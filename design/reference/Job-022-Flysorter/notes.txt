@@ -1,0 +1,3 @@
+Outer cap does not actually have a lip on the inner surface. 
+Most other features should be correct.  These designs created by Daniel Wagenaar at the Caltech 
+Neurotechnology Center.

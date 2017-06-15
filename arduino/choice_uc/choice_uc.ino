@@ -1,39 +1,48 @@
 #include <Servo.h>
 
-#define SERVO_WAIT_TIME_MS 500
-#define TRAP_VALVE_TIME_MS 6000
-#define EGRESS_VALVE_TIME_MS 5000
-#define NUM_PINS 20
-#define NUM_TRAPS 1
+// only one vacuum solenoid, and a few rotary switches redirecting the flow
+#define VACUUM_VALVE_PIN    4
+#define SORTER_PULSE_PIN    5
+#define SORTER_DIR_PIN      6
+#define SORTER_ENBL_PIN     7
+#define STEPDRIVER_PULSE_MS 5
+#define STEPS_PER_REV       200
+#define SORTER_POSITIONS    10
 
-#define ENTRY_CONTROL_PIN 2
-#define EGRESS_SLIDER_PIN 3
-#define EGRESS_VALVE_PIN 4
-#define FIRST_TRAP_PIN 5
-#define INTERRUPT_PIN A0
-
-// (degrees)
-#define BLOCKED 130
-#define OPEN 140
-
-#define EXPERIMENT 132
-#define EGRESS 147
-
-// head attached in TRAP_READY position after servo is written to 180 degrees.
-#define TRAP_READY 160
-#define TRAP_OPEN 93
-
-// input sorter: unused position
-// output sorter: all conditioning chambers -> water vacuum trap -/-> house vac
 // TODO if vacuum is too weak to suck flies out, divided across 8 chambers
 // may need to have a 3rd sorter, not linked to the first two
 // (and probably a mutually sealed position for the existing two sorters)
+
+// input sorter: unused position
+// output sorter: all conditioning chambers -> water vacuum trap -/-> house vac
+// postions in range [0,9]
 #define CLEARING_SORTER_POSITION 0
-#define SEALED_SORTER_POSITION 1
+#define SEALED_SORTER_POSITION   1
 //remaining positions will deal with vacuum traps
 
-#define STEPS_PER_REV 200
-#define SORTER_POSITIONS 10
+#define SERVO_WAIT_TIME_MS   500
+#define TRAP_VALVE_TIME_MS   6000
+#define EGRESS_VALVE_TIME_MS 5000
+// TODO remove? still used?
+#define NUM_PINS             20
+#define NUM_TRAPS            1
+
+#define ENTRY_CONTROL_PIN    2
+#define EGRESS_SLIDER_PIN    3
+#define FIRST_TRAP_PIN       8
+// TODO rename
+#define INTERRUPT_PIN        A0
+
+// (degrees)
+#define BLOCKED    130
+#define OPEN       140
+
+#define EXPERIMENT 132
+#define EGRESS     147
+
+// head attached in TRAP_READY position after servo is written to 180 degrees.
+#define TRAP_READY 160
+#define TRAP_OPEN  93
 
 #define TRAP_EXIT_THRESHOLD 800
 
@@ -45,20 +54,22 @@ const int NUM_SERVOS = NUM_TRAPS + 2;
 
 Servo servos[NUM_PINS];
 
-int TEST_DELAY = 2000;
+const int TEST_DELAY = 2000;
 
+// be careful if this doesn't divide evenly (best to make it do so)
+const int steps_per_pos = STEPS_PER_REV / SORTER_POSITIONS;
+unsigned int current_steps = 0;
+
+// TODO remove
 // pins these servos are on
-unsigned char egress_slider = 2;
-unsigned char trap1 = 3;
+//const unsigned char egress_slider = 2;
+//const unsigned char trap1 = 8;
 
 // TODO consider renaming full / fly_left for readability
 boolean full[NUM_TRAPS];
 boolean fly_left[NUM_TRAPS];
 int trap_servo_pins[NUM_TRAPS];
 int trap_exit_sensors[NUM_TRAPS];
-
-// will likely use a shift register based solution in future
-int trap_valve_pins[NUM_TRAPS];
 
 // TODO make timer based w/ global update if necessary
 void move_servo(int pin, int deg) {
@@ -67,6 +78,41 @@ void move_servo(int pin, int deg) {
   s.write(deg);
   delay(SERVO_WAIT_TIME_MS);
   s.detach();
+}
+
+void stepper_driver_pulse(int pin) {
+  digitalWrite(pin, HIGH);
+  // TODO consider increasing
+  delay(STEPDRIVER_PULSE_MS);
+  digitalWrite(pin, LOW);
+}
+
+// TODO might be hard to make non-blocking
+// might also consider only switching ENBL on at beginning
+// DIR is only set once (not switching directions should make backlash less of a 
+// problem)
+void position_sorters(unsigned int goal_pos) {
+  unsigned int goal_steps = goal_pos * steps_per_pos;
+  // would otherwise loop forever if goal_steps >= STEPS_PER_REV
+  if (goal_steps >= STEPS_PER_REV) {
+    return;
+  }
+  
+  digitalWrite(SORTER_ENBL_PIN, HIGH);
+  while (current_steps != steps_per_pos) {
+    stepper_driver_pulse(SORTER_PULSE_PIN);
+    // TODO check correct
+    current_steps = (current_steps + 1) % STEPS_PER_REV;
+  }
+  // TODO additional delay for it to finish step? do pulses buffer or 
+  // are they completed immediately (probably later)
+  digitalWrite(SORTER_ENBL_PIN, LOW);
+}
+
+void vacuum_pulse(unsigned int duration_ms) {
+  digitalWrite(VACUUM_VALVE_PIN, HIGH);
+  delay(duration_ms);
+  digitalWrite(VACUUM_VALVE_PIN, LOW);
 }
 
 /* other positions should work OK if horns set relative to this.
@@ -91,9 +137,10 @@ void end_experiment() {
   move_servo(EGRESS_SLIDER_PIN, EGRESS);
   // TODO use rotary valve or something to limit available vacuum pressure
   // to one channel at a time, if necessary to remove flies reliably
-  digitalWrite(EGRESS_VALVE_PIN, HIGH);
-  delay(EGRESS_VALVE_TIME_MS);
-  digitalWrite(EGRESS_VALVE_PIN, LOW);
+  position_sorters(CLEARING_SORTER_POSITION);
+  vacuum_pulse(EGRESS_VALVE_TIME_MS);
+  // better state to finish in?
+  position_sorters(SEALED_SORTER_POSITION);
 }
 
 boolean fly_exiting_vial() {
@@ -107,6 +154,12 @@ boolean fly_exiting_vial() {
 // i'm just getting an Arduino Mega, which has 16 analog inputs
 // alternatives: daisy chain arduinos, multiplex sensors, pick resistors such that
 // digital pins can detect fly entering trap
+
+// TODO could also possibly get this information from ROS tracking
+// have to actuate the trap later than otherwise would (and fly might 
+// fall a few times and be delayed in the meantime) with this approach.
+// wouldn't check traps individually. would just check for signal that any
+// were vacated.
 
 // fly passing sensor *should* correspond to a drop in reflectivity
 boolean fly_exiting_trap(int i) {
@@ -130,8 +183,9 @@ boolean all_full() {
   return true;
 }
 
-// loops forever if all full
+// returns the index of a randomly selected empty chamber
 int get_empty() {
+  // loops forever if all full
   while (true) {
     // [0,NUM_TRAPS) (traps indexed from zero, so should be correct)
     int n = random(NUM_TRAPS);
@@ -141,6 +195,7 @@ int get_empty() {
   }
 }
 
+// TODO could coordinate w/ ROS if i don't want to use separate sensors
 void close_vacated_traps() {
   for (int i=0;i<NUM_TRAPS;i++) {
     if (full[i] && !fly_left[i]) {
@@ -158,12 +213,12 @@ void let_fly_in(int i) {
   move_servo(trap_servo_pins[i], TRAP_READY);
   // TODO test. boolean func working? getting called? need to dereference (&)?
   wait_for(fly_exiting_vial);
-  // apply vacuum to this trap
-  digitalWrite(trap_valve_pins[i], HIGH);
+  // move sorters to current trap
+
   // TODO could use reflectivity sensor to test whether fly has entered
   // has advantages and disadvantages
-  delay(TRAP_VALVE_TIME_MS);
-  digitalWrite(trap_valve_pins[i], LOW);
+  // apply vacuum
+  vacuum_pulse(TRAP_VALVE_TIME_MS);
   // TODO maybe put this above vacuum pulse?
   move_servo(ENTRY_CONTROL_PIN, BLOCKED);
   
@@ -188,26 +243,37 @@ void serialEvent() {
   }
 }
 
+// TODO make sure all pins / used variables #defined / declared are referenced here
 void setup() {
   // make sure all pins that are supposed to be outputs are set here
+  pinMode(VACUUM_VALVE_PIN, OUTPUT);
+  pinMode(SORTER_PULSE_PIN, OUTPUT);
+  pinMode(SORTER_DIR_PIN, OUTPUT);
+  pinMode(SORTER_ENBL_PIN, OUTPUT);
   pinMode(ENTRY_CONTROL_PIN, OUTPUT);
   pinMode(EGRESS_SLIDER_PIN, OUTPUT);
-  pinMode(EGRESS_VALVE_PIN, OUTPUT);
+
+  // you don't strictly need all of these calls
+  // but it helps ensure near total independence from previous state of the Arduino
+  digitalWrite(VACUUM_VALVE_PIN, LOW);
+  digitalWrite(SORTER_PULSE_PIN, LOW);
+  // TODO maybe just hard wire this to ground?
+  digitalWrite(SORTER_DIR_PIN, LOW);
+  digitalWrite(SORTER_ENBL_PIN, LOW);
+  digitalWrite(ENTRY_CONTROL_PIN, LOW);
+  digitalWrite(EGRESS_SLIDER_PIN, LOW);
 
   for (int i=0;i<NUM_TRAPS;i++) {
     int servo_pin = FIRST_TRAP_PIN + i;
     pinMode(servo_pin, OUTPUT);
+    digitalWrite(servo_pin, LOW);
     trap_servo_pins[i] = servo_pin;
-
-    int valve_pin = FIRST_TRAP_PIN + NUM_TRAPS + i;
-    pinMode(valve_pin, OUTPUT);
-    trap_valve_pins[i] = valve_pin;
 
     full[i] = false;
     fly_left[i] = false;
   }
 
-  // this is the default, but just to be clear
+  // INPUT is the default pin mode, but just to be clear
   pinMode(INTERRUPT_PIN, INPUT);
 
   // TODO make some calibration functions
