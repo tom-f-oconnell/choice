@@ -1,0 +1,2 @@
+Allie Hexley created most of the content under the Allie directory (all of which was downloaded
+from the Hong lab NAS).  Daniel Wagenaar made the designs in Job-022-Flysorter.  I got the file from which I derived the cutaway of the vacuum trap (bottom_two_thirds_of_vacuum_trap.fcstd) from Ben de Bivort.
