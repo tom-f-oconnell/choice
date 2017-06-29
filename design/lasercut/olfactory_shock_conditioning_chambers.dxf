@@ -23,17 +23,17 @@ $INSBASE
   9
 $EXTMIN
  10
-111.8700953375698
+-0.004987549989367679
  20
-16.9758897696812
+-0.004987751321481326
  30
 0
   9
 $EXTMAX
  10
-138.1272092250461
+250
  20
-192.4074763585049
+225
  30
 0
   9
@@ -91,7 +91,7 @@ STANDARD
   9
 $CLAYER
   8
-9_trap_bottomplate
+3_yellow_manifold_layer
   9
 $CELTYPE
   6
@@ -1115,9 +1115,9 @@ AcDbViewportTableRecord
  21
 1
  12
-160.1345538002912
+195.6403115298203
  22
-108.3104932758968
+124.9874400882537
  13
 0
  23
@@ -1143,9 +1143,9 @@ AcDbViewportTableRecord
  37
 0
  40
-284.4047058535967
+284.404705853616
  41
-1.882723833543506
+1.881462799495586
  42
 50
  43
@@ -2240,10 +2240,16 @@ AcDbLayerTableRecord
     7
   6
 CONTINUOUS
+290
+0
 370
     0
 390
 F
+1001
+LibreCad
+1070
+    1
   0
 LAYER
   5
@@ -2345,7 +2351,7 @@ AcDbLayerTableRecord
   2
 3_yellow_manifold_layer
  70
-    1
+    0
  62
     1
   6
@@ -2415,7 +2421,7 @@ AcDbSymbolTableRecord
 100
 AcDbLayerTableRecord
   2
-5_bottom_acrylic
+5_support_acrylic
  70
     1
  62
@@ -2505,7 +2511,7 @@ AcDbLayerTableRecord
   2
 8_flow_regulator_retainers
  70
-    0
+    1
  62
     1
   6
@@ -2889,7 +2895,7 @@ AcDbSymbolTableRecord
 100
 AcDbBlockTableRecord
   2
-vacuum_trap_top_CUTTING_ROTATION
+vacuum_trap_top
  70
     0
 280
@@ -2925,7 +2931,7 @@ AcDbSymbolTableRecord
 100
 AcDbBlockTableRecord
   2
-trap_slider
+vactrap_slider
  70
     0
 280
@@ -2943,7 +2949,7 @@ AcDbSymbolTableRecord
 100
 AcDbBlockTableRecord
   2
-regulator_retainer
+vactrap_regulator_retainer
  70
     0
 280
@@ -3015,7 +3021,7 @@ AcDbSymbolTableRecord
 100
 AcDbBlockTableRecord
   2
-bottom_plate_unit
+support_plate_unit
  70
     0
 280
@@ -3033,7 +3039,7 @@ AcDbSymbolTableRecord
 100
 AcDbBlockTableRecord
   2
-new_delrin_chamber
+delrin_chamber
  70
     0
 280
@@ -3052,6 +3058,24 @@ AcDbSymbolTableRecord
 AcDbBlockTableRecord
   2
 vactrap_guide
+ 70
+    0
+280
+    1
+281
+    0
+  0
+BLOCK_RECORD
+  5
+79
+330
+1
+100
+AcDbSymbolTableRecord
+100
+AcDbBlockTableRecord
+  2
+delrin_slider
  70
     0
 280
@@ -3155,7 +3179,7 @@ AcDbEntity
 100
 AcDbBlockBegin
   2
-vacuum_trap_top_CUTTING_ROTATION
+vacuum_trap_top
  70
     0
  10
@@ -3163,13 +3187,13 @@ vacuum_trap_top_CUTTING_ROTATION
  20
 0
   3
-vacuum_trap_top_CUTTING_ROTATION
+vacuum_trap_top
   1
 
   0
 SPLINE
   5
-79
+7C
 100
 AcDbEntity
   8
@@ -3245,7 +3269,7 @@ AcDbSpline
   0
 SPLINE
   5
-7A
+7D
 100
 AcDbEntity
   8
@@ -3321,7 +3345,7 @@ AcDbSpline
   0
 SPLINE
   5
-7B
+7E
 100
 AcDbEntity
   8
@@ -3397,7 +3421,7 @@ AcDbSpline
   0
 SPLINE
   5
-7C
+7F
 100
 AcDbEntity
   8
@@ -3473,7 +3497,7 @@ AcDbSpline
   0
 SPLINE
   5
-7D
+80
 100
 AcDbEntity
   8
@@ -3549,7 +3573,7 @@ AcDbSpline
   0
 SPLINE
   5
-7E
+81
 100
 AcDbEntity
   8
@@ -3625,7 +3649,7 @@ AcDbSpline
   0
 LWPOLYLINE
   5
-7F
+82
 100
 AcDbEntity
   8
@@ -3655,7 +3679,7 @@ AcDbPolyline
   0
 SPLINE
   5
-80
+83
 100
 AcDbEntity
   8
@@ -3731,7 +3755,7 @@ AcDbSpline
   0
 SPLINE
   5
-81
+84
 100
 AcDbEntity
   8
@@ -3807,7 +3831,7 @@ AcDbSpline
   0
 SPLINE
   5
-82
+85
 100
 AcDbEntity
   8
@@ -3883,7 +3907,7 @@ AcDbSpline
   0
 LWPOLYLINE
   5
-83
+86
 100
 AcDbEntity
   8
@@ -3913,7 +3937,7 @@ AcDbPolyline
   0
 SPLINE
   5
-84
+87
 100
 AcDbEntity
   8
@@ -3989,7 +4013,7 @@ AcDbSpline
   0
 LWPOLYLINE
   5
-85
+88
 100
 AcDbEntity
   8
@@ -4019,7 +4043,7 @@ AcDbPolyline
   0
 SPLINE
   5
-86
+89
 100
 AcDbEntity
   8
@@ -4095,7 +4119,7 @@ AcDbSpline
   0
 SPLINE
   5
-87
+8A
 100
 AcDbEntity
   8
@@ -4171,7 +4195,7 @@ AcDbSpline
   0
 SPLINE
   5
-88
+8B
 100
 AcDbEntity
   8
@@ -4247,7 +4271,7 @@ AcDbSpline
   0
 SPLINE
   5
-89
+8C
 100
 AcDbEntity
   8
@@ -4323,7 +4347,7 @@ AcDbSpline
   0
 LWPOLYLINE
   5
-8A
+8D
 100
 AcDbEntity
   8
@@ -4353,7 +4377,7 @@ AcDbPolyline
   0
 SPLINE
   5
-8B
+8E
 100
 AcDbEntity
   8
@@ -4429,7 +4453,7 @@ AcDbSpline
   0
 LWPOLYLINE
   5
-8C
+8F
 100
 AcDbEntity
   8
@@ -4459,7 +4483,7 @@ AcDbPolyline
   0
 SPLINE
   5
-8D
+90
 100
 AcDbEntity
   8
@@ -4535,7 +4559,7 @@ AcDbSpline
   0
 SPLINE
   5
-8E
+91
 100
 AcDbEntity
   8
@@ -4611,7 +4635,7 @@ AcDbSpline
   0
 SPLINE
   5
-8F
+92
 100
 AcDbEntity
   8
@@ -4687,7 +4711,7 @@ AcDbSpline
   0
 LWPOLYLINE
   5
-90
+93
 100
 AcDbEntity
   8
@@ -4717,7 +4741,7 @@ AcDbPolyline
   0
 SPLINE
   5
-91
+94
 100
 AcDbEntity
   8
@@ -4793,7 +4817,7 @@ AcDbSpline
   0
 LWPOLYLINE
   5
-92
+95
 100
 AcDbEntity
   8
@@ -4823,7 +4847,7 @@ AcDbPolyline
   0
 SPLINE
   5
-93
+96
 100
 AcDbEntity
   8
@@ -4899,7 +4923,7 @@ AcDbSpline
   0
 SPLINE
   5
-94
+97
 100
 AcDbEntity
   8
@@ -4975,7 +4999,7 @@ AcDbSpline
   0
 SPLINE
   5
-95
+98
 100
 AcDbEntity
   8
@@ -5051,7 +5075,7 @@ AcDbSpline
   0
 LWPOLYLINE
   5
-96
+99
 100
 AcDbEntity
   8
@@ -5081,7 +5105,7 @@ AcDbPolyline
   0
 SPLINE
   5
-97
+9A
 100
 AcDbEntity
   8
@@ -5157,7 +5181,7 @@ AcDbSpline
   0
 LWPOLYLINE
   5
-98
+9B
 100
 AcDbEntity
   8
@@ -5187,7 +5211,7 @@ AcDbPolyline
   0
 SPLINE
   5
-99
+9C
 100
 AcDbEntity
   8
@@ -5263,7 +5287,7 @@ AcDbSpline
   0
 SPLINE
   5
-9A
+9D
 100
 AcDbEntity
   8
@@ -5339,7 +5363,7 @@ AcDbSpline
   0
 SPLINE
   5
-9B
+9E
 100
 AcDbEntity
   8
@@ -5415,7 +5439,7 @@ AcDbSpline
   0
 LWPOLYLINE
   5
-9C
+9F
 100
 AcDbEntity
   8
@@ -5445,7 +5469,7 @@ AcDbPolyline
   0
 SPLINE
   5
-9D
+A0
 100
 AcDbEntity
   8
@@ -5521,7 +5545,7 @@ AcDbSpline
   0
 LWPOLYLINE
   5
-9E
+A1
 100
 AcDbEntity
   8
@@ -5551,7 +5575,7 @@ AcDbPolyline
   0
 SPLINE
   5
-9F
+A2
 100
 AcDbEntity
   8
@@ -5627,7 +5651,7 @@ AcDbSpline
   0
 SPLINE
   5
-A0
+A3
 100
 AcDbEntity
   8
@@ -5703,7 +5727,7 @@ AcDbSpline
   0
 SPLINE
   5
-A1
+A4
 100
 AcDbEntity
   8
@@ -5779,7 +5803,7 @@ AcDbSpline
   0
 LWPOLYLINE
   5
-A2
+A5
 100
 AcDbEntity
   8
@@ -5809,7 +5833,7 @@ AcDbPolyline
   0
 SPLINE
   5
-A3
+A6
 100
 AcDbEntity
   8
@@ -5885,7 +5909,7 @@ AcDbSpline
   0
 LWPOLYLINE
   5
-A4
+A7
 100
 AcDbEntity
   8
@@ -5915,7 +5939,7 @@ AcDbPolyline
   0
 SPLINE
   5
-A5
+A8
 100
 AcDbEntity
   8
@@ -5991,7 +6015,7 @@ AcDbSpline
   0
 SPLINE
   5
-A6
+A9
 100
 AcDbEntity
   8
@@ -6067,7 +6091,7 @@ AcDbSpline
   0
 SPLINE
   5
-A7
+AA
 100
 AcDbEntity
   8
@@ -6143,7 +6167,7 @@ AcDbSpline
   0
 LWPOLYLINE
   5
-A8
+AB
 100
 AcDbEntity
   8
@@ -6173,7 +6197,7 @@ AcDbPolyline
   0
 SPLINE
   5
-A9
+AC
 100
 AcDbEntity
   8
@@ -6249,7 +6273,7 @@ AcDbSpline
   0
 LWPOLYLINE
   5
-AA
+AD
 100
 AcDbEntity
   8
@@ -6279,7 +6303,7 @@ AcDbPolyline
   0
 SPLINE
   5
-AB
+AE
 100
 AcDbEntity
   8
@@ -6355,7 +6379,7 @@ AcDbSpline
   0
 SPLINE
   5
-AC
+AF
 100
 AcDbEntity
   8
@@ -6431,7 +6455,7 @@ AcDbSpline
   0
 SPLINE
   5
-AD
+B0
 100
 AcDbEntity
   8
@@ -6507,7 +6531,7 @@ AcDbSpline
   0
 LWPOLYLINE
   5
-AE
+B1
 100
 AcDbEntity
   8
@@ -6537,7 +6561,7 @@ AcDbPolyline
   0
 SPLINE
   5
-AF
+B2
 100
 AcDbEntity
   8
@@ -6613,7 +6637,7 @@ AcDbSpline
   0
 LWPOLYLINE
   5
-B0
+B3
 100
 AcDbEntity
   8
@@ -6643,7 +6667,7 @@ AcDbPolyline
   0
 SPLINE
   5
-B1
+B4
 100
 AcDbEntity
   8
@@ -6719,7 +6743,7 @@ AcDbSpline
   0
 SPLINE
   5
-B2
+B5
 100
 AcDbEntity
   8
@@ -6795,7 +6819,7 @@ AcDbSpline
   0
 SPLINE
   5
-B3
+B6
 100
 AcDbEntity
   8
@@ -6871,7 +6895,7 @@ AcDbSpline
   0
 LWPOLYLINE
   5
-B4
+B7
 100
 AcDbEntity
   8
@@ -6901,7 +6925,7 @@ AcDbPolyline
   0
 SPLINE
   5
-B5
+B8
 100
 AcDbEntity
   8
@@ -6977,7 +7001,7 @@ AcDbSpline
   0
 LWPOLYLINE
   5
-B6
+B9
 100
 AcDbEntity
   8
@@ -7007,7 +7031,7 @@ AcDbPolyline
   0
 SPLINE
   5
-B7
+BA
 100
 AcDbEntity
   8
@@ -7083,7 +7107,7 @@ AcDbSpline
   0
 SPLINE
   5
-B8
+BB
 100
 AcDbEntity
   8
@@ -7159,7 +7183,7 @@ AcDbSpline
   0
 SPLINE
   5
-B9
+BC
 100
 AcDbEntity
   8
@@ -7235,7 +7259,7 @@ AcDbSpline
   0
 LWPOLYLINE
   5
-BA
+BD
 100
 AcDbEntity
   8
@@ -7265,7 +7289,7 @@ AcDbPolyline
   0
 SPLINE
   5
-BB
+BE
 100
 AcDbEntity
   8
@@ -7341,7 +7365,7 @@ AcDbSpline
   0
 LWPOLYLINE
   5
-BC
+BF
 100
 AcDbEntity
   8
@@ -7371,7 +7395,7 @@ AcDbPolyline
   0
 SPLINE
   5
-BD
+C0
 100
 AcDbEntity
   8
@@ -7447,7 +7471,7 @@ AcDbSpline
   0
 SPLINE
   5
-BE
+C1
 100
 AcDbEntity
   8
@@ -7523,7 +7547,7 @@ AcDbSpline
   0
 SPLINE
   5
-BF
+C2
 100
 AcDbEntity
   8
@@ -7599,7 +7623,7 @@ AcDbSpline
   0
 SPLINE
   5
-C0
+C3
 100
 AcDbEntity
   8
@@ -7675,7 +7699,7 @@ AcDbSpline
   0
 SPLINE
   5
-C1
+C4
 100
 AcDbEntity
   8
@@ -7751,7 +7775,7 @@ AcDbSpline
   0
 LWPOLYLINE
   5
-C2
+C5
 100
 AcDbEntity
   8
@@ -7781,7 +7805,7 @@ AcDbPolyline
   0
 SPLINE
   5
-C3
+C6
 100
 AcDbEntity
   8
@@ -7857,7 +7881,7 @@ AcDbSpline
   0
 LWPOLYLINE
   5
-C4
+C7
 100
 AcDbEntity
   8
@@ -7887,7 +7911,7 @@ AcDbPolyline
   0
 SPLINE
   5
-C5
+C8
 100
 AcDbEntity
   8
@@ -7963,7 +7987,7 @@ AcDbSpline
   0
 LWPOLYLINE
   5
-C6
+C9
 100
 AcDbEntity
   8
@@ -7993,7 +8017,7 @@ AcDbPolyline
   0
 SPLINE
   5
-C7
+CA
 100
 AcDbEntity
   8
@@ -8069,7 +8093,7 @@ AcDbSpline
   0
 SPLINE
   5
-C8
+CB
 100
 AcDbEntity
   8
@@ -8145,7 +8169,7 @@ AcDbSpline
   0
 CIRCLE
   5
-C9
+CC
 100
 AcDbEntity
   8
@@ -8167,7 +8191,7 @@ AcDbCircle
   0
 CIRCLE
   5
-CA
+CD
 100
 AcDbEntity
   8
@@ -8189,7 +8213,7 @@ AcDbCircle
   0
 CIRCLE
   5
-CB
+CE
 100
 AcDbEntity
   8
@@ -8211,7 +8235,7 @@ AcDbCircle
   0
 CIRCLE
   5
-CC
+CF
 100
 AcDbEntity
   8
@@ -8233,7 +8257,7 @@ AcDbCircle
   0
 CIRCLE
   5
-CD
+D0
 100
 AcDbEntity
   8
@@ -8255,7 +8279,7 @@ AcDbCircle
   0
 ARC
   5
-CE
+D1
 100
 AcDbEntity
   8
@@ -8283,7 +8307,7 @@ AcDbArc
   0
 SPLINE
   5
-CF
+D2
 100
 AcDbEntity
   8
@@ -8357,85 +8381,9 @@ AcDbSpline
  30
 0
   0
-SPLINE
-  5
-D0
-100
-AcDbEntity
-  8
-6.2_vacuum_trap_tops
-  6
-ByLayer
- 62
-    5
-370
-   -1
-100
-AcDbSpline
-210
-0
-220
-0
-230
-0
- 70
-    8
- 71
-    3
- 72
-    8
- 73
-    4
- 74
-    0
- 42
-1e-07
- 43
-1e-07
- 40
-0
- 40
-0
- 40
-0
- 40
-0
- 40
-1
- 40
-1
- 40
-1
- 40
-1
- 10
--2.775557561562891e-16
- 20
-10.7
- 30
-0
- 10
-0.9
- 20
-10.6
- 30
-0
- 10
-1.504477000000009
- 20
-9.563981000000013
- 30
-0
- 10
-1.574072999999999
- 20
-8.902819000000022
- 30
-0
-  0
 LWPOLYLINE
   5
-D1
+D3
 100
 AcDbEntity
   8
@@ -8495,6 +8443,82 @@ AcDbPolyline
  42
 -0.414213562373095
   0
+SPLINE
+  5
+D4
+100
+AcDbEntity
+  8
+6.2_vacuum_trap_tops
+  6
+ByLayer
+ 62
+    5
+370
+   -1
+100
+AcDbSpline
+210
+0
+220
+0
+230
+0
+ 70
+    8
+ 71
+    3
+ 72
+    8
+ 73
+    4
+ 74
+    0
+ 42
+1e-07
+ 43
+1e-07
+ 40
+0
+ 40
+0
+ 40
+0
+ 40
+0
+ 40
+1
+ 40
+1
+ 40
+1
+ 40
+1
+ 10
+-0.003616999999993761
+ 20
+10.69892
+ 30
+0
+ 10
+0.9
+ 20
+10.6
+ 30
+0
+ 10
+1.504477000000009
+ 20
+9.563981000000013
+ 30
+0
+ 10
+1.574072999999999
+ 20
+8.902819000000022
+ 30
+0
+  0
 ENDBLK
   5
 5D
@@ -8533,7 +8557,7 @@ sg90_servo_footprint
   0
 LWPOLYLINE
   5
-D2
+D5
 100
 AcDbEntity
   8
@@ -8571,7 +8595,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-D3
+D6
 100
 AcDbEntity
   8
@@ -8597,7 +8621,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-D4
+D7
 100
 AcDbEntity
   8
@@ -8623,7 +8647,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-D5
+D8
 100
 AcDbEntity
   8
@@ -8661,7 +8685,7 @@ AcDbPolyline
   0
 CIRCLE
   5
-D6
+D9
 100
 AcDbEntity
   8
@@ -8683,7 +8707,7 @@ AcDbCircle
   0
 CIRCLE
   5
-D7
+DA
 100
 AcDbEntity
   8
@@ -8727,7 +8751,7 @@ AcDbEntity
 100
 AcDbBlockBegin
   2
-trap_slider
+vactrap_slider
  70
     0
  10
@@ -8735,13 +8759,13 @@ trap_slider
  20
 0
   3
-trap_slider
+vactrap_slider
   1
 
   0
 LWPOLYLINE
   5
-D8
+DB
 100
 AcDbEntity
   8
@@ -8779,7 +8803,7 @@ AcDbPolyline
   0
 CIRCLE
   5
-D9
+DC
 100
 AcDbEntity
   8
@@ -8801,7 +8825,7 @@ AcDbCircle
   0
 CIRCLE
   5
-DA
+DD
 100
 AcDbEntity
   8
@@ -8823,7 +8847,7 @@ AcDbCircle
   0
 CIRCLE
   5
-DB
+DE
 100
 AcDbEntity
   8
@@ -8845,7 +8869,7 @@ AcDbCircle
   0
 CIRCLE
   5
-DC
+DF
 100
 AcDbEntity
   8
@@ -8867,7 +8891,7 @@ AcDbCircle
   0
 LINE
   5
-DD
+E0
 100
 AcDbEntity
   8
@@ -8891,7 +8915,7 @@ AcDbLine
   0
 LINE
   5
-DE
+E1
 100
 AcDbEntity
   8
@@ -8915,7 +8939,7 @@ AcDbLine
   0
 LINE
   5
-DF
+E2
 100
 AcDbEntity
   8
@@ -8939,7 +8963,7 @@ AcDbLine
   0
 LINE
   5
-E0
+E3
 100
 AcDbEntity
   8
@@ -8963,7 +8987,7 @@ AcDbLine
   0
 CIRCLE
   5
-E1
+E4
 100
 AcDbEntity
   8
@@ -8985,7 +9009,7 @@ AcDbCircle
   0
 CIRCLE
   5
-E2
+E5
 100
 AcDbEntity
   8
@@ -9007,7 +9031,7 @@ AcDbCircle
   0
 CIRCLE
   5
-E3
+E6
 100
 AcDbEntity
   8
@@ -9029,7 +9053,7 @@ AcDbCircle
   0
 LINE
   5
-E4
+E7
 100
 AcDbEntity
   8
@@ -9053,7 +9077,7 @@ AcDbLine
   0
 ARC
   5
-E5
+E8
 100
 AcDbEntity
   8
@@ -9081,7 +9105,7 @@ AcDbArc
   0
 ARC
   5
-E6
+E9
 100
 AcDbEntity
   8
@@ -9109,7 +9133,7 @@ AcDbArc
   0
 LINE
   5
-E7
+EA
 100
 AcDbEntity
   8
@@ -9133,7 +9157,7 @@ AcDbLine
   0
 LINE
   5
-E8
+EB
 100
 AcDbEntity
   8
@@ -9157,7 +9181,7 @@ AcDbLine
   0
 ARC
   5
-E9
+EC
 100
 AcDbEntity
   8
@@ -9185,7 +9209,7 @@ AcDbArc
   0
 LINE
   5
-EA
+ED
 100
 AcDbEntity
   8
@@ -9231,7 +9255,7 @@ AcDbEntity
 100
 AcDbBlockBegin
   2
-regulator_retainer
+vactrap_regulator_retainer
  70
     0
  10
@@ -9239,13 +9263,13 @@ regulator_retainer
  20
 0
   3
-regulator_retainer
+vactrap_regulator_retainer
   1
 
   0
 CIRCLE
   5
-EB
+EE
 100
 AcDbEntity
   8
@@ -9267,7 +9291,7 @@ AcDbCircle
   0
 CIRCLE
   5
-EC
+EF
 100
 AcDbEntity
   8
@@ -9289,7 +9313,7 @@ AcDbCircle
   0
 CIRCLE
   5
-ED
+F0
 100
 AcDbEntity
   8
@@ -9311,7 +9335,7 @@ AcDbCircle
   0
 CIRCLE
   5
-EE
+F1
 100
 AcDbEntity
   8
@@ -9333,7 +9357,7 @@ AcDbCircle
   0
 CIRCLE
   5
-EF
+F2
 100
 AcDbEntity
   8
@@ -9355,7 +9379,7 @@ AcDbCircle
   0
 CIRCLE
   5
-F0
+F3
 100
 AcDbEntity
   8
@@ -9377,7 +9401,7 @@ AcDbCircle
   0
 LINE
   5
-F1
+F4
 100
 AcDbEntity
   8
@@ -9401,7 +9425,7 @@ AcDbLine
   0
 ARC
   5
-F2
+F5
 100
 AcDbEntity
   8
@@ -9429,7 +9453,7 @@ AcDbArc
   0
 ARC
   5
-F3
+F6
 100
 AcDbEntity
   8
@@ -9457,7 +9481,7 @@ AcDbArc
   0
 LINE
   5
-F4
+F7
 100
 AcDbEntity
   8
@@ -9481,7 +9505,7 @@ AcDbLine
   0
 ARC
   5
-F5
+F8
 100
 AcDbEntity
   8
@@ -9509,7 +9533,7 @@ AcDbArc
   0
 ARC
   5
-F6
+F9
 100
 AcDbEntity
   8
@@ -9537,7 +9561,7 @@ AcDbArc
   0
 ARC
   5
-F7
+FA
 100
 AcDbEntity
   8
@@ -9565,7 +9589,7 @@ AcDbArc
   0
 LINE
   5
-F8
+FB
 100
 AcDbEntity
   8
@@ -9589,7 +9613,7 @@ AcDbLine
   0
 LINE
   5
-F9
+FC
 100
 AcDbEntity
   8
@@ -9613,7 +9637,7 @@ AcDbLine
   0
 ARC
   5
-FA
+FD
 100
 AcDbEntity
   8
@@ -9641,7 +9665,7 @@ AcDbArc
   0
 LINE
   5
-FB
+FE
 100
 AcDbEntity
   8
@@ -9701,7 +9725,7 @@ shimstock_chamber
   0
 ARC
   5
-FC
+FF
 100
 AcDbEntity
   8
@@ -9729,7 +9753,7 @@ AcDbArc
   0
 ARC
   5
-FD
+100
 100
 AcDbEntity
   8
@@ -9757,7 +9781,7 @@ AcDbArc
   0
 LINE
   5
-FE
+101
 100
 AcDbEntity
   8
@@ -9781,7 +9805,7 @@ AcDbLine
   0
 LINE
   5
-FF
+102
 100
 AcDbEntity
   8
@@ -9805,7 +9829,7 @@ AcDbLine
   0
 ARC
   5
-100
+103
 100
 AcDbEntity
   8
@@ -9833,7 +9857,7 @@ AcDbArc
   0
 LINE
   5
-101
+104
 100
 AcDbEntity
   8
@@ -9857,7 +9881,7 @@ AcDbLine
   0
 LINE
   5
-102
+105
 100
 AcDbEntity
   8
@@ -9881,7 +9905,7 @@ AcDbLine
   0
 ARC
   5
-103
+106
 100
 AcDbEntity
   8
@@ -9909,7 +9933,7 @@ AcDbArc
   0
 LINE
   5
-104
+107
 100
 AcDbEntity
   8
@@ -9933,7 +9957,7 @@ AcDbLine
   0
 LINE
   5
-105
+108
 100
 AcDbEntity
   8
@@ -9957,7 +9981,7 @@ AcDbLine
   0
 ARC
   5
-106
+109
 100
 AcDbEntity
   8
@@ -9985,7 +10009,7 @@ AcDbArc
   0
 LINE
   5
-107
+10A
 100
 AcDbEntity
   8
@@ -10009,7 +10033,7 @@ AcDbLine
   0
 LINE
   5
-108
+10B
 100
 AcDbEntity
   8
@@ -10033,7 +10057,7 @@ AcDbLine
   0
 ARC
   5
-109
+10C
 100
 AcDbEntity
   8
@@ -10061,7 +10085,7 @@ AcDbArc
   0
 LINE
   5
-10A
+10D
 100
 AcDbEntity
   8
@@ -10085,7 +10109,7 @@ AcDbLine
   0
 LINE
   5
-10B
+10E
 100
 AcDbEntity
   8
@@ -10109,7 +10133,7 @@ AcDbLine
   0
 ARC
   5
-10C
+10F
 100
 AcDbEntity
   8
@@ -10137,7 +10161,7 @@ AcDbArc
   0
 LINE
   5
-10D
+110
 100
 AcDbEntity
   8
@@ -10161,7 +10185,7 @@ AcDbLine
   0
 LINE
   5
-10E
+111
 100
 AcDbEntity
   8
@@ -10185,7 +10209,7 @@ AcDbLine
   0
 LINE
   5
-10F
+112
 100
 AcDbEntity
   8
@@ -10209,7 +10233,7 @@ AcDbLine
   0
 LINE
   5
-110
+113
 100
 AcDbEntity
   8
@@ -10233,7 +10257,7 @@ AcDbLine
   0
 ARC
   5
-111
+114
 100
 AcDbEntity
   8
@@ -10261,7 +10285,7 @@ AcDbArc
   0
 LINE
   5
-112
+115
 100
 AcDbEntity
   8
@@ -10285,7 +10309,7 @@ AcDbLine
   0
 ARC
   5
-113
+116
 100
 AcDbEntity
   8
@@ -10313,7 +10337,7 @@ AcDbArc
   0
 LINE
   5
-114
+117
 100
 AcDbEntity
   8
@@ -10337,7 +10361,7 @@ AcDbLine
   0
 LINE
   5
-115
+118
 100
 AcDbEntity
   8
@@ -10361,82 +10385,6 @@ AcDbLine
   0
 LINE
   5
-116
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
--27.13599472740131
- 20
-20.67022937565599
- 11
--17.13599472740131
- 21
-20.67022937565599
-  0
-LINE
-  5
-117
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
--27.13599472740131
- 20
-17.470229375656
- 11
--17.13599472740131
- 21
-17.470229375656
-  0
-ARC
-  5
-118
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
--17.13599472740131
- 20
-19.070229375656
- 40
-1.6
-100
-AcDbArc
- 50
-270
- 51
-450
-  0
-ARC
-  5
 119
 100
 AcDbEntity
@@ -10449,19 +10397,15 @@ ByLayer
 370
    -1
 100
-AcDbCircle
+AcDbLine
  10
 -27.13599472740131
  20
-19.070229375656
- 40
-1.6
-100
-AcDbArc
- 50
-90
- 51
-270
+20.67022937565599
+ 11
+-17.13599472740131
+ 21
+20.67022937565599
   0
 LINE
   5
@@ -10479,15 +10423,15 @@ ByLayer
 100
 AcDbLine
  10
--27.13596532293354
+-27.13599472740131
  20
-20.67020852728288
+17.470229375656
  11
--17.13596532293354
+-17.13599472740131
  21
-20.67020852728288
+17.470229375656
   0
-LINE
+ARC
   5
 11B
 100
@@ -10501,15 +10445,19 @@ ByLayer
 370
    -1
 100
-AcDbLine
+AcDbCircle
  10
--27.13596532293354
+-17.13599472740131
  20
-17.47020852728289
- 11
--17.13596532293354
- 21
-17.47020852728289
+19.070229375656
+ 40
+1.6
+100
+AcDbArc
+ 50
+270
+ 51
+450
   0
 ARC
   5
@@ -10527,19 +10475,19 @@ ByLayer
 100
 AcDbCircle
  10
--17.13596532293354
+-27.13599472740131
  20
-19.07020852728289
+19.070229375656
  40
 1.6
 100
 AcDbArc
  50
-270
+90
  51
-450
+270
   0
-ARC
+LINE
   5
 11D
 100
@@ -10553,19 +10501,15 @@ ByLayer
 370
    -1
 100
-AcDbCircle
+AcDbLine
  10
 -27.13596532293354
  20
-19.07020852728289
- 40
-1.6
-100
-AcDbArc
- 50
-90
- 51
-270
+20.67020852728288
+ 11
+-17.13596532293354
+ 21
+20.67020852728288
   0
 LINE
   5
@@ -10585,30 +10529,6 @@ AcDbLine
  10
 -27.13596532293354
  20
-20.67020852728288
- 11
--17.13596532293354
- 21
-20.67020852728288
-  0
-LINE
-  5
-11F
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
--27.13596532293354
- 20
 17.47020852728289
  11
 -17.13596532293354
@@ -10617,7 +10537,7 @@ AcDbLine
   0
 ARC
   5
-120
+11F
 100
 AcDbEntity
   8
@@ -10645,7 +10565,111 @@ AcDbArc
   0
 ARC
   5
+120
+100
+AcDbEntity
+  8
+3_yellow_manifold_layer
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+-27.13596532293354
+ 20
+19.07020852728289
+ 40
+1.6
+100
+AcDbArc
+ 50
+90
+ 51
+270
+  0
+LINE
+  5
 121
+100
+AcDbEntity
+  8
+3_yellow_manifold_layer
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbLine
+ 10
+-27.13596532293354
+ 20
+20.67020852728288
+ 11
+-17.13596532293354
+ 21
+20.67020852728288
+  0
+LINE
+  5
+122
+100
+AcDbEntity
+  8
+3_yellow_manifold_layer
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbLine
+ 10
+-27.13596532293354
+ 20
+17.47020852728289
+ 11
+-17.13596532293354
+ 21
+17.47020852728289
+  0
+ARC
+  5
+123
+100
+AcDbEntity
+  8
+3_yellow_manifold_layer
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+-17.13596532293354
+ 20
+19.07020852728289
+ 40
+1.6
+100
+AcDbArc
+ 50
+270
+ 51
+450
+  0
+ARC
+  5
+124
 100
 AcDbEntity
   8
@@ -10673,7 +10697,7 @@ AcDbArc
   0
 CIRCLE
   5
-122
+125
 100
 AcDbEntity
   8
@@ -10691,7 +10715,7 @@ AcDbCircle
  20
 16.9662
  40
-2.5
+3.75
   0
 ENDBLK
   5
@@ -10731,7 +10755,7 @@ egress_slider_unit
   0
 LWPOLYLINE
   5
-123
+126
 100
 AcDbEntity
   8
@@ -10793,7 +10817,7 @@ AcDbPolyline
   0
 CIRCLE
   5
-124
+127
 100
 AcDbEntity
   8
@@ -10815,7 +10839,7 @@ AcDbCircle
   0
 CIRCLE
   5
-125
+128
 100
 AcDbEntity
   8
@@ -10837,7 +10861,7 @@ AcDbCircle
   0
 LINE
   5
-126
+129
 100
 AcDbEntity
   8
@@ -10861,7 +10885,7 @@ AcDbLine
   0
 ARC
   5
-127
+12A
 100
 AcDbEntity
   8
@@ -10889,7 +10913,7 @@ AcDbArc
   0
 LINE
   5
-128
+12B
 100
 AcDbEntity
   8
@@ -10913,7 +10937,7 @@ AcDbLine
   0
 ARC
   5
-129
+12C
 100
 AcDbEntity
   8
@@ -10941,7 +10965,7 @@ AcDbArc
   0
 ARC
   5
-12A
+12D
 100
 AcDbEntity
   8
@@ -10969,7 +10993,7 @@ AcDbArc
   0
 ARC
   5
-12B
+12E
 100
 AcDbEntity
   8
@@ -10997,7 +11021,7 @@ AcDbArc
   0
 LINE
   5
-12C
+12F
 100
 AcDbEntity
   8
@@ -11021,7 +11045,7 @@ AcDbLine
   0
 LINE
   5
-12D
+130
 100
 AcDbEntity
   8
@@ -11081,7 +11105,7 @@ sg90_servo_mount_holes
   0
 ARC
   5
-12E
+131
 100
 AcDbEntity
   8
@@ -11109,7 +11133,7 @@ AcDbArc
   0
 ARC
   5
-12F
+132
 100
 AcDbEntity
   8
@@ -11137,7 +11161,7 @@ AcDbArc
   0
 ARC
   5
-130
+133
 100
 AcDbEntity
   8
@@ -11165,7 +11189,7 @@ AcDbArc
   0
 LINE
   5
-131
+134
 100
 AcDbEntity
   8
@@ -11189,7 +11213,7 @@ AcDbLine
   0
 LINE
   5
-132
+135
 100
 AcDbEntity
   8
@@ -11213,7 +11237,7 @@ AcDbLine
   0
 CIRCLE
   5
-133
+136
 100
 AcDbEntity
   8
@@ -11235,7 +11259,7 @@ AcDbCircle
   0
 CIRCLE
   5
-134
+137
 100
 AcDbEntity
   8
@@ -11257,7 +11281,7 @@ AcDbCircle
   0
 ARC
   5
-135
+138
 100
 AcDbEntity
   8
@@ -11285,7 +11309,7 @@ AcDbArc
   0
 ARC
   5
-136
+139
 100
 AcDbEntity
   8
@@ -11313,7 +11337,7 @@ AcDbArc
   0
 ARC
   5
-137
+13A
 100
 AcDbEntity
   8
@@ -11341,7 +11365,7 @@ AcDbArc
   0
 LINE
   5
-138
+13B
 100
 AcDbEntity
   8
@@ -11365,7 +11389,7 @@ AcDbLine
   0
 LINE
   5
-139
+13C
 100
 AcDbEntity
   8
@@ -11389,7 +11413,7 @@ AcDbLine
   0
 ARC
   5
-13A
+13D
 100
 AcDbEntity
   8
@@ -11417,7 +11441,7 @@ AcDbArc
   0
 ARC
   5
-13B
+13E
 100
 AcDbEntity
   8
@@ -11467,7 +11491,7 @@ AcDbEntity
 100
 AcDbBlockBegin
   2
-bottom_plate_unit
+support_plate_unit
  70
     0
  10
@@ -11475,17 +11499,17 @@ bottom_plate_unit
  20
 0
   3
-bottom_plate_unit
+support_plate_unit
   1
 
   0
 CIRCLE
   5
-13C
+13F
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByBlock
  62
@@ -11503,11 +11527,11 @@ AcDbCircle
   0
 CIRCLE
   5
-13D
+140
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByBlock
  62
@@ -11525,11 +11549,11 @@ AcDbCircle
   0
 LWPOLYLINE
   5
-13E
+141
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -11587,11 +11611,11 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-13F
+142
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -11629,11 +11653,11 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-140
+143
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -11793,7 +11817,7 @@ AcDbEntity
 100
 AcDbBlockBegin
   2
-new_delrin_chamber
+delrin_chamber
  70
     0
  10
@@ -11801,13 +11825,13 @@ new_delrin_chamber
  20
 0
   3
-new_delrin_chamber
+delrin_chamber
   1
 
   0
 CIRCLE
   5
-141
+144
 100
 AcDbEntity
   8
@@ -11829,7 +11853,7 @@ AcDbCircle
   0
 ARC
   5
-142
+145
 100
 AcDbEntity
   8
@@ -11857,7 +11881,7 @@ AcDbArc
   0
 LINE
   5
-143
+146
 100
 AcDbEntity
   8
@@ -11881,7 +11905,7 @@ AcDbLine
   0
 ARC
   5
-144
+147
 100
 AcDbEntity
   8
@@ -11909,7 +11933,7 @@ AcDbArc
   0
 ARC
   5
-145
+148
 100
 AcDbEntity
   8
@@ -11937,7 +11961,7 @@ AcDbArc
   0
 LINE
   5
-146
+149
 100
 AcDbEntity
   8
@@ -11961,7 +11985,7 @@ AcDbLine
   0
 ARC
   5
-147
+14A
 100
 AcDbEntity
   8
@@ -11989,7 +12013,7 @@ AcDbArc
   0
 LINE
   5
-148
+14B
 100
 AcDbEntity
   8
@@ -12013,7 +12037,7 @@ AcDbLine
   0
 ARC
   5
-149
+14C
 100
 AcDbEntity
   8
@@ -12041,7 +12065,7 @@ AcDbArc
   0
 LINE
   5
-14A
+14D
 100
 AcDbEntity
   8
@@ -12065,7 +12089,7 @@ AcDbLine
   0
 LINE
   5
-14B
+14E
 100
 AcDbEntity
   8
@@ -12089,7 +12113,7 @@ AcDbLine
   0
 LINE
   5
-14C
+14F
 100
 AcDbEntity
   8
@@ -12113,7 +12137,7 @@ AcDbLine
   0
 LINE
   5
-14D
+150
 100
 AcDbEntity
   8
@@ -12135,31 +12159,9 @@ AcDbLine
  21
 -3.993999987826584
   0
-CIRCLE
-  5
-14E
-100
-AcDbEntity
-  8
-2.1_delrin_chambers_and_manifold
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-9.375
- 20
--6.163031684991438e-08
- 40
-2.5
-  0
 LINE
   5
-14F
+151
 100
 AcDbEntity
   8
@@ -12183,31 +12185,7 @@ AcDbLine
   0
 LINE
   5
-150
-100
-AcDbEntity
-  8
-2.1_delrin_chambers_and_manifold
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-13.14800003290898
- 20
-5.005999913566342
- 11
-13.14799997374385
- 21
--3.994000086433658
-  0
-LINE
-  5
-151
+152
 100
 AcDbEntity
   8
@@ -12228,30 +12206,6 @@ AcDbLine
 31.14800003290898
  21
 5.005999795236107
-  0
-LINE
-  5
-152
-100
-AcDbEntity
-  8
-2.1_delrin_chambers_and_manifold
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-1.851779973743845
- 20
--3.994000012173416
- 11
-13.14799997374385
- 21
--3.994000086433658
   0
 LINE
   5
@@ -12425,6 +12379,158 @@ AcDbLine
  21
 -5.843983528819081
   0
+LINE
+  5
+15A
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbLine
+ 10
+9.375
+ 20
+3.7499999383697
+ 11
+13.14800003290898
+ 21
+3.7499999383697
+  0
+ARC
+  5
+15B
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+9.375
+ 20
+-6.163030000000001e-08
+ 40
+3.75
+100
+AcDbArc
+ 50
+89.99999742417441
+ 51
+180.0000018213838
+  0
+LINE
+  5
+15C
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbLine
+ 10
+13.14800003290898
+ 20
+5.005999913566342
+ 11
+13.14800002465216
+ 21
+3.7499999383697
+  0
+LINE
+  5
+15D
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbLine
+ 10
+1.851779973743845
+ 20
+-3.994000012173416
+ 11
+4.624999993426099
+ 21
+-3.994000030404292
+  0
+LINE
+  5
+15E
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbLine
+ 10
+5.625
+ 20
+-6.163029954075746e-08
+ 11
+5.625
+ 21
+-2.994000030404292
+  0
+ARC
+  5
+15F
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+4.625
+ 20
+-2.994000030404292
+ 40
+1
+100
+AcDbArc
+ 50
+269.9999996233432
+ 51
+0
+  0
 ENDBLK
   5
 75
@@ -12463,7 +12569,7 @@ vactrap_guide
   0
 ARC
   5
-15A
+160
 100
 AcDbEntity
   8
@@ -12491,7 +12597,7 @@ AcDbArc
   0
 LINE
   5
-15B
+161
 100
 AcDbEntity
   8
@@ -12515,7 +12621,7 @@ AcDbLine
   0
 LINE
   5
-15C
+162
 100
 AcDbEntity
   8
@@ -12539,7 +12645,7 @@ AcDbLine
   0
 LINE
   5
-15D
+163
 100
 AcDbEntity
   8
@@ -12563,7 +12669,7 @@ AcDbLine
   0
 LINE
   5
-15E
+164
 100
 AcDbEntity
   8
@@ -12587,7 +12693,7 @@ AcDbLine
   0
 LINE
   5
-15F
+165
 100
 AcDbEntity
   8
@@ -12611,7 +12717,7 @@ AcDbLine
   0
 LINE
   5
-160
+166
 100
 AcDbEntity
   8
@@ -12635,7 +12741,7 @@ AcDbLine
   0
 LINE
   5
-161
+167
 100
 AcDbEntity
   8
@@ -12659,7 +12765,7 @@ AcDbLine
   0
 LINE
   5
-162
+168
 100
 AcDbEntity
   8
@@ -12683,7 +12789,7 @@ AcDbLine
   0
 LINE
   5
-163
+169
 100
 AcDbEntity
   8
@@ -12717,6 +12823,264 @@ AcDbEntity
 100
 AcDbBlockEnd
   0
+BLOCK
+  5
+7A
+330
+79
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockBegin
+  2
+delrin_slider
+ 70
+    0
+ 10
+0
+ 20
+0
+  3
+delrin_slider
+  1
+
+  0
+LINE
+  5
+16A
+100
+AcDbEntity
+  8
+2.2_delrin_sliders
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbLine
+ 10
+1.31477975173766e-08
+ 20
+1.999993440564197
+ 11
+14.99978001314781
+ 21
+1.999993341957094
+  0
+LINE
+  5
+16B
+100
+AcDbEntity
+  8
+2.2_delrin_sliders
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbLine
+ 10
+14.99978007231289
+ 20
+10.99999334195709
+ 11
+14.99978001314781
+ 21
+1.999993341957094
+  0
+ARC
+  5
+16C
+100
+AcDbEntity
+  8
+2.2_delrin_sliders
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+21.999780065739
+ 20
+9.999993295939788
+ 40
+1
+100
+AcDbArc
+ 50
+359.9999996233432
+ 51
+89.9999996233432
+  0
+CIRCLE
+  5
+16D
+100
+AcDbEntity
+  8
+2.2_delrin_sliders
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+18.9997506487675
+ 20
+8.097972467288599
+ 40
+1.473
+  0
+LINE
+  5
+16E
+100
+AcDbEntity
+  8
+2.2_delrin_sliders
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbLine
+ 10
+0
+ 20
+0
+ 11
+21.99977999999999
+ 21
+-1.4462440844909e-07
+  0
+ARC
+  5
+16F
+100
+AcDbEntity
+  8
+2.2_delrin_sliders
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+21.9997800065739
+ 20
+0.9999998553756768
+ 40
+1
+100
+AcDbArc
+ 50
+269.9999996233425
+ 51
+359.9999996233425
+  0
+LINE
+  5
+170
+100
+AcDbEntity
+  8
+2.2_delrin_sliders
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbLine
+ 10
+22.99978000657401
+ 20
+1.000001756150397
+ 11
+22.999780065739
+ 21
+9.999993289365875
+  0
+LINE
+  5
+171
+100
+AcDbEntity
+  8
+2.2_delrin_sliders
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbLine
+ 10
+21.99977625761559
+ 20
+10.99999329593987
+ 11
+14.99978007231289
+ 21
+10.99999334195709
+  0
+LINE
+  5
+172
+100
+AcDbEntity
+  8
+2.2_delrin_sliders
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbLine
+ 10
+1.31477975173766e-08
+ 20
+1.999993440564197
+ 11
+0
+ 21
+0
+  0
+ENDBLK
+  5
+7B
+330
+79
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockEnd
+  0
 ENDSEC
   0
 SECTION
@@ -12725,7 +13089,7 @@ ENTITIES
   0
 CIRCLE
   5
-164
+173
 100
 AcDbEntity
   8
@@ -12747,7 +13111,7 @@ AcDbCircle
   0
 CIRCLE
   5
-165
+174
 100
 AcDbEntity
   8
@@ -12769,7 +13133,7 @@ AcDbCircle
   0
 ARC
   5
-166
+175
 100
 AcDbEntity
   8
@@ -12797,7 +13161,7 @@ AcDbArc
   0
 CIRCLE
   5
-167
+176
 100
 AcDbEntity
   8
@@ -12819,7 +13183,7 @@ AcDbCircle
   0
 ARC
   5
-168
+177
 100
 AcDbEntity
   8
@@ -12847,7 +13211,7 @@ AcDbArc
   0
 LWPOLYLINE
   5
-169
+178
 100
 AcDbEntity
   8
@@ -12915,7 +13279,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-16A
+179
 100
 AcDbEntity
   8
@@ -12983,7 +13347,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-16B
+17A
 100
 AcDbEntity
   8
@@ -13051,7 +13415,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-16C
+17B
 100
 AcDbEntity
   8
@@ -13119,7 +13483,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-16D
+17C
 100
 AcDbEntity
   8
@@ -13187,7 +13551,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-16E
+17D
 100
 AcDbEntity
   8
@@ -13255,7 +13619,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-16F
+17E
 100
 AcDbEntity
   8
@@ -13323,7 +13687,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-170
+17F
 100
 AcDbEntity
   8
@@ -13391,51 +13755,7 @@ AcDbPolyline
   0
 CIRCLE
   5
-171
-100
-AcDbEntity
-  8
-2.1_delrin_chambers_and_manifold
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-94.39501245001064
- 20
-139.9595121483715
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-172
-100
-AcDbEntity
-  8
-2.1_delrin_chambers_and_manifold
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-94.39501245001064
- 20
-95.45951274987594
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-173
+180
 100
 AcDbEntity
   8
@@ -13457,117 +13777,7 @@ AcDbCircle
   0
 CIRCLE
   5
-174
-100
-AcDbEntity
-  8
-2.1_delrin_chambers_and_manifold
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-94.39501245001064
- 20
-184.2095131061677
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-175
-100
-AcDbEntity
-  8
-2.1_delrin_chambers_and_manifold
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-155.5950124500106
- 20
-162.2095120299337
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-176
-100
-AcDbEntity
-  8
-2.1_delrin_chambers_and_manifold
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-155.5950124500106
- 20
-117.709512631438
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-177
-100
-AcDbEntity
-  8
-2.1_delrin_chambers_and_manifold
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-155.5950124500106
- 20
-72.20951175812377
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-178
-100
-AcDbEntity
-  8
-2.1_delrin_chambers_and_manifold
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-155.5950124500106
- 20
-27.70951235962811
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-179
+181
 100
 AcDbEntity
   8
@@ -13589,7 +13799,7 @@ AcDbCircle
   0
 CIRCLE
   5
-17A
+182
 100
 AcDbEntity
   8
@@ -13611,182 +13821,6 @@ AcDbCircle
   0
 CIRCLE
   5
-17B
-100
-AcDbEntity
-  8
-2.1_delrin_chambers_and_manifold
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-53.70952243943083
- 20
-146.7094853357608
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-17C
-100
-AcDbEntity
-  8
-2.1_delrin_chambers_and_manifold
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-53.70952243943083
- 20
-133.2094853357608
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-17D
-100
-AcDbEntity
-  8
-2.1_delrin_chambers_and_manifold
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-21.70952243943084
- 20
-101.7094853357608
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-17E
-100
-AcDbEntity
-  8
-2.1_delrin_chambers_and_manifold
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-21.70952243943084
- 20
-88.20948533576087
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-17F
-100
-AcDbEntity
-  8
-2.1_delrin_chambers_and_manifold
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-53.70952243943083
- 20
-56.70948533576087
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-180
-100
-AcDbEntity
-  8
-2.1_delrin_chambers_and_manifold
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-53.70952243943083
- 20
-43.20948533576087
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-181
-100
-AcDbEntity
-  8
-2.1_delrin_chambers_and_manifold
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-11.95950596623534
- 20
-194.4950122848045
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-182
-100
-AcDbEntity
-  8
-2.1_delrin_chambers_and_manifold
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-212.2805009004941
- 20
-94.95948533576089
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
 183
 100
 AcDbEntity
@@ -13801,7 +13835,7 @@ ByLayer
 100
 AcDbCircle
  10
-196.2805009004941
+53.70952243943083
  20
 146.7094853357608
  40
@@ -13823,7 +13857,7 @@ ByLayer
 100
 AcDbCircle
  10
-196.2805009004941
+53.70952243943083
  20
 133.2094853357608
  40
@@ -13845,7 +13879,7 @@ ByLayer
 100
 AcDbCircle
  10
-228.2805009004941
+21.70952243943084
  20
 101.7094853357608
  40
@@ -13867,7 +13901,7 @@ ByLayer
 100
 AcDbCircle
  10
-228.2805009004941
+21.70952243943084
  20
 88.20948533576087
  40
@@ -13889,7 +13923,7 @@ ByLayer
 100
 AcDbCircle
  10
-196.2805009004941
+53.70952243943083
  20
 56.70948533576087
  40
@@ -13911,7 +13945,7 @@ ByLayer
 100
 AcDbCircle
  10
-196.2805009004941
+53.70952243943083
  20
 43.20948533576087
  40
@@ -13933,6 +13967,182 @@ ByLayer
 100
 AcDbCircle
  10
+11.95950596623534
+ 20
+194.4950122848045
+ 40
+1.714499999999999
+  0
+CIRCLE
+  5
+18A
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+212.2805009004941
+ 20
+94.95948533576089
+ 40
+1.714499999999999
+  0
+CIRCLE
+  5
+18B
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+196.2805009004941
+ 20
+146.7094853357608
+ 40
+1.714499999999999
+  0
+CIRCLE
+  5
+18C
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+196.2805009004941
+ 20
+133.2094853357608
+ 40
+1.714499999999999
+  0
+CIRCLE
+  5
+18D
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+228.2805009004941
+ 20
+101.7094853357608
+ 40
+1.714499999999999
+  0
+CIRCLE
+  5
+18E
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+228.2805009004941
+ 20
+88.20948533576087
+ 40
+1.714499999999999
+  0
+CIRCLE
+  5
+18F
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+196.2805009004941
+ 20
+56.70948533576087
+ 40
+1.714499999999999
+  0
+CIRCLE
+  5
+190
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+196.2805009004941
+ 20
+43.20948533576087
+ 40
+1.714499999999999
+  0
+CIRCLE
+  5
+191
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
 238.0305173736896
  20
 194.4950122848045
@@ -13941,7 +14151,7 @@ AcDbCircle
   0
 LINE
   5
-18A
+192
 100
 AcDbEntity
   8
@@ -13965,7 +14175,7 @@ AcDbLine
   0
 LINE
   5
-18B
+193
 100
 AcDbEntity
   8
@@ -13989,7 +14199,7 @@ AcDbLine
   0
 LINE
   5
-18C
+194
 100
 AcDbEntity
   8
@@ -14013,7 +14223,7 @@ AcDbLine
   0
 ARC
   5
-18D
+195
 100
 AcDbEntity
   8
@@ -14041,7 +14251,7 @@ AcDbArc
   0
 ARC
   5
-18E
+196
 100
 AcDbEntity
   8
@@ -14069,7 +14279,7 @@ AcDbArc
   0
 LINE
   5
-18F
+197
 100
 AcDbEntity
   8
@@ -14093,7 +14303,7 @@ AcDbLine
   0
 LINE
   5
-190
+198
 100
 AcDbEntity
   8
@@ -14117,7 +14327,7 @@ AcDbLine
   0
 ARC
   5
-191
+199
 100
 AcDbEntity
   8
@@ -14145,7 +14355,7 @@ AcDbArc
   0
 ARC
   5
-192
+19A
 100
 AcDbEntity
   8
@@ -14173,7 +14383,7 @@ AcDbArc
   0
 LWPOLYLINE
   5
-193
+19B
 100
 AcDbEntity
   8
@@ -14217,7 +14427,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-194
+19C
 100
 AcDbEntity
   8
@@ -14261,7 +14471,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-195
+19D
 100
 AcDbEntity
   8
@@ -14341,7 +14551,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-196
+19E
 100
 AcDbEntity
   8
@@ -14391,7 +14601,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-197
+19F
 100
 AcDbEntity
   8
@@ -14435,7 +14645,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-198
+1A0
 100
 AcDbEntity
   8
@@ -14479,7 +14689,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-199
+1A1
 100
 AcDbEntity
   8
@@ -14549,17 +14759,17 @@ AcDbPolyline
  20
 141.9999999483546
  42
--0.4142135659317092
+-0.4142135659316967
  10
 223.4999989086315
  20
 139.999999924054
  42
--0.4142135659317092
+-0.4142135659316967
   0
 LWPOLYLINE
   5
-19A
+1A2
 100
 AcDbEntity
   8
@@ -14609,7 +14819,7 @@ AcDbPolyline
   0
 CIRCLE
   5
-19B
+1A3
 100
 AcDbEntity
   8
@@ -14631,182 +14841,6 @@ AcDbCircle
   0
 CIRCLE
   5
-19C
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-53.71451010548537
- 20
-146.7144732522884
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-19D
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-53.71451010548537
- 20
-133.2144732522884
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-19E
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-21.71451010548538
- 20
-101.7144732522884
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-19F
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-21.71451010548538
- 20
-88.21447325228843
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-1A0
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-53.71451010548537
- 20
-56.71447325228842
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-1A1
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-53.71451010548537
- 20
-43.21447325228842
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-1A2
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-11.96449363228987
- 20
-194.5000002013321
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-1A3
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-212.2854885665486
- 20
-94.96447325228843
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
 1A4
 100
 AcDbEntity
@@ -14821,7 +14855,7 @@ ByLayer
 100
 AcDbCircle
  10
-196.2854885665487
+53.71451010548537
  20
 146.7144732522884
  40
@@ -14843,7 +14877,7 @@ ByLayer
 100
 AcDbCircle
  10
-196.2854885665487
+53.71451010548537
  20
 133.2144732522884
  40
@@ -14865,7 +14899,7 @@ ByLayer
 100
 AcDbCircle
  10
-228.2854885665486
+21.71451010548538
  20
 101.7144732522884
  40
@@ -14887,7 +14921,7 @@ ByLayer
 100
 AcDbCircle
  10
-228.2854885665486
+21.71451010548538
  20
 88.21447325228843
  40
@@ -14909,7 +14943,7 @@ ByLayer
 100
 AcDbCircle
  10
-196.2854885665487
+53.71451010548537
  20
 56.71447325228842
  40
@@ -14931,7 +14965,7 @@ ByLayer
 100
 AcDbCircle
  10
-196.2854885665487
+53.71451010548537
  20
 43.21447325228842
  40
@@ -14953,6 +14987,182 @@ ByLayer
 100
 AcDbCircle
  10
+11.96449363228987
+ 20
+194.5000002013321
+ 40
+1.714499999999999
+  0
+CIRCLE
+  5
+1AB
+100
+AcDbEntity
+  8
+3_yellow_manifold_layer
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+212.2854885665486
+ 20
+94.96447325228843
+ 40
+1.714499999999999
+  0
+CIRCLE
+  5
+1AC
+100
+AcDbEntity
+  8
+3_yellow_manifold_layer
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+196.2854885665487
+ 20
+146.7144732522884
+ 40
+1.714499999999999
+  0
+CIRCLE
+  5
+1AD
+100
+AcDbEntity
+  8
+3_yellow_manifold_layer
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+196.2854885665487
+ 20
+133.2144732522884
+ 40
+1.714499999999999
+  0
+CIRCLE
+  5
+1AE
+100
+AcDbEntity
+  8
+3_yellow_manifold_layer
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+228.2854885665486
+ 20
+101.7144732522884
+ 40
+1.714499999999999
+  0
+CIRCLE
+  5
+1AF
+100
+AcDbEntity
+  8
+3_yellow_manifold_layer
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+228.2854885665486
+ 20
+88.21447325228843
+ 40
+1.714499999999999
+  0
+CIRCLE
+  5
+1B0
+100
+AcDbEntity
+  8
+3_yellow_manifold_layer
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+196.2854885665487
+ 20
+56.71447325228842
+ 40
+1.714499999999999
+  0
+CIRCLE
+  5
+1B1
+100
+AcDbEntity
+  8
+3_yellow_manifold_layer
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+196.2854885665487
+ 20
+43.21447325228842
+ 40
+1.714499999999999
+  0
+CIRCLE
+  5
+1B2
+100
+AcDbEntity
+  8
+3_yellow_manifold_layer
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
 238.0355050397441
  20
 194.5000002013321
@@ -14961,7 +15171,7 @@ AcDbCircle
   0
 LINE
   5
-1AB
+1B3
 100
 AcDbEntity
   8
@@ -14985,11 +15195,11 @@ AcDbLine
   0
 CIRCLE
   5
-1AC
+1B4
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -15007,11 +15217,11 @@ AcDbCircle
   0
 CIRCLE
   5
-1AD
+1B5
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -15029,7 +15239,7 @@ AcDbCircle
   0
 LWPOLYLINE
   5
-1AE
+1B6
 100
 AcDbEntity
   8
@@ -15067,7 +15277,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-1AF
+1B7
 100
 AcDbEntity
   8
@@ -15105,7 +15315,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-1B0
+1B8
 100
 AcDbEntity
   8
@@ -15143,7 +15353,7 @@ AcDbPolyline
   0
 CIRCLE
   5
-1B1
+1B9
 100
 AcDbEntity
   8
@@ -15165,7 +15375,7 @@ AcDbCircle
   0
 LINE
   5
-1B2
+1BA
 100
 AcDbEntity
   8
@@ -15189,7 +15399,7 @@ AcDbLine
   0
 CIRCLE
   5
-1B3
+1BB
 100
 AcDbEntity
   8
@@ -15211,7 +15421,7 @@ AcDbCircle
   0
 CIRCLE
   5
-1B4
+1BC
 100
 AcDbEntity
   8
@@ -15233,7 +15443,7 @@ AcDbCircle
   0
 LWPOLYLINE
   5
-1B5
+1BD
 100
 AcDbEntity
   8
@@ -15295,182 +15505,6 @@ AcDbPolyline
   0
 CIRCLE
   5
-1B6
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-162.214499378591
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-1B7
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-139.9644994970288
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-1B8
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-117.7144999800953
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-1B9
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-95.46450009853309
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-1BA
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-72.21449910678103
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-1BB
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-49.96449922521884
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-1BC
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-27.71449970828536
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-1BD
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-5.46449982672317
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
 1BE
 100
 AcDbEntity
@@ -15487,7 +15521,7 @@ AcDbCircle
  10
 170
  20
-184.214500454825
+162.214499378591
  40
 1.714499999999999
   0
@@ -15507,9 +15541,9 @@ ByLayer
 100
 AcDbCircle
  10
-80
+170
  20
-162.214499378591
+139.9644994970288
  40
 1.714499999999999
   0
@@ -15529,9 +15563,9 @@ ByLayer
 100
 AcDbCircle
  10
-80
+170
  20
-139.9644994970288
+117.7144999800953
  40
 1.714499999999999
   0
@@ -15551,9 +15585,9 @@ ByLayer
 100
 AcDbCircle
  10
-80
+170
  20
-117.7144999800953
+95.46450009853309
  40
 1.714499999999999
   0
@@ -15573,9 +15607,9 @@ ByLayer
 100
 AcDbCircle
  10
-80
+170
  20
-95.46450009853309
+72.21449910678103
  40
 1.714499999999999
   0
@@ -15595,9 +15629,9 @@ ByLayer
 100
 AcDbCircle
  10
-80
+170
  20
-72.21449910678103
+49.96449922521884
  40
 1.714499999999999
   0
@@ -15617,9 +15651,9 @@ ByLayer
 100
 AcDbCircle
  10
-80
+170
  20
-49.96449922521884
+27.71449970828536
  40
 1.714499999999999
   0
@@ -15639,9 +15673,9 @@ ByLayer
 100
 AcDbCircle
  10
-80
+170
  20
-27.71449970828536
+5.46449982672317
  40
 1.714499999999999
   0
@@ -15661,9 +15695,9 @@ ByLayer
 100
 AcDbCircle
  10
-80
+170
  20
-5.46449982672317
+184.214500454825
  40
 1.714499999999999
   0
@@ -15685,7 +15719,7 @@ AcDbCircle
  10
 80
  20
-184.214500454825
+162.214499378591
  40
 1.714499999999999
   0
@@ -15695,29 +15729,7 @@ CIRCLE
 100
 AcDbEntity
   8
-2.1_delrin_chambers_and_manifold
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-80
- 20
-162.214499378591
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-1C9
-100
-AcDbEntity
-  8
-2.1_delrin_chambers_and_manifold
+3_yellow_manifold_layer
   6
 ByLayer
  62
@@ -15735,11 +15747,11 @@ AcDbCircle
   0
 CIRCLE
   5
-1CA
+1C9
 100
 AcDbEntity
   8
-2.1_delrin_chambers_and_manifold
+3_yellow_manifold_layer
   6
 ByLayer
  62
@@ -15757,11 +15769,11 @@ AcDbCircle
   0
 CIRCLE
   5
-1CB
+1CA
 100
 AcDbEntity
   8
-2.1_delrin_chambers_and_manifold
+3_yellow_manifold_layer
   6
 ByLayer
  62
@@ -15779,11 +15791,11 @@ AcDbCircle
   0
 CIRCLE
   5
-1CC
+1CB
 100
 AcDbEntity
   8
-2.1_delrin_chambers_and_manifold
+3_yellow_manifold_layer
   6
 ByLayer
  62
@@ -15801,11 +15813,11 @@ AcDbCircle
   0
 CIRCLE
   5
-1CD
+1CC
 100
 AcDbEntity
   8
-2.1_delrin_chambers_and_manifold
+3_yellow_manifold_layer
   6
 ByLayer
  62
@@ -15823,11 +15835,11 @@ AcDbCircle
   0
 CIRCLE
   5
-1CE
+1CD
 100
 AcDbEntity
   8
-2.1_delrin_chambers_and_manifold
+3_yellow_manifold_layer
   6
 ByLayer
  62
@@ -15845,11 +15857,11 @@ AcDbCircle
   0
 CIRCLE
   5
-1CF
+1CE
 100
 AcDbEntity
   8
-2.1_delrin_chambers_and_manifold
+3_yellow_manifold_layer
   6
 ByLayer
  62
@@ -15862,6 +15874,28 @@ AcDbCircle
 80
  20
 5.46449982672317
+ 40
+1.714499999999999
+  0
+CIRCLE
+  5
+1CF
+100
+AcDbEntity
+  8
+3_yellow_manifold_layer
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+80
+ 20
+184.214500454825
  40
 1.714499999999999
   0
@@ -15883,7 +15917,7 @@ AcDbCircle
  10
 80
  20
-184.214500454825
+162.214499378591
  40
 1.714499999999999
   0
@@ -15903,9 +15937,9 @@ ByLayer
 100
 AcDbCircle
  10
-170
+80
  20
-162.214499378591
+139.9644994970288
  40
 1.714499999999999
   0
@@ -15925,9 +15959,9 @@ ByLayer
 100
 AcDbCircle
  10
-170
+80
  20
-139.9644994970288
+117.7144999800953
  40
 1.714499999999999
   0
@@ -15947,9 +15981,9 @@ ByLayer
 100
 AcDbCircle
  10
-170
+80
  20
-117.7144999800953
+95.46450009853309
  40
 1.714499999999999
   0
@@ -15969,9 +16003,9 @@ ByLayer
 100
 AcDbCircle
  10
-170
+80
  20
-95.46450009853309
+72.21449910678103
  40
 1.714499999999999
   0
@@ -15991,9 +16025,9 @@ ByLayer
 100
 AcDbCircle
  10
-170
+80
  20
-72.21449910678103
+49.96449922521884
  40
 1.714499999999999
   0
@@ -16013,9 +16047,9 @@ ByLayer
 100
 AcDbCircle
  10
-170
+80
  20
-49.96449922521884
+27.71449970828536
  40
 1.714499999999999
   0
@@ -16035,9 +16069,9 @@ ByLayer
 100
 AcDbCircle
  10
-170
+80
  20
-27.71449970828536
+5.46449982672317
  40
 1.714499999999999
   0
@@ -16057,9 +16091,9 @@ ByLayer
 100
 AcDbCircle
  10
-170
+80
  20
-5.46449982672317
+184.214500454825
  40
 1.714499999999999
   0
@@ -16081,13 +16115,189 @@ AcDbCircle
  10
 170
  20
+162.214499378591
+ 40
+1.714499999999999
+  0
+CIRCLE
+  5
+1DA
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+170
+ 20
+139.9644994970288
+ 40
+1.714499999999999
+  0
+CIRCLE
+  5
+1DB
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+170
+ 20
+117.7144999800953
+ 40
+1.714499999999999
+  0
+CIRCLE
+  5
+1DC
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+170
+ 20
+95.46450009853309
+ 40
+1.714499999999999
+  0
+CIRCLE
+  5
+1DD
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+170
+ 20
+72.21449910678103
+ 40
+1.714499999999999
+  0
+CIRCLE
+  5
+1DE
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+170
+ 20
+49.96449922521884
+ 40
+1.714499999999999
+  0
+CIRCLE
+  5
+1DF
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+170
+ 20
+27.71449970828536
+ 40
+1.714499999999999
+  0
+CIRCLE
+  5
+1E0
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+170
+ 20
+5.46449982672317
+ 40
+1.714499999999999
+  0
+CIRCLE
+  5
+1E1
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+170
+ 20
 184.214500454825
  40
 1.714499999999999
   0
 INSERT
   5
-1DA
+1E2
 100
 AcDbEntity
   8
@@ -16101,7 +16311,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-trap_slider
+vactrap_slider
  10
 92.44642700000003
  20
@@ -16127,7 +16337,7 @@ trap_slider
   0
 INSERT
   5
-1DB
+1E3
 100
 AcDbEntity
   8
@@ -16141,7 +16351,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-regulator_retainer
+vactrap_regulator_retainer
  10
 124.997736
  20
@@ -16167,7 +16377,7 @@ regulator_retainer
   0
 LWPOLYLINE
   5
-1DC
+1E4
 100
 AcDbEntity
   8
@@ -16253,7 +16463,7 @@ AcDbPolyline
   0
 INSERT
   5
-1DD
+1E5
 100
 AcDbEntity
   8
@@ -16293,7 +16503,7 @@ shimstock_chamber
   0
 INSERT
   5
-1DE
+1E6
 100
 AcDbEntity
   8
@@ -16333,7 +16543,7 @@ shimstock_chamber
   0
 INSERT
   5
-1DF
+1E7
 100
 AcDbEntity
   8
@@ -16373,7 +16583,7 @@ shimstock_chamber
   0
 INSERT
   5
-1E0
+1E8
 100
 AcDbEntity
   8
@@ -16413,7 +16623,7 @@ shimstock_chamber
   0
 INSERT
   5
-1E1
+1E9
 100
 AcDbEntity
   8
@@ -16453,7 +16663,7 @@ shimstock_chamber
   0
 INSERT
   5
-1E2
+1EA
 100
 AcDbEntity
   8
@@ -16493,7 +16703,7 @@ shimstock_chamber
   0
 INSERT
   5
-1E3
+1EB
 100
 AcDbEntity
   8
@@ -16531,31 +16741,9 @@ shimstock_chamber
  45
 0
   0
-CIRCLE
-  5
-1E4
-100
-AcDbEntity
-  8
-2.1_delrin_chambers_and_manifold
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-94.39501289374904
- 20
-50.45951151965112
- 40
-1.714499999999999
-  0
 LWPOLYLINE
   5
-1E5
+1EC
 100
 AcDbEntity
   8
@@ -16641,7 +16829,7 @@ AcDbPolyline
   0
 INSERT
   5
-1E6
+1ED
 100
 AcDbEntity
   8
@@ -16681,7 +16869,7 @@ egress_slider_unit
   0
 INSERT
   5
-1E7
+1EE
 100
 AcDbEntity
   8
@@ -16721,7 +16909,7 @@ egress_slider_unit
   0
 INSERT
   5
-1E8
+1EF
 100
 AcDbEntity
   8
@@ -16761,7 +16949,7 @@ egress_slider_unit
   0
 INSERT
   5
-1E9
+1F0
 100
 AcDbEntity
   8
@@ -16801,7 +16989,7 @@ egress_slider_unit
   0
 INSERT
   5
-1EA
+1F1
 100
 AcDbEntity
   8
@@ -16841,7 +17029,7 @@ egress_slider_unit
   0
 INSERT
   5
-1EB
+1F2
 100
 AcDbEntity
   8
@@ -16881,7 +17069,7 @@ egress_slider_unit
   0
 INSERT
   5
-1EC
+1F3
 100
 AcDbEntity
   8
@@ -16921,7 +17109,7 @@ egress_slider_unit
   0
 INSERT
   5
-1ED
+1F4
 100
 AcDbEntity
   8
@@ -16961,7 +17149,7 @@ egress_slider_unit
   0
 INSERT
   5
-1EE
+1F5
 100
 AcDbEntity
   8
@@ -16975,7 +17163,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-trap_slider
+vactrap_slider
  10
 92.44695440834874
  20
@@ -17001,7 +17189,7 @@ trap_slider
   0
 INSERT
   5
-1EF
+1F6
 100
 AcDbEntity
   8
@@ -17015,7 +17203,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-trap_slider
+vactrap_slider
  10
 92.44748181669746
  20
@@ -17041,7 +17229,7 @@ trap_slider
   0
 INSERT
   5
-1F0
+1F7
 100
 AcDbEntity
   8
@@ -17055,7 +17243,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-trap_slider
+vactrap_slider
  10
 92.44800922504618
  20
@@ -17081,7 +17269,7 @@ trap_slider
   0
 INSERT
   5
-1F1
+1F8
 100
 AcDbEntity
   8
@@ -17095,7 +17283,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-trap_slider
+vactrap_slider
  10
 157.5493061037711
  20
@@ -17121,7 +17309,7 @@ trap_slider
   0
 INSERT
   5
-1F2
+1F9
 100
 AcDbEntity
   8
@@ -17135,7 +17323,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-trap_slider
+vactrap_slider
  10
 157.5493077308118
  20
@@ -17161,7 +17349,7 @@ trap_slider
   0
 INSERT
   5
-1F3
+1FA
 100
 AcDbEntity
   8
@@ -17175,7 +17363,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-trap_slider
+vactrap_slider
  10
 157.5487812099382
  20
@@ -17201,7 +17389,7 @@ trap_slider
   0
 INSERT
   5
-1F4
+1FB
 100
 AcDbEntity
   8
@@ -17215,7 +17403,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-trap_slider
+vactrap_slider
  10
 157.5482546890647
  20
@@ -17241,7 +17429,7 @@ trap_slider
   0
 LWPOLYLINE
   5
-1F5
+1FC
 100
 AcDbEntity
   8
@@ -17279,11 +17467,11 @@ AcDbPolyline
   0
 INSERT
   5
-1F6
+1FD
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -17293,7 +17481,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-bottom_plate_unit
+support_plate_unit
  10
 124.998
  20
@@ -17319,11 +17507,11 @@ bottom_plate_unit
   0
 INSERT
   5
-1F7
+1FE
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -17333,7 +17521,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-bottom_plate_unit
+support_plate_unit
  10
 125.0120034645944
  20
@@ -17359,11 +17547,11 @@ bottom_plate_unit
   0
 INSERT
   5
-1F8
+1FF
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -17373,7 +17561,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-bottom_plate_unit
+support_plate_unit
  10
 125.0260069291888
  20
@@ -17399,11 +17587,11 @@ bottom_plate_unit
   0
 INSERT
   5
-1F9
+200
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -17413,7 +17601,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-bottom_plate_unit
+support_plate_unit
  10
 125.0400103937832
  20
@@ -17439,11 +17627,11 @@ bottom_plate_unit
   0
 INSERT
   5
-1FA
+201
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -17453,7 +17641,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-bottom_plate_unit
+support_plate_unit
  10
 124.9114163972316
  20
@@ -17479,11 +17667,11 @@ bottom_plate_unit
   0
 INSERT
   5
-1FB
+202
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -17493,7 +17681,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-bottom_plate_unit
+support_plate_unit
  10
 124.9682444458214
  20
@@ -17519,11 +17707,11 @@ bottom_plate_unit
   0
 INSERT
   5
-1FC
+203
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -17533,7 +17721,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-bottom_plate_unit
+support_plate_unit
  10
 125.0250724944112
  20
@@ -17559,11 +17747,11 @@ bottom_plate_unit
   0
 INSERT
   5
-1FD
+204
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -17573,7 +17761,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-bottom_plate_unit
+support_plate_unit
  10
 125.081900543001
  20
@@ -17599,7 +17787,7 @@ bottom_plate_unit
   0
 INSERT
   5
-1FE
+205
 100
 AcDbEntity
   8
@@ -17639,7 +17827,7 @@ sg90_servo_mount_holes
   0
 INSERT
   5
-1FF
+206
 100
 AcDbEntity
   8
@@ -17679,7 +17867,7 @@ sg90_servo_footprint
   0
 INSERT
   5
-200
+207
 100
 AcDbEntity
   8
@@ -17719,7 +17907,7 @@ sg90_servo_mount_holes
   0
 INSERT
   5
-201
+208
 100
 AcDbEntity
   8
@@ -17759,7 +17947,7 @@ sg90_servo_mount_holes
   0
 INSERT
   5
-202
+209
 100
 AcDbEntity
   8
@@ -17799,7 +17987,7 @@ sg90_servo_mount_holes
   0
 INSERT
   5
-203
+20A
 100
 AcDbEntity
   8
@@ -17839,7 +18027,7 @@ sg90_servo_mount_holes
   0
 INSERT
   5
-204
+20B
 100
 AcDbEntity
   8
@@ -17879,7 +18067,7 @@ sg90_servo_mount_holes
   0
 INSERT
   5
-205
+20C
 100
 AcDbEntity
   8
@@ -17919,7 +18107,7 @@ sg90_servo_mount_holes
   0
 INSERT
   5
-206
+20D
 100
 AcDbEntity
   8
@@ -17959,7 +18147,7 @@ sg90_servo_mount_holes
   0
 LWPOLYLINE
   5
-207
+20E
 100
 AcDbEntity
   8
@@ -18021,160 +18209,6 @@ AcDbPolyline
   0
 CIRCLE
   5
-208
-100
-AcDbEntity
-  8
-1.1_top_acrylic_manifold_sides
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-11.9645
- 20
-5.46447
- 40
-2.38
-  0
-CIRCLE
-  5
-209
-100
-AcDbEntity
-  8
-1.1_top_acrylic_manifold_sides
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-11.9645
- 20
-54.7855
- 40
-2.38
-  0
-CIRCLE
-  5
-20A
-100
-AcDbEntity
-  8
-1.1_top_acrylic_manifold_sides
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-11.9645
- 20
-135.214
- 40
-2.38
-  0
-CIRCLE
-  5
-20B
-100
-AcDbEntity
-  8
-1.1_top_acrylic_manifold_sides
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-11.9645
- 20
-184.214
- 40
-2.38
-  0
-CIRCLE
-  5
-20C
-100
-AcDbEntity
-  8
-1.1_top_acrylic_manifold_sides
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-238.035
- 20
-184.214
- 40
-2.38
-  0
-CIRCLE
-  5
-20D
-100
-AcDbEntity
-  8
-1.1_top_acrylic_manifold_sides
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-238.036
- 20
-135.214
- 40
-2.38
-  0
-CIRCLE
-  5
-20E
-100
-AcDbEntity
-  8
-1.1_top_acrylic_manifold_sides
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-238.036
- 20
-54.7855
- 40
-2.38
-  0
-CIRCLE
-  5
 20F
 100
 AcDbEntity
@@ -18189,7 +18223,7 @@ ByLayer
 100
 AcDbCircle
  10
-238.035
+11.9645
  20
 5.46447
  40
@@ -18201,29 +18235,7 @@ CIRCLE
 100
 AcDbEntity
   8
-5_bottom_acrylic
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-11.9645
- 20
-5.46447
- 40
-2.38
-  0
-CIRCLE
-  5
-211
-100
-AcDbEntity
-  8
-5_bottom_acrylic
+1.1_top_acrylic_manifold_sides
   6
 ByLayer
  62
@@ -18241,11 +18253,11 @@ AcDbCircle
   0
 CIRCLE
   5
-212
+211
 100
 AcDbEntity
   8
-5_bottom_acrylic
+1.1_top_acrylic_manifold_sides
   6
 ByLayer
  62
@@ -18263,11 +18275,11 @@ AcDbCircle
   0
 CIRCLE
   5
-213
+212
 100
 AcDbEntity
   8
-5_bottom_acrylic
+1.1_top_acrylic_manifold_sides
   6
 ByLayer
  62
@@ -18278,6 +18290,28 @@ ByLayer
 AcDbCircle
  10
 11.9645
+ 20
+184.214
+ 40
+2.38
+  0
+CIRCLE
+  5
+213
+100
+AcDbEntity
+  8
+1.1_top_acrylic_manifold_sides
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+238.035
  20
 184.214
  40
@@ -18289,29 +18323,7 @@ CIRCLE
 100
 AcDbEntity
   8
-5_bottom_acrylic
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-238.035
- 20
-184.214
- 40
-2.38
-  0
-CIRCLE
-  5
-215
-100
-AcDbEntity
-  8
-5_bottom_acrylic
+1.1_top_acrylic_manifold_sides
   6
 ByLayer
  62
@@ -18329,11 +18341,11 @@ AcDbCircle
   0
 CIRCLE
   5
-216
+215
 100
 AcDbEntity
   8
-5_bottom_acrylic
+1.1_top_acrylic_manifold_sides
   6
 ByLayer
  62
@@ -18351,11 +18363,187 @@ AcDbCircle
   0
 CIRCLE
   5
+216
+100
+AcDbEntity
+  8
+1.1_top_acrylic_manifold_sides
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+238.035
+ 20
+5.46447
+ 40
+2.38
+  0
+CIRCLE
+  5
 217
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+11.9645
+ 20
+5.46447
+ 40
+2.38
+  0
+CIRCLE
+  5
+218
+100
+AcDbEntity
+  8
+5_support_acrylic
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+11.9645
+ 20
+54.7855
+ 40
+2.38
+  0
+CIRCLE
+  5
+219
+100
+AcDbEntity
+  8
+5_support_acrylic
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+11.9645
+ 20
+135.214
+ 40
+2.38
+  0
+CIRCLE
+  5
+21A
+100
+AcDbEntity
+  8
+5_support_acrylic
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+11.9645
+ 20
+184.214
+ 40
+2.38
+  0
+CIRCLE
+  5
+21B
+100
+AcDbEntity
+  8
+5_support_acrylic
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+238.035
+ 20
+184.214
+ 40
+2.38
+  0
+CIRCLE
+  5
+21C
+100
+AcDbEntity
+  8
+5_support_acrylic
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+238.036
+ 20
+135.214
+ 40
+2.38
+  0
+CIRCLE
+  5
+21D
+100
+AcDbEntity
+  8
+5_support_acrylic
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+238.036
+ 20
+54.7855
+ 40
+2.38
+  0
+CIRCLE
+  5
+21E
+100
+AcDbEntity
+  8
+5_support_acrylic
   6
 ByLayer
  62
@@ -18373,11 +18561,11 @@ AcDbCircle
   0
 LINE
   5
-218
+21F
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -18397,11 +18585,11 @@ AcDbLine
   0
 LINE
   5
-219
+220
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -18421,11 +18609,11 @@ AcDbLine
   0
 LINE
   5
-21A
+221
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -18445,11 +18633,11 @@ AcDbLine
   0
 LINE
   5
-21B
+222
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -18469,11 +18657,11 @@ AcDbLine
   0
 LINE
   5
-21C
+223
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -18493,7 +18681,7 @@ AcDbLine
   0
 LWPOLYLINE
   5
-21D
+224
 100
 AcDbEntity
   8
@@ -18535,11 +18723,11 @@ AcDbPolyline
   0
 CIRCLE
   5
-21E
+225
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -18557,11 +18745,11 @@ AcDbCircle
   0
 CIRCLE
   5
-21F
+226
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -18579,11 +18767,11 @@ AcDbCircle
   0
 CIRCLE
   5
-220
+227
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -18601,11 +18789,11 @@ AcDbCircle
   0
 CIRCLE
   5
-221
+228
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -18623,11 +18811,11 @@ AcDbCircle
   0
 CIRCLE
   5
-222
+229
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -18645,11 +18833,11 @@ AcDbCircle
   0
 LINE
   5
-223
+22A
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -18669,11 +18857,11 @@ AcDbLine
   0
 ARC
   5
-224
+22B
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -18697,11 +18885,11 @@ AcDbArc
   0
 ARC
   5
-225
+22C
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -18725,11 +18913,11 @@ AcDbArc
   0
 LINE
   5
-226
+22D
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -18749,11 +18937,11 @@ AcDbLine
   0
 LINE
   5
-227
+22E
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -18773,11 +18961,11 @@ AcDbLine
   0
 CIRCLE
   5
-228
+22F
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -18795,11 +18983,11 @@ AcDbCircle
   0
 CIRCLE
   5
-229
+230
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -18817,11 +19005,11 @@ AcDbCircle
   0
 CIRCLE
   5
-22A
+231
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -18839,11 +19027,11 @@ AcDbCircle
   0
 CIRCLE
   5
-22B
+232
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -18861,11 +19049,11 @@ AcDbCircle
   0
 CIRCLE
   5
-22C
+233
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -18883,11 +19071,11 @@ AcDbCircle
   0
 CIRCLE
   5
-22D
+234
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -18905,11 +19093,11 @@ AcDbCircle
   0
 CIRCLE
   5
-22E
+235
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -18927,11 +19115,11 @@ AcDbCircle
   0
 CIRCLE
   5
-22F
+236
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -18949,11 +19137,11 @@ AcDbCircle
   0
 CIRCLE
   5
-230
+237
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -18971,11 +19159,11 @@ AcDbCircle
   0
 CIRCLE
   5
-231
+238
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -18993,7 +19181,7 @@ AcDbCircle
   0
 CIRCLE
   5
-232
+239
 100
 AcDbEntity
   8
@@ -19010,160 +19198,6 @@ AcDbCircle
 94.40000000000001
  20
 184.215
- 40
-2.1526
-  0
-CIRCLE
-  5
-233
-100
-AcDbEntity
-  8
-6.1_vacuum_trap_guides
-  6
-ByLayer
- 62
-    1
-370
-   -1
-100
-AcDbCircle
- 10
-94.40000000000001
- 20
-139.964
- 40
-2.1526
-  0
-CIRCLE
-  5
-234
-100
-AcDbEntity
-  8
-6.1_vacuum_trap_guides
-  6
-ByLayer
- 62
-    1
-370
-   -1
-100
-AcDbCircle
- 10
-94.40000000000001
- 20
-95.4645
- 40
-2.1526
-  0
-CIRCLE
-  5
-235
-100
-AcDbEntity
-  8
-6.1_vacuum_trap_guides
-  6
-ByLayer
- 62
-    1
-370
-   -1
-100
-AcDbCircle
- 10
-94.40000000000001
- 20
-49.9645
- 40
-2.1526
-  0
-CIRCLE
-  5
-236
-100
-AcDbEntity
-  8
-6.1_vacuum_trap_guides
-  6
-ByLayer
- 62
-    1
-370
-   -1
-100
-AcDbCircle
- 10
-94.40000000000001
- 20
-5.4645
- 40
-2.1526
-  0
-CIRCLE
-  5
-237
-100
-AcDbEntity
-  8
-6.1_vacuum_trap_guides
-  6
-ByLayer
- 62
-    1
-370
-   -1
-100
-AcDbCircle
- 10
-155.6
- 20
-5.4645
- 40
-2.1526
-  0
-CIRCLE
-  5
-238
-100
-AcDbEntity
-  8
-6.1_vacuum_trap_guides
-  6
-ByLayer
- 62
-    1
-370
-   -1
-100
-AcDbCircle
- 10
-155.6
- 20
-72.2145
- 40
-2.1526
-  0
-CIRCLE
-  5
-239
-100
-AcDbEntity
-  8
-6.1_vacuum_trap_guides
-  6
-ByLayer
- 62
-    1
-370
-   -1
-100
-AcDbCircle
- 10
-155.6
- 20
-27.7145
  40
 2.1526
   0
@@ -19183,6 +19217,160 @@ ByLayer
 100
 AcDbCircle
  10
+94.40000000000001
+ 20
+139.964
+ 40
+2.1526
+  0
+CIRCLE
+  5
+23B
+100
+AcDbEntity
+  8
+6.1_vacuum_trap_guides
+  6
+ByLayer
+ 62
+    1
+370
+   -1
+100
+AcDbCircle
+ 10
+94.40000000000001
+ 20
+95.4645
+ 40
+2.1526
+  0
+CIRCLE
+  5
+23C
+100
+AcDbEntity
+  8
+6.1_vacuum_trap_guides
+  6
+ByLayer
+ 62
+    1
+370
+   -1
+100
+AcDbCircle
+ 10
+94.40000000000001
+ 20
+49.9645
+ 40
+2.1526
+  0
+CIRCLE
+  5
+23D
+100
+AcDbEntity
+  8
+6.1_vacuum_trap_guides
+  6
+ByLayer
+ 62
+    1
+370
+   -1
+100
+AcDbCircle
+ 10
+94.40000000000001
+ 20
+5.4645
+ 40
+2.1526
+  0
+CIRCLE
+  5
+23E
+100
+AcDbEntity
+  8
+6.1_vacuum_trap_guides
+  6
+ByLayer
+ 62
+    1
+370
+   -1
+100
+AcDbCircle
+ 10
+155.6
+ 20
+5.4645
+ 40
+2.1526
+  0
+CIRCLE
+  5
+23F
+100
+AcDbEntity
+  8
+6.1_vacuum_trap_guides
+  6
+ByLayer
+ 62
+    1
+370
+   -1
+100
+AcDbCircle
+ 10
+155.6
+ 20
+72.2145
+ 40
+2.1526
+  0
+CIRCLE
+  5
+240
+100
+AcDbEntity
+  8
+6.1_vacuum_trap_guides
+  6
+ByLayer
+ 62
+    1
+370
+   -1
+100
+AcDbCircle
+ 10
+155.6
+ 20
+27.7145
+ 40
+2.1526
+  0
+CIRCLE
+  5
+241
+100
+AcDbEntity
+  8
+6.1_vacuum_trap_guides
+  6
+ByLayer
+ 62
+    1
+370
+   -1
+100
+AcDbCircle
+ 10
 155.6
  20
 117.714
@@ -19191,7 +19379,7 @@ AcDbCircle
   0
 CIRCLE
   5
-23B
+242
 100
 AcDbEntity
   8
@@ -19213,7 +19401,7 @@ AcDbCircle
   0
 CIRCLE
   5
-23C
+243
 100
 AcDbEntity
   8
@@ -19235,7 +19423,7 @@ AcDbCircle
   0
 CIRCLE
   5
-23D
+244
 100
 AcDbEntity
   8
@@ -19257,7 +19445,7 @@ AcDbCircle
   0
 CIRCLE
   5
-23E
+245
 100
 AcDbEntity
   8
@@ -19279,7 +19467,7 @@ AcDbCircle
   0
 CIRCLE
   5
-23F
+246
 100
 AcDbEntity
   8
@@ -19301,7 +19489,7 @@ AcDbCircle
   0
 CIRCLE
   5
-240
+247
 100
 AcDbEntity
   8
@@ -19323,7 +19511,7 @@ AcDbCircle
   0
 CIRCLE
   5
-241
+248
 100
 AcDbEntity
   8
@@ -19345,7 +19533,7 @@ AcDbCircle
   0
 CIRCLE
   5
-242
+249
 100
 AcDbEntity
   8
@@ -19367,7 +19555,7 @@ AcDbCircle
   0
 CIRCLE
   5
-243
+24A
 100
 AcDbEntity
   8
@@ -19389,7 +19577,7 @@ AcDbCircle
   0
 CIRCLE
   5
-244
+24B
 100
 AcDbEntity
   8
@@ -19411,7 +19599,7 @@ AcDbCircle
   0
 CIRCLE
   5
-245
+24C
 100
 AcDbEntity
   8
@@ -19433,160 +19621,6 @@ AcDbCircle
   0
 CIRCLE
   5
-246
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-94.40000000000001
- 20
-184.215
- 40
-2.1526
-  0
-CIRCLE
-  5
-247
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-94.40000000000001
- 20
-139.964
- 40
-2.1526
-  0
-CIRCLE
-  5
-248
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-94.40000000000001
- 20
-95.4645
- 40
-2.1526
-  0
-CIRCLE
-  5
-249
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-94.40000000000001
- 20
-49.9645
- 40
-2.1526
-  0
-CIRCLE
-  5
-24A
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-94.40000000000001
- 20
-5.4645
- 40
-2.1526
-  0
-CIRCLE
-  5
-24B
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-155.6
- 20
-5.4645
- 40
-2.1526
-  0
-CIRCLE
-  5
-24C
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-155.6
- 20
-27.7145
- 40
-2.1526
-  0
-CIRCLE
-  5
 24D
 100
 AcDbEntity
@@ -19601,9 +19635,9 @@ ByLayer
 100
 AcDbCircle
  10
-155.6
+94.40000000000001
  20
-72.2145
+5.4645
  40
 2.1526
   0
@@ -19625,7 +19659,7 @@ AcDbCircle
  10
 155.6
  20
-117.715
+5.4645
  40
 2.1526
   0
@@ -19645,11 +19679,11 @@ ByLayer
 100
 AcDbCircle
  10
-155.6
+11.9645
  20
-162.214
+184.214
  40
-2.1526
+2.4
   0
 CIRCLE
   5
@@ -19669,7 +19703,7 @@ AcDbCircle
  10
 11.9645
  20
-184.214
+135.214
  40
 2.4
   0
@@ -19691,7 +19725,7 @@ AcDbCircle
  10
 11.9645
  20
-135.214
+54.7855
  40
 2.4
   0
@@ -19713,7 +19747,7 @@ AcDbCircle
  10
 11.9645
  20
-54.7855
+5.46447
  40
 2.4
   0
@@ -19733,7 +19767,7 @@ ByLayer
 100
 AcDbCircle
  10
-11.9645
+238.035
  20
 5.46447
  40
@@ -19755,9 +19789,9 @@ ByLayer
 100
 AcDbCircle
  10
-238.035
+238.036
  20
-5.46447
+54.7855
  40
 2.4
   0
@@ -19779,35 +19813,13 @@ AcDbCircle
  10
 238.036
  20
-54.7855
- 40
-2.4
-  0
-CIRCLE
-  5
-256
-100
-AcDbEntity
-  8
-3_yellow_manifold_layer
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-238.036
- 20
 135.214
  40
 2.4
   0
 CIRCLE
   5
-257
+256
 100
 AcDbEntity
   8
@@ -19829,7 +19841,7 @@ AcDbCircle
   0
 CIRCLE
   5
-258
+257
 100
 AcDbEntity
   8
@@ -19851,7 +19863,7 @@ AcDbCircle
   0
 CIRCLE
   5
-259
+258
 100
 AcDbEntity
   8
@@ -19873,7 +19885,7 @@ AcDbCircle
   0
 CIRCLE
   5
-25A
+259
 100
 AcDbEntity
   8
@@ -19895,7 +19907,7 @@ AcDbCircle
   0
 CIRCLE
   5
-25B
+25A
 100
 AcDbEntity
   8
@@ -19917,7 +19929,7 @@ AcDbCircle
   0
 CIRCLE
   5
-25C
+25B
 100
 AcDbEntity
   8
@@ -19932,6 +19944,28 @@ ByLayer
 AcDbCircle
  10
 238.031
+ 20
+5.45949
+ 40
+2.4
+  0
+CIRCLE
+  5
+25C
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+11.9595
  20
 5.45949
  40
@@ -19955,7 +19989,7 @@ AcDbCircle
  10
 11.9595
  20
-5.45949
+54.7805
  40
 2.4
   0
@@ -19977,7 +20011,7 @@ AcDbCircle
  10
 11.9595
  20
-54.7805
+135.21
  40
 2.4
   0
@@ -19999,35 +20033,13 @@ AcDbCircle
  10
 11.9595
  20
-135.21
- 40
-2.4
-  0
-CIRCLE
-  5
-260
-100
-AcDbEntity
-  8
-2.1_delrin_chambers_and_manifold
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-11.9595
- 20
 184.209
  40
 2.4
   0
 INSERT
   5
-261
+260
 100
 AcDbEntity
   8
@@ -20065,207 +20077,9 @@ shimstock_chamber
  45
 0
   0
-LINE
-  5
-262
-100
-AcDbEntity
-  8
-2.2_delrin_sliders
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-123.1462204174822
- 20
-180.2450013706784
- 11
-138.1460004174822
- 21
-180.2450012720713
-  0
-LINE
-  5
-263
-100
-AcDbEntity
-  8
-2.2_delrin_sliders
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-138.1460004766473
- 20
-189.2450012720713
- 11
-138.1460004174822
- 21
-180.2450012720713
-  0
-ARC
-  5
-264
-100
-AcDbEntity
-  8
-2.2_delrin_sliders
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-145.1460004700734
- 20
-188.245001226054
- 40
-1
-100
-AcDbArc
- 50
-359.9999996233432
- 51
-89.9999996233432
-  0
-CIRCLE
-  5
-265
-100
-AcDbEntity
-  8
-2.2_delrin_sliders
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-142.1459710531019
- 20
-186.3429803974028
- 40
-1.473
-  0
-LINE
-  5
-266
-100
-AcDbEntity
-  8
-2.2_delrin_sliders
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-123.1462204043344
- 20
-178.2450079301142
- 11
-145.1460004043344
- 21
-178.2450077854898
-  0
-ARC
-  5
-267
-100
-AcDbEntity
-  8
-2.2_delrin_sliders
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-145.1460004109083
- 20
-179.2450077854899
- 40
-1
-100
-AcDbArc
- 50
-269.9999996233425
- 51
-359.9999996233425
-  0
-LINE
-  5
-268
-100
-AcDbEntity
-  8
-2.2_delrin_sliders
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-146.1460004109084
- 20
-179.2450096862646
- 11
-146.1460004700734
- 21
-188.2450012194801
-  0
-LINE
-  5
-269
-100
-AcDbEntity
-  8
-2.2_delrin_sliders
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-145.14599666195
- 20
-189.2450012260541
- 11
-138.1460004766473
- 21
-189.2450012720713
-  0
 INSERT
   5
-26A
+261
 100
 AcDbEntity
   8
@@ -20279,7 +20093,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-new_delrin_chamber
+delrin_chamber
  10
 124.9980004437383
  20
@@ -20305,7 +20119,7 @@ new_delrin_chamber
   0
 INSERT
   5
-26B
+262
 100
 AcDbEntity
   8
@@ -20319,7 +20133,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-new_delrin_chamber
+delrin_chamber
  10
 124.9979997041744
  20
@@ -20345,7 +20159,7 @@ new_delrin_chamber
   0
 INSERT
   5
-26C
+263
 100
 AcDbEntity
   8
@@ -20359,7 +20173,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-new_delrin_chamber
+delrin_chamber
  10
 124.9979989646105
  20
@@ -20385,7 +20199,7 @@ new_delrin_chamber
   0
 INSERT
   5
-26D
+264
 100
 AcDbEntity
   8
@@ -20399,7 +20213,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-new_delrin_chamber
+delrin_chamber
  10
 124.9979982250466
  20
@@ -20425,7 +20239,7 @@ new_delrin_chamber
   0
 INSERT
   5
-26E
+265
 100
 AcDbEntity
   8
@@ -20439,7 +20253,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-new_delrin_chamber
+delrin_chamber
  10
 124.998
  20
@@ -20465,7 +20279,7 @@ new_delrin_chamber
   0
 INSERT
   5
-26F
+266
 100
 AcDbEntity
   8
@@ -20479,7 +20293,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-new_delrin_chamber
+delrin_chamber
  10
 124.9979995562616
  20
@@ -20505,7 +20319,7 @@ new_delrin_chamber
   0
 INSERT
   5
-270
+267
 100
 AcDbEntity
   8
@@ -20519,7 +20333,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-new_delrin_chamber
+delrin_chamber
  10
 124.9979991125232
  20
@@ -20545,7 +20359,7 @@ new_delrin_chamber
   0
 INSERT
   5
-271
+268
 100
 AcDbEntity
   8
@@ -20559,7 +20373,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-new_delrin_chamber
+delrin_chamber
  10
 124.9979986687848
  20
@@ -20583,37 +20397,13 @@ new_delrin_chamber
  45
 0
   0
-LINE
-  5
-272
-100
-AcDbEntity
-  8
-2.2_delrin_sliders
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-123.1462204174822
- 20
-180.2450013706784
- 11
-123.1462204043344
- 21
-178.2450079301142
-  0
 CIRCLE
   5
-273
+269
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -20631,11 +20421,11 @@ AcDbCircle
   0
 CIRCLE
   5
-274
+26A
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -20653,11 +20443,11 @@ AcDbCircle
   0
 CIRCLE
   5
-275
+26B
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -20675,11 +20465,11 @@ AcDbCircle
   0
 CIRCLE
   5
-276
+26C
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -20697,11 +20487,11 @@ AcDbCircle
   0
 CIRCLE
   5
-277
+26D
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -20719,11 +20509,11 @@ AcDbCircle
   0
 CIRCLE
   5
-278
+26E
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -20741,11 +20531,11 @@ AcDbCircle
   0
 CIRCLE
   5
-279
+26F
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -20763,11 +20553,11 @@ AcDbCircle
   0
 CIRCLE
   5
-27A
+270
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -20778,6 +20568,226 @@ ByLayer
 AcDbCircle
  10
 80
+ 20
+27.7145
+ 40
+3.1115
+  0
+CIRCLE
+  5
+271
+100
+AcDbEntity
+  8
+5_support_acrylic
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+80
+ 20
+5.4645
+ 40
+3.1115
+  0
+CIRCLE
+  5
+272
+100
+AcDbEntity
+  8
+5_support_acrylic
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+170
+ 20
+184.215
+ 40
+3.1115
+  0
+CIRCLE
+  5
+273
+100
+AcDbEntity
+  8
+5_support_acrylic
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+170
+ 20
+162.214
+ 40
+3.1115
+  0
+CIRCLE
+  5
+274
+100
+AcDbEntity
+  8
+5_support_acrylic
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+170
+ 20
+139.964
+ 40
+3.1115
+  0
+CIRCLE
+  5
+275
+100
+AcDbEntity
+  8
+5_support_acrylic
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+170
+ 20
+117.714
+ 40
+3.1115
+  0
+CIRCLE
+  5
+276
+100
+AcDbEntity
+  8
+5_support_acrylic
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+170
+ 20
+95.4645
+ 40
+3.1115
+  0
+CIRCLE
+  5
+277
+100
+AcDbEntity
+  8
+5_support_acrylic
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+170
+ 20
+72.2145
+ 40
+3.1115
+  0
+CIRCLE
+  5
+278
+100
+AcDbEntity
+  8
+5_support_acrylic
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+170
+ 20
+49.9645
+ 40
+3.1115
+  0
+CIRCLE
+  5
+279
+100
+AcDbEntity
+  8
+5_support_acrylic
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+170
+ 20
+5.4645
+ 40
+3.1115
+  0
+CIRCLE
+  5
+27A
+100
+AcDbEntity
+  8
+5_support_acrylic
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+170
  20
 27.7145
  40
@@ -20789,227 +20799,7 @@ CIRCLE
 100
 AcDbEntity
   8
-5_bottom_acrylic
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-80
- 20
-5.4645
- 40
-3.1115
-  0
-CIRCLE
-  5
-27C
-100
-AcDbEntity
-  8
-5_bottom_acrylic
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-184.215
- 40
-3.1115
-  0
-CIRCLE
-  5
-27D
-100
-AcDbEntity
-  8
-5_bottom_acrylic
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-162.214
- 40
-3.1115
-  0
-CIRCLE
-  5
-27E
-100
-AcDbEntity
-  8
-5_bottom_acrylic
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-139.964
- 40
-3.1115
-  0
-CIRCLE
-  5
-27F
-100
-AcDbEntity
-  8
-5_bottom_acrylic
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-117.714
- 40
-3.1115
-  0
-CIRCLE
-  5
-280
-100
-AcDbEntity
-  8
-5_bottom_acrylic
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-95.4645
- 40
-3.1115
-  0
-CIRCLE
-  5
-281
-100
-AcDbEntity
-  8
-5_bottom_acrylic
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-72.2145
- 40
-3.1115
-  0
-CIRCLE
-  5
-282
-100
-AcDbEntity
-  8
-5_bottom_acrylic
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-49.9645
- 40
-3.1115
-  0
-CIRCLE
-  5
-283
-100
-AcDbEntity
-  8
-5_bottom_acrylic
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-5.4645
- 40
-3.1115
-  0
-CIRCLE
-  5
-284
-100
-AcDbEntity
-  8
-5_bottom_acrylic
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-27.7145
- 40
-3.1115
-  0
-CIRCLE
-  5
-285
-100
-AcDbEntity
-  8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -21027,11 +20817,11 @@ AcDbCircle
   0
 CIRCLE
   5
-286
+27C
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -21049,11 +20839,11 @@ AcDbCircle
   0
 CIRCLE
   5
-287
+27D
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -21071,11 +20861,11 @@ AcDbCircle
   0
 CIRCLE
   5
-288
+27E
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -21093,11 +20883,11 @@ AcDbCircle
   0
 CIRCLE
   5
-289
+27F
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -21115,11 +20905,11 @@ AcDbCircle
   0
 CIRCLE
   5
-28A
+280
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -21137,11 +20927,11 @@ AcDbCircle
   0
 CIRCLE
   5
-28B
+281
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -21159,11 +20949,11 @@ AcDbCircle
   0
 CIRCLE
   5
-28C
+282
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -21181,11 +20971,11 @@ AcDbCircle
   0
 CIRCLE
   5
-28D
+283
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -21203,11 +20993,11 @@ AcDbCircle
   0
 CIRCLE
   5
-28E
+284
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -21225,11 +21015,11 @@ AcDbCircle
   0
 CIRCLE
   5
-28F
+285
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -21247,11 +21037,11 @@ AcDbCircle
   0
 CIRCLE
   5
-290
+286
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -21269,11 +21059,11 @@ AcDbCircle
   0
 CIRCLE
   5
-291
+287
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -21291,11 +21081,11 @@ AcDbCircle
   0
 CIRCLE
   5
-292
+288
 100
 AcDbEntity
   8
-5_bottom_acrylic
+5_support_acrylic
   6
 ByLayer
  62
@@ -21308,6 +21098,226 @@ AcDbCircle
 21.7145
  20
 88.2145
+ 40
+3.1115
+  0
+CIRCLE
+  5
+289
+100
+AcDbEntity
+  8
+1.1_top_acrylic_manifold_sides
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+21.7145
+ 20
+101.714
+ 40
+3.1115
+  0
+CIRCLE
+  5
+28A
+100
+AcDbEntity
+  8
+1.1_top_acrylic_manifold_sides
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+53.7145
+ 20
+133.214
+ 40
+3.1115
+  0
+CIRCLE
+  5
+28B
+100
+AcDbEntity
+  8
+1.1_top_acrylic_manifold_sides
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+53.7145
+ 20
+146.714
+ 40
+3.1115
+  0
+CIRCLE
+  5
+28C
+100
+AcDbEntity
+  8
+1.1_top_acrylic_manifold_sides
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+53.7145
+ 20
+56.7145
+ 40
+3.1115
+  0
+CIRCLE
+  5
+28D
+100
+AcDbEntity
+  8
+1.1_top_acrylic_manifold_sides
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+80
+ 20
+5.4645
+ 40
+3.1115
+  0
+CIRCLE
+  5
+28E
+100
+AcDbEntity
+  8
+1.1_top_acrylic_manifold_sides
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+80
+ 20
+27.7145
+ 40
+3.1115
+  0
+CIRCLE
+  5
+28F
+100
+AcDbEntity
+  8
+1.1_top_acrylic_manifold_sides
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+80
+ 20
+49.9645
+ 40
+3.1115
+  0
+CIRCLE
+  5
+290
+100
+AcDbEntity
+  8
+1.1_top_acrylic_manifold_sides
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+80
+ 20
+72.2145
+ 40
+3.1115
+  0
+CIRCLE
+  5
+291
+100
+AcDbEntity
+  8
+1.1_top_acrylic_manifold_sides
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+80
+ 20
+139.964
+ 40
+3.1115
+  0
+CIRCLE
+  5
+292
+100
+AcDbEntity
+  8
+1.1_top_acrylic_manifold_sides
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+80
+ 20
+117.714
  40
 3.1115
   0
@@ -21327,9 +21337,9 @@ ByLayer
 100
 AcDbCircle
  10
-21.7145
+80
  20
-101.714
+162.214
  40
 3.1115
   0
@@ -21349,9 +21359,9 @@ ByLayer
 100
 AcDbCircle
  10
-53.7145
+80
  20
-133.214
+184.215
  40
 3.1115
   0
@@ -21371,9 +21381,9 @@ ByLayer
 100
 AcDbCircle
  10
-53.7145
+170
  20
-146.714
+184.215
  40
 3.1115
   0
@@ -21393,9 +21403,9 @@ ByLayer
 100
 AcDbCircle
  10
-53.7145
+170
  20
-56.7145
+162.214
  40
 3.1115
   0
@@ -21415,9 +21425,9 @@ ByLayer
 100
 AcDbCircle
  10
-80
+170
  20
-5.4645
+139.964
  40
 3.1115
   0
@@ -21437,9 +21447,9 @@ ByLayer
 100
 AcDbCircle
  10
-80
+170
  20
-27.7145
+117.714
  40
 3.1115
   0
@@ -21459,9 +21469,9 @@ ByLayer
 100
 AcDbCircle
  10
-80
+170
  20
-49.9645
+95.4645
  40
 3.1115
   0
@@ -21481,7 +21491,7 @@ ByLayer
 100
 AcDbCircle
  10
-80
+170
  20
 72.2145
  40
@@ -21503,226 +21513,6 @@ ByLayer
 100
 AcDbCircle
  10
-80
- 20
-139.964
- 40
-3.1115
-  0
-CIRCLE
-  5
-29C
-100
-AcDbEntity
-  8
-1.1_top_acrylic_manifold_sides
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-80
- 20
-117.714
- 40
-3.1115
-  0
-CIRCLE
-  5
-29D
-100
-AcDbEntity
-  8
-1.1_top_acrylic_manifold_sides
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-80
- 20
-162.214
- 40
-3.1115
-  0
-CIRCLE
-  5
-29E
-100
-AcDbEntity
-  8
-1.1_top_acrylic_manifold_sides
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-80
- 20
-184.215
- 40
-3.1115
-  0
-CIRCLE
-  5
-29F
-100
-AcDbEntity
-  8
-1.1_top_acrylic_manifold_sides
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-184.215
- 40
-3.1115
-  0
-CIRCLE
-  5
-2A0
-100
-AcDbEntity
-  8
-1.1_top_acrylic_manifold_sides
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-162.214
- 40
-3.1115
-  0
-CIRCLE
-  5
-2A1
-100
-AcDbEntity
-  8
-1.1_top_acrylic_manifold_sides
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-139.964
- 40
-3.1115
-  0
-CIRCLE
-  5
-2A2
-100
-AcDbEntity
-  8
-1.1_top_acrylic_manifold_sides
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-117.714
- 40
-3.1115
-  0
-CIRCLE
-  5
-2A3
-100
-AcDbEntity
-  8
-1.1_top_acrylic_manifold_sides
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-95.4645
- 40
-3.1115
-  0
-CIRCLE
-  5
-2A4
-100
-AcDbEntity
-  8
-1.1_top_acrylic_manifold_sides
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-72.2145
- 40
-3.1115
-  0
-CIRCLE
-  5
-2A5
-100
-AcDbEntity
-  8
-1.1_top_acrylic_manifold_sides
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
 170
  20
 49.9645
@@ -21731,7 +21521,7 @@ AcDbCircle
   0
 CIRCLE
   5
-2A6
+29C
 100
 AcDbEntity
   8
@@ -21753,7 +21543,7 @@ AcDbCircle
   0
 CIRCLE
   5
-2A7
+29D
 100
 AcDbEntity
   8
@@ -21775,7 +21565,7 @@ AcDbCircle
   0
 CIRCLE
   5
-2A8
+29E
 100
 AcDbEntity
   8
@@ -21797,7 +21587,7 @@ AcDbCircle
   0
 CIRCLE
   5
-2A9
+29F
 100
 AcDbEntity
   8
@@ -21819,7 +21609,7 @@ AcDbCircle
   0
 CIRCLE
   5
-2AA
+2A0
 100
 AcDbEntity
   8
@@ -21841,7 +21631,7 @@ AcDbCircle
   0
 CIRCLE
   5
-2AB
+2A1
 100
 AcDbEntity
   8
@@ -21863,7 +21653,7 @@ AcDbCircle
   0
 CIRCLE
   5
-2AC
+2A2
 100
 AcDbEntity
   8
@@ -21885,7 +21675,7 @@ AcDbCircle
   0
 CIRCLE
   5
-2AD
+2A3
 100
 AcDbEntity
   8
@@ -21907,7 +21697,7 @@ AcDbCircle
   0
 CIRCLE
   5
-2AE
+2A4
 100
 AcDbEntity
   8
@@ -21929,7 +21719,7 @@ AcDbCircle
   0
 CIRCLE
   5
-2AF
+2A5
 100
 AcDbEntity
   8
@@ -21951,7 +21741,7 @@ AcDbCircle
   0
 CIRCLE
   5
-2B0
+2A6
 100
 AcDbEntity
   8
@@ -21973,7 +21763,7 @@ AcDbCircle
   0
 CIRCLE
   5
-2B1
+2A7
 100
 AcDbEntity
   8
@@ -21995,7 +21785,7 @@ AcDbCircle
   0
 CIRCLE
   5
-2B2
+2A8
 100
 AcDbEntity
   8
@@ -22017,7 +21807,7 @@ AcDbCircle
   0
 INSERT
   5
-2B3
+2A9
 100
 AcDbEntity
   8
@@ -22057,7 +21847,7 @@ vactrap_guide
   0
 INSERT
   5
-2B4
+2AA
 100
 AcDbEntity
   8
@@ -22097,7 +21887,7 @@ vactrap_guide
   0
 INSERT
   5
-2B5
+2AB
 100
 AcDbEntity
   8
@@ -22137,7 +21927,7 @@ vactrap_guide
   0
 INSERT
   5
-2B6
+2AC
 100
 AcDbEntity
   8
@@ -22177,7 +21967,7 @@ vactrap_guide
   0
 INSERT
   5
-2B7
+2AD
 100
 AcDbEntity
   8
@@ -22217,7 +22007,7 @@ vactrap_guide
   0
 INSERT
   5
-2B8
+2AE
 100
 AcDbEntity
   8
@@ -22257,7 +22047,7 @@ vactrap_guide
   0
 INSERT
   5
-2B9
+2AF
 100
 AcDbEntity
   8
@@ -22297,7 +22087,7 @@ vactrap_guide
   0
 INSERT
   5
-2BA
+2B0
 100
 AcDbEntity
   8
@@ -22337,7 +22127,7 @@ vactrap_guide
   0
 INSERT
   5
-2BB
+2B1
 100
 AcDbEntity
   8
@@ -22351,7 +22141,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-vacuum_trap_top_CUTTING_ROTATION
+vacuum_trap_top
  10
 114.8200953375698
  20
@@ -22377,7 +22167,7 @@ vacuum_trap_top_CUTTING_ROTATION
   0
 INSERT
   5
-2BC
+2B2
 100
 AcDbEntity
   8
@@ -22391,7 +22181,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-vacuum_trap_top_CUTTING_ROTATION
+vacuum_trap_top
  10
 135.175902
  20
@@ -22417,7 +22207,7 @@ vacuum_trap_top_CUTTING_ROTATION
   0
 INSERT
   5
-2BD
+2B3
 100
 AcDbEntity
   8
@@ -22431,7 +22221,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-vacuum_trap_top_CUTTING_ROTATION
+vacuum_trap_top
  10
 135.1761654083487
  20
@@ -22457,7 +22247,7 @@ vacuum_trap_top_CUTTING_ROTATION
   0
 INSERT
   5
-2BE
+2B4
 100
 AcDbEntity
   8
@@ -22471,7 +22261,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-vacuum_trap_top_CUTTING_ROTATION
+vacuum_trap_top
  10
 135.1764288166974
  20
@@ -22497,7 +22287,7 @@ vacuum_trap_top_CUTTING_ROTATION
   0
 INSERT
   5
-2BF
+2B5
 100
 AcDbEntity
   8
@@ -22511,7 +22301,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-vacuum_trap_top_CUTTING_ROTATION
+vacuum_trap_top
  10
 135.176692225046
  20
@@ -22537,7 +22327,7 @@ vacuum_trap_top_CUTTING_ROTATION
   0
 INSERT
   5
-2C0
+2B6
 100
 AcDbEntity
   8
@@ -22551,7 +22341,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-vacuum_trap_top_CUTTING_ROTATION
+vacuum_trap_top
  10
 114.8200969646105
  20
@@ -22577,7 +22367,7 @@ vacuum_trap_top_CUTTING_ROTATION
   0
 INSERT
   5
-2C1
+2B7
 100
 AcDbEntity
   8
@@ -22591,7 +22381,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-vacuum_trap_top_CUTTING_ROTATION
+vacuum_trap_top
  10
 114.8200985916512
  20
@@ -22617,7 +22407,7 @@ vacuum_trap_top_CUTTING_ROTATION
   0
 INSERT
   5
-2C2
+2B8
 100
 AcDbEntity
   8
@@ -22631,7 +22421,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-vacuum_trap_top_CUTTING_ROTATION
+vacuum_trap_top
  10
 114.8201002186919
  20
@@ -22657,7 +22447,7 @@ vacuum_trap_top_CUTTING_ROTATION
   0
 INSERT
   5
-2C3
+2B9
 100
 AcDbEntity
   8
@@ -22671,7 +22461,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-regulator_retainer
+vactrap_regulator_retainer
  10
 124.9982634083487
  20
@@ -22697,7 +22487,7 @@ regulator_retainer
   0
 INSERT
   5
-2C4
+2BA
 100
 AcDbEntity
   8
@@ -22711,7 +22501,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-regulator_retainer
+vactrap_regulator_retainer
  10
 124.9987908166974
  20
@@ -22737,7 +22527,7 @@ regulator_retainer
   0
 INSERT
   5
-2C5
+2BB
 100
 AcDbEntity
   8
@@ -22751,7 +22541,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-regulator_retainer
+vactrap_regulator_retainer
  10
 124.9993182250461
  20
@@ -22777,7 +22567,7 @@ regulator_retainer
   0
 INSERT
   5
-2C6
+2BC
 100
 AcDbEntity
   8
@@ -22791,7 +22581,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-regulator_retainer
+vactrap_regulator_retainer
  10
 124.9979973375698
  20
@@ -22817,7 +22607,7 @@ regulator_retainer
   0
 INSERT
   5
-2C7
+2BD
 100
 AcDbEntity
   8
@@ -22831,7 +22621,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-regulator_retainer
+vactrap_regulator_retainer
  10
 124.9979989646105
  20
@@ -22857,7 +22647,7 @@ regulator_retainer
   0
 INSERT
   5
-2C8
+2BE
 100
 AcDbEntity
   8
@@ -22871,7 +22661,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-regulator_retainer
+vactrap_regulator_retainer
  10
 124.9980005916512
  20
@@ -22897,7 +22687,7 @@ regulator_retainer
   0
 INSERT
   5
-2C9
+2BF
 100
 AcDbEntity
   8
@@ -22911,11 +22701,683 @@ ByLayer
 100
 AcDbBlockReference
   2
-regulator_retainer
+vactrap_regulator_retainer
  10
 124.9980022186919
  20
 49.23899766783086
+ 30
+0
+ 41
+-1
+ 42
+1
+ 43
+0
+ 50
+4.143225024009932e-06
+ 70
+    1
+ 71
+    1
+ 44
+0
+ 45
+0
+  0
+CIRCLE
+  5
+2C0
+100
+AcDbEntity
+  8
+3_yellow_manifold_layer
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+94.40000000000001
+ 20
+184.215
+ 40
+3.25
+  0
+CIRCLE
+  5
+2C1
+100
+AcDbEntity
+  8
+3_yellow_manifold_layer
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+94.40000000000001
+ 20
+139.964
+ 40
+3.25
+  0
+CIRCLE
+  5
+2C2
+100
+AcDbEntity
+  8
+3_yellow_manifold_layer
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+94.40000000000001
+ 20
+95.4645
+ 40
+3.25
+  0
+CIRCLE
+  5
+2C3
+100
+AcDbEntity
+  8
+3_yellow_manifold_layer
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+94.40000000000001
+ 20
+49.9645
+ 40
+3.25
+  0
+CIRCLE
+  5
+2C4
+100
+AcDbEntity
+  8
+3_yellow_manifold_layer
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+155.6
+ 20
+27.7145
+ 40
+3.25
+  0
+CIRCLE
+  5
+2C5
+100
+AcDbEntity
+  8
+3_yellow_manifold_layer
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+155.6
+ 20
+72.2145
+ 40
+3.25
+  0
+CIRCLE
+  5
+2C6
+100
+AcDbEntity
+  8
+3_yellow_manifold_layer
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+155.6
+ 20
+117.715
+ 40
+3.25
+  0
+CIRCLE
+  5
+2C7
+100
+AcDbEntity
+  8
+3_yellow_manifold_layer
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+155.6
+ 20
+162.214
+ 40
+3.25
+  0
+CIRCLE
+  5
+2C8
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+94.395
+ 20
+184.21
+ 40
+3.25
+  0
+CIRCLE
+  5
+2C9
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+94.395
+ 20
+139.96
+ 40
+3.25
+  0
+CIRCLE
+  5
+2CA
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+94.395
+ 20
+95.45950000000001
+ 40
+3.25
+  0
+CIRCLE
+  5
+2CB
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+94.395
+ 20
+50.4595
+ 40
+3.25
+  0
+CIRCLE
+  5
+2CC
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+155.595
+ 20
+27.7095
+ 40
+3.25
+  0
+CIRCLE
+  5
+2CD
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+155.595
+ 20
+72.20950000000001
+ 40
+3.25
+  0
+CIRCLE
+  5
+2CE
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+155.595
+ 20
+117.71
+ 40
+3.25
+  0
+CIRCLE
+  5
+2CF
+100
+AcDbEntity
+  8
+2.1_delrin_chambers_and_manifold
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+155.595
+ 20
+162.21
+ 40
+3.25
+  0
+INSERT
+  5
+2D0
+100
+AcDbEntity
+  8
+2.2_delrin_sliders
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbBlockReference
+  2
+delrin_slider
+ 10
+123.1462204043344
+ 20
+178.2450079301142
+ 30
+0
+ 41
+1
+ 42
+1
+ 43
+0
+ 50
+0
+ 70
+    1
+ 71
+    1
+ 44
+0
+ 45
+0
+  0
+INSERT
+  5
+2D1
+100
+AcDbEntity
+  8
+2.2_delrin_sliders
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbBlockReference
+  2
+delrin_slider
+ 10
+123.1462220313751
+ 20
+133.2450066998895
+ 30
+0
+ 41
+1
+ 42
+1
+ 43
+0
+ 50
+0
+ 70
+    1
+ 71
+    1
+ 44
+0
+ 45
+0
+  0
+INSERT
+  5
+2D2
+100
+AcDbEntity
+  8
+2.2_delrin_sliders
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbBlockReference
+  2
+delrin_slider
+ 10
+123.1462236584158
+ 20
+88.24500546966479
+ 30
+0
+ 41
+1
+ 42
+1
+ 43
+0
+ 50
+0
+ 70
+    1
+ 71
+    1
+ 44
+0
+ 45
+0
+  0
+INSERT
+  5
+2D3
+100
+AcDbEntity
+  8
+2.2_delrin_sliders
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbBlockReference
+  2
+delrin_slider
+ 10
+123.1462252854565
+ 20
+43.24500423944008
+ 30
+0
+ 41
+1
+ 42
+1
+ 43
+0
+ 50
+0
+ 70
+    1
+ 71
+    1
+ 44
+0
+ 45
+0
+  0
+INSERT
+  5
+2D4
+100
+AcDbEntity
+  8
+2.2_delrin_sliders
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbBlockReference
+  2
+delrin_slider
+ 10
+126.8497736688589
+ 20
+155.7450067055166
+ 30
+0
+ 41
+-1
+ 42
+1
+ 43
+0
+ 50
+4.143225024009932e-06
+ 70
+    1
+ 71
+    1
+ 44
+0
+ 45
+0
+  0
+INSERT
+  5
+2D5
+100
+AcDbEntity
+  8
+2.2_delrin_sliders
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbBlockReference
+  2
+delrin_slider
+ 10
+126.8500370772076
+ 20
+110.745044962077
+ 30
+0
+ 41
+-1
+ 42
+1
+ 43
+0
+ 50
+4.143225024009932e-06
+ 70
+    1
+ 71
+    1
+ 44
+0
+ 45
+0
+  0
+INSERT
+  5
+2D6
+100
+AcDbEntity
+  8
+2.2_delrin_sliders
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbBlockReference
+  2
+delrin_slider
+ 10
+126.8503004855563
+ 20
+65.7450832186374
+ 30
+0
+ 41
+-1
+ 42
+1
+ 43
+0
+ 50
+4.143225024009932e-06
+ 70
+    1
+ 71
+    1
+ 44
+0
+ 45
+0
+  0
+INSERT
+  5
+2D7
+100
+AcDbEntity
+  8
+2.2_delrin_sliders
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbBlockReference
+  2
+delrin_slider
+ 10
+126.850563893905
+ 20
+20.74512147519781
  30
 0
  41
