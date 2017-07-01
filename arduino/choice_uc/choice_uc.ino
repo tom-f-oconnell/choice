@@ -129,6 +129,8 @@ void move_all_servos_to_145() {
 
 void ready_experiment() {
   move_servo(EGRESS_SLIDER_PIN, EXPERIMENT);
+  // TODO move egress sorter (if using) to closed position
+  // move input sorters to a valid position
 }
 
 // TODO maybe change design such that i can suck individual flies out later?
@@ -161,12 +163,14 @@ boolean fly_exiting_vial() {
 // wouldn't check traps individually. would just check for signal that any
 // were vacated.
 
+/*
 // fly passing sensor *should* correspond to a drop in reflectivity
 boolean fly_exiting_trap(int i) {
   // TODO do i need to use different thresholds across traps?
   // TODO debounce / filter?
   return analogRead(trap_exit_sensors[i]) < TRAP_EXIT_THRESHOLD;
 }
+*/
 
 void wait_for(function f) {
   while (!(*f)()) { ; }
@@ -195,6 +199,7 @@ int get_empty() {
   }
 }
 
+/*
 // TODO could coordinate w/ ROS if i don't want to use separate sensors
 void close_vacated_traps() {
   for (int i=0;i<NUM_TRAPS;i++) {
@@ -205,6 +210,19 @@ void close_vacated_traps() {
         fly_left[i] = true;
       }
     }
+  }
+}
+*/
+
+void close_vacated_trap(char c) {
+  // could probably do without the checks, but this will at least prevent trying to actuate
+  // if we are alread there
+  if (full[i] && !fly_left[i]) {
+    // TODO check no weirdness. will need to encode in ROS
+    int trap_num = c;
+    move_servo(trap_servo_pins[trap_num], TRAP_READY);
+    // TODO do i actually need this?
+    fly_left[i] = true;
   }
 }
 
@@ -240,7 +258,10 @@ void serialEvent() {
   // this character will be the signal to end the experiment
   if (c == 'E') {
     end_experiment();
+  } else {
+    close_vacated_trap(c);
   }
+  // TODO check for errors?
 }
 
 // TODO make sure all pins / used variables #defined / declared are referenced here
@@ -296,12 +317,15 @@ void loop() {
   while (!all_full()) {
     int chamber_num = get_empty();
     let_fly_in(chamber_num);
-    // TODO refactor everything to check this more frequently (less blocking)
-    close_vacated_traps();
   }
   // TODO the arduino could technically be put into a lower power state when
   // all_full. may not be of any value.
 
+  // TODO support sNN{L/R}, cNN, end (anything else?)
+  // a reason to send which chambers are full to ROS: could not track some chambers unless a fly is expected
+  
+
   // this is where serialEvent checks to for input
   // (ROS nodes may send the Arduino a character telling it to end the experiment)
+  // TODO refactor everything to check this more frequently (less blocking) (the check for vacated traps at least)
 }
