@@ -24,12 +24,13 @@
 #define TRAP_VALVE_TIME_MS   6000
 #define EGRESS_VALVE_TIME_MS 5000
 // TODO remove? still used?
-#define NUM_PINS             20
-#define NUM_TRAPS            1
+#define NUM_PINS             54
+#define NUM_TRAPS            8
 
-#define ENTRY_CONTROL_PIN    2
-#define EGRESS_SLIDER_PIN    3
-#define FIRST_TRAP_PIN       8
+// dolly can be 32 if using
+#define ENTRY_CONTROL_PIN    34
+#define EGRESS_SLIDER_PIN    36
+#define FIRST_TRAP_PIN       38
 // TODO rename
 #define INTERRUPT_PIN        A0
 
@@ -48,13 +49,9 @@
 
 typedef boolean (*function)();
 
-// 1 servo to control slider to vacuum flies out
-// 1 servo to control flies entering system from vial
-const int NUM_SERVOS = NUM_TRAPS + 2;
-
-Servo servos[NUM_PINS];
-
-const int TEST_DELAY = 2000;
+// TODO how to handle remaining servos? just allocate traps here?
+Servo trap_servos[NUM_TRAPS];
+int trap_servo_pins[NUM_TRAPS];
 
 // be careful if this doesn't divide evenly (best to make it do so)
 const int steps_per_pos = STEPS_PER_REV / SORTER_POSITIONS;
@@ -68,16 +65,27 @@ unsigned int current_steps = 0;
 // TODO consider renaming full / fly_left for readability
 boolean full[NUM_TRAPS];
 boolean fly_left[NUM_TRAPS];
-int trap_servo_pins[NUM_TRAPS];
 int trap_exit_sensors[NUM_TRAPS];
 
 // TODO make timer based w/ global update if necessary
-void move_servo(int pin, int deg) {
-  Servo s = servos[pin];
+void move_servo(int idx, int deg) {
+  Servo s = trap_servos[idx];
+  int pin = trap_servo_pins[idx];
   s.attach(pin);
+  Serial.print("pin in move_servo ");
+  Serial.println(pin);
   s.write(deg);
   delay(SERVO_WAIT_TIME_MS);
   s.detach();
+}
+
+// TODO
+void ready_trap(int trap_num) {
+  
+}
+
+void release_fly(int trap_num) {
+  
 }
 
 void stepper_driver_pulse(int pin) {
@@ -117,9 +125,10 @@ void vacuum_pulse(unsigned int duration_ms) {
 
 /* other positions should work OK if horns set relative to this.
    (used for calibration) */
-void move_all_trap_servos_to_145() {
+void move_all_trap_servos_to(int deg) {
   for (int i=0;i<NUM_TRAPS;i++) {
-    move_servo(trap_servo_pins[i], 145);
+    Serial.println(trap_servo_pins[i]);
+    move_servo(i, deg);
   }
 }
 
@@ -214,6 +223,8 @@ void close_vacated_traps() {
 }
 */
 
+// TODO
+/*
 void close_vacated_trap(char c) {
   // could probably do without the checks, but this will at least prevent trying to actuate
   // if we are alread there
@@ -225,6 +236,7 @@ void close_vacated_trap(char c) {
     fly_left[i] = true;
   }
 }
+*/
 
 void let_fly_in(int i) {
   move_servo(ENTRY_CONTROL_PIN, OPEN);
@@ -259,13 +271,22 @@ void serialEvent() {
   if (c == 'E') {
     end_experiment();
   } else {
-    close_vacated_trap(c);
+    // TODO
+    //close_vacated_trap(c);
   }
   // TODO check for errors?
 }
 
+void test_servos() {
+  
+}
+
 // TODO make sure all pins / used variables #defined / declared are referenced here
 void setup() {
+  Serial.begin(9600);
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, LOW);
+  
   // make sure all pins that are supposed to be outputs are set here
   pinMode(VACUUM_VALVE_PIN, OUTPUT);
   pinMode(SORTER_PULSE_PIN, OUTPUT);
@@ -285,7 +306,8 @@ void setup() {
   digitalWrite(EGRESS_SLIDER_PIN, LOW);
 
   for (int i=0;i<NUM_TRAPS;i++) {
-    int servo_pin = FIRST_TRAP_PIN + i;
+    int servo_pin = FIRST_TRAP_PIN + i * 2;
+    
     pinMode(servo_pin, OUTPUT);
     digitalWrite(servo_pin, LOW);
     trap_servo_pins[i] = servo_pin;
@@ -313,11 +335,13 @@ void setup() {
 */
 
 void loop() {
+  /*
   // TODO will also probably need to check for vacated traps (separately?)
   while (!all_full()) {
     int chamber_num = get_empty();
     let_fly_in(chamber_num);
   }
+  
   // TODO the arduino could technically be put into a lower power state when
   // all_full. may not be of any value.
 
@@ -328,4 +352,8 @@ void loop() {
   // this is where serialEvent checks to for input
   // (ROS nodes may send the Arduino a character telling it to end the experiment)
   // TODO refactor everything to check this more frequently (less blocking) (the check for vacated traps at least)
+  */
+
+  move_all_trap_servos_to(45);
+  move_all_trap_servos_to(40);
 }
