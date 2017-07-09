@@ -1,13 +1,18 @@
+
+#include <math.h>
 #include <Servo.h>
 
 // only one vacuum solenoid, and a few rotary switches redirecting the flow
-#define VACUUM_VALVE_PIN    4
-#define SORTER_PULSE_PIN    5
-#define SORTER_DIR_PIN      6
-#define SORTER_ENBL_PIN     7
-#define STEPDRIVER_PULSE_MS 5
-#define STEPS_PER_REV       200
-#define SORTER_POSITIONS    10
+#define VACUUM_VALVE      45
+#define SORTER_STEP       53
+#define SORTER_SLEEP      51
+#define EXIT_SORTER_STEP  49
+#define EXIT_SORTER_SLEEP 47
+#define STEPDRIVER_PULSE_MS   5
+#define FULL_STEPS_PER_REV    200
+#define MICROSTEPPING         8
+#define SORTER_POSITIONS      10
+#define SORTER_ALIGNMENT_OFFSET 85
 
 // TODO if vacuum is too weak to suck flies out, divided across 8 chambers
 // may need to have a 3rd sorter, not linked to the first two
@@ -16,23 +21,23 @@
 // input sorter: unused position
 // output sorter: all conditioning chambers -> water vacuum trap -/-> house vac
 // postions in range [0,9]
-#define CLEARING_SORTER_POSITION 0
-#define SEALED_SORTER_POSITION   1
+#define SEALED_SORTER_POSITION   9
 //remaining positions will deal with vacuum traps
 
 #define SERVO_WAIT_TIME_MS   500
 #define TRAP_VALVE_TIME_MS   6000
 #define EGRESS_VALVE_TIME_MS 5000
 // TODO remove? still used?
-#define NUM_PINS             54
+#define NUMS             54
 #define NUM_TRAPS            8
 
-// dolly can be 32 if using
-#define ENTRY_CONTROL_PIN    34
-#define EGRESS_SLIDER_PIN    36
-#define FIRST_TRAP_PIN       38
-// TODO rename
-#define INTERRUPT_PIN        A0
+// dolly can be 43 if using
+#define ENTRY_CONTROL    39
+#define EGRESS_SLIDER    41
+#define FIRST_TRAP       23
+
+#define FLY_ENTRY_SENSOR       A0
+#define SORTER_PRESSURE_SENSOR A1
 
 // (degrees)
 #define BLOCKED    130
@@ -54,7 +59,8 @@ Servo trap_servos[NUM_TRAPS];
 int trap_servo_pins[NUM_TRAPS];
 
 // be careful if this doesn't divide evenly (best to make it do so)
-const int steps_per_pos = STEPS_PER_REV / SORTER_POSITIONS;
+const int num_steps = MICROSTEPPING * FULL_STEPS_PER_REV;
+const int steps_per_pos = MICROSTEPPING * FULL_STEPS_PER_REV / SORTER_POSITIONS;
 unsigned int current_steps = 0;
 
 // TODO remove
@@ -66,6 +72,8 @@ unsigned int current_steps = 0;
 boolean full[NUM_TRAPS];
 boolean fly_left[NUM_TRAPS];
 int trap_exit_sensors[NUM_TRAPS];
+
+boolean sorter_sleeping;
 
 // TODO make timer based w/ global update if necessary
 void move_servo(int idx, int deg) {
@@ -88,39 +96,79 @@ void release_fly(int trap_num) {
   
 }
 
+// TODO what was cause of lurching on restarting stepper? these didn't 
+// seem to fix the problem...
+void unsleep() {
+  if (sorter_sleeping) {
+    digitalWrite(SORTER_SLEEP, HIGH);
+    sorter_sleeping = false;
+  }
+}
+
+void resleep() {
+  if (!sorter_sleeping) {
+    digitalWrite(SORTER_SLEEP, LOW);
+    sorter_sleeping = true;
+  }
+}
+
+// could play with trailing delay
 void stepper_driver_pulse(int pin) {
   digitalWrite(pin, HIGH);
-  // TODO consider increasing
-  delay(STEPDRIVER_PULSE_MS);
+  delayMicroseconds(2);
   digitalWrite(pin, LOW);
+  delay(21);
 }
 
 // TODO might be hard to make non-blocking
 // might also consider only switching ENBL on at beginning
 // DIR is only set once (not switching directions should make backlash less of a 
 // problem)
-void position_sorters(unsigned int goal_pos) {
+void position_sorter(unsigned int goal_pos) {
   unsigned int goal_steps = goal_pos * steps_per_pos;
-  // would otherwise loop forever if goal_steps >= STEPS_PER_REV
-  if (goal_steps >= STEPS_PER_REV) {
+  finely_position_sorter(goal_steps);
+}
+
+unsigned int positive_step_angle(int step_angle) {
+  // TODO is this stupid? should i just fail if <= -num_steps?
+  while (step_angle < 0) {
+    step_angle = step_angle + num_steps;
+  }
+  return (unsigned int) step_angle;
+}
+
+void finely_position_sorter(int goal_steps) {
+  // would otherwise loop forever if goal_steps >= num_steps
+  if (goal_steps >= num_steps) {
     return;
   }
-  
-  digitalWrite(SORTER_ENBL_PIN, HIGH);
-  while (current_steps != steps_per_pos) {
-    stepper_driver_pulse(SORTER_PULSE_PIN);
+  // TODO check
+  int positive_goal_steps = positive_step_angle(goal_steps);
+  Serial.println("goal position modulo steps per rev: " + \
+    String(positive_goal_steps));
+  unsleep();
+  // TODO minimize delays. may need to find cause of jumping.
+  delay(1000);
+  Serial.println("current positions:");
+  Serial.println(current_steps);
+  while (current_steps != positive_goal_steps) {
+    stepper_driver_pulse(SORTER_STEP);
+    // TODO longer delay
+    
     // TODO check correct
-    current_steps = (current_steps + 1) % STEPS_PER_REV;
+    current_steps = (current_steps + 1) % num_steps;
+    Serial.println(current_steps);
   }
   // TODO additional delay for it to finish step? do pulses buffer or 
   // are they completed immediately (probably later)
-  digitalWrite(SORTER_ENBL_PIN, LOW);
+  delay(1000);
+  resleep();
 }
 
 void vacuum_pulse(unsigned int duration_ms) {
-  digitalWrite(VACUUM_VALVE_PIN, HIGH);
+  digitalWrite(VACUUM_VALVE, HIGH);
   delay(duration_ms);
-  digitalWrite(VACUUM_VALVE_PIN, LOW);
+  digitalWrite(VACUUM_VALVE, LOW);
 }
 
 /* other positions should work OK if horns set relative to this.
@@ -132,12 +180,8 @@ void move_all_trap_servos_to(int deg) {
   }
 }
 
-void move_all_servos_to_145() {
-  // TODO
-}
-
 void ready_experiment() {
-  move_servo(EGRESS_SLIDER_PIN, EXPERIMENT);
+  move_servo(EGRESS_SLIDER, EXPERIMENT);
   // TODO move egress sorter (if using) to closed position
   // move input sorters to a valid position
 }
@@ -145,19 +189,18 @@ void ready_experiment() {
 // TODO maybe change design such that i can suck individual flies out later?
 // way to do it w/o changing design?
 void end_experiment() {
-  move_servo(EGRESS_SLIDER_PIN, EGRESS);
+  move_servo(EGRESS_SLIDER, EGRESS);
   // TODO use rotary valve or something to limit available vacuum pressure
   // to one channel at a time, if necessary to remove flies reliably
-  position_sorters(CLEARING_SORTER_POSITION);
   vacuum_pulse(EGRESS_VALVE_TIME_MS);
   // better state to finish in?
-  position_sorters(SEALED_SORTER_POSITION);
+  position_sorter(SEALED_SORTER_POSITION);
 }
 
 boolean fly_exiting_vial() {
   // TODO TODO TODO
   // may have to debounce / filter somehow
-  //return digitalRead(INTERRUPT_PIN);
+  //return digitalRead(FLY_ENTRY_SENSOR);
   return true;
 }
 
@@ -215,7 +258,7 @@ void close_vacated_traps() {
     if (full[i] && !fly_left[i]) {
       if (fly_exiting_trap(i)) {
         // TODO maybe wait / filter (also) here?
-        move_servo(trap_servo_pins[i], TRAP_READY);
+        move_servo(i, TRAP_READY);
         fly_left[i] = true;
       }
     }
@@ -228,19 +271,19 @@ void close_vacated_traps() {
 void close_vacated_trap(char c) {
   // could probably do without the checks, but this will at least prevent trying to actuate
   // if we are alread there
-  if (full[i] && !fly_left[i]) {
-    // TODO check no weirdness. will need to encode in ROS
-    int trap_num = c;
-    move_servo(trap_servo_pins[trap_num], TRAP_READY);
+  // TODO check no weirdness. will need to encode in ROS
+  int trap_idx = (int) c;
+  if (full[trap_idx] && !fly_left[trap_idx]) {
+    move_servo(trap_idx, TRAP_READY);
     // TODO do i actually need this?
-    fly_left[i] = true;
+    fly_left[trap_idx] = true;
   }
 }
 */
 
 void let_fly_in(int i) {
-  move_servo(ENTRY_CONTROL_PIN, OPEN);
-  move_servo(trap_servo_pins[i], TRAP_READY);
+  move_servo(ENTRY_CONTROL, OPEN);
+  move_servo(i, TRAP_READY);
   // TODO test. boolean func working? getting called? need to dereference (&)?
   wait_for(fly_exiting_vial);
   // move sorters to current trap
@@ -250,17 +293,94 @@ void let_fly_in(int i) {
   // apply vacuum
   vacuum_pulse(TRAP_VALVE_TIME_MS);
   // TODO maybe put this above vacuum pulse?
-  move_servo(ENTRY_CONTROL_PIN, BLOCKED);
+  move_servo(ENTRY_CONTROL, BLOCKED);
   
   // could also do this for all traps at the same time, and first
   // put the trap in an intermediate, sealed, position
-  move_servo(trap_servo_pins[i], TRAP_OPEN);
+  move_servo(i, TRAP_OPEN);
 
   // does not indicate fly has left trap to enter choice arena
   full[i] = true;
   // maybe remove this
   fly_left[i] = false;
 }
+
+// TODO deal w/ exit sorter too
+// want to find center position of minimum pressures (sorter aligned w/ sensor)
+// and set zero relative to that position w/ a defined offset
+void align_sorter() {
+  current_steps = 0;
+  
+  Serial.println("starting sorter alignment (uses pressure sensor)...");
+  int measurements[num_steps];
+
+  double sum1 = 0;
+  double sum2 = 0;
+
+  Serial.println("measuring pressures around one full rotation...");
+  unsleep();
+  // TODO minimize delays
+  delay(1000);
+  for (int i=0;i<num_steps;i++) {
+    stepper_driver_pulse(SORTER_STEP);
+    measurements[i] = analogRead(SORTER_PRESSURE_SENSOR);
+    Serial.print(i);
+    Serial.print(": ");
+    Serial.println(measurements[i]);
+    sum1 += measurements[i];
+  }
+  delay(1000);
+  resleep();
+
+  Serial.println("calculating sensor threshold and mean motor angle...");
+  // using the (at least for small n?) numerically stable 2 pass
+  // variance algorithm from Wikipedia
+  double mean = sum1 / num_steps;
+  double diff;
+  for (int i=0;i<num_steps;i++) {
+    diff = ((double) measurements[i]) - mean;
+    sum2 += diff*diff;
+  }
+  double stddev = sqrt(sum2 / num_steps);
+  const double c = 1.5;
+  int threshold = round(mean - c * stddev);
+  Serial.println("stddev: " + String(stddev));
+  Serial.println("threshold: " + String(threshold));
+
+
+  // using formula from Wikipedia article on mean of circular quantities
+  double sinsum = 0;
+  double cossum = 0;
+  double angle;
+  const int two_pi = 6.2832;
+  Serial.println("indices below threshold:");
+  for (int i=0;i<num_steps;i++) {
+    if (measurements[i] < threshold) {
+      angle = two_pi * (((double) i) / num_steps);
+      sinsum += sin(angle);
+      cossum += cos(angle);
+      Serial.println(i);
+    }
+  }
+  int mean_lowpressure_step = round(atan2(sinsum, cossum) / two_pi  * num_steps);
+  Serial.println("new zero in current coordinates: " + \
+    String(mean_lowpressure_step + SORTER_ALIGNMENT_OFFSET));
+  // TODO test that on a few revolutions, the minimum is in the same place?
+  // sum of differences of measurement array < some threshold?
+
+  Serial.println("moving to new zero position...");
+  // current zero is where we happened to start taking measurements
+  // we want to move to the center of low pressure area + offset
+  // and then define that as the new zero globally
+  // TODO test sorter positioning functions with negative arguments
+  finely_position_sorter(mean_lowpressure_step + SORTER_ALIGNMENT_OFFSET);
+  current_steps = 0;
+}
+
+void test_servos() {
+  
+}
+
 
 // only runs at the end of each loop(), so check it can tolerate delays
 // there are more real-time ways of doing this
@@ -277,10 +397,6 @@ void serialEvent() {
   // TODO check for errors?
 }
 
-void test_servos() {
-  
-}
-
 // TODO make sure all pins / used variables #defined / declared are referenced here
 void setup() {
   Serial.begin(9600);
@@ -288,36 +404,43 @@ void setup() {
   digitalWrite(LED_BUILTIN, LOW);
   
   // make sure all pins that are supposed to be outputs are set here
-  pinMode(VACUUM_VALVE_PIN, OUTPUT);
-  pinMode(SORTER_PULSE_PIN, OUTPUT);
-  pinMode(SORTER_DIR_PIN, OUTPUT);
-  pinMode(SORTER_ENBL_PIN, OUTPUT);
-  pinMode(ENTRY_CONTROL_PIN, OUTPUT);
-  pinMode(EGRESS_SLIDER_PIN, OUTPUT);
+  pinMode(VACUUM_VALVE, OUTPUT);
+  pinMode(SORTER_STEP, OUTPUT);
+  pinMode(SORTER_SLEEP, OUTPUT);
+  pinMode(ENTRY_CONTROL, OUTPUT);
+  pinMode(EGRESS_SLIDER, OUTPUT);
 
   // you don't strictly need all of these calls
   // but it helps ensure near total independence from previous state of the Arduino
-  digitalWrite(VACUUM_VALVE_PIN, LOW);
-  digitalWrite(SORTER_PULSE_PIN, LOW);
-  // TODO maybe just hard wire this to ground?
-  digitalWrite(SORTER_DIR_PIN, LOW);
-  digitalWrite(SORTER_ENBL_PIN, LOW);
-  digitalWrite(ENTRY_CONTROL_PIN, LOW);
-  digitalWrite(EGRESS_SLIDER_PIN, LOW);
+  digitalWrite(VACUUM_VALVE, LOW);
+  digitalWrite(SORTER_STEP, LOW);
+  digitalWrite(SORTER_SLEEP, LOW);
+  digitalWrite(EXIT_SORTER_STEP, LOW);
+  digitalWrite(EXIT_SORTER_SLEEP, LOW);
+  digitalWrite(ENTRY_CONTROL, LOW);
+  digitalWrite(EGRESS_SLIDER, LOW);
 
   for (int i=0;i<NUM_TRAPS;i++) {
-    int servo_pin = FIRST_TRAP_PIN + i * 2;
+    int servo = FIRST_TRAP + i * 2;
     
-    pinMode(servo_pin, OUTPUT);
-    digitalWrite(servo_pin, LOW);
-    trap_servo_pins[i] = servo_pin;
+    pinMode(servo, OUTPUT);
+    digitalWrite(servo, LOW);
+    trap_servo_pins[i] = servo;
 
     full[i] = false;
     fly_left[i] = false;
   }
 
   // INPUT is the default pin mode, but just to be clear
-  pinMode(INTERRUPT_PIN, INPUT);
+  pinMode(FLY_ENTRY_SENSOR, INPUT);
+  pinMode(SORTER_PRESSURE_SENSOR, INPUT);
+  
+  sorter_sleeping = true;
+  align_sorter();
+  // for testing
+  position_sorter(1);
+  position_sorter(2);
+  //
 
   // TODO make some calibration functions
   //move_all_trap_servos_to_145();
@@ -354,6 +477,8 @@ void loop() {
   // TODO refactor everything to check this more frequently (less blocking) (the check for vacated traps at least)
   */
 
-  move_all_trap_servos_to(45);
-  move_all_trap_servos_to(40);
+  digitalWrite(VACUUM_VALVE, HIGH);
+  delay(1000);
+  digitalWrite(VACUUM_VALVE, LOW);
+  delay(5000);
 }
