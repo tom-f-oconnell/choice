@@ -1,0 +1,99 @@
+# TODO maybe validate there is appropriate infrastructure running
+# to run closed loop mode, if set
+# TODO mixed mode? any work doing that?
+
+# TODO make each node that sets params set a param True
+# when they are done setting params, do know snapshot reflects
+# system performance throughout?
+
+# how to split up the params across namespaces?
+
+# either 'open' or 'closed'
+loop_control: 'open'
+# TODO raise an error if set with closed loop?
+olf/include_unreinforced_odor: True
+
+olf/all_odors_both_sides: True
+# either 'fixed', 'alternating' or 'random'
+# TODO implement fixed (enforce if above flag is False)
+# initial side will always be random
+# (within recording session. same set of flies.)
+# all odors must be available on both sides to use either
+# 'alternating' or 'random'
+# TODO TODO probably transistion to random... could flies really
+# not learn to alternate sides in Adam's '09 paper?
+olf/odor_A_side_order: 'alternating'
+
+# TODO reasons i might want to randomly mix training and test?
+olf/training_blocks: 3
+
+# TODO set tracking recording durations from sum of these
+olf/pre_stimulus_delay_s: 120
+olf/test_duration_s: 300
+olf/pretest_to_train_s: 300
+olf/train_duration_s: 60
+olf/inter_train_interval: 60
+olf/train_to_posttest_s: 300
+olf/beyond_posttest: 0
+
+# Arduino Mega integer pin #s for analog inputs
+# [A0=54, A15=69]
+# nicer way to do this? in python?
+# TODO restrict to 3? arduino should probably be given A / B
+# and balance, but that's probably it
+# TODO republish from a python node? (or set param)
+# maybe current_left, etc
+olf/left_pins: [55, 56, 57]
+olf/right_pins: [59, 60, 61]
+# use?
+#olf/separate_balances: 
+olf/left_balance: 54
+olf/right_balance: 58
+
+# (when the pin controlling this valve is OFF)
+olf/balance_normally_flowing: True
+
+# for interfacing with other hardware devices
+olf/send_high_while_pulsing: []
+olf/send_high_while_odor: []
+
+# period between onsets of odor pulses is the sum of these
+olf/odor_pulse_ms: 5000
+olf/post_pulse_ms: 5000
+
+# odor valves opening will start ~concurrently with beginning
+# of low period
+zap/shock_frequency_Hz: 0.2
+zap/shock_duty_cycle: 0.5
+# if i can somehow set voltage programmatically...
+#zap/shock_voltage: 90
+# if i plan on changing these kinds of parameters online, then
+# i should probably broadcast (and save) any changes somehow
+# (or just save all before / after, though each of these has
+#  pitfalls)
+
+# TODO raise error if closed loop is set and this is False
+zap/individual_chambers: False
+# if individual_chambers is True, the below will be lists of pin
+# numbers, otherwise just single pin numbers
+zap/left: 5
+zap/right: 6
+
+# per half chamber (one side)
+#carrier_flow_ml_min: 
+#odor_flow_ml_min:
+# could derive these two from elsewhere
+#num_odor_splits:
+#num_chambers:
+
+# TODO parameters regarding what kinds of controls should be
+# integrated and when?
+# TODO random interval between trials?
+
+# TODO parameters controlling behavior within a day but across
+# experiments? (may not be nice to keep this much state though)
+# like caching pin->odor to keep constant per day
+
+# TODO publish sync messages periodically? service? with each
+# stimulus? (but how do i get the master timestamp?)
+# (probably unnecessary)
