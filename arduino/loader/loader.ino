@@ -1,6 +1,7 @@
 
 #include <math.h>
 #include <Servo.h>
+#include <EEPROM.h>
 
 // only one vacuum solenoid, and a few rotary switches redirecting the flow
 #define VACUUM_VALVE      45
@@ -12,7 +13,7 @@
 #define FULL_STEPS_PER_REV    200
 #define MICROSTEPPING         8
 #define SORTER_POSITIONS      10
-#define SORTER_ALIGNMENT_OFFSET 85
+#define SORTER_ALIGNMENT_OFFSET 30
 
 // TODO if vacuum is too weak to suck flies out, divided across 8 chambers
 // may need to have a 3rd sorter, not linked to the first two
@@ -22,19 +23,22 @@
 // output sorter: all conditioning chambers -> water vacuum trap -/-> house vac
 // postions in range [0,9]
 #define SEALED_SORTER_POSITION   9
+#define SORTER_FAIL_STATE (byte) -1
 //remaining positions will deal with vacuum traps
 
-#define SERVO_WAIT_TIME_MS   500
+#define SERVO_WAIT_TIME_MS   2000
 #define TRAP_VALVE_TIME_MS   6000
 #define EGRESS_VALVE_TIME_MS 5000
-// TODO remove? still used?
-#define NUMS             54
+
 #define NUM_TRAPS            8
 
 // dolly can be 43 if using
 #define ENTRY_CONTROL    39
 #define EGRESS_SLIDER    41
 #define FIRST_TRAP       23
+
+#define ENTRY_OPEN       88
+#define ENTRY_BLOCKED    96
 
 #define FLY_ENTRY_SENSOR       A0
 #define SORTER_PRESSURE_SENSOR A1
@@ -46,17 +50,42 @@
 #define EXPERIMENT 132
 #define EGRESS     147
 
-// head attached in TRAP_READY position after servo is written to 180 degrees.
-#define TRAP_READY 160
-#define TRAP_OPEN  93
+// TODO if i continue trying to attach horns on one edge of the mounting plate
+// i may want to move them to an intermediate position (maybe at old delta of 15)
+// between ready and open positions (closer to ready)
+#define TRAP_READY 65
+#define TRAP_OPEN_DELTA  55
+#define TRAP_ATTACH_DELTA 5
+#define TRAP_INTERMEDIATE_DELTA 15
 
 #define TRAP_EXIT_THRESHOLD 800
 
+/********************************************************************/
+/* set this to true once you have attached the servo plate          */
+#define SERVO_PLATE_ATTACHED true
+#define ALIGN_SORTER true
+/********************************************************************/
+
 typedef boolean (*function)();
 
-// TODO how to handle remaining servos? just allocate traps here?
+// doing it this way limits maximum range i could use by half
+// but i don't need that much angular range on the servos
+const int left_trap_open = TRAP_READY - TRAP_OPEN_DELTA;
+const int right_trap_open = TRAP_READY + TRAP_OPEN_DELTA;
+const int left_trap_attach = TRAP_READY - TRAP_ATTACH_DELTA;
+const int right_trap_attach = TRAP_READY + TRAP_ATTACH_DELTA;
+const int left_trap_intermediate = TRAP_READY - TRAP_INTERMEDIATE_DELTA;
+const int right_trap_intermediate = TRAP_READY +
+TRAP_INTERMEDIATE_DELTA;
+
+Servo dolly, entry, egress;
 Servo trap_servos[NUM_TRAPS];
 int trap_servo_pins[NUM_TRAPS];
+
+const int egress_servo_eeprom_idx = NUM_TRAPS;
+const int entry_servo_eeprom_idx = NUM_TRAPS + 1;
+const int dolly_servo_eeprom_idx = NUM_TRAPS + 2;
+const int sorter_eeprom_idx = NUM_TRAPS + 3;
 
 // be careful if this doesn't divide evenly (best to make it do so)
 const int num_steps = MICROSTEPPING * FULL_STEPS_PER_REV;
@@ -75,25 +104,161 @@ int trap_exit_sensors[NUM_TRAPS];
 
 boolean sorter_sleeping;
 
+void wait_for_char() {
+  Serial.println("Send any character when you are ready.");
+  while (!Serial.available()) { ; }
+  while (Serial.available()) {
+    Serial.read();
+  }
+}
+
+void write_servo_pos_to_eeprom(int idx) {
+  Servo s = trap_servos[idx];
+  byte pos = (byte) s.read();
+  // EEPROM addresses are one byte apart
+  EEPROM.write(idx, pos);
+}
+
+void move_servo(Servo s, int pin, int deg, int idx) {
+  s.attach(pin);
+  s.write(deg);
+  delay(SERVO_WAIT_TIME_MS);
+  s.detach();
+  if (idx != -1) {
+    write_servo_pos_to_eeprom(idx);
+  }
+}
+
+void move_servo_smoothly(Servo s, int pin, int deg, int duration_ms, int idx) {
+  s.attach(pin);
+  // assumes last wrote position is correct. requires minimum delay.
+  int start_theta = s.read();
+  int curr_theta = start_theta;
+  // TODO no abs weirdness here (see docs comment about functions inside)?
+  int dir = (deg - curr_theta) / abs(deg - curr_theta);
+  int interval = duration_ms / abs(deg - start_theta);
+
+  while (curr_theta != deg) {
+    curr_theta += dir;
+    s.write(curr_theta);
+    delay(interval);
+  }
+  
+  //delay(SERVO_WAIT_TIME_MS);
+  s.detach();
+  if (idx != -1) {
+    write_servo_pos_to_eeprom(idx);
+  }
+}
+
+void move_servo(Servo s, int pin, int deg) {
+  move_servo(s, pin, deg, -1);
+}
+
+void move_servo_smoothly(Servo s, int pin, int deg, int duration_ms) {
+  move_servo_smoothly(s, pin, deg, duration_ms, -1);
+}
+
 // TODO make timer based w/ global update if necessary
 void move_servo(int idx, int deg) {
   Servo s = trap_servos[idx];
   int pin = trap_servo_pins[idx];
-  s.attach(pin);
-  Serial.print("pin in move_servo ");
-  Serial.println(pin);
-  s.write(deg);
-  delay(SERVO_WAIT_TIME_MS);
-  s.detach();
+  move_servo(s, pin, deg, idx);
 }
 
-// TODO
+void move_servo_smoothly(int idx, int deg, int duration_ms) {
+  Servo s = trap_servos[idx];
+  int pin = trap_servo_pins[idx];
+  move_servo_smoothly(s, pin, deg, duration_ms, idx);
+}
+
+// should prevent servos from jumping around if the program stops
+// when they are in a different position than the first position
+// they will be sent to upon restarting
+void correct_servo_positions() {
+  for (int i=0;i<NUM_TRAPS;i++) {
+    byte pos = EEPROM.read(i);
+    Servo s = trap_servos[i];
+    // shouldn't actually require moving, if servo wasn't moved since last saved position
+    // and if the move to the last saved position was successfully completed
+    // BUT this will make remind the Arduino Servo library where all the servos are
+    s.write((int) pos);
+  }
+}
+
+void open_entry() {
+  move_servo(entry, ENTRY_CONTROL, ENTRY_OPEN);
+}
+
+void block_entry() {
+  move_servo(entry, ENTRY_CONTROL, ENTRY_BLOCKED);
+}
+
 void ready_trap(int trap_num) {
-  
+    move_servo_smoothly(trap_num, TRAP_READY, SERVO_WAIT_TIME_MS);
 }
 
 void release_fly(int trap_num) {
+  if (trap_num < NUM_TRAPS / 2) {
+    move_servo_smoothly(trap_num, left_trap_open, SERVO_WAIT_TIME_MS);
+  } else {
+    move_servo_smoothly(trap_num, right_trap_open, SERVO_WAIT_TIME_MS);
+  }
+}
+
+void attach_servo_walkthrough() {
+  // TODO how to actually only start when serial connection is "opened", if that is even detectable
+  while (!Serial) { }
+  Serial.println("Positioning servos for horn attachment...");
+  Serial.println("Attach each horn as close to parallel to the edges of the mounting plate as possible.");
+  for (int i=0;i<NUM_TRAPS;i++) {
+    if (i < NUM_TRAPS / 2) {
+      Serial.println("left. going to " + String(left_trap_attach));
+      move_servo(i, left_trap_attach);
+    } else {
+      Serial.println("right. going to " + String(right_trap_attach));
+      move_servo(i, right_trap_attach);
+    }
+  }
   
+  wait_for_char();
+  for (int i=0;i<NUM_TRAPS;i++) {
+    if (i < NUM_TRAPS / 2) {
+      move_servo(i, left_trap_intermediate);
+    } else {
+      move_servo(i, right_trap_intermediate);
+    }
+  }
+  Serial.println("Now bolt the servo plate to the main maze assembly.");
+  wait_for_char();
+
+  move_servo(ENTRY_CONTROL, ENTRY_BLOCKED);
+  Serial.println("Attach entry control servo horn covering the entry...");
+  wait_for_char();
+
+  move_servo(ENTRY_CONTROL, ENTRY_OPEN);
+}
+
+void test_servos() {
+  Serial.println("Testing servos...");
+  Serial.println("Each trap to ready position...");
+  for (int i=0;i<NUM_TRAPS;i++) {
+    Serial.println(i);
+    ready_trap(i);
+  }
+
+  wait_for_char();
+  Serial.println("Each trap to open position...");
+  for (int i=0;i<NUM_TRAPS;i++) {
+    Serial.println(i);
+    release_fly(i);
+  }
+  wait_for_char();
+  Serial.println("Entry control servo to open position...");
+  move_servo(entry, ENTRY_CONTROL, ENTRY_OPEN);
+  wait_for_char();
+  Serial.println("Entry control servo to blocked position...");
+  move_servo(entry, ENTRY_CONTROL, ENTRY_BLOCKED);
 }
 
 // TODO what was cause of lurching on restarting stepper? these didn't 
@@ -126,7 +291,11 @@ void stepper_driver_pulse(int pin) {
 // problem)
 void position_sorter(unsigned int goal_pos) {
   unsigned int goal_steps = goal_pos * steps_per_pos;
+  // if move gets interrupted, we will need to re-align sorter next start
+  EEPROM.write(sorter_eeprom_idx, SORTER_FAIL_STATE);
   finely_position_sorter(goal_steps);
+  byte sorter_index = positive_step_angle(goal_steps) / steps_per_pos;
+  EEPROM.write(sorter_eeprom_idx, sorter_index);
 }
 
 unsigned int positive_step_angle(int step_angle) {
@@ -149,15 +318,12 @@ void finely_position_sorter(int goal_steps) {
   unsleep();
   // TODO minimize delays. may need to find cause of jumping.
   delay(1000);
-  Serial.println("current positions:");
-  Serial.println(current_steps);
   while (current_steps != positive_goal_steps) {
     stepper_driver_pulse(SORTER_STEP);
     // TODO longer delay
     
     // TODO check correct
     current_steps = (current_steps + 1) % num_steps;
-    Serial.println(current_steps);
   }
   // TODO additional delay for it to finish step? do pulses buffer or 
   // are they completed immediately (probably later)
@@ -171,19 +337,11 @@ void vacuum_pulse(unsigned int duration_ms) {
   digitalWrite(VACUUM_VALVE, LOW);
 }
 
-/* other positions should work OK if horns set relative to this.
-   (used for calibration) */
-void move_all_trap_servos_to(int deg) {
-  for (int i=0;i<NUM_TRAPS;i++) {
-    Serial.println(trap_servo_pins[i]);
-    move_servo(i, deg);
-  }
-}
-
 void ready_experiment() {
-  move_servo(EGRESS_SLIDER, EXPERIMENT);
+  //move_servo(egress, EGRESS_SERVO, EXPERIMENT);
   // TODO move egress sorter (if using) to closed position
   // move input sorters to a valid position
+  move_servo(entry, ENTRY_CONTROL, ENTRY_BLOCKED);
 }
 
 // TODO maybe change design such that i can suck individual flies out later?
@@ -204,11 +362,6 @@ boolean fly_exiting_vial() {
   return true;
 }
 
-// since Arduino Uno / Nano only has 5 Analog inputs, and I may need 8
-// i'm just getting an Arduino Mega, which has 16 analog inputs
-// alternatives: daisy chain arduinos, multiplex sensors, pick resistors such that
-// digital pins can detect fly entering trap
-
 // TODO could also possibly get this information from ROS tracking
 // have to actuate the trap later than otherwise would (and fly might 
 // fall a few times and be delayed in the meantime) with this approach.
@@ -224,6 +377,7 @@ boolean fly_exiting_trap(int i) {
 }
 */
 
+// TODO get rid of?
 void wait_for(function f) {
   while (!(*f)()) { ; }
 }
@@ -231,12 +385,15 @@ void wait_for(function f) {
 // TODO how to accept variable length bool array? sizeof(boolean) = 1 byte?
 // in an array do they still each take up 1 byte? bit?
 boolean all_full() {
+  /* TODO uncomment me!
   for (int i=0;i<NUM_TRAPS;i++) {
     if (!full[i]) {
       return false;
     }
   }
   return true;
+  */
+  return (full[1] && full[5]);
 }
 
 // returns the index of a randomly selected empty chamber
@@ -245,7 +402,13 @@ int get_empty() {
   while (true) {
     // [0,NUM_TRAPS) (traps indexed from zero, so should be correct)
     int n = random(NUM_TRAPS);
+    /* TODO uncomment me
     if (!full[n]) {
+      return n;
+    }
+    */
+    // TODO delete me
+    if (!full[n] && (n == 1 || n == 5)) {
       return n;
     }
   }
@@ -282,10 +445,13 @@ void close_vacated_trap(char c) {
 */
 
 void let_fly_in(int i) {
-  move_servo(ENTRY_CONTROL, OPEN);
-  move_servo(i, TRAP_READY);
+  Serial.println("letting fly in channel " + String(i));
+  position_sorter(i);
+  ready_trap(i);
+  open_entry();
   // TODO test. boolean func working? getting called? need to dereference (&)?
-  wait_for(fly_exiting_vial);
+  //wait_for(fly_exiting_vial);
+  wait_for_char();
   // move sorters to current trap
 
   // TODO could use reflectivity sensor to test whether fly has entered
@@ -293,16 +459,17 @@ void let_fly_in(int i) {
   // apply vacuum
   vacuum_pulse(TRAP_VALVE_TIME_MS);
   // TODO maybe put this above vacuum pulse?
-  move_servo(ENTRY_CONTROL, BLOCKED);
+  block_entry();
   
   // could also do this for all traps at the same time, and first
   // put the trap in an intermediate, sealed, position
-  move_servo(i, TRAP_OPEN);
+  release_fly(i);
 
   // does not indicate fly has left trap to enter choice arena
   full[i] = true;
   // maybe remove this
   fly_left[i] = false;
+  Serial.println("fly loaded");
 }
 
 // TODO deal w/ exit sorter too
@@ -317,6 +484,8 @@ void align_sorter() {
   double sum1 = 0;
   double sum2 = 0;
 
+  digitalWrite(VACUUM_VALVE, HIGH);
+  delay(1500);
   Serial.println("measuring pressures around one full rotation...");
   unsleep();
   // TODO minimize delays
@@ -331,6 +500,7 @@ void align_sorter() {
   }
   delay(1000);
   resleep();
+  digitalWrite(VACUUM_VALVE, LOW);
 
   Serial.println("calculating sensor threshold and mean motor angle...");
   // using the (at least for small n?) numerically stable 2 pass
@@ -342,15 +512,18 @@ void align_sorter() {
     sum2 += diff*diff;
   }
   double stddev = sqrt(sum2 / num_steps);
-  const double c = 1.5;
+  const double c = 3;
   int threshold = round(mean - c * stddev);
   Serial.println("stddev: " + String(stddev));
   Serial.println("threshold: " + String(threshold));
 
+  // could have another loop setting the threshold for desired fraction of angles
+  // being beneath the threshold
 
   // using formula from Wikipedia article on mean of circular quantities
   double sinsum = 0;
   double cossum = 0;
+  double num_below = 0;
   double angle;
   const int two_pi = 6.2832;
   Serial.println("indices below threshold:");
@@ -360,27 +533,34 @@ void align_sorter() {
       sinsum += sin(angle);
       cossum += cos(angle);
       Serial.println(i);
+      num_below++;
     }
   }
-  int mean_lowpressure_step = round(atan2(sinsum, cossum) / two_pi  * num_steps);
-  Serial.println("new zero in current coordinates: " + \
-    String(mean_lowpressure_step + SORTER_ALIGNMENT_OFFSET));
-  // TODO test that on a few revolutions, the minimum is in the same place?
-  // sum of differences of measurement array < some threshold?
 
-  Serial.println("moving to new zero position...");
-  // current zero is where we happened to start taking measurements
-  // we want to move to the center of low pressure area + offset
-  // and then define that as the new zero globally
-  // TODO test sorter positioning functions with negative arguments
-  finely_position_sorter(mean_lowpressure_step + SORTER_ALIGNMENT_OFFSET);
-  current_steps = 0;
-}
-
-void test_servos() {
+  if (num_below == 0) {
+    Serial.print("Error: no angles found pressure readings below threshold. ");
+    Serial.println("could not find starting position. set threshold higher.");
+    // TODO go into idle failure state (to not proceed into other stuff)
+    
+  } else {
+    // probably want this around fraction of circumference holes occupy
+    // maybe a little wider, since tube isn't a infinitesimal point (~0.05). change c to get it.
+    Serial.println("fraction of indices below threshold: " + String(num_below / num_steps));
+    int mean_lowpressure_step = round(atan2(sinsum, cossum) / two_pi  * num_steps);
+    Serial.println("new zero in current coordinates: " + \
+      String(mean_lowpressure_step + SORTER_ALIGNMENT_OFFSET));
+    // TODO test that on a few revolutions, the minimum is in the same place?
+    // sum of differences of measurement array < some threshold?
   
+    Serial.println("moving to new zero position...");
+    // current zero is where we happened to start taking measurements
+    // we want to move to the center of low pressure area + offset
+    // and then define that as the new zero globally
+    // TODO test sorter positioning functions with negative arguments
+    finely_position_sorter(mean_lowpressure_step + SORTER_ALIGNMENT_OFFSET);
+    current_steps = 0;
+  }
 }
-
 
 // only runs at the end of each loop(), so check it can tolerate delays
 // there are more real-time ways of doing this
@@ -436,14 +616,21 @@ void setup() {
   pinMode(SORTER_PRESSURE_SENSOR, INPUT);
   
   sorter_sleeping = true;
-  align_sorter();
-  // for testing
-  position_sorter(1);
-  position_sorter(2);
-  //
+  byte sorter_position = EEPROM.read(sorter_eeprom_idx);
+  if (ALIGN_SORTER || sorter_position == SORTER_FAIL_STATE) {
+    align_sorter();
+  } else {
+    current_steps = sorter_position * steps_per_pos;
+  }
 
-  // TODO make some calibration functions
-  //move_all_trap_servos_to_145();
+  correct_servo_positions();
+  /* set this true if the servo plate is already attached! */
+  if (!SERVO_PLATE_ATTACHED) {
+    attach_servo_walkthrough();
+  }
+  //TODO maybe not always?
+  //test_servos();
+
   ready_experiment();
 }
 
@@ -458,11 +645,13 @@ void setup() {
 */
 
 void loop() {
-  /*
   // TODO will also probably need to check for vacated traps (separately?)
   while (!all_full()) {
     int chamber_num = get_empty();
     let_fly_in(chamber_num);
+    // TODO remove
+    full[1] = false;
+    full[5] = false;
   }
   
   // TODO the arduino could technically be put into a lower power state when
@@ -475,10 +664,5 @@ void loop() {
   // this is where serialEvent checks to for input
   // (ROS nodes may send the Arduino a character telling it to end the experiment)
   // TODO refactor everything to check this more frequently (less blocking) (the check for vacated traps at least)
-  */
-
-  digitalWrite(VACUUM_VALVE, HIGH);
-  delay(1000);
-  digitalWrite(VACUUM_VALVE, LOW);
-  delay(5000);
+  
 }
