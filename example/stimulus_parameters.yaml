@@ -45,8 +45,8 @@ olf/beyond_posttest: 0
 # maybe current_left, etc
 olf/left_pins: [55, 56, 57]
 olf/right_pins: [59, 60, 61]
-# use?
-#olf/separate_balances: 
+
+olf/separate_balances: True
 olf/left_balance: 54
 olf/right_balance: 58
 
@@ -71,6 +71,9 @@ zap/shock_duty_cycle: 0.5
 # i should probably broadcast (and save) any changes somehow
 # (or just save all before / after, though each of these has
 #  pitfalls)
+
+# could implement (on a pin w/ appropriate interrupt ability?)
+#zap/shock_when_pin_high: 4
 
 # TODO raise error if closed loop is set and this is False
 zap/individual_chambers: False
