@@ -18,7 +18,6 @@ class Stimuli:
         
         return StimInfoRequest()
         
-        
 
 if __name__ == '__main__':
     s = Shocks()

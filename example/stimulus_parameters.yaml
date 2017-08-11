@@ -1,3 +1,20 @@
+
+# choices = 1, should (try to) keep behavior of old stimulus
+# delivery code
+# choices = 2 (maybe later 2+), expecting other parameters
+# describing testing / training regimen
+# TODO better way? rename from choices (1 -> no actual choice?)?
+#olf/choices: 2
+
+# TODO TODO list different parameters expected for 1 choice vs 2
+# generate?
+
+# TODO add support for including venting into trial structure?
+# TODO some uniform way to handle / describe normal trials, tests, venting, etc?
+
+# TODO don't break support for scope window overlapping stimulus
+# presentation at defined offsets
+
 # TODO maybe validate there is appropriate infrastructure running
 # to run closed loop mode, if set
 # TODO mixed mode? any work doing that?
@@ -32,9 +49,9 @@ olf/pre_stimulus_delay_s: 120
 olf/test_duration_s: 300
 olf/pretest_to_train_s: 300
 olf/train_duration_s: 60
-olf/inter_train_interval: 60
+olf/inter_train_interval_s: 60
 olf/train_to_posttest_s: 300
-olf/beyond_posttest: 0
+olf/beyond_posttest_s: 0
 
 # Arduino Mega integer pin #s for analog inputs
 # [A0=54, A15=69]
@@ -43,6 +60,9 @@ olf/beyond_posttest: 0
 # and balance, but that's probably it
 # TODO republish from a python node? (or set param)
 # maybe current_left, etc
+# or maybe odor_A_pin, etc, w/ corresponding odor_A
+# TODO but then what if they are mixtures? still variable length
+olf/max_num_pins: 8
 olf/left_pins: [55, 56, 57]
 olf/right_pins: [59, 60, 61]
 
