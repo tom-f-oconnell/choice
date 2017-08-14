@@ -5,89 +5,65 @@ import random
 import datetime
 import pickle
 
-import odors
 import trial_server
-
-# TODO put in place all randomizers can use
-def set_product(s1, s2):
-    """
-    Returns unordered "Cartesian product".
-    """
-    s = set()
-    for e1 in s1:
-        for e2 in s2:
-            s.add(frozenset({e1, e2}))
-    return s
-
-
-def key2tupleset(dictionary, key):
-    """
-    Assumes dictionary values are iterables.
-    """
-    val = dictionary[key]
-    return set(zip(len(val) * [key], val))
-
-
-def nice_timestamp():
-    return str(datetime.datetime.now())[:-7].replace(' ', '_').replace(':', '')
-
-
-def print_nestedset(s):
-    """
-    Because lots of frozensets as elements of something doesn't print well.
-    """
-    print('{', end='')
-    for fs in s:
-        # convert the frozensets to sets for printing
-        print(set(fs))
-    print('}')
-
-###############################################################################
+import rospy
+from std_msgs.msg import Header
+from stimuli.msg import PulseSeq, Pulse, Transition, State, DefaultState
+from . import StimuliLoader
 
 # TODO do i ever want to train the same flies on different pairs of odors sequentially?
 # or maybe expose them to some odors / some sequence of odors first (/ after?)?
 
-save_mappings = True
-communicate_to_arduino = False
+save_stimulus_info = False
 
-'''
-odor_panel = {'2-butanone': (-4, -6, -8),
-              'trans-2-hexenal': (-5, -6, -8, -10),
-              'pentyl acetate': (-3,),
-              'pentanoic acid': (-2, -3, -4),
-              'parafin (mock)': (0,)}
-'''
 # TODO store as effective dilution given flow conditions / mixing ratios?
+'''
 odor_panel = {'parafin (mock)': (0,),
               '4-methylcyclohexanol': (-2,),
+              '3-octanol': (-2,)}
+'''
+'''
+odor_panel = {'4-methylcyclohexanol': (-2,),
               '3-octanol': (-2,)}
 
 # TODO left pins & right pins separately?
 
-# 5 through 11 inclusive
-available_pins = tuple(range(5,12))
-
 # TODO break this into a function?
-mock = ('parafin (mock)', 0)
+'''
+reinforced_odor_side_order = rospy.get_param('reinforced_odor_side_order')
 
-# TODO TODO consolidate these kind of parameters and move off arduino
-# for each odor combination we will test
-repeats = 5 # 5
-# TODO check that it was / still is 45
-secs_per_repeat = 45  # seconds
+training_blocks = rospy.get_param('olf/training_blocks')
+prestimulus_delay_s = rospy.get_param('olf/prestimulus_delay_s')
+test_duration_s = rospy.get_param('olf/test_duration_s')
+pretest_to_train_s = rospy.get_param('olf/pretest_to_train_s')
+train_duration_s = rospy.get_param('olf/train_duration_s')
+inter_train_interval_s = rospy.get_param('olf/inter_train_interval_s')
+train_to_posttest_s = rospy.get_param('olf/train_to_posttest_s')
+beyond_posttest_s = rospy.get_param('olf/beyond_posttest_s')
 
-all_mappings = []
-odors2pins = []
-all_stimuli_in_order = []
+left_pins = rospy.get_param('olf/left_pins')
+right_pins = rospy.get_param('olf/right_pins')
+separate_balances = rospy.get_param('olf/separate_balances')
+left_balance = rospy.get_param('olf/left_balance')
+right_balance = rospy.get_param('olf/right_balance')
+balance_normally_flowing = rospy.get_param('olf/balance_normally_flowing')
+
+shock_ms_on = rospy.get_param('zap/shock_ms_on')
+shock_ms_off = rospy.get_param('zap/shock_ms_off')
+
+left_shock = rospy.get_param('zap/left')
+right_shock = rospy.get_param('zap/right')
 
 # TODO TODO how to deal w/ symmetry re: sides? (blocks pick a random side to start on?)
 
 # TODO for now, just save sides to a separate file to be loaded by that ROS node
 
 ###############################################################################
-# TODO
-odors = list(odors_panel)
-random.shuffle(odors)
+#odors = list(odor_panel)
+mock = ('parafin (mock)', 0)
+odors = [('4-methylcyclohexanol', -2), ('3-octanol': -2)]
+reinforced, unreinforced = random.sample(odors, 2)
+odors.append(mock)
 
 # TODO
 # randomly break stimuli into groups fitting into the number of 
@@ -99,32 +75,156 @@ random.shuffle(odors)
 # (samples without replacement)
 # TODO maybe keep pin -> odor assignments for a few neighboring sets of experiments?
 # if the total time a fly is in there will be short...
-pins = random.sample(available_pins, len(odors))
+# TODO republish / set?
+left_pins = random.sample(left_pins, len(odors))
+right_pins = random.sample(right_pins, len(odors))
 
-for pin, odor_pair in sorted(zip(pins, odors), key=lambda x: x[0]):
-    odor = odors.pair2str(odor_pair)
-    print(str(pin) + ' -> ' + odor)
+for pin, odor_pair in sorted(zip(left_pins, odors), key=lambda x: x[0]):
+    print(str(pin) + ' -> ' + odor_pair)
 
-odors2pins.append(dict(zip(odors, pins)))
-# TODO delete me? replace w/ odors2pins where necessary.
-all_mappings.append(list(zip(pins, odors)))
+for pin, odor_pair in sorted(zip(right_pins, odors), key=lambda x: x[0]):
+    print(str(pin) + ' -> ' + odor_pair)
 
-# now determine order in which to present combinations of the connected
-# odors
-to_present = list(odors)
-random.shuffle(to_present)
-expanded = []
-for e in to_present:
-    expanded += [e] * repeats
-expanded = [set(e) for e in expanded]
+# TODO republish / set?
+odors2left_pins = dict(zip(odors, left_pins))
+odors2right_pins = dict(zip(odors, right_pins))
 
-all_stimuli_in_order.append(expanded)
+# TODO pause until person has connected stuff?
+
 ###############################################################################
 
-total_secs = sum(map(lambda x: len(x), all_stimuli_in_order)) * secs_per_repeat
-m, s = divmod(total_secs, 60)
-h, m = divmod(m, 60)
-print(h, 'hours', m, 'minutes', s, 'seconds')
+class StimuliGenerator:
+    def __init__(self):
+        self.current_t0 = rospy.Time.now()
+
+        # only do this for 'alternating' mode?
+        current_side_is_left = random.choice([True, False])
+
+    # currently just on all the time. maybe i want something else?
+    def odor_transitions(self):
+        # TODO need to deep copy these?
+        # setting ms_on to 1 to emphasize duration is determined by end time set in PulseSeq
+        # and the pin will only go low if that is the DefaultState for the pin
+        high = State(ms_on=1, ms_off=0)
+        # don't need explicit low transistion because default state is low
+        # but end time in PulseSeq messsage must be set correctly
+        transistion = Transition(self.current_t0, high)
+
+        pulse_seq = []
+        if separate_balances:
+            balance_pins = [left_balance, right_balance]
+
+            if balance_normally_flowing:
+                balance_transition = transition
+            else:
+                low = State(ms_on=0, ms_off=1)
+                balance_transition = Transition(self.current_t0, low)
+
+            for p in balance_pins:
+                pulse_seq.append(Pulse(p, balance_transition))
+
+        if current_side_is_left:
+            pins = [odors2left_pins[reinforced]), odors2right_pins[unreinforced]]
+        else:
+            pins = [odors2left_pins[unreinforced]), odors2right_pins[reinforced]]
+
+        for p in pins:
+            pulse_seq.append(Pulse(p, transition))
+
+        return pulse_seq
+
+
+    # TODO how to handle shocking + presenting reinforced odor on both sides?
+    def shock_transitions(self):
+        square_wave = State(ms_on=shock_ms_on, ms_off=shock_ms_off)
+        transition = Transition(self.current_t0, square_wave)
+
+        # TODO 'left' / r / 'both'?
+        if current_side_is_left:
+            return [Pulse(left_shock, square_wave)]
+        else:
+            return [Pulse(right_shock, square_wave)]
+
+
+    def test(self):
+        # TODO will need to add header.stamp before sending
+        header = Header()
+
+        start = rospy.Duration(self.current_t0)
+        end = start + rospy.Duration(test_duration_s)
+        self.current_t0 = end
+
+        pulse_seq = odor_transitions()
+        if reinforced_odor_side_order == 'alternating':
+            current_side_is_left = not current_side_is_left 
+
+        elif reinforced_odor_side_order == 'random':
+            current_side_is_left = random.choice([True, False])
+
+        # TODO add shock and balance pins
+        pins_to_signal = []
+        return PulseSeq(header, start, end, pulse_seq, pins_to_signal)
+
+
+    def train(self):
+        # TODO will need to add header.stamp before sending
+        header = Header()
+
+        start = t0 + rospy.Duration(self.current_t0)
+        end = start + rospy.Duration(train_duration_s)
+
+        pulse_seq = odor_transitions() + shock_transitions()
+        if reinforced_odor_side_order == 'alternating':
+            current_side_is_left = not current_side_is_left 
+
+        elif reinforced_odor_side_order == 'random':
+            current_side_is_left = random.choice([True, False])
+
+        self.current_t0 = end
+
+        # TODO add shock and balance pins
+        pins_to_signal = []
+        return PulseSeq(header, start, end, pulse_seq, pins_to_signal)
+
+
+    def delay(self, delay_s):
+        ros_delay = rospy.Duration(delay_s)
+        self.current_t0 = self.current_t0 + ros_delay
+        # TODO do we have a copy constructor? maybe use float intermediate?
+        return ros_delay
+
+gen = StimuliGenerator()
+trial_structure = [gen.delay(prestimulus_delay_s), \
+                   gen.test(), \
+                   gen.delay(pretest_to_train_s)] + \
+                  [f(), gen.delay(inter_train_interval_s) for f in [gen.train] * training_blocks] + \
+                  [gen.delay(train_to_posttest_s), \
+                   gen.test(), \
+                   gen.delay(beyond_posttest_s)]
+
+print(trial_structure)
+
+low_pins = left_pins + right_pins + [left_shock, right_shock]
+if separate_balances:
+    if balance_normally_flowing:
+        low_pins += [left_balance, right_balance]
+        high_pins = []
+    else:
+        high_pins = [left_balance, right_balance]
+
+default_states = [DefaultState(p, True) for p in high_pins] + \
+                 [DefaultState(p, False) for p in low_pins]
+
+# TODO make sure this node stays alive until the current_t0 after the trial structure has been
+# evaluated
+
+###############################################################################
+
+# print trial structure?
+
+# can i do this from outside of a node?
+rospy.loginfo('Stimuli should finish at ' + datetime.datetime.fromtimestamp(gen.current_t0.to_secs()\
+        ).strftime('%Y-%m-%d %H:%M:%S'))
 
 # TODO compare w/ decoding saved all_stimuli_in_order
 # and then possibly skip decoding
@@ -132,34 +232,22 @@ print(h, 'hours', m, 'minutes', s, 'seconds')
 # TODO make if not there. warn if cant.
 output_dir = '.'
 
-if save_mappings:
-    filename = output_dir + nice_timestamp() + '.p'
-    print(filename)
-    with open(filename, 'wb') as f:
-        pickle.dump((all_mappings, all_stimuli_in_order), f)
-else:
-    print('NOT SAVING MAPPINGS!!!')
-    
-required_pins_in_order = []
-for block in range(len(all_stimuli_in_order)):
-    order = []
-    for mixture in all_stimuli_in_order[block]:
-        order.append({odors2pins[block][o] for o in mixture})
-    required_pins_in_order.append(order)
-    
-# so that i can break the communication out into another script if i want to
-with open('.pinorder.tmp.p', 'wb') as f:
-    pickle.dump((required_pins_in_order, all_mappings), f)
-    
-###############################################################
+if save_stimulus_info:
+    # TODO get rid of multi_tracker prefix
+    experiment_basename = rospy.get_param('multi_tracker/experiment_basename', None)
+    if experiment_basename is None:
+        experiment_basename = time.strftime("%Y%m%d_%H%M%S_N1", time.localtime())
+        rospy.set_param('multi_tracker/experiment_basename', experiment_basename)
 
-with open('.pinorder.tmp.p', 'rb') as f:
-    required_pins_in_order, all_mappings = pickle.load(f)
-    
-# TODO detect where arduino is 
-# (and which, based on whatever hardware ID info is available)
-# maybe upload some handshaking / id code
-if communicate_to_arduino:
-    # TODO set timing (and other) params in ROS eventually
-    trial_server.start(required_pins_in_order, port='COM14', mappings=all_mappings)
+    filename = output_dir + experiment_basename + '_stimuli.p'
+    rospy.loginfo('Trying to save save stimulus info to ' + filename)
+
+    # TODO check / test success
+    with open(filename, 'wb') as f:
+        # TODO test trial_structure is recoverable from pickle / serializable
+        pickle.dump((odors2left_pins, odors2right_pins, default_states, trial_structure), f)
+else:
+    rospy.logwarn('Not saving generated trial structure / pin to odor mappings!')
+
+stimuli_loader = StimuliLoader(default_states, trial_structure)
 

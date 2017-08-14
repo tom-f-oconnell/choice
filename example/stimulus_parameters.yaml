@@ -39,13 +39,13 @@ olf/all_odors_both_sides: True
 # 'alternating' or 'random'
 # TODO TODO probably transistion to random... could flies really
 # not learn to alternate sides in Adam's '09 paper?
-olf/odor_A_side_order: 'alternating'
+olf/reinforced_odor_side_order: 'alternating'
 
 # TODO reasons i might want to randomly mix training and test?
 olf/training_blocks: 3
 
 # TODO set tracking recording durations from sum of these
-olf/pre_stimulus_delay_s: 120
+olf/prestimulus_delay_s: 120
 olf/test_duration_s: 300
 olf/pretest_to_train_s: 300
 olf/train_duration_s: 60
@@ -83,8 +83,10 @@ olf/post_pulse_ms: 5000
 
 # odor valves opening will start ~concurrently with beginning
 # of low period
-zap/shock_frequency_Hz: 0.2
-zap/shock_duty_cycle: 0.5
+# should be ~0.2 Hz
+# and ~0.5 duty cycle?
+zap/shock_ms_on: 2500
+zap/shock_ms_off: 2500
 # if i can somehow set voltage programmatically...
 #zap/shock_voltage: 90
 # if i plan on changing these kinds of parameters online, then
