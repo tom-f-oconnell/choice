@@ -9,11 +9,15 @@ from std_msgs.msg import Header
 from stimuli.msg import PulseSeq, Pulse, Transition, State, DefaultState
 from stimuli.srv import LoadDefaultStates, LoadPulseSeq
 
+def readable_rostime(ros_time):
+    return datetime.datetime.fromtimestamp(ros_time.to_sec()).strftime('%Y-%m-%d %H:%M:%S')
+
 class StimuliLoader:
     def __init__(self, default_states, trial_structure):
+        self.pin2name = dict(zip(range(54, 70), ['A' + str(i) for i in range(16)]))
         rospy.loginfo('stimuli_loader waiting for services')
         defaults_service_name = 'load_defaults'
-        sequence_service_name = 'load_next_sequence'
+        sequence_service_name = 'load_seq'
         rospy.wait_for_service(defaults_service_name)
         rospy.wait_for_service(sequence_service_name)
         load_defaults = rospy.ServiceProxy(defaults_service_name, LoadDefaultStates)
@@ -34,9 +38,16 @@ class StimuliLoader:
                 try:
                     #print(block)
                     #print(block.pulse_seq)
+                    # TODO any way to print in here whether it is a test / train and side, etc?
                     block.header.stamp = rospy.Time.now()
                     resp = load_next_sequence(block)
                     rospy.logwarn('sent block info!')
+                    rospy.loginfo('current time is ' + readable_rostime(rospy.Time.now()))
+                    rospy.loginfo('should start at ' + readable_rostime(block.start))
+                    # TODO TODO duration of test seemed much lower than it should have been. ~40s rather than 300s
+                    rospy.loginfo('duration of sequence ' + str((block.end - block.start).to_sec()))
+                    # TODO don't replace when not in dict
+                    rospy.loginfo('using pins: ' + str([self.pin2name[pulse.pin] for pulse in block.pulse_seq]))
 
                 except rospy.ServiceException as exc:
                     rospy.logerr("Service load_next_sequence failed: " + str(exc))
@@ -45,13 +56,14 @@ class StimuliLoader:
             # TODO test
             elif type(block) is rospy.Time:
                 intertrial_interval_end = block
-                wake_at = intertrial_interval_end - rospy.Duration(2)
-                rospy.loginfo('stimuli_loader sleeping until ' + \
-                    datetime.datetime.fromtimestamp(wake_at.to_sec()).strftime('%Y-%m-%d %H:%M:%S'))
+                # TODO how to not write when arduino is in a busy state / rewrite if necessary
+                # should i just switch the arduino to a client?
+                wake_at = intertrial_interval_end - rospy.Duration(10)
+                rospy.loginfo('stimuli_loader sleeping until ' + readable_rostime(wake_at))
 
-                # sleep until 2 secs before next block we need to communicate
-                until_wake = wake_at - rospy.Time.now()
-                rospy.sleep(until_wake)
+                # sleep until N secs before next block we need to communicate
+                until_wake = (wake_at - rospy.Time.now()).to_sec()
+                rospy.sleep(max(0.0, until_wake))
 
             else:
                 # TODO was this error getting supressed? logerr?

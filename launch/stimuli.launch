@@ -16,7 +16,7 @@
       require:
         publishers: []
         subscribers: []
-        services: ['load_defaults', 'load_next_sequence']
+        services: ['load_defaults', 'load_seq']
     </rosparam>
   </node>
 </launch>
