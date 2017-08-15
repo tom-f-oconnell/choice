@@ -9,6 +9,8 @@ project(choice)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   rospy
+  std_msgs
+  stimuli
 )
 
 ## System dependencies are found with CMake's conventions
@@ -99,7 +101,7 @@ catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES stimuli
 #  CATKIN_DEPENDS rosserial_arduino
-#   CATKIN_DEPENDS message_runtime
+   CATKIN_DEPENDS message_runtime
 #  DEPENDS system_lib
 )
 

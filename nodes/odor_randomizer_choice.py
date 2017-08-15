@@ -1,18 +1,21 @@
+#!/usr/bin/env python
 
 from __future__ import print_function
 
 import random
 import datetime
+import time
 import pickle
 
-import trial_server
 import rospy
 from std_msgs.msg import Header
 from stimuli.msg import PulseSeq, Pulse, Transition, State, DefaultState
-from . import StimuliLoader
+from stimuli_loader import StimuliLoader
 
 # TODO do i ever want to train the same flies on different pairs of odors sequentially?
 # or maybe expose them to some odors / some sequence of odors first (/ after?)?
+
+rospy.init_node('stimuli')
 
 save_stimulus_info = False
 
@@ -30,7 +33,7 @@ odor_panel = {'4-methylcyclohexanol': (-2,),
 
 # TODO break this into a function?
 '''
-reinforced_odor_side_order = rospy.get_param('reinforced_odor_side_order')
+reinforced_odor_side_order = rospy.get_param('olf/reinforced_odor_side_order')
 
 training_blocks = rospy.get_param('olf/training_blocks')
 prestimulus_delay_s = rospy.get_param('olf/prestimulus_delay_s')
@@ -61,7 +64,7 @@ right_shock = rospy.get_param('zap/right')
 ###############################################################################
 #odors = list(odor_panel)
 mock = ('parafin (mock)', 0)
-odors = [('4-methylcyclohexanol', -2), ('3-octanol': -2)]
+odors = [('4-methylcyclohexanol', -2), ('3-octanol', -2)]
 reinforced, unreinforced = random.sample(odors, 2)
 odors.append(mock)
 
@@ -80,10 +83,10 @@ left_pins = random.sample(left_pins, len(odors))
 right_pins = random.sample(right_pins, len(odors))
 
 for pin, odor_pair in sorted(zip(left_pins, odors), key=lambda x: x[0]):
-    print(str(pin) + ' -> ' + odor_pair)
+    print(str(pin) + ' -> ' + str(odor_pair))
 
 for pin, odor_pair in sorted(zip(right_pins, odors), key=lambda x: x[0]):
-    print(str(pin) + ' -> ' + odor_pair)
+    print(str(pin) + ' -> ' + str(odor_pair))
 
 # TODO republish / set?
 odors2left_pins = dict(zip(odors, left_pins))
@@ -98,7 +101,7 @@ class StimuliGenerator:
         self.current_t0 = rospy.Time.now()
 
         # only do this for 'alternating' mode?
-        current_side_is_left = random.choice([True, False])
+        self.current_side_is_left = random.choice([True, False])
 
     # currently just on all the time. maybe i want something else?
     def odor_transitions(self):
@@ -106,9 +109,9 @@ class StimuliGenerator:
         # setting ms_on to 1 to emphasize duration is determined by end time set in PulseSeq
         # and the pin will only go low if that is the DefaultState for the pin
         high = State(ms_on=1, ms_off=0)
-        # don't need explicit low transistion because default state is low
+        # don't need explicit low transition because default state is low
         # but end time in PulseSeq messsage must be set correctly
-        transistion = Transition(self.current_t0, high)
+        transition = [Transition(self.current_t0, high)]
 
         pulse_seq = []
         if separate_balances:
@@ -118,15 +121,15 @@ class StimuliGenerator:
                 balance_transition = transition
             else:
                 low = State(ms_on=0, ms_off=1)
-                balance_transition = Transition(self.current_t0, low)
+                balance_transition = [Transition(self.current_t0, low)]
 
             for p in balance_pins:
                 pulse_seq.append(Pulse(p, balance_transition))
 
-        if current_side_is_left:
-            pins = [odors2left_pins[reinforced]), odors2right_pins[unreinforced]]
+        if self.current_side_is_left:
+            pins = [odors2left_pins[reinforced], odors2right_pins[unreinforced]]
         else:
-            pins = [odors2left_pins[unreinforced]), odors2right_pins[reinforced]]
+            pins = [odors2left_pins[unreinforced], odors2right_pins[reinforced]]
 
         for p in pins:
             pulse_seq.append(Pulse(p, transition))
@@ -137,10 +140,10 @@ class StimuliGenerator:
     # TODO how to handle shocking + presenting reinforced odor on both sides?
     def shock_transitions(self):
         square_wave = State(ms_on=shock_ms_on, ms_off=shock_ms_off)
-        transition = Transition(self.current_t0, square_wave)
+        transition = [Transition(self.current_t0, square_wave)]
 
         # TODO 'left' / r / 'both'?
-        if current_side_is_left:
+        if self.current_side_is_left:
             return [Pulse(left_shock, square_wave)]
         else:
             return [Pulse(right_shock, square_wave)]
@@ -150,16 +153,16 @@ class StimuliGenerator:
         # TODO will need to add header.stamp before sending
         header = Header()
 
-        start = rospy.Duration(self.current_t0)
+        start = self.current_t0
         end = start + rospy.Duration(test_duration_s)
         self.current_t0 = end
 
-        pulse_seq = odor_transitions()
+        pulse_seq = self.odor_transitions()
         if reinforced_odor_side_order == 'alternating':
-            current_side_is_left = not current_side_is_left 
+            self.current_side_is_left = not self.current_side_is_left 
 
         elif reinforced_odor_side_order == 'random':
-            current_side_is_left = random.choice([True, False])
+            self.current_side_is_left = random.choice([True, False])
 
         # TODO add shock and balance pins
         pins_to_signal = []
@@ -170,15 +173,15 @@ class StimuliGenerator:
         # TODO will need to add header.stamp before sending
         header = Header()
 
-        start = t0 + rospy.Duration(self.current_t0)
+        start = self.current_t0
         end = start + rospy.Duration(train_duration_s)
 
-        pulse_seq = odor_transitions() + shock_transitions()
+        pulse_seq = self.odor_transitions() + self.shock_transitions()
         if reinforced_odor_side_order == 'alternating':
-            current_side_is_left = not current_side_is_left 
+            self.current_side_is_left = not self.current_side_is_left 
 
         elif reinforced_odor_side_order == 'random':
-            current_side_is_left = random.choice([True, False])
+            self.current_side_is_left = random.choice([True, False])
 
         self.current_t0 = end
 
@@ -190,14 +193,17 @@ class StimuliGenerator:
     def delay(self, delay_s):
         ros_delay = rospy.Duration(delay_s)
         self.current_t0 = self.current_t0 + ros_delay
-        # TODO do we have a copy constructor? maybe use float intermediate?
-        return ros_delay
+        # do we have a copy constructor?
+        return rospy.Time.from_sec(self.current_t0.to_sec())
 
+flatten = lambda l: [item for sublist in l for item in sublist]
+
+# TODO fix train + delay line
 gen = StimuliGenerator()
 trial_structure = [gen.delay(prestimulus_delay_s), \
                    gen.test(), \
                    gen.delay(pretest_to_train_s)] + \
-                  [f(), gen.delay(inter_train_interval_s) for f in [gen.train] * training_blocks] + \
+                  flatten([[f(), gen.delay(inter_train_interval_s)] for f in [gen.train] * training_blocks]) + \
                   [gen.delay(train_to_posttest_s), \
                    gen.test(), \
                    gen.delay(beyond_posttest_s)]
@@ -223,7 +229,7 @@ default_states = [DefaultState(p, True) for p in high_pins] + \
 # print trial structure?
 
 # can i do this from outside of a node?
-rospy.loginfo('Stimuli should finish at ' + datetime.datetime.fromtimestamp(gen.current_t0.to_secs()\
+rospy.loginfo('Stimuli should finish at ' + datetime.datetime.fromtimestamp(gen.current_t0.to_sec()\
         ).strftime('%Y-%m-%d %H:%M:%S'))
 
 # TODO compare w/ decoding saved all_stimuli_in_order
