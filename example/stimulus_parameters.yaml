@@ -45,11 +45,11 @@ olf/reinforced_odor_side_order: 'alternating'
 olf/training_blocks: 3
 
 # TODO set tracking recording durations from sum of these
-olf/prestimulus_delay_s: 15 # 120. shorter for testing
-olf/test_duration_s: 300
-olf/pretest_to_train_s: 300
-olf/train_duration_s: 60
-olf/inter_train_interval_s: 60
+olf/prestimulus_delay_s: 20 # 120. shorter for testing
+olf/test_duration_s: 15 # 300
+olf/pretest_to_train_s: 20 # 300
+olf/train_duration_s: 10 # 60
+olf/inter_train_interval_s: 20 # 60
 olf/train_to_posttest_s: 300
 olf/beyond_posttest_s: 0
 

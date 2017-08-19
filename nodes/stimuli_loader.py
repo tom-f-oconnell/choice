@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from __future__ import division
+from __future__ import print_function
 import rospy
 import time
 import datetime
@@ -13,6 +14,7 @@ def readable_rostime(ros_time):
     return datetime.datetime.fromtimestamp(ros_time.to_sec()).strftime('%Y-%m-%d %H:%M:%S')
 
 class StimuliLoader:
+    # TODO TODO assert that time to sleep before is less than all intertrial intervals
     def __init__(self, default_states, trial_structure):
         self.pin2name = dict(zip(range(54, 70), ['A' + str(i) for i in range(16)]))
         rospy.loginfo('stimuli_loader waiting for services')
@@ -42,16 +44,15 @@ class StimuliLoader:
                     block.header.stamp = rospy.Time.now()
                     resp = load_next_sequence(block)
                     rospy.logwarn('sent block info!')
+                    
                     rospy.loginfo('current time is ' + readable_rostime(rospy.Time.now()))
                     rospy.loginfo('should start at ' + readable_rostime(block.start))
-                    # TODO TODO duration of test seemed much lower than it should have been. ~40s rather than 300s
+                    rospy.loginfo('should end at ' + readable_rostime(block.end))
                     rospy.loginfo('duration of sequence ' + str((block.end - block.start).to_sec()))
-                    # TODO don't replace when not in dict
-                    rospy.loginfo('using pins: ' + str([self.pin2name[pulse.pin] for pulse in block.pulse_seq]))
+                    rospy.loginfo('using pins: ' + str([self.pin2name[pulse.pin] if pulse.pin in self.pin2name else pulse.pin for pulse in block.pulse_seq]))
 
                 except rospy.ServiceException as exc:
                     rospy.logerr("Service load_next_sequence failed: " + str(exc))
-                rospy.loginfo('stimuli_loader finished sending')
 
             # TODO test
             elif type(block) is rospy.Time:

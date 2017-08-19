@@ -105,6 +105,9 @@ class StimuliGenerator:
 
     # currently just on all the time. maybe i want something else?
     def odor_transitions(self):
+        """
+        TODO
+        """
         # TODO need to deep copy these?
         # setting ms_on to 1 to emphasize duration is determined by end time set in PulseSeq
         # and the pin will only go low if that is the DefaultState for the pin
@@ -139,14 +142,17 @@ class StimuliGenerator:
 
     # TODO how to handle shocking + presenting reinforced odor on both sides?
     def shock_transitions(self):
+        """
+        TODO
+        """
         square_wave = State(ms_on=shock_ms_on, ms_off=shock_ms_off)
         transition = [Transition(self.current_t0, square_wave)]
 
         # TODO 'left' / r / 'both'?
         if self.current_side_is_left:
-            return [Pulse(left_shock, square_wave)]
+            return [Pulse(left_shock, transition)]
         else:
-            return [Pulse(right_shock, square_wave)]
+            return [Pulse(right_shock, transition)]
 
 
     def test(self):
