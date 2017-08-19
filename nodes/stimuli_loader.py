@@ -71,6 +71,8 @@ class StimuliLoader:
                 # seems a list was in here
                 raise ValueError('unexpected type ' + str(type(block)) + ' in trial structure')
 
+        # TODO should i die here? after arduino finishes?
+        rospy.loginfo('Done sending stimuli!')
         rospy.spin()
         
 # fix

@@ -214,7 +214,7 @@ trial_structure = [gen.delay(prestimulus_delay_s), \
                    gen.test(), \
                    gen.delay(beyond_posttest_s)]
 
-print(trial_structure)
+#print(trial_structure)
 
 low_pins = left_pins + right_pins + [left_shock, right_shock]
 if separate_balances:
