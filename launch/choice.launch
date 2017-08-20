@@ -1,0 +1,32 @@
+<launch>
+  <!-- TODO put snapshot_params node in this package, add another node tag -->
+  <node name="versionpub" pkg="versionpub" type="versionpub.py">
+    <rosparam>
+      package_names: ['versionpub', 'stimuli', 'choice', 'multi_tracker', 'rosserial_arduino']
+    </rosparam>
+  </node>
+
+  <!-- TODO deal with camera parameters / calibration -->
+  <include file="$(find multi_tracker)/launch/rectified_usb_cam.launch" />
+
+  <!-- TODO reasonable to set these all as default in package directories and only set non defaults
+       locally?
+  -->
+  <!-- TODO test these are loaded from directory roslaunch is invoked in. setup default handling -->
+  <include file="$(find multi_tracker)/launch/load_tracking_parameter_yamls.launch" />
+  <include file="$(find multi_tracker)/launch/detect_roi_tracking.launch" />
+
+  <rosparam command="load" file="$(find choice)/example/stimulus_parameters.yaml" />
+  <!-- TODO should i break out the stimulus_loader.py into stimuli package? how to handle? -->
+  <node name="stimulus_loader" pkg="choice" type="odor_randomizer_choice.py" output="screen" required="true" />
+ 
+  <!-- baud and port parameters are in here -->
+  <!-- TODO any way to pass them through? I don't really want to set them globally, but I could. --> 
+  <!-- TODO is this explicit find syntax idiomatic or is there a simpler way to find .launch files? -->
+  <include file="$(find stimuli)/launch/stimulus_arduino.launch" />
+
+  <!-- put this in its own package or group in here? rename versionpub? -->
+  <node name="snapshot_params" pkg="versionpub" type="snapshot_params.py">
+    <param name="wait_s" value="10" />
+  </node>
+</launch>
