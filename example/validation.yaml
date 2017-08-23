@@ -1,0 +1,17 @@
+parameter_validator/get_params_after_s: 5
+parameter_validator/required: []
+# TODO add a circular roi param
+# TODO shouldn't delta video topic just publish cropped image for other nodes, so they dont all
+# have to select an roi (particularly if it involves something like transforming)
+parameter_validator/exactly_one_of_each: ['delta_video/roi_l', 'delta_video/corner_1'] 
+parameter_validator/all_if_any_of_each: [['delta_video/roi_l', 'delta_video/roi_r', 
+                                          'delta_video/roi_t', 'delta_video/roi_b'],
+                                         ['delta_video/corner_1', 'delta_video/corner_2',
+                                          'delta_video/corner_3', 'delta_video/corner_4']]
+# TODO but i guess existing convention for rois wouldnt work with one of these bounds?
+# maybe just change convention to have both be 0?
+# alternatives would be: more complicated validation (probably in node that crops to roi)
+# TODO maybe just rename tracker to image processing? does it really integrate the other nodes?
+parameter_validator/inclusive_upper_bounds: [['delta_video/threshold', 'tracker/threshold']]
+#parameter_validator/inclusive_lower_bounds: ['', '']
+

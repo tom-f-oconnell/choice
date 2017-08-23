@@ -1,0 +1,4 @@
+problem naming this choice? choice_analysis?
+
+how should i organize this? choice.analysis? i guess i don't have other python code here though?
+(at least not / w/ this name / reusable)
