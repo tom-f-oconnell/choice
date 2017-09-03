@@ -1,7 +1,10 @@
 <launch>
   <!-- can be used to PID with the same parameter file as your main experiment -->
   <arg name="stimuli_only" default="False" />
-  <arg name="port" default="/dev/ttyACM1" />
+  <arg name="port" default="/dev/ttyACM0" />
+  
+  <!-- TODO maybe make this expand to full path? or make more clear that it is relative to package?
+       or another arg that is absolute / a flag to switch? -->
   <arg name="params" default="stimulus_parameters.yaml" />
 
   <!-- TODO put snapshot_params node in this package, add another node tag -->

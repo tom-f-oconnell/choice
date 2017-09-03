@@ -229,8 +229,8 @@ if separate_balances:
     else:
         high_pins = [left_balance, right_balance]
 
-default_states = [DefaultState(p, True) for p in high_pins] + \
-                 [DefaultState(p, False) for p in low_pins]
+default_states = [DefaultState(p, True) for p in set(high_pins)] + \
+                 [DefaultState(p, False) for p in set(low_pins)]
 
 # TODO make sure this node stays alive until the current_t0 after the trial structure has been
 # evaluated

@@ -1,3 +1,6 @@
+# can be 1 or 0, for True and False respectively
+# rosserial can not seem to pass boolean parameters
+stimulus_arduino/debug: 1
 
 # choices = 1, should (try to) keep behavior of old stimulus
 # delivery code
