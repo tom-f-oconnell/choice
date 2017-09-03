@@ -25,6 +25,10 @@ class StimuliLoader:
         load_defaults = rospy.ServiceProxy(defaults_service_name, LoadDefaultStates)
         load_next_sequence = rospy.ServiceProxy(sequence_service_name, LoadPulseSeq)
 
+        # to allos arduino to get parameters before services are called
+        # (so that debug flag can be in effect during services)
+        rospy.sleep(1.0)
+
         rospy.loginfo('stimuli_loader sending default states')
         try:
             h = Header()
@@ -34,14 +38,16 @@ class StimuliLoader:
             rospy.logerr("Service load_defaults failed: " + str(exc))
         rospy.loginfo('stimuli_loader finished sending default states')
         
-        for block in trial_structure:
+        for n, block in enumerate(trial_structure):
             if type(block) is PulseSeq:
                 rospy.loginfo('stimuli_loader sending block info')
                 try:
+                    # TODO debugging flags
                     #print(block)
                     #print(block.pulse_seq)
                     # TODO any way to print in here whether it is a test / train and side, etc?
                     block.header.stamp = rospy.Time.now()
+                    # TODO TODO why does this seem to selectively block forever on the last block?
                     resp = load_next_sequence(block)
                     rospy.logwarn('sent block info!')
                     
@@ -49,10 +55,14 @@ class StimuliLoader:
                     rospy.loginfo('should start at ' + readable_rostime(block.start))
                     rospy.loginfo('should end at ' + readable_rostime(block.end))
                     rospy.loginfo('duration of sequence ' + str((block.end - block.start).to_sec()))
-                    rospy.loginfo('using pins: ' + str([self.pin2name[pulse.pin] if pulse.pin in self.pin2name else pulse.pin for pulse in block.pulse_seq]))
+                    # TODO also include integer pin names
+                    #rospy.loginfo('using pins: ' + str([self.pin2name[pulse.pin] if pulse.pin in self.pin2name else pulse.pin for pulse in block.pulse_seq]))
+                    rospy.loginfo('using pins: ' + str([pulse.pin if pulse.pin in self.pin2name else pulse.pin for pulse in block.pulse_seq]))
 
                 except rospy.ServiceException as exc:
                     rospy.logerr("Service load_next_sequence failed: " + str(exc))
+
+                end = block.end
 
             # TODO test
             elif type(block) is rospy.Time:
@@ -66,14 +76,22 @@ class StimuliLoader:
                 until_wake = (wake_at - rospy.Time.now()).to_sec()
                 rospy.sleep(max(0.0, until_wake))
 
+                end = intertrial_interval_end
+
             else:
                 # TODO was this error getting supressed? logerr?
                 # seems a list was in here
                 raise ValueError('unexpected type ' + str(type(block)) + ' in trial structure')
 
-        # TODO should i die here? after arduino finishes?
+        # TODO TODO why is this not being reached?
         rospy.loginfo('Done sending stimuli!')
-        rospy.spin()
+
+        # TODO test
+        rate = rospy.Rate(0.5)
+        while not rospy.is_shutdown():
+            if rospy.Time.now() >= end:
+                break
+            rate.sleep()
         
 # fix
 if __name__ == '__main__':

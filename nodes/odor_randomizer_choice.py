@@ -21,7 +21,7 @@ save_stimulus_info = False
 
 # TODO store as effective dilution given flow conditions / mixing ratios?
 '''
-odor_panel = {'parafin (mock)': (0,),
+odor_panel = {'paraffin (mock)': (0,),
               '4-methylcyclohexanol': (-2,),
               '3-octanol': (-2,)}
 '''
@@ -63,7 +63,7 @@ right_shock = rospy.get_param('zap/right')
 
 ###############################################################################
 #odors = list(odor_panel)
-mock = ('parafin (mock)', 0)
+mock = ('paraffin (mock)', 0)
 odors = [('4-methylcyclohexanol', -2), ('3-octanol', -2)]
 reinforced, unreinforced = random.sample(odors, 2)
 odors.append(mock)
@@ -206,6 +206,7 @@ flatten = lambda l: [item for sublist in l for item in sublist]
 
 # TODO fix train + delay line
 gen = StimuliGenerator()
+t0_sec = gen.current_t0.to_sec()
 trial_structure = [gen.delay(prestimulus_delay_s), \
                    gen.test(), \
                    gen.delay(pretest_to_train_s)] + \
@@ -214,8 +215,12 @@ trial_structure = [gen.delay(prestimulus_delay_s), \
                    gen.test(), \
                    gen.delay(beyond_posttest_s)]
 
-#print(trial_structure)
+# TODO put behind debug flag
+print(trial_structure)
 
+# low_pins = pins that default to low (0v)
+# high_pins = pins that default to high (5v)
+# pins should be in the default state during the intertrial interval
 low_pins = left_pins + right_pins + [left_shock, right_shock]
 if separate_balances:
     if balance_normally_flowing:
@@ -237,6 +242,7 @@ default_states = [DefaultState(p, True) for p in high_pins] + \
 # can i do this from outside of a node?
 rospy.loginfo('Stimuli should finish at ' + datetime.datetime.fromtimestamp(gen.current_t0.to_sec()\
         ).strftime('%Y-%m-%d %H:%M:%S'))
+rospy.loginfo(str(gen.current_t0.to_sec() - t0_sec) + ' seconds')
 
 # TODO compare w/ decoding saved all_stimuli_in_order
 # and then possibly skip decoding

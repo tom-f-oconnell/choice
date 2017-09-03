@@ -45,26 +45,22 @@ olf/reinforced_odor_side_order: 'alternating'
 olf/training_blocks: 3
 
 # TODO set tracking recording durations from sum of these
-olf/prestimulus_delay_s: 20 # ~60. shorter for testing
-olf/test_duration_s: 120
-olf/pretest_to_train_s: 120
-olf/train_duration_s: 60
-olf/inter_train_interval_s: 60
-olf/train_to_posttest_s: 300
+olf/prestimulus_delay_s: 5
+olf/test_duration_s: 10
+olf/pretest_to_train_s: 15
+olf/train_duration_s: 10
+olf/inter_train_interval_s: 15
+olf/train_to_posttest_s: 15
 olf/beyond_posttest_s: 0
 
 # Arduino Mega integer pin #s for analog inputs
 # [A0=54, A15=69]
-# nicer way to do this? in python?
-# TODO restrict to 3? arduino should probably be given A / B
-# and balance, but that's probably it
-# TODO republish from a python node? (or set param)
-# maybe current_left, etc
-# or maybe odor_A_pin, etc, w/ corresponding odor_A
-# TODO but then what if they are mixtures? still variable length
+# TODO TODO test pin states when not set
 olf/max_num_pins: 8
-olf/left_pins: [59, 59, 59] # 
+olf/left_pins: [59, 59, 59]
+#olf/left_pins: [59, 57, 56]
 olf/right_pins: [61, 61, 61]
+#olf/right_pins: [61, 54, 55]
 
 olf/separate_balances: True
 # 
@@ -80,6 +76,8 @@ olf/send_high_while_pulsing: []
 olf/send_high_while_odor: []
 
 # period between onsets of odor pulses is the sum of these
+# TODO TODO fix or remove
+# meisenbock people dont seem to pulse
 olf/odor_pulse_ms: 5000
 olf/post_pulse_ms: 5000
 
@@ -87,6 +85,7 @@ olf/post_pulse_ms: 5000
 # of low period
 # should be ~0.2 Hz
 # and ~0.5 duty cycle?
+# TODO test these both work
 zap/shock_ms_on: 2500
 zap/shock_ms_off: 2500
 # if i can somehow set voltage programmatically...
@@ -103,6 +102,7 @@ zap/shock_ms_off: 2500
 zap/individual_chambers: False
 # if individual_chambers is True, the below will be lists of pin
 # numbers, otherwise just single pin numbers
+# TODO TODO test this is correct
 zap/left: 5
 zap/right: 6
 

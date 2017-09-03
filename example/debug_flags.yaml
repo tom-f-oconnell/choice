@@ -1,0 +1,3 @@
+# 0 for false, 1 for true
+# rosserial can't pass boolean parameters
+stimulus_arduino/debug: 0
