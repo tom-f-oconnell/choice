@@ -27,7 +27,7 @@ class StimuliLoader:
 
         # to allos arduino to get parameters before services are called
         # (so that debug flag can be in effect during services)
-        rospy.sleep(1.0)
+        rospy.sleep(8.0)
 
         rospy.loginfo('stimuli_loader sending default states')
         try:
@@ -83,11 +83,11 @@ class StimuliLoader:
                 # seems a list was in here
                 raise ValueError('unexpected type ' + str(type(block)) + ' in trial structure')
 
-        # TODO TODO why is this not being reached?
         rospy.loginfo('Done sending stimuli!')
 
         # TODO test
         rate = rospy.Rate(0.5)
+        end = end + 3.0
         while not rospy.is_shutdown():
             if rospy.Time.now() >= end:
                 break
