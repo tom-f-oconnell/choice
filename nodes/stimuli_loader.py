@@ -25,7 +25,7 @@ class StimuliLoader:
         load_defaults = rospy.ServiceProxy(defaults_service_name, LoadDefaultStates)
         load_next_sequence = rospy.ServiceProxy(sequence_service_name, LoadPulseSeq)
 
-        # to allos arduino to get parameters before services are called
+        # to allow arduino to get parameters before services are called
         # (so that debug flag can be in effect during services)
         rospy.sleep(8.0)
 
@@ -39,6 +39,7 @@ class StimuliLoader:
         rospy.loginfo('stimuli_loader finished sending default states')
         
         for n, block in enumerate(trial_structure):
+            # TODO err if would send block before arduino could start it in time
             if type(block) is PulseSeq:
                 rospy.loginfo('stimuli_loader sending block info')
                 try:
@@ -83,16 +84,14 @@ class StimuliLoader:
                 # seems a list was in here
                 raise ValueError('unexpected type ' + str(type(block)) + ' in trial structure')
 
-        rospy.loginfo('Done sending stimuli!')
-
-        # TODO test
         rate = rospy.Rate(0.5)
-        end = end + 3.0
+        end = end + rospy.Duration.from_sec(3.0)
         while not rospy.is_shutdown():
             if rospy.Time.now() >= end:
                 break
             rate.sleep()
-        
-# fix
+        rospy.loginfo('Done sending stimuli!')
+
+
 if __name__ == '__main__':
     s = StimuliLoader()
