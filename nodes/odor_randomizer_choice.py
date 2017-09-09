@@ -9,7 +9,8 @@ import pickle
 
 import rospy
 from std_msgs.msg import Header
-from stimuli.msg import PulseSeq, Pulse, Transition, State, DefaultState
+from stimuli.msg import Sequence, Transition, State, DefaultState
+from stimuli.srv import LoadSequenceRequest
 from stimuli_loader import StimuliLoader
 
 # TODO do i ever want to train the same flies on different pairs of odors sequentially?
@@ -119,15 +120,15 @@ class StimuliGenerator:
         """
         TODO
         """
-        # TODO need to deep copy these?
-        # setting ms_on to 1 to emphasize duration is determined by end time set in PulseSeq
-        # and the pin will only go low if that is the DefaultState for the pin
+        # setting ms_on to 1 to emphasize duration is determined by end time set of the Sequence
+        # and the pin will go low if that is the DefaultState for the pin
         high = State(ms_on=1, ms_off=0)
         # don't need explicit low transition because default state is low
-        # but end time in PulseSeq messsage must be set correctly
+        # but end time in Sequence message must be set correctly
         transition = [Transition(self.current_t0, high)]
 
-        pulse_seq = []
+        expanded_pins = []
+        seq = []
         if separate_balances:
             balance_pins = [left_balance, right_balance]
 
@@ -138,17 +139,20 @@ class StimuliGenerator:
                 balance_transition = [Transition(self.current_t0, low)]
 
             for p in balance_pins:
-                pulse_seq.append(Pulse(p, balance_transition))
+                expanded_pins.extend(len(balance_transition) * [p])
+                seq.extend(balance_transition)
 
         if self.current_side_is_left:
             pins = [odors2left_pins[reinforced], odors2right_pins[unreinforced]]
         else:
             pins = [odors2left_pins[unreinforced], odors2right_pins[reinforced]]
 
+        # TODO will need to make sure pins aren't turned into a set later
         for p in pins:
-            pulse_seq.append(Pulse(p, transition))
+            expanded_pins.extend(len(transition) * [p])
+            seq.extend(transition)
 
-        return pulse_seq
+        return expanded_pins, seq
 
 
     # TODO how to handle shocking + presenting reinforced odor on both sides?
@@ -157,54 +161,54 @@ class StimuliGenerator:
         TODO
         """
         square_wave = State(ms_on=shock_ms_on, ms_off=shock_ms_off)
-        transition = [Transition(self.current_t0, square_wave)]
+        transition = Transition(self.current_t0, square_wave)
 
-        # TODO 'left' / r / 'both'?
+        # TODO add support (w/ parameter?) for shocking both sides?
         if self.current_side_is_left:
-            return [Pulse(left_shock, transition)]
+            return [left_shock], [transition]
         else:
-            return [Pulse(right_shock, transition)]
+            return [right_shock], [transition]
 
 
     def test(self):
-        # TODO will need to add header.stamp before sending
-        header = Header()
-
         start = self.current_t0
         end = start + rospy.Duration(test_duration_s)
         self.current_t0 = end
 
-        pulse_seq = self.odor_transitions()
+        pins, seq = self.odor_transitions()
         if reinforced_odor_side_order == 'alternating':
             self.current_side_is_left = not self.current_side_is_left 
 
         elif reinforced_odor_side_order == 'random':
             self.current_side_is_left = random.choice([True, False])
 
-        # TODO add shock and balance pins
         pins_to_signal = []
-        return PulseSeq(header, start, end, pulse_seq, pins_to_signal)
-
-
-    def train(self):
+        seq = Sequence(start, end, pins, seq)
         # TODO will need to add header.stamp before sending
-        header = Header()
+        return LoadSequenceRequest(Header(), seq, pins_to_signal)
 
+
+    # TODO share most of this function with test?
+    def train(self):
         start = self.current_t0
         end = start + rospy.Duration(train_duration_s)
+        self.current_t0 = end
 
-        pulse_seq = self.odor_transitions() + self.shock_transitions()
+        odor_pins, odor_seq = self.odor_transitions()
+        shock_pins, shock_seq = self.shock_transitions()
+        pins = odor_pins + shock_pins
+        seq = odor_seq + shock_seq
+
         if reinforced_odor_side_order == 'alternating':
             self.current_side_is_left = not self.current_side_is_left 
 
         elif reinforced_odor_side_order == 'random':
             self.current_side_is_left = random.choice([True, False])
 
-        self.current_t0 = end
-
-        # TODO add shock and balance pins
         pins_to_signal = []
-        return PulseSeq(header, start, end, pulse_seq, pins_to_signal)
+        seq = Sequence(start, end, pins, seq)
+        # TODO will need to add header.stamp before sending
+        return LoadSequenceRequest(Header(), seq, pins_to_signal)
 
 
     def delay(self, delay_s):
@@ -213,9 +217,9 @@ class StimuliGenerator:
         # do we have a copy constructor?
         return rospy.Time.from_sec(self.current_t0.to_sec())
 
+
 flatten = lambda l: [item for sublist in l for item in sublist]
 
-# TODO fix train + delay line
 gen = StimuliGenerator()
 t0_sec = gen.current_t0.to_sec()
 trial_structure = [gen.delay(prestimulus_delay_s), \
@@ -227,7 +231,7 @@ trial_structure = [gen.delay(prestimulus_delay_s), \
                    gen.delay(beyond_posttest_s)]
 
 # TODO put behind debug flag
-print(trial_structure)
+print('trial_structure', trial_structure)
 
 # low_pins = pins that default to low (0v)
 # high_pins = pins that default to high (5v)

@@ -7,9 +7,9 @@ import time
 import datetime
 # necessary?
 from std_msgs.msg import Header
-from stimuli.msg import PulseSeq, Pulse, Transition, State, DefaultState
-from stimuli.srv import LoadDefaultStates, LoadPulseSeq, LoadPulseSeqRequest, \
-    TestTransportLoadPulseSeqReq, TestTransportLoadPulseSeqReqRequest
+from stimuli.msg import Sequence, Transition, State, DefaultState
+from stimuli.srv import LoadDefaultStates, LoadSequence, LoadSequenceRequest, \
+    TestTransportLoadSequenceReq, TestTransportLoadSequenceReqRequest
 
 import StringIO
 
@@ -26,7 +26,7 @@ class StimuliLoader:
         rospy.wait_for_service(defaults_service_name)
         rospy.wait_for_service(sequence_service_name)
         load_defaults = rospy.ServiceProxy(defaults_service_name, LoadDefaultStates)
-        load_next_sequence = rospy.ServiceProxy(sequence_service_name, LoadPulseSeq)
+        load_next_sequence = rospy.ServiceProxy(sequence_service_name, LoadSequence)
 
         # to allow arduino to get parameters before services are called
         # (so that debug flag can be in effect during services)
@@ -37,19 +37,19 @@ class StimuliLoader:
             h = Header()
             h.stamp = rospy.Time.now()
             resp = load_defaults(h, default_states)
+
         except rospy.ServiceException as exc:
             rospy.logerr("Service load_defaults failed: " + str(exc))
         rospy.loginfo('stimuli_loader finished sending default states')
         
         for n, block in enumerate(trial_structure):
             # TODO err if would send block before arduino could start it in time
-            if type(block) is PulseSeq:
+            if type(block) is LoadSequenceRequest:
                 # TODO delete me / move to testing
                 '''
-                req = LoadPulseSeqRequest(seq=block)
                 buff = StringIO.StringIO()
-                rospy.logwarn(req)
-                req.serialize(buff)
+                rospy.logwarn(block)
+                block.serialize(buff)
                 req_buff = LoadPulseSeqRequest()
                 # TODO should i change type of input?
                 req_buff.deserialize(buff.getvalue())
@@ -57,42 +57,45 @@ class StimuliLoader:
                 # (for testing purposes) generic way to deep test equality?
                 rospy.loginfo(req_buff)
                 '''
-                test_req = TestTransportLoadPulseSeqReqRequest(seq=block)
+                '''
+                test_req = TestTransportLoadSequenceReqRequest(header=block.header, \
+                    seq=block.seq, pins_to_signal=block.pins_to_signal)
                 rospy.logwarn(test_req)
                 test_loadseq_service_name = 'test_loadseq_req'
                 rospy.wait_for_service(test_loadseq_service_name)
                 test_loadseq_req = rospy.ServiceProxy(test_loadseq_service_name, \
-                    TestTransportLoadPulseSeqReq)
+                    TestTransportLoadSequenceReq)
                 roundtrip_seq = test_loadseq_req(test_req)
                 rospy.loginfo(roundtrip_seq)
+                '''
 
                 rospy.loginfo('stimuli_loader sending block info')
                 try:
                     # TODO debugging flags
-                    #print(block)
-                    print(block.pulse_seq)
+                    print(block)
                     # TODO any way to print in here whether it is a test / train and side, etc?
                     block.header.stamp = rospy.Time.now()
                     # TODO TODO why does this seem to selectively block forever on the last block?
                     # TODO is this the correct type? should it be the request type?
-                    # TODO doesn't seem to matter whether i pass wrap the PulseSeq in the
+                    # TODO doesn't seem to matter whether i pass wrap the Sequence in the
                     # request type... (why?) is something wrapping it for me? do they just
                     # happen to serialize the same? what do the tutorials do?
-                    resp = load_next_sequence(LoadPulseSeqRequest(seq=block))
+                    resp = load_next_sequence(block)
                     rospy.logwarn('sent block info!')
                     
                     rospy.loginfo('current time is ' + readable_rostime(rospy.Time.now()))
-                    rospy.loginfo('should start at ' + readable_rostime(block.start))
-                    rospy.loginfo('should end at ' + readable_rostime(block.end))
-                    rospy.loginfo('duration of sequence ' + str((block.end - block.start).to_sec()))
+                    rospy.loginfo('should start at ' + readable_rostime(block.seq.start))
+                    rospy.loginfo('should end at ' + readable_rostime(block.seq.end))
+                    rospy.loginfo('duration of sequence ' + str((block.seq.end - block.seq.start).to_sec()))
                     # TODO also include integer pin names
-                    #rospy.loginfo('using pins: ' + str([self.pin2name[pulse.pin] if pulse.pin in self.pin2name else pulse.pin for pulse in block.pulse_seq]))
-                    rospy.loginfo('using pins: ' + str([pulse.pin if pulse.pin in self.pin2name else pulse.pin for pulse in block.pulse_seq]))
+                    #rospy.loginfo('using pins: ' + str([self.pin2name[p] if p in self.pin2name else p for p in block.seq.pins]))
+                    # TODO make a set?
+                    rospy.loginfo('using pins: ' + str([p if p in self.pin2name else p for p in block.seq.pins]))
 
                 except rospy.ServiceException as exc:
                     rospy.logerr("Service load_next_sequence failed: " + str(exc))
 
-                end = block.end
+                end = block.seq.end
 
             # TODO test
             elif type(block) is rospy.Time:
