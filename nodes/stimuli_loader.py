@@ -8,7 +8,10 @@ import datetime
 # necessary?
 from std_msgs.msg import Header
 from stimuli.msg import PulseSeq, Pulse, Transition, State, DefaultState
-from stimuli.srv import LoadDefaultStates, LoadPulseSeq
+from stimuli.srv import LoadDefaultStates, LoadPulseSeq, LoadPulseSeqRequest, \
+    TestTransportLoadPulseSeqReq, TestTransportLoadPulseSeqReqRequest
+
+import StringIO
 
 def readable_rostime(ros_time):
     return datetime.datetime.fromtimestamp(ros_time.to_sec()).strftime('%Y-%m-%d %H:%M:%S')
@@ -41,15 +44,41 @@ class StimuliLoader:
         for n, block in enumerate(trial_structure):
             # TODO err if would send block before arduino could start it in time
             if type(block) is PulseSeq:
+                # TODO delete me / move to testing
+                '''
+                req = LoadPulseSeqRequest(seq=block)
+                buff = StringIO.StringIO()
+                rospy.logwarn(req)
+                req.serialize(buff)
+                req_buff = LoadPulseSeqRequest()
+                # TODO should i change type of input?
+                req_buff.deserialize(buff.getvalue())
+                # TODO is a means to check deep equality provided / implicit in generated code?
+                # (for testing purposes) generic way to deep test equality?
+                rospy.loginfo(req_buff)
+                '''
+                test_req = TestTransportLoadPulseSeqReqRequest(seq=block)
+                rospy.logwarn(test_req)
+                test_loadseq_service_name = 'test_loadseq_req'
+                rospy.wait_for_service(test_loadseq_service_name)
+                test_loadseq_req = rospy.ServiceProxy(test_loadseq_service_name, \
+                    TestTransportLoadPulseSeqReq)
+                roundtrip_seq = test_loadseq_req(test_req)
+                rospy.loginfo(roundtrip_seq)
+
                 rospy.loginfo('stimuli_loader sending block info')
                 try:
                     # TODO debugging flags
                     #print(block)
-                    #print(block.pulse_seq)
+                    print(block.pulse_seq)
                     # TODO any way to print in here whether it is a test / train and side, etc?
                     block.header.stamp = rospy.Time.now()
                     # TODO TODO why does this seem to selectively block forever on the last block?
-                    resp = load_next_sequence(block)
+                    # TODO is this the correct type? should it be the request type?
+                    # TODO doesn't seem to matter whether i pass wrap the PulseSeq in the
+                    # request type... (why?) is something wrapping it for me? do they just
+                    # happen to serialize the same? what do the tutorials do?
+                    resp = load_next_sequence(LoadPulseSeqRequest(seq=block))
                     rospy.logwarn('sent block info!')
                     
                     rospy.loginfo('current time is ' + readable_rostime(rospy.Time.now()))

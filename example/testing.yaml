@@ -45,7 +45,7 @@ olf/all_odors_both_sides: True
 olf/reinforced_odor_side_order: 'alternating'
 
 # TODO reasons i might want to randomly mix training and test?
-olf/training_blocks: 3
+olf/training_blocks: 2
 
 # TODO set tracking recording durations from sum of these
 olf/prestimulus_delay_s: 15
@@ -72,7 +72,8 @@ olf/left_balance: 58
 olf/right_balance: 60
 
 # (when the pin controlling this valve is OFF)
-olf/balance_normally_flowing: True
+#olf/balance_normally_flowing: True
+olf/balance_normally_flowing: False
 
 # for interfacing with other hardware devices
 olf/send_high_while_pulsing: []

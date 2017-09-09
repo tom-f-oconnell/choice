@@ -15,6 +15,9 @@ from stimuli_loader import StimuliLoader
 # TODO do i ever want to train the same flies on different pairs of odors sequentially?
 # or maybe expose them to some odors / some sequence of odors first (/ after?)?
 
+# TODO provide a function in this file that stimuli_loader can call
+# and pass a parameter indicating where to find the containing file to stimuli_loader?
+# then move the node maintenance stuff to there?
 rospy.init_node('stimuli')
 
 save_stimulus_info = False
@@ -33,6 +36,8 @@ odor_panel = {'4-methylcyclohexanol': (-2,),
 
 # TODO break this into a function?
 '''
+# TODO way to load parameter yaml directly? (for testing without ROS running)
+
 reinforced_odor_side_order = rospy.get_param('olf/reinforced_odor_side_order')
 
 training_blocks = rospy.get_param('olf/training_blocks')
@@ -97,7 +102,13 @@ odors2right_pins = dict(zip(odors, right_pins))
 ###############################################################################
 
 class StimuliGenerator:
+    # TODO maybe just add all the parameters that are scoped in to the init?
+    # not sure it would make sense to put this class in a fn otherwise, but
+    # i'd like to have a function here, so i could call it both in a __main__
+    # and from my testing functions
     def __init__(self):
+        # TODO switch everything over to milliseconds relative to start? provide the option?
+        # or Durations? or zero time here somehow?
         self.current_t0 = rospy.Time.now()
 
         # only do this for 'alternating' mode?
