@@ -72,8 +72,7 @@ olf/left_balance: 58
 olf/right_balance: 60
 
 # (when the pin controlling this valve is OFF)
-#olf/balance_normally_flowing: True
-olf/balance_normally_flowing: False
+olf/balance_normally_flowing: True
 
 # for interfacing with other hardware devices
 olf/send_high_while_pulsing: []

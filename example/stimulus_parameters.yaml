@@ -9,12 +9,6 @@
 # TODO TODO list different parameters expected for 1 choice vs 2
 # generate?
 
-# TODO add support for including venting into trial structure?
-# TODO some uniform way to handle / describe normal trials, tests, venting, etc?
-
-# TODO don't break support for scope window overlapping stimulus
-# presentation at defined offsets
-
 # TODO maybe validate there is appropriate infrastructure running
 # to run closed loop mode, if set
 # TODO mixed mode? any work doing that?
@@ -55,16 +49,9 @@ olf/beyond_posttest_s: 0
 
 # Arduino Mega integer pin #s for analog inputs
 # [A0=54, A15=69]
-# nicer way to do this? in python?
-# TODO restrict to 3? arduino should probably be given A / B
-# and balance, but that's probably it
-# TODO republish from a python node? (or set param)
-# maybe current_left, etc
-# or maybe odor_A_pin, etc, w/ corresponding odor_A
-# TODO but then what if they are mixtures? still variable length
 olf/max_num_pins: 8
-olf/left_pins: [59, 59, 59] # 
-olf/right_pins: [61, 61, 61]
+olf/left_pins: [56, 57, 59]
+olf/right_pins: [54, 55, 61]
 
 olf/separate_balances: True
 # 
@@ -120,7 +107,3 @@ zap/right: 6
 # TODO parameters controlling behavior within a day but across
 # experiments? (may not be nice to keep this much state though)
 # like caching pin->odor to keep constant per day
-
-# TODO publish sync messages periodically? service? with each
-# stimulus? (but how do i get the master timestamp?)
-# (probably unnecessary)

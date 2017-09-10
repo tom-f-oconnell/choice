@@ -64,7 +64,6 @@ class StimuliLoader:
                     rospy.loginfo('duration of sequence ' + str((block.seq.end - block.seq.start).to_sec()))
                     # TODO also include integer pin names
                     #rospy.loginfo('using pins: ' + str([self.pin2name[p] if p in self.pin2name else p for p in block.seq.pins]))
-                    # TODO make a set?
                     rospy.loginfo('using pins: ' + str([p if p in self.pin2name else p for p in block.seq.pins]))
 
                 except rospy.ServiceException as exc:

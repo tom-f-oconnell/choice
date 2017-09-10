@@ -222,10 +222,12 @@ flatten = lambda l: [item for sublist in l for item in sublist]
 
 gen = StimuliGenerator()
 t0_sec = gen.current_t0.to_sec()
+
 trial_structure = [gen.delay(prestimulus_delay_s), \
                    gen.test(), \
                    gen.delay(pretest_to_train_s)] + \
-                  flatten([[f(), gen.delay(inter_train_interval_s)] for f in [gen.train] * training_blocks]) + \
+                  flatten([[f(), gen.delay(inter_train_interval_s)] for f in [gen.train] * (training_blocks - 1)]) + \
+                  ([gen.train()] if training_blocks >= 0 else []) + \
                   [gen.delay(train_to_posttest_s), \
                    gen.test(), \
                    gen.delay(beyond_posttest_s)]
