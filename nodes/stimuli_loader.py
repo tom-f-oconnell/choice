@@ -8,8 +8,7 @@ import datetime
 # necessary?
 from std_msgs.msg import Header
 from stimuli.msg import Sequence, Transition, State, DefaultState
-from stimuli.srv import LoadDefaultStates, LoadSequence, LoadSequenceRequest, \
-    TestTransportLoadSequenceReq, TestTransportLoadSequenceReqRequest
+from stimuli.srv import LoadDefaultStates, LoadSequence, LoadSequenceRequest
 
 import StringIO
 
@@ -45,43 +44,6 @@ class StimuliLoader:
         for n, block in enumerate(trial_structure):
             # TODO err if would send block before arduino could start it in time
             if type(block) is LoadSequenceRequest:
-                # TODO delete me / move to testing
-                buff = StringIO.StringIO()
-                rospy.logwarn('before python serialization')
-                rospy.logwarn(block)
-                block.serialize(buff)
-                req_buff = LoadSequenceRequest()
-                # TODO should i change type of input?
-                req_buff.deserialize(buff.getvalue())
-                # TODO is a means to check deep equality provided / implicit in generated code?
-                # (for testing purposes) generic way to deep test equality?
-                rospy.loginfo('after python roundtrip')
-                rospy.loginfo(req_buff)
-
-                test_req = TestTransportLoadSequenceReqRequest(header=block.header, \
-                    seq=block.seq, pins_to_signal=block.pins_to_signal)
-                rospy.logwarn('before trip through arduino')
-                rospy.logwarn(test_req)
-                test_loadseq_service_name = 'test_loadseq_req'
-                rospy.wait_for_service(test_loadseq_service_name)
-                test_loadseq_req = rospy.ServiceProxy(test_loadseq_service_name, \
-                    TestTransportLoadSequenceReq)
-                roundtrip_seq = test_loadseq_req(test_req)
-                rospy.loginfo('after roundtrip through arduino test service')
-                rospy.loginfo(roundtrip_seq)
-
-                '''
-                rospy.logwarn('transitions before trip through arduino')
-                rospy.logwarn(block.seq.seq)
-                test_transitions_service_name = 'test_transitions_rt'
-                rospy.wait_for_service(test_transitions_service_name)
-                test_transitions_rt = rospy.ServiceProxy(test_transitions_service_name, \
-                    TestTransitionsRT)
-                roundtrip_seq = test_transitions_rt(block.seq.seq)
-                rospy.loginfo('transitions after roundtrip through arduino test service')
-                rospy.loginfo(roundtrip_seq)
-                '''
-
                 rospy.loginfo('stimuli_loader sending block info')
                 try:
                     # TODO debugging flags
