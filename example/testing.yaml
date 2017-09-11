@@ -60,10 +60,8 @@ olf/beyond_posttest_s: 0
 # [A0=54, A15=69]
 # TODO TODO test pin states when not set
 olf/max_num_pins: 8
-olf/left_pins: [59, 59, 59]
-#olf/left_pins: [59, 57, 56]
-olf/right_pins: [61, 61, 61]
-#olf/right_pins: [61, 54, 55]
+olf/left_pins: [56, 57, 59]
+olf/right_pins: [54, 55, 61]
 
 olf/separate_balances: True
 # 

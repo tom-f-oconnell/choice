@@ -5,6 +5,7 @@ from __future__ import print_function
 import random
 import datetime
 import time
+import os
 import pickle
 
 import rospy
@@ -21,7 +22,8 @@ from stimuli_loader import StimuliLoader
 # then move the node maintenance stuff to there?
 rospy.init_node('stimuli')
 
-save_stimulus_info = False
+# TODO make parameter for this?
+save_stimulus_info = True
 
 # TODO store as effective dilution given flow conditions / mixing ratios?
 '''
@@ -32,14 +34,11 @@ odor_panel = {'paraffin (mock)': (0,),
 '''
 odor_panel = {'4-methylcyclohexanol': (-2,),
               '3-octanol': (-2,)}
-
-# TODO left pins & right pins separately?
-
-# TODO break this into a function?
 '''
 # TODO way to load parameter yaml directly? (for testing without ROS running)
 
 reinforced_odor_side_order = rospy.get_param('olf/reinforced_odor_side_order')
+train_one_odor_at_a_time = rospy.get_param('olf/train_one_odor_at_a_time')
 
 training_blocks = rospy.get_param('olf/training_blocks')
 prestimulus_delay_s = rospy.get_param('olf/prestimulus_delay_s')
@@ -68,11 +67,46 @@ right_shock = rospy.get_param('zap/right')
 # TODO for now, just save sides to a separate file to be loaded by that ROS node
 
 ###############################################################################
-#odors = list(odor_panel)
-mock = ('paraffin (mock)', 0)
-odors = [('4-methylcyclohexanol', -2), ('3-octanol', -2)]
-reinforced, unreinforced = random.sample(odors, 2)
-odors.append(mock)
+
+daily_connections_filename = '.' + time.strftime('%Y%m%d', time.localtime()) + '_mappings.p'
+if os.path.isfile(daily_connections_filename):
+    c = raw_input('Found saved mappings from today. Load them? ([y]es/[n]o/[d]elete them.')
+    if c.lower() == 'y':
+        rospy.loginfo('loading odors and odor->pin mappings from ' + \
+            daily_connections_filename)
+        with open(daily_connections_filename, 'rb') as f:
+            odors, left_pins, right_pins = pickle.load(f)
+        generate = False
+
+    elif c.lower() == 'n':
+        generate = True
+
+    elif c.lower() == 'd':
+        rospy.logwarn('Deleting ' + daily_connections_filename)
+        os.remove(daily_connections_filename)
+        generate = True
+
+    else:
+        raise ValueError('invalid choice')
+
+else:
+    generate = True
+
+if generate:
+    rospy.loginfo('did not find saved odors and odor->pin mappings to load')
+    #odors = list(odor_panel)
+    mock = ('paraffin (mock)', 0)
+    odors = [('4-methylcyclohexanol', -2), ('3-octanol', -2)]
+    odors.append(mock)
+
+    left_pins = random.sample(left_pins, len(odors))
+    right_pins = random.sample(right_pins, len(odors))
+
+    with open(daily_connections_filename, 'wb') as f:
+        rospy.loginfo('temporarily saving odors and odor->pin mappings to ' + \
+            daily_connections_filename + ', for reuse in other experiments today.')
+        pickle.dump([odors, left_pins, right_pins], f)
+        # TODO verify it saved correctly?
 
 # TODO
 # randomly break stimuli into groups fitting into the number of 
@@ -80,21 +114,25 @@ odors.append(mock)
 # ***if odors are ever to be mixed, need to be connected simultaneously***
 
 # assign them to random pins / ports
-# needs |pins| <= |odors|
+# needs |pins| >= |odors|
 # (samples without replacement)
-# TODO maybe keep pin -> odor assignments for a few neighboring sets of experiments?
-# if the total time a fly is in there will be short...
-# TODO republish / set?
-left_pins = random.sample(left_pins, len(odors))
-right_pins = random.sample(right_pins, len(odors))
+# TODO load pickle if it is there / if same day? prompt?
 
+rospy.loginfo('Left pins:')
 for pin, odor_pair in sorted(zip(left_pins, odors), key=lambda x: x[0]):
-    print(str(pin) + ' -> ' + str(odor_pair))
+    rospy.loginfo(str(pin) + ' -> ' + str(odor_pair))
 
+rospy.loginfo('Right pins:')
 for pin, odor_pair in sorted(zip(right_pins, odors), key=lambda x: x[0]):
-    print(str(pin) + ' -> ' + str(odor_pair))
+    rospy.loginfo(str(pin) + ' -> ' + str(odor_pair))
 
-# TODO republish / set?
+reinforced, unreinforced = random.sample(odors, 2)
+rospy.loginfo('pairing shock with '  + str(reinforced))
+rospy.loginfo('unpaired ' + str(unreinforced))
+
+# TODO also only start recording when this is done?
+raw_input('Press Enter when the odor vials are connected.')
+
 odors2left_pins = dict(zip(odors, left_pins))
 odors2right_pins = dict(zip(odors, right_pins))
 
@@ -116,7 +154,7 @@ class StimuliGenerator:
         self.current_side_is_left = random.choice([True, False])
 
     # currently just on all the time. maybe i want something else?
-    def odor_transitions(self):
+    def odor_transitions(self, train=False):
         """
         TODO
         """
@@ -142,10 +180,19 @@ class StimuliGenerator:
                 expanded_pins.extend(len(balance_transition) * [p])
                 seq.extend(balance_transition)
 
-        if self.current_side_is_left:
-            pins = [odors2left_pins[reinforced], odors2right_pins[unreinforced]]
+        # TODO check / test this part
+        if train and train_one_odor_at_a_time:
+            # TODO probably rename this flag to indicate its use here as well?
+            if self.current_side_is_left:
+                pins = [odors2left_pins[reinforced], odors2right_pins[reinforced]]
+            else:
+                pins = [odors2left_pins[unreinforced], odors2right_pins[unreinforced]]
+
         else:
-            pins = [odors2left_pins[unreinforced], odors2right_pins[reinforced]]
+            if self.current_side_is_left:
+                pins = [odors2left_pins[reinforced], odors2right_pins[unreinforced]]
+            else:
+                pins = [odors2left_pins[unreinforced], odors2right_pins[reinforced]]
 
         # TODO will need to make sure pins aren't turned into a set later
         for p in pins:
@@ -163,11 +210,19 @@ class StimuliGenerator:
         square_wave = State(ms_on=shock_ms_on, ms_off=shock_ms_off)
         transition = Transition(self.current_t0, square_wave)
 
-        # TODO add support (w/ parameter?) for shocking both sides?
-        if self.current_side_is_left:
-            return [left_shock], [transition]
+        # TODO check this part
+        if train_one_odor_at_a_time:
+            if self.current_side_is_left:
+                return [left_shock, right_shock], [transition, transition]
+            else:
+                return [], []
+
         else:
-            return [right_shock], [transition]
+            # TODO add support (w/ parameter?) for shocking both sides?
+            if self.current_side_is_left:
+                return [left_shock], [transition]
+            else:
+                return [right_shock], [transition]
 
 
     def test(self):
@@ -184,7 +239,6 @@ class StimuliGenerator:
 
         pins_to_signal = []
         seq = Sequence(start, end, pins, seq)
-        # TODO will need to add header.stamp before sending
         return LoadSequenceRequest(Header(), seq, pins_to_signal)
 
 
@@ -194,7 +248,7 @@ class StimuliGenerator:
         end = start + rospy.Duration(train_duration_s)
         self.current_t0 = end
 
-        odor_pins, odor_seq = self.odor_transitions()
+        odor_pins, odor_seq = self.odor_transitions(train=True)
         shock_pins, shock_seq = self.shock_transitions()
         pins = odor_pins + shock_pins
         seq = odor_seq + shock_seq
@@ -207,7 +261,6 @@ class StimuliGenerator:
 
         pins_to_signal = []
         seq = Sequence(start, end, pins, seq)
-        # TODO will need to add header.stamp before sending
         return LoadSequenceRequest(Header(), seq, pins_to_signal)
 
 
@@ -231,9 +284,10 @@ trial_structure = [gen.delay(prestimulus_delay_s), \
                   [gen.delay(train_to_posttest_s), \
                    gen.test(), \
                    gen.delay(beyond_posttest_s)]
+epoch_labels = ['test'] + ['train'] * training_blocks + ['test']
 
-# TODO put behind debug flag
-print('trial_structure', trial_structure)
+# TODO even if not printed to /rosout, is this saved by default?
+rospy.logdebug('trial_structure', trial_structure)
 
 # low_pins = pins that default to low (0v)
 # high_pins = pins that default to high (5v)
@@ -254,35 +308,35 @@ default_states = [DefaultState(p, True) for p in set(high_pins)] + \
 
 ###############################################################################
 
-# print trial structure?
-
 # can i do this from outside of a node?
 rospy.loginfo('Stimuli should finish at ' + datetime.datetime.fromtimestamp(gen.current_t0.to_sec()\
         ).strftime('%Y-%m-%d %H:%M:%S'))
 rospy.loginfo(str(gen.current_t0.to_sec() - t0_sec) + ' seconds')
 
-# TODO compare w/ decoding saved all_stimuli_in_order
-# and then possibly skip decoding
+output_base_dir = '.'
 
-# TODO make if not there. warn if cant.
-output_dir = '.'
-
+# TODO test this
 if save_stimulus_info:
     # TODO get rid of multi_tracker prefix
     experiment_basename = rospy.get_param('multi_tracker/experiment_basename', None)
     if experiment_basename is None:
-        experiment_basename = time.strftime("%Y%m%d_%H%M%S_N1", time.localtime())
+        # TODO fix node number thing
+        experiment_basename = time.strftime('%Y%m%d_%H%M%S_N1', time.localtime())
         rospy.set_param('multi_tracker/experiment_basename', experiment_basename)
 
-    filename = output_dir + experiment_basename + '_stimuli.p'
+    output_dir = os.path.join(output_base_dir, experiment_basename)
+    filename = os.path.join(output_dir, experiment_basename + '_stimuli.p')
     rospy.loginfo('Trying to save save stimulus info to ' + filename)
+
+    # TODO expand path?
+    if not os.path.isdir(output_dir):
+        os.mkdir(output_dir)
 
     # TODO check / test success
     with open(filename, 'wb') as f:
-        # TODO test trial_structure is recoverable from pickle / serializable
         pickle.dump((odors2left_pins, odors2right_pins, default_states, trial_structure), f)
 else:
     rospy.logwarn('Not saving generated trial structure / pin to odor mappings!')
 
-stimuli_loader = StimuliLoader(default_states, trial_structure)
+stimuli_loader = StimuliLoader(default_states, trial_structure, epoch_labels=epoch_labels)
 

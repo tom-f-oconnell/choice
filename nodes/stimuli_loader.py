@@ -17,7 +17,7 @@ def readable_rostime(ros_time):
 
 class StimuliLoader:
     # TODO TODO assert that time to sleep before is less than all intertrial intervals
-    def __init__(self, default_states, trial_structure):
+    def __init__(self, default_states, trial_structure, epoch_labels=None):
         self.pin2name = dict(zip(range(54, 70), ['A' + str(i) for i in range(16)]))
         rospy.loginfo('stimuli_loader waiting for services')
         defaults_service_name = 'load_defaults'
@@ -41,14 +41,16 @@ class StimuliLoader:
             rospy.logerr("Service load_defaults failed: " + str(exc))
         rospy.loginfo('stimuli_loader finished sending default states')
         
+        block_num = 0
         for n, block in enumerate(trial_structure):
             # TODO err if would send block before arduino could start it in time
             if type(block) is LoadSequenceRequest:
                 rospy.loginfo('stimuli_loader sending block info')
                 try:
-                    # TODO debugging flags
-                    print(block)
-                    # TODO any way to print in here whether it is a test / train and side, etc?
+                    rospy.logdebug(block)
+                    if not epoch_labels is None:
+                        rospy.loginfo(epoch_labels[block_num])
+
                     block.header.stamp = rospy.Time.now()
                     # TODO TODO why does this seem to selectively block forever on the last block?
                     # TODO is this the correct type? should it be the request type?
@@ -56,20 +58,22 @@ class StimuliLoader:
                     # request type... (why?) is something wrapping it for me? do they just
                     # happen to serialize the same? what do the tutorials do?
                     resp = load_next_sequence(block)
-                    rospy.logwarn('sent block info!')
+                    rospy.logdebug('sent block info!')
                     
-                    rospy.loginfo('current time is ' + readable_rostime(rospy.Time.now()))
-                    rospy.loginfo('should start at ' + readable_rostime(block.seq.start))
-                    rospy.loginfo('should end at ' + readable_rostime(block.seq.end))
+                    rospy.logdebug('current time is ' + readable_rostime(rospy.Time.now()))
+                    rospy.logdebug('should start at ' + readable_rostime(block.seq.start))
+                    rospy.logdebug('should end at ' + readable_rostime(block.seq.end))
                     rospy.loginfo('duration of sequence ' + str((block.seq.end - block.seq.start).to_sec()))
                     # TODO also include integer pin names
                     #rospy.loginfo('using pins: ' + str([self.pin2name[p] if p in self.pin2name else p for p in block.seq.pins]))
+                    # TODO print which odors are associated w/ them?
                     rospy.loginfo('using pins: ' + str([p if p in self.pin2name else p for p in block.seq.pins]))
 
                 except rospy.ServiceException as exc:
                     rospy.logerr("Service load_next_sequence failed: " + str(exc))
 
                 end = block.seq.end
+                block_num += 1
 
             # TODO test
             elif type(block) is rospy.Time:

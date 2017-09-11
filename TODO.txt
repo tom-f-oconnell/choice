@@ -1,1 +1,6 @@
-check balance is handled correctly
+add facilities for testing valves before trials.
+	-service?
+
+pause until user signals they have connected everything before
+starting acquisition? just run trial structure generator in 
+advance as before?
