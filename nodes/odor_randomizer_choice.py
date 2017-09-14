@@ -97,7 +97,7 @@ if generate:
     #odors = list(odor_panel)
     mock = ('paraffin (mock)', 0)
     odors = [('4-methylcyclohexanol', -2), ('3-octanol', -2)]
-    odors.append(mock)
+    #odors.append(mock)
 
     left_pins = random.sample(left_pins, len(odors))
     right_pins = random.sample(right_pins, len(odors))

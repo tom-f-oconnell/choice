@@ -3,14 +3,10 @@
 from __future__ import division
 from __future__ import print_function
 import rospy
-import time
 import datetime
-# necessary?
 from std_msgs.msg import Header
 from stimuli.msg import Sequence, Transition, State, DefaultState
 from stimuli.srv import LoadDefaultStates, LoadSequence, LoadSequenceRequest
-
-import StringIO
 
 def readable_rostime(ros_time):
     return datetime.datetime.fromtimestamp(ros_time.to_sec()).strftime('%Y-%m-%d %H:%M:%S')
