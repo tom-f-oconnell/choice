@@ -18,6 +18,8 @@ import rosparam
 
 import ipdb
 
+make_plots = False
+
 # was it set_style?
 sns.set()
 
@@ -165,9 +167,10 @@ crop_to_seconds = 1100
 
 # TODO legends for odors and shock patch. label / group by the reinforced odor?
 for fly, data in fly2data.items():
-    plt.figure()
-    plt.title(fly2meta[fly]['dir'] + ' ' + str(fly2meta[fly]['n']))
-    plt.xlabel('Seconds')
+    if make_plots:
+        plt.figure()
+        plt.title(fly2meta[fly]['dir'] + ' ' + str(fly2meta[fly]['n']))
+        plt.xlabel('Seconds')
     # TODO what happens to missing data?
     # plotted as zero? not plotted?
     curr_times = (data['time_epoch_secs'] + data['time_epoch_nsecs'] / 1e9).as_matrix()
@@ -186,7 +189,8 @@ for fly, data in fly2data.items():
     cropped_times = curr_times[cropped_indices]
     # relative to start of experiment
     cropped_rel_times = cropped_times - start
-    plt.plot(cropped_rel_times , data['position_y'][cropped_indices])
+    if make_plots:
+        plt.plot(cropped_rel_times , data['position_y'][cropped_indices])
 
     # calculate percent time in each odor region
     # TODO make one variable at top which controls which dimension to use as long axis
@@ -258,10 +262,11 @@ for fly, data in fly2data.items():
             assert x0 + width < crop_to_seconds, 'last time index of patched region should fall ' + \
                 'within limits of cropped experiment. was ' + str(x0)
             print 'patching pin', p, 'from', (x0, y0), 'with w=', width, 'and h=', height
-            p = patches.Rectangle((x0, y0), width, height, alpha=alpha, \
-                facecolor=color, edgecolor=color)
-            ax = plt.gca()
-            ax.add_patch(p)
+            if make_plots:
+                p = patches.Rectangle((x0, y0), width, height, alpha=alpha, \
+                    facecolor=color, edgecolor=color)
+                ax = plt.gca()
+                ax.add_patch(p)
     
     # patch indications of which sides are shocked, and when
 
@@ -279,15 +284,17 @@ for fly, data in fly2data.items():
     else:
         percent_reinforced_post.append(1 - percent_left_post)
 
-plt.figure()
-plt.title('Percent on side w/ reinforced odor')
-axes = plt.gca()
-axes.set_xlim([-.2, 1.2])
-axes.set_ylim([0, 1])
-x = [0, 1]
-for pre, post in zip(percent_reinforced_pre, percent_reinforced_post):
-    plt.plot(x, [pre, post])
-# TODO boxplot on top of this?
+if make_plots:
+    plt.figure()
+    plt.title('Percent on side w/ reinforced odor')
+    axes = plt.gca()
+    axes.set_xlim([-.2, 1.2])
+    axes.set_ylim([0, 1])
 
-plt.show()
+    x = [0, 1]
+    for pre, post in zip(percent_reinforced_pre, percent_reinforced_post):
+        plt.plot(x, [pre, post])
+    # TODO boxplot on top of this?
+
+    plt.show()
 
