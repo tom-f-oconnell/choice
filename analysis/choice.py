@@ -13,6 +13,10 @@ from stimuli.srv import LoadSequenceRequest
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import seaborn as sns
+# TODO maybe remove this dependency if it means it cant be run easily on windows?
+import rosparam
+
+import ipdb
 
 # was it set_style?
 sns.set()
@@ -21,7 +25,7 @@ sns.set()
 left_shock = 6
 right_shock = 5
 
-def load_trial_structure(d):
+def load_metadata(d):
     files = glob.glob(join(d, '*_stimuli.p'))
     if len(files) > 1:
         raise IOError('too many stimulus files in ' + d)
@@ -95,6 +99,7 @@ def load_trial_structure(d):
 
 fps = 30.0
 
+# TODO allow script to be run in directory w/ data
 path = '/home/tom/data/retracked'
 # TODO just walk from path in future?
 # or glob on date here and glob separately below?
@@ -107,10 +112,14 @@ all_odors = set()
 
 for d in map(lambda x: join(path, x), dirs):
     # TODO check trial structure times against those in log
-    metadata = load_trial_structure(d)
+    common_metadata = load_metadata(d)
+    for o in common_metadata['odors']:
+        all_odors.add(o)
+
     # TODO can join take a variable # of args?
     for f in glob.glob(join(d, '*.hdf5')):
-        # TODO make it so this generates the required config, and notifies it is doing so
+        metadata = dict(common_metadata)
+        # TODO make it so this generates the (optional) config? notify if doing so
         # TODO TODO exclude trajectories that don't cover enough ground
         data, _ = mta.read_hdf5_file_to_pandas.load_and_preprocess_data(f)
         print 'position_x range', data['position_x'].min(), data['position_x'].max()
@@ -118,12 +127,13 @@ for d in map(lambda x: join(path, x), dirs):
         fly2data[curr_fly] = data
         metadata['dir'] = d
         match = re.search('_N([0-9])_', f)
-        #print 'MATCH', match
         # TODO why is it more than what is in the parens?
+        #print 'MATCH', match
         metadata['n'] = int(match.group(0)[2:-1])
+        roi_points = rosparam.load_file(join(d, 'roi_N' + str(metadata['n']) + \
+            '.yaml'))[0][0]['roi_points']
+        metadata['roi_points'] = roi_points
         fly2meta[curr_fly] = metadata
-        for o in metadata['odors']:
-            all_odors.add(o)
         curr_fly += 1
 
 # how to use this if not a cmap?
@@ -143,12 +153,15 @@ y_min = min([data['position_y'][data['position_y'] > 1].min() for data in fly2da
     if np.sum(data['position_y'] > 1) > 0])
 print 'overall y_max', y_max
 print 'overall y_min', y_min
-mid = (y_max + y_min) / 2
-print 'using y midline', mid
 
 # TODO divide into mch and oct? make a dataframe including all variables (like side, etc)?
 percent_reinforced_pre = []
 percent_reinforced_post = []
+
+crop_to_seconds = 1100
+
+# TODO TODO line up images of ROIs, with drawn midline, to check for those errors
+# TODO one y value range for all plots
 
 # TODO legends for odors and shock patch. label / group by the reinforced odor?
 for fly, data in fly2data.items():
@@ -160,20 +173,26 @@ for fly, data in fly2data.items():
     curr_times = (data['time_epoch_secs'] + data['time_epoch_nsecs'] / 1e9).as_matrix()
     # TODO so does floris initialize something to 5000? blocks written in that size?
     #print(curr_times.shape)
-    start = curr_times[0]
+    nonzero_times = curr_times.nonzero()[0]
+    if nonzero_times.size == 0:
+        print 'SKIPPING FLY ', fly2meta[fly]['n'], 'FROM', fly2meta[fly]['dir']
+        continue
+    start = curr_times[nonzero_times].min()
+    print 'START TIME =', start
+    #ipdb.set_trace()
+
     # because for some of these, the tracking ran much longer than the stimulus presentation
-    # TODO TODO rescale x axis to seconds / minutes
-    # TODO TODO patch in stimulus
-    cropped_indices = (curr_times - start) <= 1100
+    cropped_indices = (curr_times - start) <= crop_to_seconds
     cropped_times = curr_times[cropped_indices]
     # relative to start of experiment
     cropped_rel_times = cropped_times - start
     plt.plot(cropped_rel_times , data['position_y'][cropped_indices])
-    # TODO patch in stimulus regions / indicate which side which odor was on
 
     # calculate percent time in each odor region
-    # TODO display (title?) which odor was reinforced
-    # TODO TODO test
+    # TODO make one variable at top which controls which dimension to use as long axis
+    # and have this (and elsewhere) depend on that
+    mid = np.mean(map(lambda x: x[1], fly2meta[fly]['roi_points']))
+    print 'using y midline', mid
     left = data['position_y'][cropped_indices] > mid
     pretest_indices = np.logical_and(cropped_times > fly2meta[fly]['times']['pretest_start'], \
         cropped_times < (fly2meta[fly]['times']['pretest_start'] + \
@@ -192,6 +211,7 @@ for fly, data in fly2data.items():
     odor_patch_alpha = 0.4
     shock_patch_alpha = 1
     shock_color = 'red'
+    # TODO TODO center all plots about mid point. set origin for all to midpoint?
 
     meta = fly2meta[fly]
     for s in meta['stimuli']:
@@ -211,6 +231,7 @@ for fly, data in fly2data.items():
                 y0 = y_max + y_bord + y_shock_to_odor
                 alpha = shock_patch_alpha
 
+            # TODO TODO dont use y_min and y_max from across all flies / placements here
             elif p in meta['left_pins2odors']:
                 print 'left odor', meta['left_pins2odors'][p]
                 color = odor2color[meta['left_pins2odors'][p]]
@@ -233,6 +254,9 @@ for fly, data in fly2data.items():
 
             # TODO maybe subdivide for shocks? (to reflect actual pulse cycle ~2.5s on/off)
             x0 = s.seq.start.to_sec() - start
+            assert x0 > 0, 'times we want to disply should not be negative. was ' + str(x0)
+            assert x0 + width < crop_to_seconds, 'last time index of patched region should fall ' + \
+                'within limits of cropped experiment. was ' + str(x0)
             print 'patching pin', p, 'from', (x0, y0), 'with w=', width, 'and h=', height
             p = patches.Rectangle((x0, y0), width, height, alpha=alpha, \
                 facecolor=color, edgecolor=color)
