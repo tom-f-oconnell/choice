@@ -138,13 +138,13 @@ for o, c in zip(all_odors, cmap):
 
 # TODO don't necessarily average across trials (because arena is repositioned wrt camera)
 # TODO just load rois and take middle of that? (assumes you click evenly far away on both sides...)
-x_max = max([data['position_x'].max() for data in fly2data.values()])
-x_min = min([data['position_x'][data['position_x'] > 1].min() for data in fly2data.values() \
-    if np.sum(data['position_x'] > 1) > 0])
-print 'overall x_max', x_max
-print 'overall x_min', x_min
-mid = (x_max + x_min) / 2
-print 'using x midline', mid
+y_max = max([data['position_y'].max() for data in fly2data.values()])
+y_min = min([data['position_y'][data['position_y'] > 1].min() for data in fly2data.values() \
+    if np.sum(data['position_y'] > 1) > 0])
+print 'overall y_max', y_max
+print 'overall y_min', y_min
+mid = (y_max + y_min) / 2
+print 'using y midline', mid
 
 # TODO divide into mch and oct? make a dataframe including all variables (like side, etc)?
 percent_reinforced_pre = []
@@ -168,57 +168,59 @@ for fly, data in fly2data.items():
     cropped_times = curr_times[cropped_indices]
     # relative to start of experiment
     cropped_rel_times = cropped_times - start
-    plt.plot(cropped_rel_times , data['position_x'][cropped_indices])
+    plt.plot(cropped_rel_times , data['position_y'][cropped_indices])
     # TODO patch in stimulus regions / indicate which side which odor was on
 
     # calculate percent time in each odor region
     # TODO display (title?) which odor was reinforced
     # TODO TODO test
-    left = data['position_x'][cropped_indices] > mid
-    pretest_indices = np.logical_and(cropped_times > fly2meta[fly]['times']['pretest_start'], cropped_times < (fly2meta[fly]['times']['pretest_start'] + fly2meta[fly]['times']['test_duration']))
+    left = data['position_y'][cropped_indices] > mid
+    pretest_indices = np.logical_and(cropped_times > fly2meta[fly]['times']['pretest_start'], \
+        cropped_times < (fly2meta[fly]['times']['pretest_start'] + \
+        fly2meta[fly]['times']['test_duration']))
 
-    posttest_indices = np.logical_and(cropped_times > fly2meta[fly]['times']['posttest_start'], cropped_times < (fly2meta[fly]['times']['posttest_start'] + fly2meta[fly]['times']['test_duration']))
+    posttest_indices = np.logical_and(cropped_times > fly2meta[fly]['times']['posttest_start'], \
+        cropped_times < (fly2meta[fly]['times']['posttest_start'] + \
+        fly2meta[fly]['times']['test_duration']))
     # patch in those indices, also representing which odor is on each side
     # first argument is lower left corner of rectangle
 
     y_bord = 10
     y_shock_to_odor = 10
-    large_height = (x_max - x_min) / 2 + y_bord
+    large_height = (y_max - y_min) / 2 + y_bord
     small_height = 20
-    odor_patch_alpha = 0.2
+    odor_patch_alpha = 0.4
     shock_patch_alpha = 1
-    # TODO make odor to color dict
     shock_color = 'red'
 
     meta = fly2meta[fly]
     for s in meta['stimuli']:
         width = (s.seq.end - s.seq.start).to_sec()
         for p in s.seq.pins:
+            # TODO fix fact that some x values for patches (and maybe other things?)
+            # are way off (i.e. still in unix epoch time)
             if p is left_shock:
                 color = shock_color
                 height = small_height
-                y0 = x_min - y_bord - (y_shock_to_odor + small_height)
+                y0 = y_min - y_bord - (y_shock_to_odor + small_height)
                 alpha = shock_patch_alpha
 
             elif p is right_shock:
                 color = shock_color
                 height = small_height
-                y0 = x_max + y_bord + y_shock_to_odor
+                y0 = y_max + y_bord + y_shock_to_odor
                 alpha = shock_patch_alpha
 
             elif p in meta['left_pins2odors']:
-                # are odor representations hashable?
-                print(p)
-                print(meta['left_pins2odors'])
-                print(odor2color)
-                print(meta['left_pins2odors'][p])
+                print 'left odor', meta['left_pins2odors'][p]
                 color = odor2color[meta['left_pins2odors'][p]]
                 # TODO check
-                y0 = x_min - y_bord
+                y0 = y_min - y_bord
                 height = large_height
                 alpha = odor_patch_alpha
 
             elif p in meta['right_pins2odors']:
+                print 'right odor', meta['right_pins2odors'][p]
                 color = odor2color[meta['right_pins2odors'][p]]
                 # TODO check
                 y0 = mid
@@ -231,7 +233,7 @@ for fly, data in fly2data.items():
 
             # TODO maybe subdivide for shocks? (to reflect actual pulse cycle ~2.5s on/off)
             x0 = s.seq.start.to_sec() - start
-            alpha = 0.2
+            print 'patching pin', p, 'from', (x0, y0), 'with w=', width, 'and h=', height
             p = patches.Rectangle((x0, y0), width, height, alpha=alpha, \
                 facecolor=color, edgecolor=color)
             ax = plt.gca()
