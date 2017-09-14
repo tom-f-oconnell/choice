@@ -4,3 +4,8 @@ add facilities for testing valves before trials.
 pause until user signals they have connected everything before
 starting acquisition? just run trial structure generator in 
 advance as before?
+
+FIX STIMULUS PARAMETER SAVING (FROM TRACKER, OR REPEAT IN THIS LAUNCH) WHEN TRACKING CONCURRENTLY
+
+copy stimulus parameters to retracked directory (maybe any pickle files?)
+
