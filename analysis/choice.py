@@ -15,7 +15,6 @@ import rosparam
 
 make_plots = True
 
-# TODO will this work?
 if make_plots:
     import matplotlib.pyplot as plt
     import matplotlib.patches as patches
@@ -68,10 +67,6 @@ def load_metadata(d):
             assert len(odors) == 1
             reinforced_odor = odors[0]
             break
-    # TODO associate with negative / positive on appropriate x / y axis
-    #side2odor = dict()
-    #side2odor_index['down'] = 
-    #return times, trial_structure
     metadata = dict()
     metadata['times'] = times
     # TODO maybe don't need these?
@@ -97,8 +92,6 @@ def load_metadata(d):
     metadata['odors'] = set(odors2pins.keys())
     return metadata
 
-# TODO include list of known good trials to use. derive from inspecting tracking.
-
 fps = 30.0
 
 # TODO allow script to be run in directory w/ data
@@ -111,14 +104,10 @@ dirs = ['20170913_104724', '20170913_105853', '20170913_112951']
 '''
 also check:
 20170913_105853
-    -end of roi 1 (does first shock kill the fly?)
     -roi 5. ever a fly in there?
     -3. i assume artifact? (basically a flat line)
-    -6. also only looks like a fly part of the time. investigate flat regions.
-        -also more flat towards end
     -4. looks like a step function. real?
-    -2 WHY DOES THIS ALSO GET FLAT TOWARDS END?
-    -7 SAME THING
+    -i think at least 1,2,6,7 are dead by end of last shock
 
 really not excluding from this one?
 20170913_104724
@@ -133,9 +122,14 @@ really only 2/6 this day were good? what happened to other 2 flies?
 
 '''
 
+'''
 bad = {'20170913_104724': set(),
-       '20170913_105853': {3,4,5},
+       '20170913_105853': {3,4}, # 5 was here before but i think it looks like the fly is doing stuff in the video
        '20170913_112951': {1,2,4,5}}
+'''
+bad = {'20170913_104724': set(),
+       '20170913_105853': set(),
+       '20170913_112951': set()}
 
 curr_fly = 0
 fly2data = dict()
@@ -206,7 +200,7 @@ percent_reinforced_post = []
 # TODO why did 1100 not work? isn't sequence 1000 long?
 crop_to_seconds = 1300
 
-# TODO TODO line up images of ROIs, with drawn midline, to check for those errors
+# TODO line up images of ROIs, with drawn midline, to check for those errors
 # TODO label / group by the reinforced odor?
 
 plotting_y_max = None
@@ -236,6 +230,8 @@ for fly, data in fly2data.items():
         continue
     start = curr_times[nonzero_times].min()
 
+    # TODO print how much this fly has walked (in each test period?)
+
     if make_plots:
         label_set = set()
         labels = []
@@ -261,8 +257,9 @@ for fly, data in fly2data.items():
     # and have this (and elsewhere) depend on that
     y_mid = np.mean(map(lambda x: x[1], meta['roi_points']))
     if make_plots:
-        # TODO TODO keep in mind this is probably inverted from image display, since pixels count from top
-        plt.plot(cropped_rel_times , data['position_y'][cropped_indices] - y_mid)
+        # multiplied by negative one so it is displayed in same orientation as video
+        # and also by patches (rectangles) indicating which side each odor is on
+        plt.plot(cropped_rel_times , (-1) * (data['position_y'][cropped_indices] - y_mid))
 
     y_max = max(map(lambda x: x[1], meta['roi_points']))
     y_min = min(map(lambda x: x[1], meta['roi_points']))
@@ -299,6 +296,12 @@ for fly, data in fly2data.items():
                 y0 = y_max_above_mid + y_beyond_arena + y_shock_to_odor
                 alpha = shock_patch_alpha
 
+            # TODO i think the reason these have been displaying correctly is that
+            # y_min_below_mid ~= y_max_above_mid, though those are probably still
+            # calculated for the wrong sides. fix? use one number equal to their average?
+
+            # displayed on down side in plot, and down should also be left in the video
+            # , with closer arenas further to the right
             elif p in meta['left_pins2odors']:
                 #print 'left odor', meta['left_pins2odors'][p]
                 if make_plots:
@@ -308,6 +311,7 @@ for fly, data in fly2data.items():
                 height = large_height
                 alpha = odor_patch_alpha
 
+            # displayed on top sides of plots, which should also be right in the video
             elif p in meta['right_pins2odors']:
                 #print 'right odor', meta['right_pins2odors'][p]
                 if make_plots:
@@ -352,7 +356,6 @@ for fly, data in fly2data.items():
 
                 axes_to_set_limits.append(ax)
 
-                # TODO flipped?
                 curr_y_max = y0 + height
                 if plotting_y_max is None or plotting_y_max < curr_y_max:
                     plotting_y_max = curr_y_max
@@ -376,6 +379,7 @@ for fly, data in fly2data.items():
     # TODO include a buffer region that is called in neither direction to make this more robust to 
     # misspecifying the middle of the arena?
     # TODO TODO check uniform sampling rate?
+    # TODO print these
     percent_left_pre = np.sum(left[pretest_indices]) / pretest_indices.size
     if meta['reinforced_odor'] == meta['pretest_left_odor']:
         percent_reinforced_pre.append(percent_left_pre)
