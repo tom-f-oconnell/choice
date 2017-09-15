@@ -6,7 +6,7 @@ import pandas as pd
 # TODO figure out what the hold up is on importing this, with the prints
 import multi_tracker_analysis as mta
 import glob
-from os.path import join
+from os.path import join, split
 import re
 import pickle
 from stimuli.srv import LoadSequenceRequest
@@ -105,7 +105,37 @@ fps = 30.0
 path = '/home/tom/data/retracked'
 # TODO just walk from path in future?
 # or glob on date here and glob separately below?
+
 dirs = ['20170913_104724', '20170913_105853', '20170913_112951']
+
+'''
+also check:
+20170913_105853
+    -end of roi 1 (does first shock kill the fly?)
+    -roi 5. ever a fly in there?
+    -3. i assume artifact? (basically a flat line)
+    -6. also only looks like a fly part of the time. investigate flat regions.
+        -also more flat towards end
+    -4. looks like a step function. real?
+    -2 WHY DOES THIS ALSO GET FLAT TOWARDS END?
+    -7 SAME THING
+
+really not excluding from this one?
+20170913_104724
+    -(WHICH) why so jumpy?
+    -5, whats up during flat region starting at last training session?
+
+really only 2/6 this day were good? what happened to other 2 flies?
+20170913_112951
+    -1, really ugly. i assume there was no fly?
+    -3, pretty jumpy
+    -4, if there is a fly at all, very erratic. investigate.
+
+'''
+
+bad = {'20170913_104724': set(),
+       '20170913_105853': {3,4,5},
+       '20170913_112951': {1,2,4,5}}
 
 curr_fly = 0
 fly2data = dict()
@@ -128,12 +158,18 @@ for d in map(lambda x: join(path, x), dirs):
         print 'position_x range', data['position_x'].min(), data['position_x'].max()
         print 'position_y range', data['position_y'].min(), data['position_y'].max()
         '''
-        fly2data[curr_fly] = data
-        metadata['dir'] = d
         match = re.search('_N([0-9])_', f)
         # TODO why is it more than what is in the parens?
         #print 'MATCH', match
         metadata['n'] = int(match.group(0)[2:-1])
+
+        stamp = split(d)[-1]
+        if metadata['n'] in bad[stamp]:
+            print 'skipping fly', metadata['n'], 'from experiment', stamp, 'because listed as bad'
+            continue
+
+        fly2data[curr_fly] = data
+        metadata['dir'] = d
         roi_points = rosparam.load_file(join(d, 'roi_N' + str(metadata['n']) + \
             '.yaml'))[0][0]['roi_points']
         metadata['roi_points'] = roi_points
@@ -188,6 +224,17 @@ shock_patch_alpha = 1
 shock_color = 'red'
 
 for fly, data in fly2data.items():
+    # TODO what happens to missing data?
+    # plotted as zero? not plotted?
+    curr_times = (data['time_epoch_secs'] + data['time_epoch_nsecs'] / 1e9).as_matrix()
+    # TODO so does floris initialize something to 5000? blocks written in that size?
+    #print(curr_times.shape)
+    nonzero_times = curr_times.nonzero()[0]
+    if nonzero_times.size == 0:
+        print 'SKIPPING FLY', meta['n'], 'FROM', meta['dir']
+        continue
+    start = curr_times[nonzero_times].min()
+
     meta = fly2meta[fly]
     if make_plots:
         label_set = set()
@@ -200,17 +247,6 @@ for fly, data in fly2data.items():
         # TODO no other unit conversion is happening, right?
         # TODO convert
         plt.ylabel('Pixels relative to midline')
-
-    # TODO what happens to missing data?
-    # plotted as zero? not plotted?
-    curr_times = (data['time_epoch_secs'] + data['time_epoch_nsecs'] / 1e9).as_matrix()
-    # TODO so does floris initialize something to 5000? blocks written in that size?
-    #print(curr_times.shape)
-    nonzero_times = curr_times.nonzero()[0]
-    if nonzero_times.size == 0:
-        print 'SKIPPING FLY', meta['n'], 'FROM', meta['dir']
-        continue
-    start = curr_times[nonzero_times].min()
     #print 'START TIME =', start
     #print '# of zero entries', curr_times.size - nonzero_times.size
 
