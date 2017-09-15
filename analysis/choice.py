@@ -92,8 +92,6 @@ def load_metadata(d):
     metadata['odors'] = set(odors2pins.keys())
     return metadata
 
-fps = 30.0
-
 # TODO allow script to be run in directory w/ data
 path = '/home/tom/data/retracked'
 # TODO just walk from path in future?
@@ -102,34 +100,39 @@ path = '/home/tom/data/retracked'
 dirs = ['20170913_104724', '20170913_105853', '20170913_112951']
 
 '''
-also check:
+checked
 20170913_105853
-    -roi 5. ever a fly in there?
-    -3. i assume artifact? (basically a flat line)
-    -4. looks like a step function. real?
+    -3 really did just not move
+    -4. doesn't really sample both sides in first test, but you can kind of see it
+     smell the shocked odor, run away, and then even avoid crossing back in to that
+     region around ~1300s
     -i think at least 1,2,6,7 are dead by end of last shock
+    -5 was never much of a responder. stayed too still to sample both odors.
 
-really not excluding from this one?
 20170913_104724
-    -(WHICH) why so jumpy?
-    -5, whats up during flat region starting at last training session?
+    -**1 might not show shock response? on cieling? maybe should be marked bad
+    -only flies in 1,3,5 (central 3)
+    -5 might be one of more clear instances of learning
+        -shock response in at least second training block
+        -seems (from trace) to spend more time in non-shocked odor
+        -and in a proportion different from pretest behavior
+    -no apparent artifacts
 
 really only 2/6 this day were good? what happened to other 2 flies?
 20170913_112951
-    -1, really ugly. i assume there was no fly?
-    -3, pretty jumpy
-    -4, if there is a fly at all, very erratic. investigate.
-
+    -looks like maybe only 3 was good this session?
+        -you can kind of see her turn away from punished odor a couple times in first half
+         of post test
+    -1 definitely does have artifacts in some parts, but not any that would have really
+     affected ultimate analysis, and this fly was a non-responder anyway
+        -could probably have been fixed by increasing threshold in image processing
+         and maybe more conservative filtering
 '''
 
-'''
-bad = {'20170913_104724': set(),
-       '20170913_105853': {3,4}, # 5 was here before but i think it looks like the fly is doing stuff in the video
+# TODO skip before loading if marked bad
+bad = {'20170913_104724': {2,4},
+       '20170913_105853': {1,2,3,4,5,6,7},
        '20170913_112951': {1,2,4,5}}
-'''
-bad = {'20170913_104724': set(),
-       '20170913_105853': set(),
-       '20170913_112951': set()}
 
 curr_fly = 0
 fly2data = dict()
@@ -228,6 +231,7 @@ for fly, data in fly2data.items():
     if nonzero_times.size == 0:
         print 'SKIPPING FLY', meta['n'], 'FROM', meta['dir']
         continue
+    print 'fly', meta['n'], 'from', meta['dir']
     start = curr_times[nonzero_times].min()
 
     # TODO print how much this fly has walked (in each test period?)
@@ -265,6 +269,7 @@ for fly, data in fly2data.items():
     y_min = min(map(lambda x: x[1], meta['roi_points']))
     print 'y_max', y_max, 'y_min', y_min, 'using y midline', y_mid
     left = data['position_y'][cropped_indices] > y_mid
+    # TODO maybe use times from log, rather than these?
     pretest_indices = np.logical_and(cropped_times > meta['times']['pretest_start'], \
         cropped_times < (meta['times']['pretest_start'] + \
         meta['times']['test_duration']))
@@ -372,21 +377,37 @@ for fly, data in fly2data.items():
                 if plotting_x_min is None or plotting_x_min > curr_x_min:
                     plotting_x_min = curr_x_min
 
-    # patch indications of which sides are shocked, and when
+    assert pretest_indices.dtype == np.bool, \
+        'later functions assume indices represented as boolean mask'
+    assert posttest_indices.dtype == np.bool, \
+        'later functions assume indices represented as boolean mask'
+    assert not np.any(np.logical_and(pretest_indices, posttest_indices)), \
+        'pre and post test indices overlapped'
+    # maybe allow some tolerance here
+    assert pretest_indices.size == posttest_indices.size
 
-    # TODO TODO check! (is sign effectively switched b/c pixel y origin being on top? plots at least 
-    # may still be shown backwards)
+    rel_indices_tol = 0.05
+    n_pretest_indices = np.sum(pretest_indices)
+    n_posttest_indices = np.sum(posttest_indices)
+    assert (abs(n_pretest_indices - n_posttest_indices) / n_posttest_indices) \
+        <= rel_indices_tol, '# pretest_indices=' + str(n_pretest_indices) + \
+        ', # posttest_indices=' + str(n_posttest_indices)
+
     # TODO include a buffer region that is called in neither direction to make this more robust to 
     # misspecifying the middle of the arena?
-    # TODO TODO check uniform sampling rate?
-    # TODO print these
-    percent_left_pre = np.sum(left[pretest_indices]) / pretest_indices.size
+    # TODO check uniform sampling rate?
+    percent_left_pre = np.sum(left[pretest_indices]) / np.sum(pretest_indices)
+    #print 'sum pretest indices on left', np.sum(left[pretest_indices])
+    #print 'sum pretest_indices', np.sum(pretest_indices)
     if meta['reinforced_odor'] == meta['pretest_left_odor']:
         percent_reinforced_pre.append(percent_left_pre)
     else:
         percent_reinforced_pre.append(1 - percent_left_pre)
 
-    percent_left_post = np.sum(left[posttest_indices]) / posttest_indices.size
+    # TODO factor into function for better consistency / isolation
+    percent_left_post = np.sum(left[posttest_indices]) / np.sum(posttest_indices)
+    #print 'sum posttest indices on left', np.sum(left[posttest_indices])
+    #print 'sum posttest_indices', np.sum(posttest_indices)
     if meta['reinforced_odor'] == meta['posttest_left_odor']:
         percent_reinforced_post.append(percent_left_post)
     else:
@@ -411,6 +432,8 @@ for ax in axes_to_set_limits:
     ax.set_xlim([plotting_x_min, plotting_x_max])
     ax.set_ylim([plotting_y_min, plotting_y_max])
 
+# TODO make it so you can get fly id from hovering? or clicking?
+# TODO patch in counted regions for troubleshooting?
 if make_plots:
     plt.figure()
     plt.title('Percent on side w/ reinforced odor')
