@@ -13,12 +13,17 @@ from stimuli.srv import LoadSequenceRequest
 # TODO maybe remove this dependency if it means it cant be run easily on windows?
 import rosparam
 
-make_plots = True
+show_plots = False
+save_plots = True
+plot_format = 'png'
+make_plots = show_plots or save_plots
 
 if make_plots:
     import matplotlib.pyplot as plt
     import matplotlib.patches as patches
     import seaborn as sns
+    #from matplotlib import rcParams
+    #rcParams.update({'figure.autolayout': True})
     # was it set_style?
     sns.set()
 
@@ -129,7 +134,9 @@ really only 2/6 this day were good? what happened to other 2 flies?
          and maybe more conservative filtering
 '''
 
-# TODO skip before loading if marked bad
+# TODO skip before loading if marked bad?
+# TODO maybe have a flag to save figures for rejects?
+reject_bad = True
 bad = {'20170913_104724': {2,4},
        '20170913_105853': {1,2,3,4,5,6,7},
        '20170913_112951': {1,2,4,5}}
@@ -161,7 +168,7 @@ for d in map(lambda x: join(path, x), dirs):
         metadata['n'] = int(match.group(0)[2:-1])
 
         stamp = split(d)[-1]
-        if metadata['n'] in bad[stamp]:
+        if reject_bad and metadata['n'] in bad[stamp]:
             print 'skipping fly', metadata['n'], 'from experiment', stamp, 'because listed as bad'
             continue
 
@@ -212,6 +219,7 @@ plotting_x_max = None
 plotting_x_min = None
 
 axes_to_set_limits = []
+fly_nums_in_order = []
 
 y_shock_to_odor = 4
 y_beyond_arena = 10
@@ -241,7 +249,8 @@ for fly, data in fly2data.items():
         labels = []
         handles = []
 
-        plt.figure()
+        scale = 12
+        fig = plt.figure(figsize=(scale * 1, scale * 0.5))
         plt.title(meta['dir'] + ', ROI ' + str(meta['n']))
         plt.xlabel('Seconds')
         # TODO no other unit conversion is happening, right?
@@ -360,6 +369,7 @@ for fly, data in fly2data.items():
                     handles.append(p)
 
                 axes_to_set_limits.append(ax)
+                fly_nums_in_order.append(fly)
 
                 curr_y_max = y0 + height
                 if plotting_y_max is None or plotting_y_max < curr_y_max:
@@ -428,23 +438,35 @@ plotting_x_max = plotting_x_max + x_range * x_bord
 plotting_y_min = plotting_y_min - y_range * y_bord
 plotting_y_max = plotting_y_max + y_range * y_bord
 
-for ax in axes_to_set_limits:
+for fly, ax in zip(fly_nums_in_order, axes_to_set_limits):
     ax.set_xlim([plotting_x_min, plotting_x_max])
     ax.set_ylim([plotting_y_min, plotting_y_max])
+    if save_plots:
+        meta = fly2meta[fly]
+        ax.figure.savefig(split(meta['dir'])[-1] + '_' + str(meta['n']) + '.' + plot_format)
+        #    plot_format, bbox_inches='tight')
 
 # TODO make it so you can get fly id from hovering? or clicking?
 # TODO patch in counted regions for troubleshooting?
 if make_plots:
-    plt.figure()
-    plt.title('Percent on side w/ reinforced odor')
-    axes = plt.gca()
-    axes.set_xlim([-.2, 1.2])
-    axes.set_ylim([0, 1])
-
+    fig = plt.figure(figsize=(4,4))
+    plt.title('Conditioned change in preference')
+    plt.ylabel('Proportion of test spent in shocked odor')
     x = [0, 1]
+    plt.xticks(x, ['Pre', 'Post'])
+    ax = plt.gca()
+    ax.set_xlim([-.2, 1.2])
+    ax.set_ylim([0, 1])
+
     for pre, post in zip(percent_reinforced_pre, percent_reinforced_post):
         plt.plot(x, [pre, post])
     # TODO boxplot on top of this?
 
-    plt.show()
+    if save_plots:
+        fig.savefig('preference_change.' + plot_format, bbox_inches='tight')
+
+    if show_plots:
+        plt.show()
+    else:
+        plt.close('all')
 
