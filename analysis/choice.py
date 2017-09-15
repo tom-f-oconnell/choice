@@ -224,6 +224,7 @@ shock_patch_alpha = 1
 shock_color = 'red'
 
 for fly, data in fly2data.items():
+    meta = fly2meta[fly]
     # TODO what happens to missing data?
     # plotted as zero? not plotted?
     curr_times = (data['time_epoch_secs'] + data['time_epoch_nsecs'] / 1e9).as_matrix()
@@ -235,7 +236,6 @@ for fly, data in fly2data.items():
         continue
     start = curr_times[nonzero_times].min()
 
-    meta = fly2meta[fly]
     if make_plots:
         label_set = set()
         labels = []
@@ -375,6 +375,7 @@ for fly, data in fly2data.items():
     # may still be shown backwards)
     # TODO include a buffer region that is called in neither direction to make this more robust to 
     # misspecifying the middle of the arena?
+    # TODO TODO check uniform sampling rate?
     percent_left_pre = np.sum(left[pretest_indices]) / pretest_indices.size
     if meta['reinforced_odor'] == meta['pretest_left_odor']:
         percent_reinforced_pre.append(percent_left_pre)
