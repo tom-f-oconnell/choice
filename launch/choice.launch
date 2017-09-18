@@ -10,7 +10,7 @@
   <!-- TODO put snapshot_params node in this package, add another node tag -->
   <node name="versionpub" pkg="metatools" type="versionpub.py" unless="$(arg stimuli_only)">
     <rosparam>
-      package_names: ['metatools', 'stimuli', 'choice', 'multi_tracker', 'rosserial_arduino']
+      package_names: ['metatools', 'stimuli', 'choice', 'multi_tracker', 'rosserial_arduino', 'usb_cam']
     </rosparam>
   </node>
 
