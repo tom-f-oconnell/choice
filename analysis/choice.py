@@ -396,12 +396,19 @@ for fly, data in fly2data.items():
     # maybe allow some tolerance here
     assert pretest_indices.size == posttest_indices.size
 
-    rel_indices_tol = 0.05
+    # TODO warn whenever different
     n_pretest_indices = np.sum(pretest_indices)
     n_posttest_indices = np.sum(posttest_indices)
-    assert (abs(n_pretest_indices - n_posttest_indices) / n_posttest_indices) \
-        <= rel_indices_tol, '# pretest_indices=' + str(n_pretest_indices) + \
-        ', # posttest_indices=' + str(n_posttest_indices)
+    curr_rel_err = abs(n_pretest_indices - n_posttest_indices) / n_posttest_indices
+    '''
+    rel_indices_tol = 0.35
+    assert curr_rel_err <= rel_indices_tol, '# pretest_indices=' + \
+        str(n_pretest_indices) + ', # posttest_indices=' + str(n_posttest_indices) + \
+        ', relative error=' + str(curr_rel_err)
+    '''
+    if curr_rel_err != 0:
+        print 'WARNING! relative difference in timepoints in pre and post test = ' + \
+            str(curr_rel_err)
 
     # TODO include a buffer region that is called in neither direction to make this more robust to 
     # misspecifying the middle of the arena?

@@ -10,7 +10,7 @@
   <!-- TODO put snapshot_params node in this package, add another node tag -->
   <node name="versionpub" pkg="metatools" type="versionpub.py" unless="$(arg stimuli_only)">
     <rosparam>
-      package_names: ['versionpub', 'stimuli', 'choice', 'multi_tracker', 'rosserial_arduino']
+      package_names: ['metatools', 'stimuli', 'choice', 'multi_tracker', 'rosserial_arduino']
     </rosparam>
   </node>
 
@@ -32,9 +32,4 @@
   <include file="$(find stimuli)/launch/stimulus_arduino.launch">
     <arg name="port" value="$(arg port)" />
   </include>
-
-  <!-- put this in its own package or group in here? rename versionpub? -->
-  <node name="snapshot_params" pkg="multi_tracker" type="snapshot_params.py" unless="$(arg stimuli_only)">
-    <param name="wait_s" value="10" />
-  </node>
 </launch>
