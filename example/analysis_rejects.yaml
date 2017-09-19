@@ -1,0 +1,41 @@
+
+# TODO validate syntax / fail if something doesnt match data here
+# TODO put an example file like this in package somewhere
+# TODO support no reason (simpler syntax or separate key?)
+# TODO make gui to generate these quickly from plots
+# TODO maybe use flipped syntax where it is exp_id: {reason_0: [rois...], reason_1: [...], ...}?
+# TODO assert no duplicates
+
+no_fly:
+        # check this. not totally sure...
+        '20170913_104724': [2,4]
+
+never_active:
+        '20170913_105853': [3]
+        '20170913_112951': [2,5]
+        '20170919_091811': [4,6]
+
+inactive_after_shock:
+        # what happens with 5 again?
+        '20170913_105853': [1,2,5,6,7]
+        '20170913_112951': [4]
+        '20170919_030024': [1,5,6,7,8]
+        '20170919_031425': [1,2,3,4,6]
+        '20170919_090747': [1,4,5,7]
+
+# should i reject thihgns like 20170913_105853, 4? would Betty?
+no_sample_either_test:
+        '20170913_105853': [4]
+        # in some sense 20170919_031425, 7 could be construed as not sampling, 
+        # but she is moving well, and could be sampling at boundary. implications re:
+        # automated criteria?
+        '20170919_030024': [4]
+        '20170919_091811': [5]
+
+# possibly 20170919_0090747, 6, but won't be able to tell ex post facto
+no_receive_shock:
+
+# 20170919_091811, 6?
+tracker_artifacts:
+        '20170913_112951': [1]
+

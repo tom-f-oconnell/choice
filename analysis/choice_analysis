@@ -14,6 +14,18 @@ from stimuli.srv import LoadSequenceRequest
 # TODO maybe remove this dependency if it means it cant be run easily on windows?
 import rosparam
 
+import sys
+
+# TODO replace rosparam usage w/ this?
+# using this rather than pyyaml, because this supports rejecting duplicate keys
+from ruamel import yaml
+
+# TODO need to use Loader=Loader arg to load/similar for dump to benefit from this?
+
+# TODO check current dir -> check for env var -> check that dir
+# what all indications of having data from this kind of experiment?
+# not sure i want to make config file mandatory
+
 show_plots = False
 save_plots = True
 plot_format = 'png'
@@ -56,11 +68,28 @@ def load_metadata(d):
     # TODO load
     left_pins = [56, 57, 59]
     right_pins = [54, 55, 61]
+
     # TODO check
-    pretest_left_pin = [p for p in stimuli[0].seq.pins if p in left_pins][0]
-    pretest_left_odor = [o for o, p in odors2left_pins.items() if p == pretest_left_pin]
-    posttest_left_pin = [p for p in stimuli[-1].seq.pins if p in left_pins][0]
-    posttest_left_odor = [o for o, p in odors2left_pins.items() if p == posttest_left_pin]
+    def pin_from(check, group):
+        pins = [p for p in check if p in group]
+        assert len(pins) == 1
+        return pins[0]
+
+    def odor_for_pin(odors2pins, pin):
+        odors = [o for o, p in odors2pins.items() if p == pin]
+        assert len(odors) == 1
+        return odors[0]
+
+    def prepost_odors(odors2pins, pin_group, stimuli):
+        prepins = stimuli[0].seq.pins
+        postpins = stimuli[-1].seq.pins
+        prepin = pin_from(prepins, pin_group)
+        postpin = pin_from(postpins, pin_group)
+        return odor_for_pin(odors2pins, prepin), odor_for_pin(odors2pins, postpin)
+
+    pretest_left_odor, posttest_left_odor = prepost_odors(odors2left_pins, left_pins, stimuli)
+    pretest_right_odor, posttest_right_odor = prepost_odors(odors2right_pins, right_pins, stimuli)
+
     # TODO check that all blocks would yield the same answer
     for block in stimuli[1:-1]:
         odors = []
@@ -80,6 +109,8 @@ def load_metadata(d):
     # TODO maybe don't need these?
     metadata['pretest_left_odor'] = pretest_left_odor
     metadata['posttest_left_odor'] = posttest_left_odor
+    metadata['pretest_right_odor'] = pretest_right_odor
+    metadata['posttest_right_odor'] = posttest_right_odor
     # TODO TODO check
     metadata['reinforced_odor'] = reinforced_odor
     if split(d)[-1] == '20170919_090747':
@@ -88,18 +119,22 @@ def load_metadata(d):
         print 'experiment:', split(d)[-1]
         print 'odors2left_pins:', odors2left_pins
         print 'odors2right_pins:', odors2right_pins
-        print 'pretest left:', pretest_left_pin, pretest_left_odor 
-        print 'posttest left:', posttest_left_pin, posttest_left_odor 
+        print 'pretest left:', odors2left_pins[pretest_left_odor], pretest_left_odor 
+        print 'posttest left:', odors2left_pins[posttest_left_odor], posttest_left_odor 
+        print 'pretest right:', odors2right_pins[pretest_right_odor], pretest_right_odor 
+        print 'posttest right:', odors2right_pins[posttest_right_odor], posttest_right_odor 
         print 'reinforced odor', reinforced_odor
         print ''
         print ''
     metadata['stimuli'] = list(stimuli)
+    # TODO switch to new style
     left_pins2odors = dict((v, k) for k, v in odors2left_pins.items())
     right_pins2odors = dict((v, k) for k, v in odors2right_pins.items())
 
     assert len(left_pins2odors) == len(odors2left_pins), 'some odors map to multiple left pins'
     assert len(right_pins2odors) == len(odors2right_pins), 'some odors map to multiple right pins'
 
+    # TODO TODO check
     for p in left_pins2odors.keys():
         assert not p in right_pins2odors.keys(), 'pin ' + str(p) + \
             ' was listed as both left and right'
@@ -125,17 +160,25 @@ dirs = glob.glob('/home/tom/data/retracked/2017091*')
 
 # TODO flag to visually indicate which indices are counted for the various preference metrics
 
-# TODO skip before loading if marked bad?
 # TODO maybe have a flag to save figures for rejects?
-reject_bad = True
-bad = {'20170913_104724': {2,4},
-       '20170913_105853': {1,2,3,4,5,6,7},
-       '20170913_112951': {1,2,4,5},
-       # all dead?
-       '20170919_030024': {1,4,5,6,7,8},
-       '20170919_031425': {1,2,3,4,6},
-       '20170919_090747': {1,4,5,6,7},
-       '20170919_091811': {4,5,6}}
+reject_bad = False
+
+with open(join(path, 'analysis_rejects.yaml'), 'r') as f:
+    yaml_loader = yaml.YAML()
+    yaml_loader.allow_duplicate_keys = False
+    rejects = yaml_loader.load(f)
+
+bad = dict()
+for reason, reject_dict in rejects.items():
+    if reject_dict is None:
+        continue
+
+    for exp_id, rois in reject_dict.items():
+        print(set(rois))
+        if exp_id in bad:
+            bad[exp_id] = bad[exp_id] | set(rois)
+        else:
+            bad[exp_id] = set(rois)
 
 curr_fly = 0
 fly2data = dict()
@@ -413,6 +456,7 @@ for fly, data in fly2data.items():
         print 'WARNING! relative difference in timepoints in pre and post test = ' + \
             str(curr_rel_err)
 
+    # TODO TODO factor into function for better consistency / isolation
     # TODO include a buffer region that is called in neither direction to make this more robust to 
     # misspecifying the middle of the arena?
     # TODO check uniform sampling rate?
@@ -422,20 +466,23 @@ for fly, data in fly2data.items():
     if meta['reinforced_odor'] == meta['pretest_left_odor']:
         percent_reinforced_pre.append(percent_left_pre)
         print('pretest_left_odor was reinforced')
-    else:
+    elif meta['reinforced_odor'] == meta['pretest_right_odor']:
         percent_reinforced_pre.append(1 - percent_left_pre)
         print('pretest_left_odor was NOT reinforced')
+    else:
+        assert False, 'neither of pretest_<left/right>_odor(s) were equal to reinforced odor'
 
-    # TODO factor into function for better consistency / isolation
     percent_left_post = np.sum(left[posttest_indices]) / np.sum(posttest_indices)
     #print 'sum posttest indices on left', np.sum(left[posttest_indices])
     #print 'sum posttest_indices', np.sum(posttest_indices)
     if meta['reinforced_odor'] == meta['posttest_left_odor']:
         percent_reinforced_post.append(percent_left_post)
         print('posttest_left_odor was reinforced')
-    else:
+    elif meta['reinforced_odor'] == meta['posttest_right_odor']:
         percent_reinforced_post.append(1 - percent_left_post)
         print('posttest_left_odor was NOT reinforced')
+    else:
+        assert False, 'neither of posttest_<left/right>_odor(s) were equal to reinforced odor'
     # TODO save these into something easily loadable as pandas dataframe?
     # w/ other metadata i might want
 
@@ -479,10 +526,10 @@ if make_plots:
     plt.xticks(x, ['Pre', 'Post'])
     ax = plt.gca()
     ax.set_xlim([-.2, 1.2])
-    ax.set_ylim([0, 1])
+    ax.set_ylim([-.1, 1.1])
 
     for pre, post in zip(percent_reinforced_pre, percent_reinforced_post):
-        plt.plot(x, [pre, post])
+        plt.plot(x, [pre, post], marker='.')
     # TODO boxplot on top of this?
 
     if save_plots:

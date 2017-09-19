@@ -11,3 +11,5 @@ setup(
     #description='',
     #long_description=open('README.md').read(),
 )
+
+#requires=['ruamel.yaml',]
