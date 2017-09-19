@@ -9,3 +9,4 @@ FIX STIMULUS PARAMETER SAVING (FROM TRACKER, OR REPEAT IN THIS LAUNCH) WHEN TRAC
 
 copy stimulus parameters to retracked directory (maybe any pickle files?)
 
+only start shock after the fly has experienced the odor
