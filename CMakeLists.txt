@@ -153,6 +153,7 @@ include_directories(
 # all install targets should use catkin DESTINATION variables
 # See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
 
+# TODO do i want to install script here or globally (from setup.py)? both?
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 # install(PROGRAMS
@@ -174,6 +175,7 @@ include_directories(
 #   PATTERN ".svn" EXCLUDE
 # )
 
+# TODO example data
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES
 #   # myfile1

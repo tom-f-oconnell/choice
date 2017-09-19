@@ -7,6 +7,7 @@ import pandas as pd
 import multi_tracker_analysis as mta
 import glob
 from os.path import join, split
+import os
 import re
 import pickle
 from stimuli.srv import LoadSequenceRequest
@@ -27,7 +28,7 @@ if make_plots:
     # was it set_style?
     sns.set()
 
-# TODO have these parameters save correctly
+# TODO load
 left_shock = 6
 right_shock = 5
 
@@ -54,7 +55,8 @@ def load_metadata(d):
     times['pretest_start'] = stimuli[0].seq.start.to_sec()
     times['posttest_start'] = stimuli[-1].seq.start.to_sec()
     times['test_duration'] = stimuli[0].seq.end.to_sec() - stimuli[0].seq.start.to_sec()
-    # TODO fix parameter saving so stimulus parameters are also recorded (e.g. which pins are left)
+
+    # TODO load
     left_pins = [56, 57, 59]
     right_pins = [54, 55, 61]
     pretest_left_pin = [p for p in stimuli[0].seq.pins if p in left_pins][0]
@@ -72,6 +74,7 @@ def load_metadata(d):
             assert len(odors) == 1
             reinforced_odor = odors[0]
             break
+
     metadata = dict()
     metadata['times'] = times
     # TODO maybe don't need these?
@@ -102,7 +105,9 @@ path = '/home/tom/data/retracked'
 # TODO just walk from path in future?
 # or glob on date here and glob separately below?
 
-dirs = ['20170913_104724', '20170913_105853', '20170913_112951']
+#dirs = ['20170913_104724', '20170913_105853', '20170913_112951']
+# TODO regex matching this timestamp pattern?
+dirs = glob.glob('/home/tom/data/retracked/20170919*')
 
 '''
 checked
@@ -136,7 +141,7 @@ really only 2/6 this day were good? what happened to other 2 flies?
 
 # TODO skip before loading if marked bad?
 # TODO maybe have a flag to save figures for rejects?
-reject_bad = True
+reject_bad = False
 bad = {'20170913_104724': {2,4},
        '20170913_105853': {1,2,3,4,5,6,7},
        '20170913_112951': {1,2,4,5}}
@@ -146,11 +151,18 @@ fly2data = dict()
 fly2meta = dict()
 all_odors = set()
 
+fig_subdir = 'figs'
+
 for d in map(lambda x: join(path, x), dirs):
     # TODO check trial structure times against those in log
     common_metadata = load_metadata(d)
     for o in common_metadata['odors']:
         all_odors.add(o)
+
+    if save_plots:
+        fd = join(d, fig_subdir)
+        if not os.path.exists(fd):
+            os.makedirs(fd)
 
     # TODO can join take a variable # of args?
     for f in glob.glob(join(d, '*.hdf5')):
@@ -429,6 +441,10 @@ for fly, data in fly2data.items():
         percent_reinforced_post.append(percent_left_post)
     else:
         percent_reinforced_post.append(1 - percent_left_post)
+    # TODO save these into something easily loadable as pandas dataframe?
+    # w/ other metadata i might want
+
+    # TODO calculate other metric
 
     if make_plots:
         plt.legend(handles=handles, labels=labels)
@@ -450,7 +466,12 @@ for fly, ax in zip(fly_nums_in_order, axes_to_set_limits):
     ax.set_ylim([plotting_y_min, plotting_y_max])
     if save_plots:
         meta = fly2meta[fly]
-        ax.figure.savefig(split(meta['dir'])[-1] + '_' + str(meta['n']) + '.' + plot_format)
+        # TODO flag to output all figs in current dir? (as well?)
+        #fd = join(meta['dir'], fig_subdir)
+        #ax.figure.savefig(join(fd, split(meta['dir'])[-1] + '_' + str(meta['n']) + \
+        #    '.' + plot_format))
+        ax.figure.savefig(split(meta['dir'])[-1] + '_' + str(meta['n']) + \
+            '.' + plot_format)
         #    plot_format, bbox_inches='tight')
 
 # TODO make it so you can get fly id from hovering? or clicking?
@@ -470,6 +491,7 @@ if make_plots:
     # TODO boxplot on top of this?
 
     if save_plots:
+        # TODO save at same level as all experiment directories?
         fig.savefig('preference_change.' + plot_format, bbox_inches='tight')
 
     if show_plots:
