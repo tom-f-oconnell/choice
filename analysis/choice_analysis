@@ -193,8 +193,6 @@ fly2data = dict()
 fly2meta = dict()
 all_odors = set()
 
-fig_subdir = 'figs'
-
 experiment2label = dict()
 curr_char = ord('A')
 
@@ -220,10 +218,12 @@ for d in map(lambda x: join(path, x), dirs):
         metadata['n'] = int(match.group(0)[2:-1])
 
         stamp = split(d)[-1]
+        '''
         if reject_bad and metadata['n'] in bad[stamp]:
             if verbose:
                 print 'skipping fly', metadata['n'], 'from experiment', stamp, 'because listed as bad'
             continue
+        '''
 
         fly2data[curr_fly] = data
         metadata['dir'] = d
@@ -239,403 +239,456 @@ for d in map(lambda x: join(path, x), dirs):
         curr_fly += 1
 
 if make_plots:
+    # TODO seed or something for better colors w/ # odors=2
     cmap = sns.color_palette('husl', len(all_odors))
     odor2color = dict()
     for o, c in zip(all_odors, cmap):
         odor2color[o] = c
 
-y_maxes_above_mid = []
-y_mins_below_mid = []
 
-# TODO assert that we are analyzing with dimension that corresponds to long axis of roi
+def analyze_group(fly2data, title=''):
+    """
+    """
+    y_maxes_above_mid = []
+    y_mins_below_mid = []
 
-for m in fly2meta.values():
-    y_vals = map(lambda p: p[1], m['roi_points'])
-    curr_mid = np.mean(y_vals)
-    centered_y_vals = map(lambda y: y - curr_mid, y_vals)
-    y_maxes_above_mid.append(max(centered_y_vals))
-    y_mins_below_mid.append(min(centered_y_vals))
+    # TODO assert that we are analyzing with dimension that corresponds to long axis of roi
 
-y_max_above_mid = max(y_maxes_above_mid)
-y_min_below_mid = min(y_mins_below_mid)
+    for m in fly2meta.values():
+        y_vals = map(lambda p: p[1], m['roi_points'])
+        curr_mid = np.mean(y_vals)
+        centered_y_vals = map(lambda y: y - curr_mid, y_vals)
+        y_maxes_above_mid.append(max(centered_y_vals))
+        y_mins_below_mid.append(min(centered_y_vals))
 
-if verbose:
-    print 'y_min_below_mid', y_min_below_mid, 'y_max_above_mid', y_max_above_mid
+    y_max_above_mid = max(y_maxes_above_mid)
+    y_min_below_mid = min(y_mins_below_mid)
 
-# TODO divide into mch and oct? make a dataframe including all variables (like side, etc)?
-percent_reinforced_pre = []
-percent_reinforced_post = []
-
-# TODO why did 1100 not work? isn't sequence 1000 long?
-crop_to_seconds = 1300
-
-# TODO line up images of ROIs, with drawn midline, to check for those errors
-# TODO label / group by the reinforced odor?
-
-plotting_y_max = None
-plotting_y_min = None
-plotting_x_max = None
-plotting_x_min = None
-
-axes_to_set_limits = []
-fly_nums_in_order = []
-
-y_shock_to_odor = 2
-y_beyond_arena = 0
-small_height = 4
-odor_patch_alpha = 0.4
-shock_patch_alpha = 0.8
-shock_color = 'red'
-
-if make_plots:
-    label_set = set()
-    labels = []
-    handles = []
-
-    scale = 12
-    fig, axes = plt.subplots(nrows=len(fly2data), sharex=True, sharey=True, squeeze=True, figsize=(scale * 1, scale * 1))
-    plt.xlabel('Seconds')
-
-for fly, data in fly2data.items():
-    meta = fly2meta[fly]
-    # TODO what happens to missing data?
-    # plotted as zero? not plotted?
-    curr_times = (data['time_epoch_secs'] + data['time_epoch_nsecs'] / 1e9).as_matrix()
-    # TODO so does floris initialize something to 5000? blocks written in that size?
-    #print(curr_times.shape)
-    nonzero_times = curr_times.nonzero()[0]
-    if nonzero_times.size == 0:
-        # TODO automatically add these to yaml? recommend?
-        # count earlier to get the right # of subplots?
-        if verbose:
-            print 'SKIPPING FLY', meta['n'], 'FROM', meta['dir']
-        continue
     if verbose:
-        print 'fly', meta['n'], 'from', meta['dir']
-    #start = curr_times[nonzero_times].min()
-    start = meta['times']['pretest_start'] - 60
+        print 'y_min_below_mid', y_min_below_mid, 'y_max_above_mid', y_max_above_mid
 
-    # TODO print how much this fly has walked (in each test period?)
+    # TODO divide into mch and oct? make a dataframe including all variables (like side, etc)?
+    percent_reinforced_pre = []
+    percent_reinforced_post = []
 
-    #print 'START TIME =', start
-    #print '# of zero entries', curr_times.size - nonzero_times.size
+    # TODO why did 1100 not work? isn't sequence 1000 long?
+    crop_to_seconds = 1300
 
-    # because for some of these, the tracking ran much longer than the stimulus presentation
-    cropped_indices = (curr_times - start) <= crop_to_seconds
-    cropped_times = curr_times[cropped_indices]
-    # relative to start of experiment
-    cropped_rel_times = cropped_times - start
+    # TODO line up images of ROIs, with drawn midline, to check for those errors
+    # TODO label / group by the reinforced odor?
 
-    # calculate percent time in each odor region
-    # TODO make one variable at top which controls which dimension to use as long axis
-    # and have this (and elsewhere) depend on that
-    y_mid = np.mean(map(lambda x: x[1], meta['roi_points']))
+    plotting_y_max = None
+    plotting_y_min = None
+    plotting_x_max = None
+    plotting_x_min = None
+
+    axes_to_set_limits = []
+    fly_nums_in_order = []
+
+    y_shock_to_odor = 2
+    y_beyond_arena = 0
+    small_height = 4
+    odor_patch_alpha = 0.4
+    shock_patch_alpha = 0.8
+    shock_color = 'red'
+
     if make_plots:
-        # TODO TODO filter very high frequency noise out before plotting
-        # multiplied by negative one so it is displayed in same orientation as video
-        # and also by patches (rectangles) indicating which side each odor is on
-        # TODO maybe try antialiased=True/False? default?
-        # rasterized default?
-        ax = axes[fly]
-        ax.plot(cropped_rel_times , (-1) * (data['position_y'][cropped_indices] - y_mid), \
-            c='black', linewidth=1.3)
+        label_set = set()
+        labels = []
+        handles = []
 
-    y_max = max(map(lambda x: x[1], meta['roi_points']))
-    y_min = min(map(lambda x: x[1], meta['roi_points']))
-    if verbose:
-        print 'y_max', y_max, 'y_min', y_min, 'using y midline', y_mid
-    left = data['position_y'][cropped_indices] > y_mid
-    # TODO maybe use times from log, rather than these?
-    pretest_indices = np.logical_and(cropped_times > meta['times']['pretest_start'], \
-        cropped_times < (meta['times']['pretest_start'] + \
-        meta['times']['test_duration']))
+        scale = 12
+        fig, axes = plt.subplots(nrows=len(fly2data), sharex=True, sharey=True, \
+            squeeze=True, figsize=(scale * 1, scale * 1))
+        if not type(axes) is np.ndarray:
+            axes = [axes]
 
-    posttest_indices = np.logical_and(cropped_times > meta['times']['posttest_start'], \
-        cropped_times < (meta['times']['posttest_start'] + \
-        meta['times']['test_duration']))
+        plt.xlabel('Seconds')
 
-    # TODO TODO filter out trajectories that don't move much. just use floris' config file thing?
+    curr_ax = 0
+    for fly, data in fly2data.items():
+        meta = fly2meta[fly]
+        # TODO what happens to missing data?
+        # plotted as zero? not plotted?
+        curr_times = (data['time_epoch_secs'] + data['time_epoch_nsecs'] / 1e9).as_matrix()
+        # TODO so does floris initialize something to 5000? blocks written in that size?
+        #print(curr_times.shape)
+        nonzero_times = curr_times.nonzero()[0]
+        if nonzero_times.size == 0:
+            # TODO automatically add these to yaml? recommend?
+            # count earlier to get the right # of subplots?
+            if verbose:
+                print 'SKIPPING FLY', meta['n'], 'FROM', meta['dir']
+            continue
 
-    large_height = (y_max_above_mid - y_min_below_mid) / 2 + y_beyond_arena
-    
-    for i, s in enumerate(meta['stimuli']):
-        width = (s.seq.end - s.seq.start).to_sec()
-        for p in s.seq.pins:
-            color = 'b'
-            label = None
-            if p is left_shock:
-                label = 'shock'
-                color = shock_color
-                height = small_height
-                y0 = y_min_below_mid - y_beyond_arena - (y_shock_to_odor + small_height)
-                alpha = shock_patch_alpha
-
-            elif p is right_shock:
-                label = 'shock'
-                color = shock_color
-                height = small_height
-                y0 = y_max_above_mid + y_beyond_arena + y_shock_to_odor
-                alpha = shock_patch_alpha
-
-            # TODO i think the reason these have been displaying correctly is that
-            # y_min_below_mid ~= y_max_above_mid, though those are probably still
-            # calculated for the wrong sides. fix? use one number equal to their average?
-
-            # displayed on down side in plot, and down should also be left in the video
-            # , with closer arenas further to the right
-            elif p in meta['left_pins2odors']:
-                #print 'left odor', meta['left_pins2odors'][p]
-                if make_plots:
-                    label = meta['left_pins2odors'][p]
-                    color = odor2color[label]
-                y0 = y_min_below_mid - y_beyond_arena
-                height = large_height
-                alpha = odor_patch_alpha
-
-            # displayed on top sides of plots, which should also be right in the video
-            elif p in meta['right_pins2odors']:
-                #print 'right odor', meta['right_pins2odors'][p]
-                if make_plots:
-                    label = meta['right_pins2odors'][p]
-                    color = odor2color[label]
-                # because we define the middle as the new origin
-                y0 = 0
-                height = large_height
-                alpha = odor_patch_alpha
-
-            else:
-                #print 'skipping pin', p
-                continue
-
-            # TODO maybe subdivide for shocks? (to reflect actual pulse cycle ~2.5s on/off)
-            x0 = s.seq.start.to_sec() - start
-            #print 'seq.start.to_sec()', s.seq.start.to_sec(), 'x0', x0, 'width', width
-            if i == 0:
-                # define acceptable mismatch here?
-                if x0 <= 0.0:
-                    if verbose:
-                        print 'WARNING! seems no video was recorded for first ' + \
-                            str(-x0) + ' seconds of first block (pre-training test)'
-
-            else:
-                assert x0 > 0, 'times we want to disply should not be negative. was ' + str(x0)
-
-            assert x0 + width < crop_to_seconds, 'last time index of patched region should fall ' + \
-                'within limits of cropped experiment. was ' + str(x0 + width) + ' end=' + \
-                str(crop_to_seconds)
-            #print 'patching pin', p, 'from', (x0, y0), 'with w=', width, 'and h=', height
-
-            if make_plots:
-                p = patches.Rectangle((x0, y0), width, height, alpha=alpha, \
-                    facecolor=color, edgecolor=color)
-                ax.add_patch(p)
-
-                if (not label is None)  and (not label in label_set):
-                    label_set.add(label)
-                    labels.append(label)
-                    handles.append(p)
-
-                curr_y_max = y0 + height
-                if plotting_y_max is None or plotting_y_max < curr_y_max:
-                    plotting_y_max = curr_y_max
-
-                curr_y_min = y0
-                if plotting_y_min is None or plotting_y_min > curr_y_min:
-                    plotting_y_min = curr_y_min
-
-                curr_x_max = x0 + width
-                if plotting_x_max is None or plotting_x_max < curr_x_max:
-                    plotting_x_max = curr_x_max
-
-                curr_x_min = x0
-                if plotting_x_min is None or plotting_x_min > curr_x_min:
-                    plotting_x_min = curr_x_min
-
-    assert pretest_indices.dtype == np.bool, \
-        'later functions assume indices represented as boolean mask'
-    assert posttest_indices.dtype == np.bool, \
-        'later functions assume indices represented as boolean mask'
-    assert not np.any(np.logical_and(pretest_indices, posttest_indices)), \
-        'pre and post test indices overlapped'
-    # maybe allow some tolerance here
-    assert pretest_indices.size == posttest_indices.size
-
-    # TODO warn whenever different
-    n_pretest_indices = np.sum(pretest_indices)
-    n_posttest_indices = np.sum(posttest_indices)
-    curr_rel_err = abs(n_pretest_indices - n_posttest_indices) / n_posttest_indices
-    '''
-    rel_indices_tol = 0.35
-    assert curr_rel_err <= rel_indices_tol, '# pretest_indices=' + \
-        str(n_pretest_indices) + ', # posttest_indices=' + str(n_posttest_indices) + \
-        ', relative error=' + str(curr_rel_err)
-    '''
-    if curr_rel_err != 0:
         if verbose:
-            print 'WARNING! relative difference in timepoints in pre and post test = ' + \
-                str(curr_rel_err)
+            print 'fly', meta['n'], 'from', meta['dir']
+        #start = curr_times[nonzero_times].min()
+        start = meta['times']['pretest_start'] - 60
 
-    # TODO TODO factor into function for better consistency / isolation
-    # TODO include a buffer region that is called in neither direction to make this more robust to 
-    # misspecifying the middle of the arena?
-    # TODO check uniform sampling rate?
-    percent_left_pre = np.sum(left[pretest_indices]) / np.sum(pretest_indices)
-    #print 'sum pretest indices on left', np.sum(left[pretest_indices])
-    #print 'sum pretest_indices', np.sum(pretest_indices)
-    if meta['reinforced_odor'] == meta['pretest_left_odor']:
-        percent_reinforced_pre.append(percent_left_pre)
+        # TODO print how much this fly has walked (in each test period?)
+
+        #print 'START TIME =', start
+        #print '# of zero entries', curr_times.size - nonzero_times.size
+
+        # because for some of these, the tracking ran much longer than the stimulus presentation
+        cropped_indices = (curr_times - start) <= crop_to_seconds
+        cropped_times = curr_times[cropped_indices]
+        # relative to start of experiment
+        cropped_rel_times = cropped_times - start
+
+        # calculate percent time in each odor region
+        # TODO make one variable at top which controls which dimension to use as long axis
+        # and have this (and elsewhere) depend on that
+        y_mid = np.mean(map(lambda x: x[1], meta['roi_points']))
+        if make_plots:
+            # TODO TODO filter very high frequency noise out before plotting
+            # multiplied by negative one so it is displayed in same orientation as video
+            # and also by patches (rectangles) indicating which side each odor is on
+            # TODO maybe try antialiased=True/False? default?
+            # rasterized default?
+            ax = axes[curr_ax]
+            curr_ax += 1
+            ax.plot(cropped_rel_times , (-1) * (data['position_y'][cropped_indices] - y_mid), \
+                c='black', linewidth=1.3)
+
+        y_max = max(map(lambda x: x[1], meta['roi_points']))
+        y_min = min(map(lambda x: x[1], meta['roi_points']))
         if verbose:
-            print('pretest_left_odor was reinforced')
-    elif meta['reinforced_odor'] == meta['pretest_right_odor']:
-        percent_reinforced_pre.append(1 - percent_left_pre)
-        if verbose:
-            print('pretest_left_odor was NOT reinforced')
-    else:
-        assert False, 'neither of pretest_<left/right>_odor(s) were equal to reinforced odor'
+            print 'y_max', y_max, 'y_min', y_min, 'using y midline', y_mid
+        left = data['position_y'][cropped_indices] > y_mid
+        # TODO maybe use times from log, rather than these?
+        pretest_indices = np.logical_and(cropped_times > meta['times']['pretest_start'], \
+            cropped_times < (meta['times']['pretest_start'] + \
+            meta['times']['test_duration']))
 
-    percent_left_post = np.sum(left[posttest_indices]) / np.sum(posttest_indices)
-    #print 'sum posttest indices on left', np.sum(left[posttest_indices])
-    #print 'sum posttest_indices', np.sum(posttest_indices)
-    if meta['reinforced_odor'] == meta['posttest_left_odor']:
-        percent_reinforced_post.append(percent_left_post)
-        if verbose:
-            print('posttest_left_odor was reinforced')
-    elif meta['reinforced_odor'] == meta['posttest_right_odor']:
-        percent_reinforced_post.append(1 - percent_left_post)
-        if verbose:
-            print('posttest_left_odor was NOT reinforced')
-    else:
-        assert False, 'neither of posttest_<left/right>_odor(s) were equal to reinforced odor'
-    # TODO save these into something easily loadable as pandas dataframe?
-    # w/ other metadata i might want
+        posttest_indices = np.logical_and(cropped_times > meta['times']['posttest_start'], \
+            cropped_times < (meta['times']['posttest_start'] + \
+            meta['times']['test_duration']))
 
-    # TODO calculate other metric
+        # TODO TODO filter out trajectories that don't move much. 
+        # just use floris' config file thing?
 
-    # TODO only print metrics if not make_plots and display_metrics? just latter?
-    if make_plots:
-        if display_metrics:
-            # TODO other metrics?
-            text = ''
-            if want_time_spent:
-                # TODO make robust to fly #0 getting skipped
-                if fly == 0:
-                    text += 'pre: %.3f in reinforced\npost: %.3f in reinforced' % \
-                        (percent_reinforced_pre[-1], percent_reinforced_post[-1])
-                else:
-                    text += 'pre: %.3f\npost: %.3f' % \
-                        (percent_reinforced_pre[-1], percent_reinforced_post[-1])
-
-            # TODO might want this to the left of the other (not above / below)?
-            if want_preference_index:
-                # TODO was it performance index or preference index?
-                # TODO nicer way to do this? join list w/ newline?
-                if want_time_spent:
-                    text += '\n'
-
-                text += 'PI pre: %.3f\nPI post: %.3f' % \
-                    (pre_preference_index[-1], post_prefence_index[-1])
-
-            # no sure i want a box?
-            # TODO what does verticalalignment do?
-            ax.text(1, 0.7, text, transform=ax.transAxes, fontsize=8, \
-                verticalalignment='top')
-
-            # different name for this flag?
-            if show_experiment_labels:
-                ax.text(-.04, 0.6, experiment2label[meta['dir']], transform=ax.transAxes, \
-                    fontsize=12, verticalalignment='top')
-
-        axes_to_set_limits.append(ax)
-        fly_nums_in_order.append(fly)
-
-if make_plots:
-    fig.legend(handles=handles, labels=labels, loc='lower left', fontsize=9)
-
-if verbose:
-    print 'plotting ranges: x', (plotting_x_min, plotting_x_max), 'y', (plotting_y_min, plotting_y_max)
-
-# relative
-y_bord = 0.025
-x_bord = 0.025
-x_range = plotting_x_max - plotting_y_min
-y_range = plotting_y_max - plotting_y_min
-plotting_x_min = plotting_x_min - x_range * x_bord
-plotting_x_max = plotting_x_max + x_range * x_bord
-plotting_y_min = plotting_y_min - y_range * y_bord
-plotting_y_max = plotting_y_max + y_range * y_bord
-
-for fly, ax in zip(fly_nums_in_order, axes_to_set_limits):
-    ax.set_xlim([plotting_x_min, plotting_x_max])
-    ax.set_ylim([plotting_y_min, plotting_y_max])
-    if fly != len(fly_nums_in_order) - 1:
-        ax.axis('off')
-    else:
-        ax.spines['top'].set_visible(False)
-        ax.spines['right'].set_visible(False)
-        ax.spines['left'].set_visible(False)
-        # TODO make the bottom frame a little further away
-        #print 'xticks:', ax.get_xticks()
-        ax.set_yticks([])
-        # TODO why is this not working?
-        ax.tick_params(axis='x', direction='out')
+        large_height = (y_max_above_mid - y_min_below_mid) / 2 + y_beyond_arena
         
+        for i, s in enumerate(meta['stimuli']):
+            width = (s.seq.end - s.seq.start).to_sec()
+            for p in s.seq.pins:
+                color = 'b'
+                label = None
+                if p is left_shock:
+                    label = 'shock'
+                    color = shock_color
+                    height = small_height
+                    y0 = y_min_below_mid - y_beyond_arena - (y_shock_to_odor + small_height)
+                    alpha = shock_patch_alpha
 
-if save_plots:
-    # TODO flag to output all figs in current dir? (as well?) symlink?
-    fig.savefig('traces.' + plot_format)
+                elif p is right_shock:
+                    label = 'shock'
+                    color = shock_color
+                    height = small_height
+                    y0 = y_max_above_mid + y_beyond_arena + y_shock_to_odor
+                    alpha = shock_patch_alpha
 
-if (not show_plots) or only_show_interactive:
-    plt.close('all')
+                # TODO i think the reason these have been displaying correctly is that
+                # y_min_below_mid ~= y_max_above_mid, though those are probably still
+                # calculated for the wrong sides. fix? use one number equal to their average?
 
-# TODO make it so you can get fly id from hovering? or clicking?
-# TODO patch in counted regions for troubleshooting?
-if make_plots:
-    fig = plt.figure(figsize=(4,4))
-    plt.title('Conditioned change in preference')
-    plt.ylabel('Proportion of test spent in shocked odor')
-    x = [0, 1]
-    plt.xticks(x, ['Pre', 'Post'])
-    ax = plt.gca()
-    ax.set_xlim([-.2, 1.2])
-    ax.set_ylim([-.1, 1.1])
+                # displayed on down side in plot, and down should also be left in the video
+                # , with closer arenas further to the right
+                elif p in meta['left_pins2odors']:
+                    #print 'left odor', meta['left_pins2odors'][p]
+                    if make_plots:
+                        label = meta['left_pins2odors'][p]
+                        color = odor2color[label]
+                    y0 = y_min_below_mid - y_beyond_arena
+                    height = large_height
+                    alpha = odor_patch_alpha
 
-    for fly, pre, post in zip(fly_nums_in_order, \
-            percent_reinforced_pre, percent_reinforced_post):
+                # displayed on top sides of plots, which should also be right in the video
+                elif p in meta['right_pins2odors']:
+                    #print 'right odor', meta['right_pins2odors'][p]
+                    if make_plots:
+                        label = meta['right_pins2odors'][p]
+                        color = odor2color[label]
+                    # because we define the middle as the new origin
+                    y0 = 0
+                    height = large_height
+                    alpha = odor_patch_alpha
 
-        label = split(fly2meta[fly]['dir'])[-1] + ', ROI ' + str(fly2meta[fly]['n'])
-        ax.plot(x, [pre, post], marker='.', label=label, color='black')
+                else:
+                    #print 'skipping pin', p
+                    continue
 
-    # TODO boxplot on top of this?
-    if save_plots:
-        # TODO save at same level as all experiment directories?
-        fig.savefig('preference_change.' + plot_format, bbox_inches='tight')
+                # TODO maybe subdivide for shocks? (to reflect actual pulse cycle ~2.5s on/off)
+                x0 = s.seq.start.to_sec() - start
+                #print 'seq.start.to_sec()', s.seq.start.to_sec(), 'x0', x0, 'width', width
+                if i == 0:
+                    # define acceptable mismatch here?
+                    if x0 <= 0.0:
+                        if verbose:
+                            print 'WARNING! seems no video was recorded for first ' + \
+                                str(-x0) + ' seconds of first block (pre-training test)'
 
-    if show_plots:
-        def on_plot_hover(ax, event):
-            on_any_curve = False
-            for curve in ax.get_lines():
-                if curve.contains(event)[0]:
-                    on_any_curve = True
-                    # drawing at one side would probably also be acceptable
-                    # rectangular patch as relief, behind text?
-                    if not hasattr(on_plot_hover, 'text_handle'):
-                        on_plot_hover.text_handle = ax.text(float(event.xdata), \
-                                float(event.ydata), curve.get_label())
+                else:
+                    assert x0 > 0, 'times we want to disply should not be negative. was ' + str(x0)
 
+                assert x0 + width < crop_to_seconds, 'last time index of patched ' + \
+                    'region should fall within limits of cropped experiment. was ' + \
+                    str(x0 + width) + ' end=' + str(crop_to_seconds)
+                #print 'patching pin', p, 'from', (x0, y0), 'with w=', width, 'and h=', height
+
+                if make_plots:
+                    p = patches.Rectangle((x0, y0), width, height, alpha=alpha, \
+                        facecolor=color, edgecolor=color)
+                    ax.add_patch(p)
+
+                    if (not label is None)  and (not label in label_set):
+                        label_set.add(label)
+                        labels.append(label)
+                        handles.append(p)
+
+                    curr_y_max = y0 + height
+                    if plotting_y_max is None or plotting_y_max < curr_y_max:
+                        plotting_y_max = curr_y_max
+
+                    curr_y_min = y0
+                    if plotting_y_min is None or plotting_y_min > curr_y_min:
+                        plotting_y_min = curr_y_min
+
+                    curr_x_max = x0 + width
+                    if plotting_x_max is None or plotting_x_max < curr_x_max:
+                        plotting_x_max = curr_x_max
+
+                    curr_x_min = x0
+                    if plotting_x_min is None or plotting_x_min > curr_x_min:
+                        plotting_x_min = curr_x_min
+
+        assert pretest_indices.dtype == np.bool, \
+            'later functions assume indices represented as boolean mask'
+        assert posttest_indices.dtype == np.bool, \
+            'later functions assume indices represented as boolean mask'
+        assert not np.any(np.logical_and(pretest_indices, posttest_indices)), \
+            'pre and post test indices overlapped'
+        # maybe allow some tolerance here
+        assert pretest_indices.size == posttest_indices.size
+
+        # TODO warn whenever different
+        n_pretest_indices = np.sum(pretest_indices)
+        n_posttest_indices = np.sum(posttest_indices)
+        curr_rel_err = abs(n_pretest_indices - n_posttest_indices) / n_posttest_indices
+        '''
+        rel_indices_tol = 0.35
+        assert curr_rel_err <= rel_indices_tol, '# pretest_indices=' + \
+            str(n_pretest_indices) + ', # posttest_indices=' + str(n_posttest_indices) + \
+            ', relative error=' + str(curr_rel_err)
+        '''
+        if curr_rel_err != 0:
+            if verbose:
+                print 'WARNING! relative difference in timepoints in pre and post test = ' + \
+                    str(curr_rel_err)
+
+        # TODO TODO factor into function for better consistency / isolation
+        # TODO include a buffer region that is called in neither direction 
+        # to make this more robust to misspecifying the middle of the arena?
+        # TODO check uniform sampling rate?
+        percent_left_pre = np.sum(left[pretest_indices]) / np.sum(pretest_indices)
+        #print 'sum pretest indices on left', np.sum(left[pretest_indices])
+        #print 'sum pretest_indices', np.sum(pretest_indices)
+        if meta['reinforced_odor'] == meta['pretest_left_odor']:
+            percent_reinforced_pre.append(percent_left_pre)
+            if verbose:
+                print('pretest_left_odor was reinforced')
+        elif meta['reinforced_odor'] == meta['pretest_right_odor']:
+            percent_reinforced_pre.append(1 - percent_left_pre)
+            if verbose:
+                print('pretest_left_odor was NOT reinforced')
+        else:
+            assert False, 'neither of pretest_<left/right>_odor(s) were equal to reinforced odor'
+
+        percent_left_post = np.sum(left[posttest_indices]) / np.sum(posttest_indices)
+        #print 'sum posttest indices on left', np.sum(left[posttest_indices])
+        #print 'sum posttest_indices', np.sum(posttest_indices)
+        if meta['reinforced_odor'] == meta['posttest_left_odor']:
+            percent_reinforced_post.append(percent_left_post)
+            if verbose:
+                print('posttest_left_odor was reinforced')
+        elif meta['reinforced_odor'] == meta['posttest_right_odor']:
+            percent_reinforced_post.append(1 - percent_left_post)
+            if verbose:
+                print('posttest_left_odor was NOT reinforced')
+        else:
+            assert False, 'neither of posttest_<left/right>_odor(s) were equal to reinforced odor'
+        # TODO save these into something easily loadable as pandas dataframe?
+        # w/ other metadata i might want
+
+        # TODO calculate other metric
+
+        # TODO only print metrics if not make_plots and display_metrics? just latter?
+        if make_plots:
+            if display_metrics:
+                # TODO other metrics?
+                text = ''
+                if want_time_spent:
+                    # TODO make robust to fly #0 getting skipped
+                    if fly == 0:
+                        text += 'pre: %.3f in reinforced\npost: %.3f in reinforced' % \
+                            (percent_reinforced_pre[-1], percent_reinforced_post[-1])
                     else:
-                        on_plot_hover.text_handle.set_x(float(event.xdata))
-                        on_plot_hover.text_handle.set_y(float(event.ydata))
-                        on_plot_hover.text_handle.set_text(curve.get_label())
-                    on_plot_hover.text_handle.set_visible(True)
+                        text += 'pre: %.3f\npost: %.3f' % \
+                            (percent_reinforced_pre[-1], percent_reinforced_post[-1])
 
-            if (not on_any_curve) and hasattr(on_plot_hover, 'text_handle'):
-                on_plot_hover.text_handle.set_visible(False)
+                # TODO might want this to the left of the other (not above / below)?
+                if want_preference_index:
+                    # TODO was it performance index or preference index?
+                    # TODO nicer way to do this? join list w/ newline?
+                    if want_time_spent:
+                        text += '\n'
 
-            ax.figure.canvas.draw_idle()
+                    text += 'PI pre: %.3f\nPI post: %.3f' % \
+                        (pre_preference_index[-1], post_prefence_index[-1])
 
-        fig.canvas.mpl_connect('motion_notify_event', lambda e: on_plot_hover(ax, e))           
-        plt.show()
+                # no sure i want a box?
+                # TODO what does verticalalignment do?
+                ax.text(1, 0.7, text, transform=ax.transAxes, fontsize=8, \
+                    verticalalignment='top')
 
-    else:
+                # different name for this flag?
+                if show_experiment_labels:
+                    ax.text(-.04, 0.6, experiment2label[meta['dir']], \
+                        transform=ax.transAxes, fontsize=12, verticalalignment='top')
+
+            axes_to_set_limits.append(ax)
+            fly_nums_in_order.append(fly)
+
+    if make_plots:
+        fig.legend(handles=handles, labels=labels, loc='lower left', fontsize=9)
+
+    if verbose:
+        print 'plotting ranges: x', (plotting_x_min, plotting_x_max), 'y', \
+            (plotting_y_min, plotting_y_max)
+
+    # relative
+    y_bord = 0.025
+    x_bord = 0.025
+    x_range = plotting_x_max - plotting_y_min
+    y_range = plotting_y_max - plotting_y_min
+    plotting_x_min = plotting_x_min - x_range * x_bord
+    plotting_x_max = plotting_x_max + x_range * x_bord
+    plotting_y_min = plotting_y_min - y_range * y_bord
+    plotting_y_max = plotting_y_max + y_range * y_bord
+
+    for fly, ax in zip(fly_nums_in_order, axes_to_set_limits):
+        ax.set_xlim([plotting_x_min, plotting_x_max])
+        ax.set_ylim([plotting_y_min, plotting_y_max])
+        if fly != len(fly_nums_in_order) - 1:
+            ax.axis('off')
+        else:
+            ax.spines['top'].set_visible(False)
+            ax.spines['right'].set_visible(False)
+            ax.spines['left'].set_visible(False)
+            # TODO make the bottom frame a little further away
+            #print 'xticks:', ax.get_xticks()
+            ax.set_yticks([])
+            # TODO why was this not working?
+            #ax.tick_params(axis='x', direction='out')
+
+    if save_plots:
+        # TODO flag to output all figs in current dir? (as well?) symlink?
+        if title == '':
+            fig.savefig('traces.' + plot_format)
+
+        else:
+            plt.suptitle(title)
+            fig.savefig(title.replace(' ', '_') + '_traces.' + plot_format)
+
+    if (not show_plots) or only_show_interactive:
         plt.close('all')
 
+    # TODO maybe have this function return the results of the loop above, 
+    # optionally making plots of traces?
+    # how best to break it up?
+
+    # TODO make it so you can get fly id from hovering? or clicking?
+    # TODO patch in counted regions for troubleshooting?
+    if make_plots:
+        fig = plt.figure(figsize=(4,4))
+        plt.title('Conditioned change in preference')
+        plt.ylabel('Proportion of test spent in shocked odor')
+        x = [0, 1]
+        plt.xticks(x, ['Pre', 'Post'])
+        ax = plt.gca()
+        ax.set_xlim([-.2, 1.2])
+        ax.set_ylim([-.1, 1.1])
+
+        for fly, pre, post in zip(fly_nums_in_order, \
+                percent_reinforced_pre, percent_reinforced_post):
+
+            label = split(fly2meta[fly]['dir'])[-1] + ', ROI ' + str(fly2meta[fly]['n'])
+            ax.plot(x, [pre, post], marker='.', label=label, color='black')
+
+        # TODO boxplot on top of this?
+        if save_plots:
+            # TODO save at same level as all experiment directories?
+            if title == '':
+                fig.savefig('preference_change.' + plot_format, bbox_inches='tight')
+            else:
+                fig.savefig(title.replace(' ', '_') + '_preference_change.' + plot_format, bbox_inches='tight')
+
+        if show_plots:
+            def on_plot_hover(ax, event):
+                on_any_curve = False
+                for curve in ax.get_lines():
+                    if curve.contains(event)[0]:
+                        on_any_curve = True
+                        # drawing at one side would probably also be acceptable
+                        # rectangular patch as relief, behind text?
+                        if not hasattr(on_plot_hover, 'text_handle'):
+                            on_plot_hover.text_handle = ax.text(float(event.xdata), \
+                                    float(event.ydata), curve.get_label())
+
+                        else:
+                            on_plot_hover.text_handle.set_x(float(event.xdata))
+                            on_plot_hover.text_handle.set_y(float(event.ydata))
+                            on_plot_hover.text_handle.set_text(curve.get_label())
+                        on_plot_hover.text_handle.set_visible(True)
+
+                if (not on_any_curve) and hasattr(on_plot_hover, 'text_handle'):
+                    on_plot_hover.text_handle.set_visible(False)
+
+                ax.figure.canvas.draw_idle()
+
+            fig.canvas.mpl_connect('motion_notify_event', lambda e: on_plot_hover(ax, e)) 
+            plt.show()
+
+        else:
+            plt.close('all')
+
+    return percent_reinforced_pre, percent_reinforced_post
+
+good_fly2data = dict()
+for k, v in fly2data.items():
+    stamp = split(fly2meta[k]['dir'])[-1]
+
+    if not stamp in bad:
+        good_fly2data[k] = v
+    elif not fly2meta[k]['n'] in bad[stamp]:
+        good_fly2data[k] = v
+    
+#analyze_group(good_fly2data)
+
+for reason, reject_dict in rejects.items():
+    if reject_dict is None:
+        continue
+
+    bad_fly2data = {k: v for k, v in fly2data.items() \
+        if split(fly2meta[k]['dir'])[-1] in reject_dict and \
+        fly2meta[k]['n'] in reject_dict[split(fly2meta[k]['dir'])[-1]]}
+
+    if reason == 'no_fly':
+        print len(bad_fly2data), 'rois marked as not having a fly in them. not analyzing them.'
+        continue
+
+    print reason
+    print '# of this reject type', len(bad_fly2data)
+    analyze_group(bad_fly2data, title=reason.replace('_', ' '))
