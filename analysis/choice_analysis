@@ -184,7 +184,6 @@ for reason, reject_dict in rejects.items():
         continue
 
     for exp_id, rois in reject_dict.items():
-        print(set(rois))
         if exp_id in bad:
             bad[exp_id] = bad[exp_id] | set(rois)
         else:
@@ -202,11 +201,6 @@ for d in map(lambda x: join(path, x), dirs):
     common_metadata = load_metadata(d)
     for o in common_metadata['odors']:
         all_odors.add(o)
-
-    if save_plots:
-        fd = join(d, fig_subdir)
-        if not os.path.exists(fd):
-            os.makedirs(fd)
 
     # TODO can join take a variable # of args?
     for f in glob.glob(join(d, '*.hdf5')):
@@ -284,6 +278,15 @@ odor_patch_alpha = 0.4
 shock_patch_alpha = 0.8
 shock_color = 'red'
 
+if make_plots:
+    label_set = set()
+    labels = []
+    handles = []
+
+    scale = 12
+    fig, axes = plt.subplots(nrows=len(fly2data), sharex=True, sharey=True, squeeze=True, figsize=(scale * 1, scale * 1))
+    plt.xlabel('Seconds')
+
 for fly, data in fly2data.items():
     meta = fly2meta[fly]
     # TODO what happens to missing data?
@@ -293,25 +296,16 @@ for fly, data in fly2data.items():
     #print(curr_times.shape)
     nonzero_times = curr_times.nonzero()[0]
     if nonzero_times.size == 0:
+        # TODO automatically add these to yaml? recommend?
+        # count earlier to get the right # of subplots?
         print 'SKIPPING FLY', meta['n'], 'FROM', meta['dir']
         continue
     print 'fly', meta['n'], 'from', meta['dir']
-    start = curr_times[nonzero_times].min()
+    #start = curr_times[nonzero_times].min()
+    start = meta['times']['pretest_start'] - 60
 
     # TODO print how much this fly has walked (in each test period?)
 
-    if make_plots:
-        label_set = set()
-        labels = []
-        handles = []
-
-        scale = 12
-        fig = plt.figure(figsize=(scale * 1, scale * 0.5))
-        plt.title(meta['dir'] + ', ROI ' + str(meta['n']))
-        plt.xlabel('Seconds')
-        # TODO no other unit conversion is happening, right?
-        # TODO convert
-        plt.ylabel('Pixels relative to midline')
     #print 'START TIME =', start
     #print '# of zero entries', curr_times.size - nonzero_times.size
 
@@ -331,7 +325,8 @@ for fly, data in fly2data.items():
         # and also by patches (rectangles) indicating which side each odor is on
         # TODO maybe try antialiased=True/False? default?
         # rasterized default?
-        plt.plot(cropped_rel_times , (-1) * (data['position_y'][cropped_indices] - y_mid), \
+        ax = axes[fly]
+        ax.plot(cropped_rel_times , (-1) * (data['position_y'][cropped_indices] - y_mid), \
             c='black', linewidth=1.3)
 
     y_max = max(map(lambda x: x[1], meta['roi_points']))
@@ -420,7 +415,6 @@ for fly, data in fly2data.items():
             if make_plots:
                 p = patches.Rectangle((x0, y0), width, height, alpha=alpha, \
                     facecolor=color, edgecolor=color)
-                ax = plt.gca()
                 ax.add_patch(p)
 
                 if (not label is None)  and (not label in label_set):
@@ -505,8 +499,13 @@ for fly, data in fly2data.items():
             # TODO other metrics?
             text = ''
             if want_time_spent:
-                text += 'pre: %.3f in reinforced\npost: %.3f in reinforced' % \
-                    (percent_reinforced_pre[-1], percent_reinforced_post[-1])
+                # TODO make robust to fly #0 getting skipped
+                if fly == 0:
+                    text += 'pre: %.3f in reinforced\npost: %.3f in reinforced' % \
+                        (percent_reinforced_pre[-1], percent_reinforced_post[-1])
+                else:
+                    text += 'pre: %.3f\npost: %.3f' % \
+                        (percent_reinforced_pre[-1], percent_reinforced_post[-1])
 
             # TODO might want this to the left of the other (not above / below)?
             if want_preference_index:
@@ -518,16 +517,16 @@ for fly, data in fly2data.items():
                 text += 'PI pre: %.3f\nPI post: %.3f' % \
                     (pre_preference_index[-1], post_prefence_index[-1])
 
-            props = dict(facecolor='wheat', alpha=0.4)
             # no sure i want a box?
             # TODO what does verticalalignment do?
-            ax.text(0.70, 0.07, text, transform=ax.transAxes, fontsize=8, \
-                verticalalignment='top', bbox=props)
-
-        plt.legend(handles=handles, labels=labels, bbox_to_anchor=(0.85, 1), fontsize=9)
+            ax.text(1, 0.7, text, transform=ax.transAxes, fontsize=8, \
+                verticalalignment='top')
 
         axes_to_set_limits.append(ax)
         fly_nums_in_order.append(fly)
+
+if make_plots:
+    fig.legend(handles=handles, labels=labels, loc='lower left', fontsize=9)
 
 print 'plotting ranges: x', (plotting_x_min, plotting_x_max), 'y', (plotting_y_min, plotting_y_max)
 
@@ -544,14 +543,22 @@ plotting_y_max = plotting_y_max + y_range * y_bord
 for fly, ax in zip(fly_nums_in_order, axes_to_set_limits):
     ax.set_xlim([plotting_x_min, plotting_x_max])
     ax.set_ylim([plotting_y_min, plotting_y_max])
-    if save_plots:
-        meta = fly2meta[fly]
-        # TODO flag to output all figs in current dir? (as well?) symlink?
-        #fd = join(meta['dir'], fig_subdir)
-        #ax.figure.savefig(join(fd, split(meta['dir'])[-1] + '_' + str(meta['n']) + \
-        #    '.' + plot_format))
-        ax.figure.savefig(split(meta['dir'])[-1] + '_' + str(meta['n']) + \
-            '.' + plot_format)
+    if fly != len(fly_nums_in_order) - 1:
+        ax.axis('off')
+    else:
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.spines['left'].set_visible(False)
+        # TODO make the bottom frame a little further away
+        #print 'xticks:', ax.get_xticks()
+        ax.set_yticks([])
+        # TODO why is this not working?
+        ax.tick_params(axis='x', direction='out')
+        
+
+if save_plots:
+    # TODO flag to output all figs in current dir? (as well?) symlink?
+    fig.savefig('traces.' + plot_format)
 
 if (not show_plots) or only_show_interactive:
     plt.close('all')
