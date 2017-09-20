@@ -15,3 +15,4 @@ include scripts to help automate setup of key pair for secure rsync
 and include optional path in probably save_data_to_hdf5, maybe 
 another data saving node, to copy data via rsync in shutdown
 hook
+-should i start retracking locally under any circumstances? (leaning towards no, if aiming for max experiment uptime)

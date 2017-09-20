@@ -2,6 +2,7 @@
   <!-- can be used to PID with the same parameter file as your main experiment -->
   <arg name="stimuli_only" default="False" />
   <arg name="port" default="/dev/ttyACM0" />
+  <arg name="video_only" default="False" />
   
   <!-- TODO maybe make this expand to full path? or make more clear that it is relative to package?
        or another arg that is absolute / a flag to switch? -->
@@ -22,7 +23,15 @@
   -->
   <!-- TODO test these are loaded from directory roslaunch is invoked in. setup default handling -->
   <include file="$(find multi_tracker)/launch/load_tracking_parameter_yamls.launch" unless="$(arg stimuli_only)"/>
-  <include file="$(find multi_tracker)/launch/detect_roi_tracking.launch" unless="$(arg stimuli_only)"/>
+  <include file="$(find multi_tracker)/launch/detect_roi_tracking.launch" unless="$(arg stimuli_only)">
+    <arg name="video_only" value="$(arg video_only)" />
+    <!-- TODO how best to treat this when retracking?
+         should i aim for a package wide policy of remapping cameras 
+         to camera/image_raw? or package wide policy of always
+         doing this just when retracking? i kind of like the former better
+         but it might take more work? -->
+    <arg name="camera" value="usb_cam/image_rect" />
+  </include>
 
   <rosparam command="load" file="$(find choice)/example/$(arg params)" />
   <!-- TODO should i break out the stimulus_loader.py into stimuli package? how to handle? -->

@@ -43,6 +43,8 @@ olf/train_one_odor_at_a_time: True
 # TODO reasons i might want to randomly mix training and test?
 # TODO TODO include parameter for same trial structure but w/
 # no shocks? (fig 1a in claridge-change et al 09)
+# TODO make this mean one reinforced on unreinforced, if
+# each side has same stimulus?
 olf/training_blocks: 4
 
 # TODO set tracking recording durations from sum of these
