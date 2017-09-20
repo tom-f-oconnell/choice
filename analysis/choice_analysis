@@ -20,19 +20,22 @@ import sys
 # using this rather than pyyaml, because this supports rejecting duplicate keys
 from ruamel import yaml
 
-# TODO need to use Loader=Loader arg to load/similar for dump to benefit from this?
-
 # TODO check current dir -> check for env var -> check that dir
 # what all indications of having data from this kind of experiment?
 # not sure i want to make config file mandatory
 
 # TODO flag to just show interactive plot?
 
-only_show_interactive = True
+only_show_interactive = False
 show_plots = True
 save_plots = True
 plot_format = 'png'
 make_plots = show_plots or save_plots
+
+want_time_spent = True
+want_preference_index = False
+# TODO turn off interactive plots if this is false? rename interactive flag?
+display_metrics = want_time_spent or want_prefence_index 
 
 # TODO optional annotation of example plots with metrics, both before and after
 
@@ -43,7 +46,7 @@ if make_plots:
     #from matplotlib import rcParams
     #rcParams.update({'figure.autolayout': True})
     # was it set_style?
-    sns.set()
+    sns.set_style('white')
 
 # TODO load
 left_shock = 6
@@ -274,11 +277,11 @@ plotting_x_min = None
 axes_to_set_limits = []
 fly_nums_in_order = []
 
-y_shock_to_odor = 4
-y_beyond_arena = 10
-small_height = 6
+y_shock_to_odor = 2
+y_beyond_arena = 0
+small_height = 4
 odor_patch_alpha = 0.4
-shock_patch_alpha = 1
+shock_patch_alpha = 0.8
 shock_color = 'red'
 
 for fly, data in fly2data.items():
@@ -323,9 +326,13 @@ for fly, data in fly2data.items():
     # and have this (and elsewhere) depend on that
     y_mid = np.mean(map(lambda x: x[1], meta['roi_points']))
     if make_plots:
+        # TODO TODO filter very high frequency noise out before plotting
         # multiplied by negative one so it is displayed in same orientation as video
         # and also by patches (rectangles) indicating which side each odor is on
-        plt.plot(cropped_rel_times , (-1) * (data['position_y'][cropped_indices] - y_mid))
+        # TODO maybe try antialiased=True/False? default?
+        # rasterized default?
+        plt.plot(cropped_rel_times , (-1) * (data['position_y'][cropped_indices] - y_mid), \
+            c='black', linewidth=1.3)
 
     y_max = max(map(lambda x: x[1], meta['roi_points']))
     y_min = min(map(lambda x: x[1], meta['roi_points']))
@@ -446,10 +453,6 @@ for fly, data in fly2data.items():
     # maybe allow some tolerance here
     assert pretest_indices.size == posttest_indices.size
 
-    if make_plots:
-        axes_to_set_limits.append(ax)
-        fly_nums_in_order.append(fly)
-
     # TODO warn whenever different
     n_pretest_indices = np.sum(pretest_indices)
     n_posttest_indices = np.sum(posttest_indices)
@@ -496,14 +499,41 @@ for fly, data in fly2data.items():
 
     # TODO calculate other metric
 
+    # TODO only print metrics if not make_plots and display_metrics? just latter?
     if make_plots:
-        plt.legend(handles=handles, labels=labels)
+        if display_metrics:
+            # TODO other metrics?
+            text = ''
+            if want_time_spent:
+                text += 'pre: %.3f in reinforced\npost: %.3f in reinforced' % \
+                    (percent_reinforced_pre[-1], percent_reinforced_post[-1])
+
+            # TODO might want this to the left of the other (not above / below)?
+            if want_preference_index:
+                # TODO was it performance index or preference index?
+                # TODO nicer way to do this? join list w/ newline?
+                if want_time_spent:
+                    text += '\n'
+
+                text += 'PI pre: %.3f\nPI post: %.3f' % \
+                    (pre_preference_index[-1], post_prefence_index[-1])
+
+            props = dict(facecolor='wheat', alpha=0.4)
+            # no sure i want a box?
+            # TODO what does verticalalignment do?
+            ax.text(0.70, 0.07, text, transform=ax.transAxes, fontsize=8, \
+                verticalalignment='top', bbox=props)
+
+        plt.legend(handles=handles, labels=labels, bbox_to_anchor=(0.85, 1), fontsize=9)
+
+        axes_to_set_limits.append(ax)
+        fly_nums_in_order.append(fly)
 
 print 'plotting ranges: x', (plotting_x_min, plotting_x_max), 'y', (plotting_y_min, plotting_y_max)
 
 # relative
-y_bord = 0.05
-x_bord = 0.05
+y_bord = 0.025
+x_bord = 0.025
 x_range = plotting_x_max - plotting_y_min
 y_range = plotting_y_max - plotting_y_min
 plotting_x_min = plotting_x_min - x_range * x_bord
@@ -542,10 +572,9 @@ if make_plots:
             percent_reinforced_pre, percent_reinforced_post):
 
         label = split(fly2meta[fly]['dir'])[-1] + ', ROI ' + str(fly2meta[fly]['n'])
-        print 'fly #' , fly, 'label', label
-        plt.plot(x, [pre, post], marker='.', label=label)
-    # TODO boxplot on top of this?
+        ax.plot(x, [pre, post], marker='.', label=label, color='black')
 
+    # TODO boxplot on top of this?
     if save_plots:
         # TODO save at same level as all experiment directories?
         fig.savefig('preference_change.' + plot_format, bbox_inches='tight')
