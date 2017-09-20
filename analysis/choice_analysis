@@ -26,10 +26,15 @@ from ruamel import yaml
 # what all indications of having data from this kind of experiment?
 # not sure i want to make config file mandatory
 
-show_plots = False
+# TODO flag to just show interactive plot?
+
+only_show_interactive = True
+show_plots = True
 save_plots = True
 plot_format = 'png'
 make_plots = show_plots or save_plots
+
+# TODO optional annotation of example plots with metrics, both before and after
 
 if make_plots:
     import matplotlib.pyplot as plt
@@ -113,6 +118,7 @@ def load_metadata(d):
     metadata['posttest_right_odor'] = posttest_right_odor
     # TODO TODO check
     metadata['reinforced_odor'] = reinforced_odor
+    '''
     if split(d)[-1] == '20170919_090747':
         print ''
         print 'trial_structure', trial_structure
@@ -126,6 +132,7 @@ def load_metadata(d):
         print 'reinforced odor', reinforced_odor
         print ''
         print ''
+    '''
     metadata['stimuli'] = list(stimuli)
     # TODO switch to new style
     left_pins2odors = dict((v, k) for k, v in odors2left_pins.items())
@@ -161,7 +168,7 @@ dirs = glob.glob('/home/tom/data/retracked/2017091*')
 # TODO flag to visually indicate which indices are counted for the various preference metrics
 
 # TODO maybe have a flag to save figures for rejects?
-reject_bad = False
+reject_bad = True
 
 with open(join(path, 'analysis_rejects.yaml'), 'r') as f:
     yaml_loader = yaml.YAML()
@@ -414,9 +421,6 @@ for fly, data in fly2data.items():
                     labels.append(label)
                     handles.append(p)
 
-                axes_to_set_limits.append(ax)
-                fly_nums_in_order.append(fly)
-
                 curr_y_max = y0 + height
                 if plotting_y_max is None or plotting_y_max < curr_y_max:
                     plotting_y_max = curr_y_max
@@ -441,6 +445,10 @@ for fly, data in fly2data.items():
         'pre and post test indices overlapped'
     # maybe allow some tolerance here
     assert pretest_indices.size == posttest_indices.size
+
+    if make_plots:
+        axes_to_set_limits.append(ax)
+        fly_nums_in_order.append(fly)
 
     # TODO warn whenever different
     n_pretest_indices = np.sum(pretest_indices)
@@ -508,13 +516,15 @@ for fly, ax in zip(fly_nums_in_order, axes_to_set_limits):
     ax.set_ylim([plotting_y_min, plotting_y_max])
     if save_plots:
         meta = fly2meta[fly]
-        # TODO flag to output all figs in current dir? (as well?)
+        # TODO flag to output all figs in current dir? (as well?) symlink?
         #fd = join(meta['dir'], fig_subdir)
         #ax.figure.savefig(join(fd, split(meta['dir'])[-1] + '_' + str(meta['n']) + \
         #    '.' + plot_format))
         ax.figure.savefig(split(meta['dir'])[-1] + '_' + str(meta['n']) + \
             '.' + plot_format)
-        #    plot_format, bbox_inches='tight')
+
+if (not show_plots) or only_show_interactive:
+    plt.close('all')
 
 # TODO make it so you can get fly id from hovering? or clicking?
 # TODO patch in counted regions for troubleshooting?
@@ -528,8 +538,12 @@ if make_plots:
     ax.set_xlim([-.2, 1.2])
     ax.set_ylim([-.1, 1.1])
 
-    for pre, post in zip(percent_reinforced_pre, percent_reinforced_post):
-        plt.plot(x, [pre, post], marker='.')
+    for fly, pre, post in zip(fly_nums_in_order, \
+            percent_reinforced_pre, percent_reinforced_post):
+
+        label = split(fly2meta[fly]['dir'])[-1] + ', ROI ' + str(fly2meta[fly]['n'])
+        print 'fly #' , fly, 'label', label
+        plt.plot(x, [pre, post], marker='.', label=label)
     # TODO boxplot on top of this?
 
     if save_plots:
@@ -537,7 +551,31 @@ if make_plots:
         fig.savefig('preference_change.' + plot_format, bbox_inches='tight')
 
     if show_plots:
+        def on_plot_hover(ax, event):
+            on_any_curve = False
+            for curve in ax.get_lines():
+                if curve.contains(event)[0]:
+                    on_any_curve = True
+                    # drawing at one side would probably also be acceptable
+                    # rectangular patch as relief, behind text?
+                    if not hasattr(on_plot_hover, 'text_handle'):
+                        on_plot_hover.text_handle = ax.text(float(event.xdata), \
+                                float(event.ydata), curve.get_label())
+
+                    else:
+                        on_plot_hover.text_handle.set_x(float(event.xdata))
+                        on_plot_hover.text_handle.set_y(float(event.ydata))
+                        on_plot_hover.text_handle.set_text(curve.get_label())
+                    on_plot_hover.text_handle.set_visible(True)
+
+            if (not on_any_curve) and hasattr(on_plot_hover, 'text_handle'):
+                on_plot_hover.text_handle.set_visible(False)
+
+            ax.figure.canvas.draw_idle()
+
+        fig.canvas.mpl_connect('motion_notify_event', lambda e: on_plot_hover(ax, e))           
         plt.show()
+
     else:
         plt.close('all')
 
