@@ -24,6 +24,8 @@ from ruamel import yaml
 # what all indications of having data from this kind of experiment?
 # not sure i want to make config file mandatory
 
+verbose = False
+
 # TODO flag to just show interactive plot?
 
 only_show_interactive = False
@@ -37,7 +39,8 @@ want_preference_index = False
 # TODO turn off interactive plots if this is false? rename interactive flag?
 display_metrics = want_time_spent or want_prefence_index 
 
-# TODO optional annotation of example plots with metrics, both before and after
+# TODO also include option to color lines in metric change plots by same labels?
+show_experiment_labels = True
 
 if make_plots:
     import matplotlib.pyplot as plt
@@ -63,9 +66,6 @@ def load_metadata(d):
         # TODO it seems like pins2odors would really be more useful?
         odors2left_pins, odors2right_pins, _, trial_structure = pickle.load(f)
     times = dict()
-    # TODO convert to double here?
-    # TODO also display period before?
-    # TODO is this to seconds from epoch?
     times['start'] = trial_structure[0].to_sec()
     times['end'] = trial_structure[-1].to_sec()
     stimuli = filter(lambda x: type(x) is LoadSequenceRequest, trial_structure)
@@ -114,12 +114,11 @@ def load_metadata(d):
 
     metadata = dict()
     metadata['times'] = times
-    # TODO maybe don't need these?
     metadata['pretest_left_odor'] = pretest_left_odor
     metadata['posttest_left_odor'] = posttest_left_odor
     metadata['pretest_right_odor'] = pretest_right_odor
     metadata['posttest_right_odor'] = posttest_right_odor
-    # TODO TODO check
+    # TODO check
     metadata['reinforced_odor'] = reinforced_odor
     '''
     if split(d)[-1] == '20170919_090747':
@@ -144,7 +143,7 @@ def load_metadata(d):
     assert len(left_pins2odors) == len(odors2left_pins), 'some odors map to multiple left pins'
     assert len(right_pins2odors) == len(odors2right_pins), 'some odors map to multiple right pins'
 
-    # TODO TODO check
+    # TODO check
     for p in left_pins2odors.keys():
         assert not p in right_pins2odors.keys(), 'pin ' + str(p) + \
             ' was listed as both left and right'
@@ -196,6 +195,9 @@ all_odors = set()
 
 fig_subdir = 'figs'
 
+experiment2label = dict()
+curr_char = ord('A')
+
 for d in map(lambda x: join(path, x), dirs):
     # TODO check trial structure times against those in log
     common_metadata = load_metadata(d)
@@ -219,11 +221,17 @@ for d in map(lambda x: join(path, x), dirs):
 
         stamp = split(d)[-1]
         if reject_bad and metadata['n'] in bad[stamp]:
-            print 'skipping fly', metadata['n'], 'from experiment', stamp, 'because listed as bad'
+            if verbose:
+                print 'skipping fly', metadata['n'], 'from experiment', stamp, 'because listed as bad'
             continue
 
         fly2data[curr_fly] = data
         metadata['dir'] = d
+
+        if d not in experiment2label:
+            experiment2label[d] = chr(curr_char)
+            curr_char += 1
+
         roi_points = rosparam.load_file(join(d, 'roi_N' + str(metadata['n']) + \
             '.yaml'))[0][0]['roi_points']
         metadata['roi_points'] = roi_points
@@ -251,7 +259,8 @@ for m in fly2meta.values():
 y_max_above_mid = max(y_maxes_above_mid)
 y_min_below_mid = min(y_mins_below_mid)
 
-print 'y_min_below_mid', y_min_below_mid, 'y_max_above_mid', y_max_above_mid
+if verbose:
+    print 'y_min_below_mid', y_min_below_mid, 'y_max_above_mid', y_max_above_mid
 
 # TODO divide into mch and oct? make a dataframe including all variables (like side, etc)?
 percent_reinforced_pre = []
@@ -298,9 +307,11 @@ for fly, data in fly2data.items():
     if nonzero_times.size == 0:
         # TODO automatically add these to yaml? recommend?
         # count earlier to get the right # of subplots?
-        print 'SKIPPING FLY', meta['n'], 'FROM', meta['dir']
+        if verbose:
+            print 'SKIPPING FLY', meta['n'], 'FROM', meta['dir']
         continue
-    print 'fly', meta['n'], 'from', meta['dir']
+    if verbose:
+        print 'fly', meta['n'], 'from', meta['dir']
     #start = curr_times[nonzero_times].min()
     start = meta['times']['pretest_start'] - 60
 
@@ -331,7 +342,8 @@ for fly, data in fly2data.items():
 
     y_max = max(map(lambda x: x[1], meta['roi_points']))
     y_min = min(map(lambda x: x[1], meta['roi_points']))
-    print 'y_max', y_max, 'y_min', y_min, 'using y midline', y_mid
+    if verbose:
+        print 'y_max', y_max, 'y_min', y_min, 'using y midline', y_mid
     left = data['position_y'][cropped_indices] > y_mid
     # TODO maybe use times from log, rather than these?
     pretest_indices = np.logical_and(cropped_times > meta['times']['pretest_start'], \
@@ -401,8 +413,9 @@ for fly, data in fly2data.items():
             if i == 0:
                 # define acceptable mismatch here?
                 if x0 <= 0.0:
-                    print 'WARNING! seems no video was recorded for first ' + \
-                        str(-x0) + ' seconds of first block (pre-training test)'
+                    if verbose:
+                        print 'WARNING! seems no video was recorded for first ' + \
+                            str(-x0) + ' seconds of first block (pre-training test)'
 
             else:
                 assert x0 > 0, 'times we want to disply should not be negative. was ' + str(x0)
@@ -458,8 +471,9 @@ for fly, data in fly2data.items():
         ', relative error=' + str(curr_rel_err)
     '''
     if curr_rel_err != 0:
-        print 'WARNING! relative difference in timepoints in pre and post test = ' + \
-            str(curr_rel_err)
+        if verbose:
+            print 'WARNING! relative difference in timepoints in pre and post test = ' + \
+                str(curr_rel_err)
 
     # TODO TODO factor into function for better consistency / isolation
     # TODO include a buffer region that is called in neither direction to make this more robust to 
@@ -470,10 +484,12 @@ for fly, data in fly2data.items():
     #print 'sum pretest_indices', np.sum(pretest_indices)
     if meta['reinforced_odor'] == meta['pretest_left_odor']:
         percent_reinforced_pre.append(percent_left_pre)
-        print('pretest_left_odor was reinforced')
+        if verbose:
+            print('pretest_left_odor was reinforced')
     elif meta['reinforced_odor'] == meta['pretest_right_odor']:
         percent_reinforced_pre.append(1 - percent_left_pre)
-        print('pretest_left_odor was NOT reinforced')
+        if verbose:
+            print('pretest_left_odor was NOT reinforced')
     else:
         assert False, 'neither of pretest_<left/right>_odor(s) were equal to reinforced odor'
 
@@ -482,10 +498,12 @@ for fly, data in fly2data.items():
     #print 'sum posttest_indices', np.sum(posttest_indices)
     if meta['reinforced_odor'] == meta['posttest_left_odor']:
         percent_reinforced_post.append(percent_left_post)
-        print('posttest_left_odor was reinforced')
+        if verbose:
+            print('posttest_left_odor was reinforced')
     elif meta['reinforced_odor'] == meta['posttest_right_odor']:
         percent_reinforced_post.append(1 - percent_left_post)
-        print('posttest_left_odor was NOT reinforced')
+        if verbose:
+            print('posttest_left_odor was NOT reinforced')
     else:
         assert False, 'neither of posttest_<left/right>_odor(s) were equal to reinforced odor'
     # TODO save these into something easily loadable as pandas dataframe?
@@ -522,13 +540,19 @@ for fly, data in fly2data.items():
             ax.text(1, 0.7, text, transform=ax.transAxes, fontsize=8, \
                 verticalalignment='top')
 
+            # different name for this flag?
+            if show_experiment_labels:
+                ax.text(-.04, 0.6, experiment2label[meta['dir']], transform=ax.transAxes, \
+                    fontsize=12, verticalalignment='top')
+
         axes_to_set_limits.append(ax)
         fly_nums_in_order.append(fly)
 
 if make_plots:
     fig.legend(handles=handles, labels=labels, loc='lower left', fontsize=9)
 
-print 'plotting ranges: x', (plotting_x_min, plotting_x_max), 'y', (plotting_y_min, plotting_y_max)
+if verbose:
+    print 'plotting ranges: x', (plotting_x_min, plotting_x_max), 'y', (plotting_y_min, plotting_y_max)
 
 # relative
 y_bord = 0.025
