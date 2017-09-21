@@ -16,3 +16,5 @@ and include optional path in probably save_data_to_hdf5, maybe
 another data saving node, to copy data via rsync in shutdown
 hook
 -should i start retracking locally under any circumstances? (leaning towards no, if aiming for max experiment uptime)
+
+why were some experiments mising roi_NX.yaml files, but not others?

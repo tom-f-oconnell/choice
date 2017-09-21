@@ -232,6 +232,8 @@ for d in map(lambda x: join(path, x), dirs):
             experiment2label[d] = chr(curr_char)
             curr_char += 1
 
+        # TODO also load from compressor_rois_..., if this is missing
+        # or just figure out why it was missing?
         roi_points = rosparam.load_file(join(d, 'roi_N' + str(metadata['n']) + \
             '.yaml'))[0][0]['roi_points']
         metadata['roi_points'] = roi_points
@@ -244,6 +246,185 @@ if make_plots:
     odor2color = dict()
     for o, c in zip(all_odors, cmap):
         odor2color[o] = c
+
+
+def plot_trace(curr_times, position_y, meta, ax=None):
+    # TODO why did 1100 not work? isn't sequence 1000 long?
+    crop_to_seconds = 1300
+    zero_before_test_by = 60
+
+    start = meta['times']['pretest_start'] - zero_before_test_by
+
+    # TODO print how much this fly has walked (in each test period?)
+
+    #print 'START TIME =', start
+    #print '# of zero entries', curr_times.size - nonzero_times.size
+
+    # because for some of these, the tracking ran much longer than the stimulus presentation
+    cropped_indices = (curr_times - start) <= crop_to_seconds
+    cropped_times = curr_times[cropped_indices]
+    # relative to start of experiment
+    cropped_rel_times = cropped_times - start
+
+    # calculate percent time in each odor region
+    # TODO make one variable at top which controls which dimension to use as long axis
+    # and have this (and elsewhere) depend on that
+    # TODO move this out? / return?
+    y_mid = np.mean(map(lambda x: x[1], meta['roi_points']))
+
+    if ax is None:
+        plt.plot(cropped_rel_times , (-1) * (position_y[cropped_indices] - y_mid), \
+            c='black', linewidth=1.3)
+    else:
+        ax.plot(cropped_rel_times , (-1) * (position_y[cropped_indices] - y_mid), \
+            c='black', linewidth=1.3)
+
+    plt.xlabel('Seconds')
+
+    y_max = max(map(lambda x: x[1], meta['roi_points']))
+    y_min = min(map(lambda x: x[1], meta['roi_points']))
+    # TODO move this out?
+    if verbose:
+        print 'y_max', y_max, 'y_min', y_min, 'using y midline', y_mid
+
+    # TODO TODO filter out trajectories that don't move much. 
+    # just use floris' config file thing?
+
+    large_height = (y_max_above_mid - y_min_below_mid) / 2 + y_beyond_arena
+
+    y_shock_to_odor = 2
+    y_beyond_arena = 0
+    small_height = 4
+    odor_patch_alpha = 0.4
+    shock_patch_alpha = 0.8
+    shock_color = 'red'
+    
+    for i, s in enumerate(meta['stimuli']):
+        width = (s.seq.end - s.seq.start).to_sec()
+        for p in s.seq.pins:
+            color = 'b'
+            label = None
+            if p is left_shock:
+                label = 'shock'
+                color = shock_color
+                height = small_height
+                y0 = y_min_below_mid - y_beyond_arena - (y_shock_to_odor + small_height)
+                alpha = shock_patch_alpha
+
+            elif p is right_shock:
+                label = 'shock'
+                color = shock_color
+                height = small_height
+                y0 = y_max_above_mid + y_beyond_arena + y_shock_to_odor
+                alpha = shock_patch_alpha
+
+            # TODO i think the reason these have been displaying correctly is that
+            # y_min_below_mid ~= y_max_above_mid, though those are probably still
+            # calculated for the wrong sides. fix? use one number equal to their average?
+
+            # displayed on down side in plot, and down should also be left in the video
+            # , with closer arenas further to the right
+            elif p in meta['left_pins2odors']:
+                #print 'left odor', meta['left_pins2odors'][p]
+                label = meta['left_pins2odors'][p]
+                color = odor2color[label]
+                y0 = y_min_below_mid - y_beyond_arena
+                height = large_height
+                alpha = odor_patch_alpha
+
+            # displayed on top sides of plots, which should also be right in the video
+            elif p in meta['right_pins2odors']:
+                #print 'right odor', meta['right_pins2odors'][p]
+                label = meta['right_pins2odors'][p]
+                color = odor2color[label]
+                # because we define the middle as the new origin
+                y0 = 0
+                height = large_height
+                alpha = odor_patch_alpha
+
+            else:
+                #print 'skipping pin', p
+                continue
+
+            # TODO maybe subdivide for shocks? (to reflect actual pulse cycle ~2.5s on/off)
+            x0 = s.seq.start.to_sec() - start
+            #print 'seq.start.to_sec()', s.seq.start.to_sec(), 'x0', x0, 'width', width
+            if i == 0:
+                # define acceptable mismatch here?
+                if x0 <= 0.0:
+                    if verbose:
+                        print 'WARNING! seems no video was recorded for first ' + \
+                            str(-x0) + ' seconds of first block (pre-training test)'
+
+            else:
+                assert x0 > 0, 'times we want to disply should not be negative. was ' + str(x0)
+
+            assert x0 + width < crop_to_seconds, 'last time index of patched ' + \
+                'region should fall within limits of cropped experiment. was ' + \
+                str(x0 + width) + ' end=' + str(crop_to_seconds)
+            #print 'patching pin', p, 'from', (x0, y0), 'with w=', width, 'and h=', height
+
+            p = patches.Rectangle((x0, y0), width, height, alpha=alpha, \
+                facecolor=color, edgecolor=color)
+
+            if ax is None:
+                ax = plt.gca()
+            ax.add_patch(p)
+
+            if (not label is None)  and (not label in label_set):
+                label_set.add(label)
+                labels.append(label)
+                handles.append(p)
+
+            curr_y_max = y0 + height
+            if plotting_y_max is None or plotting_y_max < curr_y_max:
+                plotting_y_max = curr_y_max
+
+            curr_y_min = y0
+            if plotting_y_min is None or plotting_y_min > curr_y_min:
+                plotting_y_min = curr_y_min
+
+            curr_x_max = x0 + width
+            if plotting_x_max is None or plotting_x_max < curr_x_max:
+                plotting_x_max = curr_x_max
+
+            curr_x_min = x0
+            if plotting_x_min is None or plotting_x_min > curr_x_min:
+                plotting_x_min = curr_x_min
+
+        if display_metrics:
+            # TODO other metrics?
+            text = ''
+            if want_time_spent:
+                # TODO make robust to fly #0 getting skipped
+                if fly == 0:
+                    text += 'pre: %.3f in reinforced\npost: %.3f in reinforced' % \
+                        (percent_reinforced_pre[-1], percent_reinforced_post[-1])
+                else:
+                    text += 'pre: %.3f\npost: %.3f' % \
+                        (percent_reinforced_pre[-1], percent_reinforced_post[-1])
+
+            # TODO might want this to the left of the other (not above / below)?
+            if want_preference_index:
+                # TODO was it performance index or preference index?
+                # TODO nicer way to do this? join list w/ newline?
+                if want_time_spent:
+                    text += '\n'
+
+                text += 'PI pre: %.3f\nPI post: %.3f' % \
+                    (pre_preference_index[-1], post_prefence_index[-1])
+
+            # no sure i want a box?
+            # TODO what does verticalalignment do?
+            ax.text(1, 0.7, text, transform=ax.transAxes, fontsize=8, \
+                verticalalignment='top')
+
+        # different name for this flag?
+        if show_experiment_labels:
+            ax.text(-.04, 0.6, experiment2label[meta['dir']], \
+                transform=ax.transAxes, fontsize=12, verticalalignment='top')
+
+    return plotting_x_min, plotting_x_max, plotting_y_min, plotting_y_max
 
 
 def analyze_group(fly2data, title=''):
@@ -271,9 +452,6 @@ def analyze_group(fly2data, title=''):
     percent_reinforced_pre = []
     percent_reinforced_post = []
 
-    # TODO why did 1100 not work? isn't sequence 1000 long?
-    crop_to_seconds = 1300
-
     # TODO line up images of ROIs, with drawn midline, to check for those errors
     # TODO label / group by the reinforced odor?
 
@@ -285,13 +463,6 @@ def analyze_group(fly2data, title=''):
     axes_to_set_limits = []
     fly_nums_in_order = []
 
-    y_shock_to_odor = 2
-    y_beyond_arena = 0
-    small_height = 4
-    odor_patch_alpha = 0.4
-    shock_patch_alpha = 0.8
-    shock_color = 'red'
-
     if make_plots:
         label_set = set()
         labels = []
@@ -302,8 +473,6 @@ def analyze_group(fly2data, title=''):
             squeeze=True, figsize=(scale * 1, scale * 1))
         if not type(axes) is np.ndarray:
             axes = [axes]
-
-        plt.xlabel('Seconds')
 
     curr_ax = 0
     for fly, data in fly2data.items():
@@ -323,24 +492,6 @@ def analyze_group(fly2data, title=''):
 
         if verbose:
             print 'fly', meta['n'], 'from', meta['dir']
-        #start = curr_times[nonzero_times].min()
-        start = meta['times']['pretest_start'] - 60
-
-        # TODO print how much this fly has walked (in each test period?)
-
-        #print 'START TIME =', start
-        #print '# of zero entries', curr_times.size - nonzero_times.size
-
-        # because for some of these, the tracking ran much longer than the stimulus presentation
-        cropped_indices = (curr_times - start) <= crop_to_seconds
-        cropped_times = curr_times[cropped_indices]
-        # relative to start of experiment
-        cropped_rel_times = cropped_times - start
-
-        # calculate percent time in each odor region
-        # TODO make one variable at top which controls which dimension to use as long axis
-        # and have this (and elsewhere) depend on that
-        y_mid = np.mean(map(lambda x: x[1], meta['roi_points']))
         if make_plots:
             # TODO TODO filter very high frequency noise out before plotting
             # multiplied by negative one so it is displayed in same orientation as video
@@ -349,14 +500,8 @@ def analyze_group(fly2data, title=''):
             # rasterized default?
             ax = axes[curr_ax]
             curr_ax += 1
-            ax.plot(cropped_rel_times , (-1) * (data['position_y'][cropped_indices] - y_mid), \
-                c='black', linewidth=1.3)
+            cropped_times = plot_trace(curr_times, data['position_y'], meta, ax=ax)
 
-        y_max = max(map(lambda x: x[1], meta['roi_points']))
-        y_min = min(map(lambda x: x[1], meta['roi_points']))
-        if verbose:
-            print 'y_max', y_max, 'y_min', y_min, 'using y midline', y_mid
-        left = data['position_y'][cropped_indices] > y_mid
         # TODO maybe use times from log, rather than these?
         pretest_indices = np.logical_and(cropped_times > meta['times']['pretest_start'], \
             cropped_times < (meta['times']['pretest_start'] + \
@@ -365,104 +510,6 @@ def analyze_group(fly2data, title=''):
         posttest_indices = np.logical_and(cropped_times > meta['times']['posttest_start'], \
             cropped_times < (meta['times']['posttest_start'] + \
             meta['times']['test_duration']))
-
-        # TODO TODO filter out trajectories that don't move much. 
-        # just use floris' config file thing?
-
-        large_height = (y_max_above_mid - y_min_below_mid) / 2 + y_beyond_arena
-        
-        for i, s in enumerate(meta['stimuli']):
-            width = (s.seq.end - s.seq.start).to_sec()
-            for p in s.seq.pins:
-                color = 'b'
-                label = None
-                if p is left_shock:
-                    label = 'shock'
-                    color = shock_color
-                    height = small_height
-                    y0 = y_min_below_mid - y_beyond_arena - (y_shock_to_odor + small_height)
-                    alpha = shock_patch_alpha
-
-                elif p is right_shock:
-                    label = 'shock'
-                    color = shock_color
-                    height = small_height
-                    y0 = y_max_above_mid + y_beyond_arena + y_shock_to_odor
-                    alpha = shock_patch_alpha
-
-                # TODO i think the reason these have been displaying correctly is that
-                # y_min_below_mid ~= y_max_above_mid, though those are probably still
-                # calculated for the wrong sides. fix? use one number equal to their average?
-
-                # displayed on down side in plot, and down should also be left in the video
-                # , with closer arenas further to the right
-                elif p in meta['left_pins2odors']:
-                    #print 'left odor', meta['left_pins2odors'][p]
-                    if make_plots:
-                        label = meta['left_pins2odors'][p]
-                        color = odor2color[label]
-                    y0 = y_min_below_mid - y_beyond_arena
-                    height = large_height
-                    alpha = odor_patch_alpha
-
-                # displayed on top sides of plots, which should also be right in the video
-                elif p in meta['right_pins2odors']:
-                    #print 'right odor', meta['right_pins2odors'][p]
-                    if make_plots:
-                        label = meta['right_pins2odors'][p]
-                        color = odor2color[label]
-                    # because we define the middle as the new origin
-                    y0 = 0
-                    height = large_height
-                    alpha = odor_patch_alpha
-
-                else:
-                    #print 'skipping pin', p
-                    continue
-
-                # TODO maybe subdivide for shocks? (to reflect actual pulse cycle ~2.5s on/off)
-                x0 = s.seq.start.to_sec() - start
-                #print 'seq.start.to_sec()', s.seq.start.to_sec(), 'x0', x0, 'width', width
-                if i == 0:
-                    # define acceptable mismatch here?
-                    if x0 <= 0.0:
-                        if verbose:
-                            print 'WARNING! seems no video was recorded for first ' + \
-                                str(-x0) + ' seconds of first block (pre-training test)'
-
-                else:
-                    assert x0 > 0, 'times we want to disply should not be negative. was ' + str(x0)
-
-                assert x0 + width < crop_to_seconds, 'last time index of patched ' + \
-                    'region should fall within limits of cropped experiment. was ' + \
-                    str(x0 + width) + ' end=' + str(crop_to_seconds)
-                #print 'patching pin', p, 'from', (x0, y0), 'with w=', width, 'and h=', height
-
-                if make_plots:
-                    p = patches.Rectangle((x0, y0), width, height, alpha=alpha, \
-                        facecolor=color, edgecolor=color)
-                    ax.add_patch(p)
-
-                    if (not label is None)  and (not label in label_set):
-                        label_set.add(label)
-                        labels.append(label)
-                        handles.append(p)
-
-                    curr_y_max = y0 + height
-                    if plotting_y_max is None or plotting_y_max < curr_y_max:
-                        plotting_y_max = curr_y_max
-
-                    curr_y_min = y0
-                    if plotting_y_min is None or plotting_y_min > curr_y_min:
-                        plotting_y_min = curr_y_min
-
-                    curr_x_max = x0 + width
-                    if plotting_x_max is None or plotting_x_max < curr_x_max:
-                        plotting_x_max = curr_x_max
-
-                    curr_x_min = x0
-                    if plotting_x_min is None or plotting_x_min > curr_x_min:
-                        plotting_x_min = curr_x_min
 
         assert pretest_indices.dtype == np.bool, \
             'later functions assume indices represented as boolean mask'
@@ -473,7 +520,6 @@ def analyze_group(fly2data, title=''):
         # maybe allow some tolerance here
         assert pretest_indices.size == posttest_indices.size
 
-        # TODO warn whenever different
         n_pretest_indices = np.sum(pretest_indices)
         n_posttest_indices = np.sum(posttest_indices)
         curr_rel_err = abs(n_pretest_indices - n_posttest_indices) / n_posttest_indices
@@ -488,6 +534,7 @@ def analyze_group(fly2data, title=''):
                 print 'WARNING! relative difference in timepoints in pre and post test = ' + \
                     str(curr_rel_err)
 
+        left = data['position_y'][cropped_indices] > y_mid
         # TODO TODO factor into function for better consistency / isolation
         # TODO include a buffer region that is called in neither direction 
         # to make this more robust to misspecifying the middle of the arena?
