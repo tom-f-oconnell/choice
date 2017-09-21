@@ -29,7 +29,7 @@ verbose = False
 # TODO flag to just show interactive plot?
 
 only_show_interactive = False
-show_plots = True
+show_plots = False
 save_plots = True
 plot_format = 'png'
 make_plots = show_plots or save_plots
@@ -578,10 +578,10 @@ def analyze_group(fly2data, title=''):
     plotting_y_min = plotting_y_min - y_range * y_bord
     plotting_y_max = plotting_y_max + y_range * y_bord
 
-    for fly, ax in zip(fly_nums_in_order, axes_to_set_limits):
+    for i, (fly, ax) in enumerate(zip(fly_nums_in_order, axes_to_set_limits)):
         ax.set_xlim([plotting_x_min, plotting_x_max])
         ax.set_ylim([plotting_y_min, plotting_y_max])
-        if fly != len(fly_nums_in_order) - 1:
+        if i != len(fly_nums_in_order) - 1:
             ax.axis('off')
         else:
             ax.spines['top'].set_visible(False)
@@ -674,9 +674,11 @@ for k, v in fly2data.items():
         good_fly2data[k] = v
     elif not fly2meta[k]['n'] in bad[stamp]:
         good_fly2data[k] = v
-    
-#analyze_group(good_fly2data)
 
+print len(good_fly2data), 'good flies'
+analyze_group(good_fly2data)
+
+rois_without_flies = 0
 for reason, reject_dict in rejects.items():
     if reject_dict is None:
         continue
@@ -687,8 +689,13 @@ for reason, reject_dict in rejects.items():
 
     if reason == 'no_fly':
         print len(bad_fly2data), 'rois marked as not having a fly in them. not analyzing them.'
+        rois_without_flies = len(bad_fly2data)
         continue
 
     print reason
     print '# of this reject type', len(bad_fly2data)
     analyze_group(bad_fly2data, title=reason.replace('_', ' '))
+
+total_flies = len(fly2data) - rois_without_flies
+print total_flies, 'total flies'
+
