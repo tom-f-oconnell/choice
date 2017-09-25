@@ -395,10 +395,10 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, y_max_min=None
             # TODO make robust to fly #0 getting skipped
             if fly == 0:
                 text += 'pre: %.3f in reinforced\npost: %.3f in reinforced' % \
-                    (metrics['percent_reinforced_pre'], metrics['percent_reinforced_post'])
+                    (metrics['fraction_reinforced_pre'], metrics['fraction_reinforced_post'])
             else:
                 text += 'pre: %.3f\npost: %.3f' % \
-                    (metrics['percent_reinforced_pre'], metrics['percent_reinforced_post'])
+                    (metrics['fraction_reinforced_pre'], metrics['fraction_reinforced_post'])
 
         # TODO might want this to the left of the other (not above / below)?
         if want_preference_index:
@@ -421,6 +421,7 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, y_max_min=None
             transform=ax.transAxes, fontsize=12, verticalalignment='top')
 
     return plotting_x_min, plotting_x_max, plotting_y_min, plotting_y_max, labels, handles
+
 
 key2group = {'1': 'good',
              '2': 'never_active',
@@ -586,8 +587,8 @@ def analyze_group(fly2data, title=''):
         print 'y_min_below_mid', y_min_below_mid, 'y_max_above_mid', y_max_above_mid
 
     # TODO divide into mch and oct? make a dataframe including all variables (like side, etc)?
-    percent_reinforced_pre = []
-    percent_reinforced_post = []
+    fraction_reinforced_pre = []
+    fraction_reinforced_post = []
 
     # TODO line up images of ROIs, with drawn midline, to check for those errors
     # TODO label / group by the reinforced odor?
@@ -607,7 +608,9 @@ def analyze_group(fly2data, title=''):
         if not type(axes) is np.ndarray:
             axes = [axes]
 
-    curr_ax = 0
+    dfs = []
+    curr_idx = 0
+
     for fly, data in fly2data.items():
         meta = fly2meta[fly]
         # TODO what happens to missing data?
@@ -681,33 +684,49 @@ def analyze_group(fly2data, title=''):
         # TODO include a buffer region that is called in neither direction 
         # to make this more robust to misspecifying the middle of the arena?
         # TODO check uniform sampling rate?
-        percent_left_pre = np.sum(left[pretest_indices]) / np.sum(pretest_indices)
+        fraction_left_pre = np.sum(left[pretest_indices]) / np.sum(pretest_indices)
         #print 'sum pretest indices on left', np.sum(left[pretest_indices])
         #print 'sum pretest_indices', np.sum(pretest_indices)
         if meta['reinforced_odor'] == meta['pretest_left_odor']:
-            percent_reinforced_pre.append(percent_left_pre)
+            fraction_reinforced_pre.append(fraction_left_pre)
             if verbose:
                 print('pretest_left_odor was reinforced')
+            nonshocked_odor = meta['pretest_right_odor']
+
         elif meta['reinforced_odor'] == meta['pretest_right_odor']:
-            percent_reinforced_pre.append(1 - percent_left_pre)
+            fraction_reinforced_pre.append(1 - fraction_left_pre)
             if verbose:
                 print('pretest_left_odor was NOT reinforced')
+            nonshocked_odor = meta['pretest_left_odor']
+
         else:
             assert False, 'neither of pretest_<left/right>_odor(s) were equal to reinforced odor'
 
-        percent_left_post = np.sum(left[posttest_indices]) / np.sum(posttest_indices)
+        assert meta['reinforced_odor'] != nonshocked_odor
+
+        fraction_left_post = np.sum(left[posttest_indices]) / np.sum(posttest_indices)
         #print 'sum posttest indices on left', np.sum(left[posttest_indices])
         #print 'sum posttest_indices', np.sum(posttest_indices)
         if meta['reinforced_odor'] == meta['posttest_left_odor']:
-            percent_reinforced_post.append(percent_left_post)
+            fraction_reinforced_post.append(fraction_left_post)
             if verbose:
                 print('posttest_left_odor was reinforced')
         elif meta['reinforced_odor'] == meta['posttest_right_odor']:
-            percent_reinforced_post.append(1 - percent_left_post)
+            fraction_reinforced_post.append(1 - fraction_left_post)
             if verbose:
                 print('posttest_left_odor was NOT reinforced')
         else:
             assert False, 'neither of posttest_<left/right>_odor(s) were equal to reinforced odor'
+
+        # TODO convert odor + conc to good string representation
+        curr_df = pd.DataFrame({'experiment': meta['dir'], \
+                      'roi': meta['n'], \
+                      'shocked_odor': meta['reinforced_odor'][0], \
+                      'nonshocked_odor': nonshocked_odor[0], \
+                      'fraction_reinforced_pre': fraction_reinforced_pre[-1], \
+                      'fraction_reinforced_post': fraction_reinforced_post[-1]}, index=[curr_idx])
+        dfs.append(curr_df)
+
         # TODO save these into something easily loadable as pandas dataframe?
         # w/ other metadata i might want
 
@@ -720,10 +739,9 @@ def analyze_group(fly2data, title=''):
             # and also by patches (rectangles) indicating which side each odor is on
             # TODO maybe try antialiased=True/False? default?
             # rasterized default?
-            ax = axes[curr_ax]
-            curr_ax += 1
-            metrics = {'percent_reinforced_pre': percent_reinforced_pre[-1],
-                       'percent_reinforced_post': percent_reinforced_post[-1]}
+            ax = axes[curr_idx]
+            metrics = {'fraction_reinforced_pre': fraction_reinforced_pre[-1],
+                       'fraction_reinforced_post': fraction_reinforced_post[-1]}
 
             curr_x_min, curr_x_max, curr_y_min, curr_y_max, labels, handles = \
                 plot_trace(cropped_rel_times, data['position_y'][cropped_indices], \
@@ -743,6 +761,7 @@ def analyze_group(fly2data, title=''):
 
             axes_to_set_limits.append(ax)
             fly_nums_in_order.append(fly)
+        curr_idx += 1
 
     if make_plots:
         fig.legend(handles=handles, labels=labels, loc='lower left', fontsize=9)
@@ -762,20 +781,21 @@ def analyze_group(fly2data, title=''):
     plotting_y_min = plotting_y_min - y_range * y_bord
     plotting_y_max = plotting_y_max + y_range * y_bord
 
-    for i, (fly, ax) in enumerate(zip(fly_nums_in_order, axes_to_set_limits)):
-        ax.set_xlim([plotting_x_min, plotting_x_max])
-        ax.set_ylim([plotting_y_min, plotting_y_max])
-        if i != len(fly_nums_in_order) - 1:
-            ax.axis('off')
-        else:
-            ax.spines['top'].set_visible(False)
-            ax.spines['right'].set_visible(False)
-            ax.spines['left'].set_visible(False)
-            # TODO make the bottom frame a little further away
-            #print 'xticks:', ax.get_xticks()
-            ax.set_yticks([])
-            # TODO why was this not working?
-            #ax.tick_params(axis='x', direction='out')
+    if make_plots:
+        for i, (fly, ax) in enumerate(zip(fly_nums_in_order, axes_to_set_limits)):
+            ax.set_xlim([plotting_x_min, plotting_x_max])
+            ax.set_ylim([plotting_y_min, plotting_y_max])
+            if i != len(fly_nums_in_order) - 1:
+                ax.axis('off')
+            else:
+                ax.spines['top'].set_visible(False)
+                ax.spines['right'].set_visible(False)
+                ax.spines['left'].set_visible(False)
+                # TODO make the bottom frame a little further away
+                #print 'xticks:', ax.get_xticks()
+                ax.set_yticks([])
+                # TODO why was this not working?
+                #ax.tick_params(axis='x', direction='out')
 
     if save_plots:
         # TODO flag to output all figs in current dir? (as well?) symlink?
@@ -793,8 +813,7 @@ def analyze_group(fly2data, title=''):
     # optionally making plots of traces?
     # how best to break it up?
 
-    # TODO make it so you can get fly id from hovering? or clicking?
-    # TODO patch in counted regions for troubleshooting?
+    # TODO factor this out into a function so i can call it with the sub DataFrames below more easily?
     if make_plots:
         fig = plt.figure(figsize=(4,4))
         plt.title('Conditioned change in preference')
@@ -806,7 +825,7 @@ def analyze_group(fly2data, title=''):
         ax.set_ylim([-.1, 1.1])
 
         for fly, pre, post in zip(fly_nums_in_order, \
-                percent_reinforced_pre, percent_reinforced_post):
+                fraction_reinforced_pre, fraction_reinforced_post):
 
             label = split(fly2meta[fly]['dir'])[-1] + ', ROI ' + str(fly2meta[fly]['n'])
             ax.plot(x, [pre, post], marker='.', label=label, color='black')
@@ -848,8 +867,12 @@ def analyze_group(fly2data, title=''):
         else:
             plt.close('all')
 
-    return percent_reinforced_pre, percent_reinforced_post
+    # TODO ignore_index?
+    df = pd.concat(dfs)
+    return df
 
+# TODO it seems that running analysis 1 (2?) times after initial scoring, empty plots are gone
+# but first 1 (2?) times have some empty plots (should be no_fly) why?
 good_fly2data = dict()
 for k, v in fly2data.items():
     stamp = split(fly2meta[k]['dir'])[-1]
@@ -860,7 +883,10 @@ for k, v in fly2data.items():
         good_fly2data[k] = v
 
 print len(good_fly2data), 'good flies'
-analyze_group(good_fly2data)
+df = analyze_group(good_fly2data)
+
+for o in all_odors:
+    print 'traces with', o[0], 'as the reinforced odor', len(df[df['shocked_odor'] == o[0]])
 
 rois_without_flies = 0
 for reason, reject_dict in rejects.items():
