@@ -1,0 +1,2 @@
+split metric change charts up by which odor was reinforced
+(in addition to current plots)

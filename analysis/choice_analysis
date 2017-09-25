@@ -14,6 +14,8 @@ from stimuli.srv import LoadSequenceRequest
 # TODO maybe remove this dependency if it means it cant be run easily on windows?
 import rosparam
 
+import time
+
 import sys
 
 # TODO replace rosparam usage w/ this?
@@ -165,29 +167,11 @@ path = '/home/tom/data/retracked'
 # TODO regex matching this timestamp pattern?
 # TODO use original timestamp flag when retracking
 #dirs = glob.glob('/home/tom/data/retracked/20170919*')
-dirs = glob.glob('/home/tom/data/retracked/2017091*')
+dirs = glob.glob('/home/tom/data/retracked/201709*')
 
 # TODO flag to visually indicate which indices are counted for the various preference metrics
 
 # TODO maybe have a flag to save figures for rejects?
-reject_bad = True
-
-with open(join(path, 'analysis_rejects.yaml'), 'r') as f:
-    yaml_loader = yaml.YAML()
-    yaml_loader.allow_duplicate_keys = False
-    rejects = yaml_loader.load(f)
-
-bad = dict()
-for reason, reject_dict in rejects.items():
-    if reject_dict is None:
-        continue
-
-    for exp_id, rois in reject_dict.items():
-        if exp_id in bad:
-            bad[exp_id] = bad[exp_id] | set(rois)
-        else:
-            bad[exp_id] = set(rois)
-
 curr_fly = 0
 fly2data = dict()
 fly2meta = dict()
@@ -221,13 +205,6 @@ for d in map(lambda x: join(path, x), dirs):
         metadata['n'] = int(match.group(0)[2:-1])
 
         stamp = split(d)[-1]
-        '''
-        if reject_bad and metadata['n'] in bad[stamp]:
-            if verbose:
-                print 'skipping fly', metadata['n'], 'from experiment', stamp, 'because listed as bad'
-            continue
-        '''
-
         fly2data[curr_fly] = data
         metadata['dir'] = d
 
@@ -249,6 +226,16 @@ if make_plots:
     odor2color = dict()
     for o, c in zip(all_odors, cmap):
         odor2color[o] = c
+
+yaml_filename = join(path, 'analysis_rejects.yaml')
+
+if os.path.exists(yaml_filename):
+    with open(yaml_filename, 'r') as f:
+        yaml_loader = yaml.YAML()
+        yaml_loader.allow_duplicate_keys = False
+        rejects = yaml_loader.load(f)
+
+reject_reason_dict = dict()
 
 # organize better?
 zero_before_test_by = 60
@@ -433,6 +420,142 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, y_max_min=None
             transform=ax.transAxes, fontsize=12, verticalalignment='top')
 
     return plotting_x_min, plotting_x_max, plotting_y_min, plotting_y_max, labels, handles
+
+
+def press(event):
+    print event.key
+    valid_key = False
+    # TODO rank these according to how common they are
+    if event.key == '1':
+        group = 'good'
+        valid_key = True
+
+    elif event.key == '2':
+        group = 'never_active'
+        valid_key = True
+
+    elif event.key == '3':
+        group = 'inactive_after_shock'
+        valid_key = True
+
+    elif event.key == '4':
+        group = 'no_sample_either_test'
+        valid_key = True
+
+    elif event.key == '5':
+        group = 'no_receive_shock'
+        valid_key = True
+
+    elif event.key == '6':
+        group = 'no_fly'
+        valid_key = True
+
+    elif event.key == '7':
+        group = 'tracker_artifacts'
+        valid_key = True
+
+    elif event.key == '8':
+        group = 'suspicious'
+        valid_key = True
+
+    if valid_key:
+        press.group = group
+        press.fig.canvas.mpl_disconnect(press.cid)
+        print 'closing fig'
+        plt.close(press.fig)
+
+
+new_keys = False
+# open yaml for writing
+for fly, data in fly2data.items():
+    meta = fly2meta[fly]
+    stamp = split(meta['dir'])[-1]
+
+    already_labelled = False
+    for reason, reject_dict in rejects.items():
+        if (not reject_dict is None) and stamp in reject_dict \
+            and meta['n'] in reject_dict[stamp]:
+
+            # TODO use actual yaml filename?
+            print stamp, meta['n'], 'was already labeled in analysis_rejects.yaml'
+            already_labelled = True
+            break
+
+    if already_labelled:
+        continue
+
+    new_keys = True
+
+    curr_times = (data['time_epoch_secs'] + data['time_epoch_nsecs'] / 1e9).as_matrix()
+    nonzero_times = curr_times.nonzero()[0]
+
+    if nonzero_times.size == 0:
+        if not 'no_fly' in reject_reason_dict:
+            reject_reason_dict['no_fly'] = dict()
+
+        stamp = split(meta['dir'])[-1]
+        if not stamp in reject_reason_dict['no_fly']:
+            reject_reason_dict['no_fly'][stamp] = set()
+
+        reject_reason_dict['no_fly'][stamp].add(meta['n'])
+
+        continue
+
+    fig = plt.figure()
+    cid = fig.canvas.mpl_connect('key_press_event', press)
+
+    #plot_trace(curr_times, data['position_y'], meta, ax=ax)
+    # TODO why did this seem to be on a log x scale once?
+    plot_trace(curr_times, data['position_y'], meta)
+
+    press.fig = fig
+    press.cid = cid
+
+    while True:
+        try:
+            # TODO maybe just delay before / after?
+            plt.show()
+            break
+        except AttributeError:
+            # TODO what to do? need to fail?
+            print 'caught attribute error'
+            pass
+
+    if not hasattr(press, 'group'):
+        sys.exit()
+
+    if not press.group in reject_reason_dict:
+        reject_reason_dict[press.group] = dict()
+
+    if not stamp in reject_reason_dict[press.group]:
+        reject_reason_dict[press.group][stamp] = set()
+
+    reject_reason_dict[press.group][stamp].add(meta['n'])
+
+if new_keys:
+    for reason in reject_reason_dict:
+        for stamp in reject_reason_dict[reason]:
+            reject_reason_dict[reason][stamp] = sorted(list(reject_reason_dict[reason][stamp]))
+
+    print 'saving to', yaml_filename
+    with open(yaml_filename, 'w') as f:
+        # TODO want to convert sets to lists first? sort?
+        yaml.dump(reject_reason_dict, f)
+
+bad = dict()
+for reason, reject_dict in rejects.items():
+    if reason == 'good' or reject_dict is None:
+        continue
+
+    if reason == 'suspicious':
+        # TODO print which
+        print 'WARNING: using some trajectories marked as suspicious for analysis.'
+
+    for exp_id, rois in reject_dict.items():
+        if exp_id in bad:
+            bad[exp_id] = bad[exp_id] | set(rois)
+        else:
+            bad[exp_id] = set(rois)
 
 
 def analyze_group(fly2data, title=''):
@@ -722,18 +845,6 @@ def analyze_group(fly2data, title=''):
 
     return percent_reinforced_pre, percent_reinforced_post
 
-
-for fly, data in fly2data.items():
-    meta = fly2meta[fly]
-    curr_times = (data['time_epoch_secs'] + data['time_epoch_nsecs'] / 1e9).as_matrix()
-    nonzero_times = curr_times.nonzero()[0]
-    if nonzero_times.size == 0:
-        # TODO automatically add these to yaml as no fly
-        continue
-    #plot_trace(curr_times, data['position_y'], meta, ax=ax)
-    plot_trace(curr_times, data['position_y'], meta)
-    
-
 good_fly2data = dict()
 for k, v in fly2data.items():
     stamp = split(fly2meta[k]['dir'])[-1]
@@ -767,3 +878,4 @@ for reason, reject_dict in rejects.items():
 total_flies = len(fly2data) - rois_without_flies
 print total_flies, 'total flies'
 
+print experiment2label
