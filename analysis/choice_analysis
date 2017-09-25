@@ -235,6 +235,9 @@ if os.path.exists(yaml_filename):
         yaml_loader.allow_duplicate_keys = False
         rejects = yaml_loader.load(f)
 
+else:
+    rejects = dict()
+
 reject_reason_dict = dict()
 
 # organize better?
@@ -421,52 +424,30 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, y_max_min=None
 
     return plotting_x_min, plotting_x_max, plotting_y_min, plotting_y_max, labels, handles
 
+key2group = {'1': 'good',
+             '2': 'never_active',
+             '3': 'inactive_after_shock',
+             '4': 'no_sample_either_test',
+             '5': 'no_receive_shock',
+             '6': 'no_fly',
+             '7': 'tracker_artifacts',
+             '8': 'suspicious'}
 
 def press(event):
-    print event.key
-    valid_key = False
-    # TODO rank these according to how common they are
-    if event.key == '1':
-        group = 'good'
-        valid_key = True
+    # TODO rank these according to how common they are?
+    if event.key in key2group:
+        group = key2group[event.key]
 
-    elif event.key == '2':
-        group = 'never_active'
-        valid_key = True
-
-    elif event.key == '3':
-        group = 'inactive_after_shock'
-        valid_key = True
-
-    elif event.key == '4':
-        group = 'no_sample_either_test'
-        valid_key = True
-
-    elif event.key == '5':
-        group = 'no_receive_shock'
-        valid_key = True
-
-    elif event.key == '6':
-        group = 'no_fly'
-        valid_key = True
-
-    elif event.key == '7':
-        group = 'tracker_artifacts'
-        valid_key = True
-
-    elif event.key == '8':
-        group = 'suspicious'
-        valid_key = True
-
-    if valid_key:
+        # TODO fix this printing. not displaying.
+        print group, '            \r',
         press.group = group
         press.fig.canvas.mpl_disconnect(press.cid)
-        print 'closing fig'
+        #print 'closing fig'
         plt.close(press.fig)
-
 
 new_keys = False
 # open yaml for writing
+# TODO fix patching / plot ranges
 for fly, data in fly2data.items():
     meta = fly2meta[fly]
     stamp = split(meta['dir'])[-1]
@@ -484,6 +465,11 @@ for fly, data in fly2data.items():
     if already_labelled:
         continue
 
+    if not new_keys:
+        print 'Keys to label traces:'
+        for k in sorted(key2group.keys()):
+            print k, '-', key2group[k]
+        
     new_keys = True
 
     curr_times = (data['time_epoch_secs'] + data['time_epoch_nsecs'] / 1e9).as_matrix()
@@ -532,6 +518,19 @@ for fly, data in fly2data.items():
 
     reject_reason_dict[press.group][stamp].add(meta['n'])
 
+    # TODO factor out or something?
+    if not press.group in rejects:
+        rejects[press.group] = dict()
+
+    if not stamp in rejects[press.group]:
+        rejects[press.group][stamp] = set()
+
+    rejects[press.group][stamp].add(meta['n'])
+    #
+
+if new_keys:
+    print ''
+
 if new_keys:
     for reason in reject_reason_dict:
         for stamp in reject_reason_dict[reason]:
@@ -547,9 +546,10 @@ for reason, reject_dict in rejects.items():
     if reason == 'good' or reject_dict is None:
         continue
 
-    if reason == 'suspicious':
+    if reason == 'suspicious' and (not reject_dict is None):
         # TODO print which
         print 'WARNING: using some trajectories marked as suspicious for analysis.'
+        continue
 
     for exp_id, rois in reject_dict.items():
         if exp_id in bad:
