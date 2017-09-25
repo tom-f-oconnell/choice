@@ -1,2 +1,8 @@
 split metric change charts up by which odor was reinforced
 (in addition to current plots)
+
+store notes on age, density (?), time of day, time of starvation
+(and generate information re: which odor was trained) to plot
+metric changes for each of these as well, for debugging
+
+

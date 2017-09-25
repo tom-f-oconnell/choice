@@ -11,12 +11,9 @@ import os
 import re
 import pickle
 from stimuli.srv import LoadSequenceRequest
+import sys
 # TODO maybe remove this dependency if it means it cant be run easily on windows?
 import rosparam
-
-import time
-
-import sys
 
 # TODO replace rosparam usage w/ this?
 # using this rather than pyyaml, because this supports rejecting duplicate keys
@@ -180,6 +177,7 @@ all_odors = set()
 experiment2label = dict()
 curr_char = ord('A')
 
+# TODO do most processing while loading, to not need as much memory?
 for d in map(lambda x: join(path, x), dirs):
     if not os.path.isdir(d):
         continue
@@ -490,9 +488,16 @@ for fly, data in fly2data.items():
     fig = plt.figure()
     cid = fig.canvas.mpl_connect('key_press_event', press)
 
+    # TODO factor out? (repeated below)
+    start = meta['times']['pretest_start'] - zero_before_test_by
+    cropped_indices = (curr_times - start) <= crop_to_seconds
+    cropped_times = curr_times[cropped_indices]
+    # relative to start of experiment
+    cropped_rel_times = cropped_times - start
+
     #plot_trace(curr_times, data['position_y'], meta, ax=ax)
     # TODO why did this seem to be on a log x scale once?
-    plot_trace(curr_times, data['position_y'], meta)
+    plot_trace(cropped_rel_times, data['position_y'][cropped_indices], meta)
 
     press.fig = fig
     press.cid = cid
@@ -859,7 +864,7 @@ analyze_group(good_fly2data)
 
 rois_without_flies = 0
 for reason, reject_dict in rejects.items():
-    if reject_dict is None:
+    if reason == 'good' or reason == 'suspicious' or reject_dict is None:
         continue
 
     bad_fly2data = {k: v for k, v in fly2data.items() \
