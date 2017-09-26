@@ -185,17 +185,11 @@ def load_metadata(d):
     return metadata
 
 # TODO allow script to be run in directory w/ data
-path = '/home/tom/data/retracked'
+path = os.path.expanduser('~/data/retracked')
 # TODO just walk from path in future?
-# or glob on date here and glob separately below?
 
-#dirs = ['20170913_104724', '20170913_105853', '20170913_112951']
-# TODO regex matching this timestamp pattern?
-# TODO use original timestamp flag when retracking
-#dirs = glob.glob('/home/tom/data/retracked/20170919*')
-dirs = glob.glob('/home/tom/data/retracked/201709*')
-
-# TODO flag to visually indicate which indices are counted for the various preference metrics
+dirs = [join(path, d) for d in os.listdir(path) if re.match(r'([0-9]){8}_([0-9]){6}', d) \
+    and os.path.isdir(join(path, d))]
 
 # TODO maybe have a flag to save figures for rejects?
 curr_fly = 0
@@ -262,11 +256,10 @@ if os.path.exists(yaml_filename):
         yaml_loader = yaml.YAML()
         yaml_loader.allow_duplicate_keys = False
         rejects = yaml_loader.load(f)
+        print rejects
 
 else:
     rejects = dict()
-
-reject_reason_dict = dict()
 
 # organize better?
 zero_before_test_by = 60
@@ -482,6 +475,8 @@ for fly, data in fly2data.items():
     stamp = split(meta['dir'])[-1]
 
     already_labelled = False
+    # try to find the current fly in one of the dictionaries for any group in the
+    # analysis_rejects.yaml file. if it is in one, no need to get a label for it here.
     for reason, reject_dict in rejects.items():
         if (not reject_dict is None) and stamp in reject_dict \
             and meta['n'] in reject_dict[stamp]:
@@ -495,6 +490,8 @@ for fly, data in fly2data.items():
 
     if already_labelled:
         continue
+    elif verbose:
+        print stamp, meta['n'], 'was NOT in yaml'
 
     if not new_keys:
         print 'Keys to label traces:'
@@ -502,20 +499,17 @@ for fly, data in fly2data.items():
             print k, '-', key2group[k]
         
     new_keys = True
-
     curr_times = (data['time_epoch_secs'] + data['time_epoch_nsecs'] / 1e9).as_matrix()
     nonzero_times = curr_times.nonzero()[0]
 
     if nonzero_times.size == 0:
-        if not 'no_fly' in reject_reason_dict:
-            reject_reason_dict['no_fly'] = dict()
+        if not 'no_fly' in rejects:
+            rejects['no_fly'] = dict()
 
-        stamp = split(meta['dir'])[-1]
-        if not stamp in reject_reason_dict['no_fly']:
-            reject_reason_dict['no_fly'][stamp] = set()
+        if not stamp in rejects['no_fly']:
+            rejects['no_fly'][stamp] = set()
 
-        reject_reason_dict['no_fly'][stamp].add(meta['n'])
-
+        rejects['no_fly'][stamp].add(meta['n'])
         continue
 
     fig = plt.figure()
@@ -548,15 +542,6 @@ for fly, data in fly2data.items():
     if not hasattr(press, 'group'):
         sys.exit()
 
-    if not press.group in reject_reason_dict:
-        reject_reason_dict[press.group] = dict()
-
-    if not stamp in reject_reason_dict[press.group]:
-        reject_reason_dict[press.group][stamp] = set()
-
-    reject_reason_dict[press.group][stamp].add(meta['n'])
-
-    # TODO factor out or something?
     if not press.group in rejects:
         rejects[press.group] = dict()
 
@@ -564,20 +549,20 @@ for fly, data in fly2data.items():
         rejects[press.group][stamp] = set()
 
     rejects[press.group][stamp].add(meta['n'])
-    #
 
 if new_keys:
     print ''
 
 if new_keys:
-    for reason in reject_reason_dict:
-        for stamp in reject_reason_dict[reason]:
-            reject_reason_dict[reason][stamp] = sorted(list(reject_reason_dict[reason][stamp]))
+    for reason in rejects:
+        for stamp in rejects[reason]:
+            rejects[reason][stamp] = sorted(list(rejects[reason][stamp]))
 
+    print rejects
     print 'saving to', yaml_filename
     with open(yaml_filename, 'w') as f:
         # TODO want to convert sets to lists first? sort?
-        yaml.dump(reject_reason_dict, f)
+        yaml.dump(rejects, f)
 
 bad = dict()
 for reason, reject_dict in rejects.items():
@@ -834,9 +819,6 @@ def analyze_group(fly2data, title=''):
                       'fraction_reinforced_pre': fraction_reinforced_pre[-1], \
                       'fraction_reinforced_post': fraction_reinforced_post[-1]}, index=[curr_idx])
         dfs.append(curr_df)
-
-        # TODO save these into something easily loadable as pandas dataframe?
-        # w/ other metadata i might want
 
         # TODO calculate other metric
 
