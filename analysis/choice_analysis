@@ -19,6 +19,35 @@ import rosparam
 # using this rather than pyyaml, because this supports rejecting duplicate keys
 from ruamel import yaml
 
+import string
+
+# see falsetru's answer at
+# https://stackoverflow.com/questions/21872366/plural-string-formatting
+class PluralFormatter(string.Formatter):
+    def get_value(self, key, args, kwargs):
+        if isinstance(key, int) or isinstance(key, long):
+            return args[key]
+
+        if key in kwargs:
+            return kwargs[key]
+
+        if '(' in key and key.endswith(')'):
+            key, rest = key.split('(', 1)
+
+            try:
+                idx = int(key)
+                value = args[idx]
+            except ValueError:
+                value = kwargs[key]
+
+            suffix = rest.rstrip(')').split(',')
+            if len(suffix) == 1:
+                # TODO what is this for?
+                suffix.insert(0, '')
+            return suffix[0] if value <= 1 else suffix[1]
+        else:
+            raise KeyError(key)
+
 # TODO check current dir -> check for env var -> check that dir
 # what all indications of having data from this kind of experiment?
 # not sure i want to make config file mandatory
@@ -192,6 +221,7 @@ for d in map(lambda x: join(path, x), dirs):
         metadata = dict(common_metadata)
         # TODO make it so this generates the (optional) config? notify if doing so
         # TODO TODO exclude trajectories that don't cover enough ground
+        print 'mta=', mta.__file__
         data, _ = mta.read_hdf5_file_to_pandas.load_and_preprocess_data(f)
         '''
         print 'position_x range', data['position_x'].min(), data['position_x'].max()
@@ -457,7 +487,9 @@ for fly, data in fly2data.items():
             and meta['n'] in reject_dict[stamp]:
 
             # TODO use actual yaml filename?
-            print stamp, meta['n'], 'was already labeled in analysis_rejects.yaml'
+            if verbose:
+                print stamp, meta['n'], 'was already labeled in analysis_rejects.yaml'
+
             already_labelled = True
             break
 
@@ -562,6 +594,82 @@ for reason, reject_dict in rejects.items():
             bad[exp_id] = bad[exp_id] | set(rois)
         else:
             bad[exp_id] = set(rois)
+
+
+def plot_metric_change(metric_pre, metric_post, title='', ylabel='', fly2meta=None, \
+    fly_nums_in_order=None, exps=None, rois=None, filename=None):
+    """
+    """
+    group1 = [fly2meta, fly_nums_in_order]
+    group2 = [exps, rois]
+    is_none = lambda x: x is None
+    def check_all_or_none(group):
+        elements_none = map(is_none, group)
+        if any(elements_none):
+            assert all(elements_none), 'either all parameters within group' + \
+                ' must be set, or none should be'
+            return False
+        return True
+
+    use_group1 = check_all_or_none(group1)
+    use_group2 = check_all_or_none(group2)
+    assert use_group1 ^ use_group2, 'parameter groups were not exclusive'
+
+    # TODO option for adding these plots to subplots? pass in ax?
+    fig = plt.figure(figsize=(4,4))
+    plt.title(title)
+    plt.ylabel(ylabel)
+    x = [0, 1]
+    plt.xticks(x, ['Pre', 'Post'])
+    ax = plt.gca()
+    ax.set_xlim([-.2, 1.2])
+    ax.set_ylim([-.1, 1.1])
+
+    if use_group1:
+        for fly, pre, post in zip(fly_nums_in_order, metric_pre, metric_post):
+            label = split(fly2meta[fly]['dir'])[-1] + ', ROI ' + str(fly2meta[fly]['n'])
+            ax.plot(x, [pre, post], marker='.', label=label, color='black')
+
+    elif use_group2:
+        for exp, roi, pre, post in zip(exps, rois, metric_pre, metric_post):
+            label = split(exp)[-1] + ', ROI ' + str(roi)
+            ax.plot(x, [pre, post], marker='.', label=label, color='black')
+
+    # TODO boxplot on top of this?
+    if save_plots:
+        assert not filename is None, 'must pass filename to plot_metric_change' + \
+            ' if save_plots is True'
+        # TODO save at same level as all experiment directories?
+        fig.savefig(filename, bbox_inches='tight')
+
+    if show_plots:
+        def on_plot_hover(ax, event):
+            on_any_curve = False
+            for curve in ax.get_lines():
+                if curve.contains(event)[0]:
+                    on_any_curve = True
+                    # drawing at one side would probably also be acceptable
+                    # rectangular patch as relief, behind text?
+                    if not hasattr(on_plot_hover, 'text_handle'):
+                        on_plot_hover.text_handle = ax.text(float(event.xdata), \
+                                float(event.ydata), curve.get_label())
+
+                    else:
+                        on_plot_hover.text_handle.set_x(float(event.xdata))
+                        on_plot_hover.text_handle.set_y(float(event.ydata))
+                        on_plot_hover.text_handle.set_text(curve.get_label())
+                    on_plot_hover.text_handle.set_visible(True)
+
+            if (not on_any_curve) and hasattr(on_plot_hover, 'text_handle'):
+                on_plot_hover.text_handle.set_visible(False)
+
+            ax.figure.canvas.draw_idle()
+
+        fig.canvas.mpl_connect('motion_notify_event', lambda e: on_plot_hover(ax, e)) 
+        plt.show()
+
+    else:
+        plt.close('all')
 
 
 def analyze_group(fly2data, title=''):
@@ -813,59 +921,17 @@ def analyze_group(fly2data, title=''):
     # optionally making plots of traces?
     # how best to break it up?
 
-    # TODO factor this out into a function so i can call it with the sub DataFrames below more easily?
     if make_plots:
-        fig = plt.figure(figsize=(4,4))
-        plt.title('Conditioned change in preference')
-        plt.ylabel('Proportion of test spent in shocked odor')
-        x = [0, 1]
-        plt.xticks(x, ['Pre', 'Post'])
-        ax = plt.gca()
-        ax.set_xlim([-.2, 1.2])
-        ax.set_ylim([-.1, 1.1])
-
-        for fly, pre, post in zip(fly_nums_in_order, \
-                fraction_reinforced_pre, fraction_reinforced_post):
-
-            label = split(fly2meta[fly]['dir'])[-1] + ', ROI ' + str(fly2meta[fly]['n'])
-            ax.plot(x, [pre, post], marker='.', label=label, color='black')
-
-        # TODO boxplot on top of this?
-        if save_plots:
-            # TODO save at same level as all experiment directories?
-            if title == '':
-                fig.savefig('preference_change.' + plot_format, bbox_inches='tight')
-            else:
-                fig.savefig(title.replace(' ', '_') + '_preference_change.' + plot_format, bbox_inches='tight')
-
-        if show_plots:
-            def on_plot_hover(ax, event):
-                on_any_curve = False
-                for curve in ax.get_lines():
-                    if curve.contains(event)[0]:
-                        on_any_curve = True
-                        # drawing at one side would probably also be acceptable
-                        # rectangular patch as relief, behind text?
-                        if not hasattr(on_plot_hover, 'text_handle'):
-                            on_plot_hover.text_handle = ax.text(float(event.xdata), \
-                                    float(event.ydata), curve.get_label())
-
-                        else:
-                            on_plot_hover.text_handle.set_x(float(event.xdata))
-                            on_plot_hover.text_handle.set_y(float(event.ydata))
-                            on_plot_hover.text_handle.set_text(curve.get_label())
-                        on_plot_hover.text_handle.set_visible(True)
-
-                if (not on_any_curve) and hasattr(on_plot_hover, 'text_handle'):
-                    on_plot_hover.text_handle.set_visible(False)
-
-                ax.figure.canvas.draw_idle()
-
-            fig.canvas.mpl_connect('motion_notify_event', lambda e: on_plot_hover(ax, e)) 
-            plt.show()
-
+        # TODO maybe deal with plot format inside function?
+        if title == '':
+            filename = 'preference_change.' + plot_format
         else:
-            plt.close('all')
+            filename = title.replace(' ', '_') + '_preference_change.' + plot_format
+
+        plot_metric_change(fraction_reinforced_pre, fraction_reinforced_post, \
+            title='Conditioned change in preference', ylabel='Proportion of test ' + \
+            'spent in shocked odor', fly2meta=fly2meta, \
+            fly_nums_in_order=fly_nums_in_order, filename=filename)
 
     # TODO ignore_index?
     df = pd.concat(dfs)
@@ -882,12 +948,30 @@ for k, v in fly2data.items():
     elif not fly2meta[k]['n'] in bad[stamp]:
         good_fly2data[k] = v
 
-print len(good_fly2data), 'good flies'
 df = analyze_group(good_fly2data)
 
-for o in all_odors:
-    print 'traces with', o[0], 'as the reinforced odor', len(df[df['shocked_odor'] == o[0]])
+formatter = PluralFormatter()
 
+odor_lines = []
+for o in all_odors:
+    curr_df = df[df['shocked_odor'] == o[0]]
+    # TODO how to not need to input positions / kwarg names w/ custom formatter?
+    odor_lines.append(formatter.format('{0} good trace{0(s)} with {1} as the ' + \
+        'reinforced odor.', len(curr_df), o[0]))
+    # TODO handle odor better in filename
+    plot_metric_change(curr_df['fraction_reinforced_pre'], curr_df['fraction_reinforced_post'], \
+        title='Conditioned change in preference, ' + o[0] + ' reinforced', \
+        ylabel='Proportion of test spent in shocked odor', exps=curr_df['experiment'], \
+        rois=curr_df['roi'], filename=o[0] + '_preference_change.' + plot_format)
+
+reason2formatstr = {'never_active': '{0} fl{0(y,ies)} were never active',
+                    'inactive_after_show': '{0} fl{0(y,ies)} became inactive after a shock',
+                    'no_sample_either_test': '{0} fl{0(y,ies)} did not come close enough' + \
+                        ' to sampling one odor during a test',
+                    'no_receive_shock': '{0} fl{0(y,ies)} did not appear to receive a shock', \
+                    'tracker_artifacts': '{0} trajector{0(y,ies)} appeared to have tracking artifacts'}
+
+lines = []
 rois_without_flies = 0
 for reason, reject_dict in rejects.items():
     if reason == 'good' or reason == 'suspicious' or reject_dict is None:
@@ -898,15 +982,30 @@ for reason, reject_dict in rejects.items():
         fly2meta[k]['n'] in reject_dict[split(fly2meta[k]['dir'])[-1]]}
 
     if reason == 'no_fly':
-        print len(bad_fly2data), 'rois marked as not having a fly in them. not analyzing them.'
+        if verbose:
+            print len(bad_fly2data), 'rois marked as not having a fly in them. not analyzing them.'
         rois_without_flies = len(bad_fly2data)
         continue
 
-    print reason
-    print '# of this reject type', len(bad_fly2data)
+    if reason in reason2formatstr:
+        lines.append(formatter.format(reason2formatstr[reason], len(bad_fly2data)))
+
     analyze_group(bad_fly2data, title=reason.replace('_', ' '))
 
+# TODO format this for evernote & upload
 total_flies = len(fly2data) - rois_without_flies
-print total_flies, 'total flies'
+print 'Good flies:', str(len(good_fly2data)) + '/' + str(total_flies)
+print ''
+for line in odor_lines:
+    print line
+print ''
+for line in lines:
+    print line
+print ''
 
-print experiment2label
+print 'Experiments represented by each label:'
+label2experiment = {v: k for k, v in experiment2label.items()}
+assert len(label2experiment) == len(experiment2label)
+sorted_labels = sorted(label2experiment.keys())
+for k in sorted_labels:
+    print k, '-', label2experiment[k]
