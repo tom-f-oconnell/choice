@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 # TODO figure out what the hold up is on importing this, with the prints
 import multi_tracker_analysis as mta
+# TODO delete me
+print 'mta=', mta.__file__
 import glob
 from os.path import join, split
 import os
@@ -51,6 +53,8 @@ class PluralFormatter(string.Formatter):
         else:
             raise KeyError(key)
 
+# TODO use config file for these flags / command line args
+
 # TODO check current dir -> check for env var -> check that dir
 # what all indications of having data from this kind of experiment?
 # not sure i want to make config file mandatory
@@ -65,13 +69,17 @@ save_plots = True
 plot_format = 'png'
 make_plots = show_plots or save_plots
 
+# TODO it seems these were originally for displaying?
+# separate flags for whether the text should be added to traces plot?
 want_time_spent = True
-want_preference_index = False
+want_decision_bias = True
 # TODO turn off interactive plots if this is false? rename interactive flag?
-display_metrics = want_time_spent or want_prefence_index 
+display_metrics = want_time_spent or want_decision_bias 
 
 # TODO also include option to color lines in metric change plots by same labels?
 show_experiment_labels = True
+
+print_version = True
 
 if make_plots:
     import matplotlib.pyplot as plt
@@ -220,7 +228,6 @@ for d in map(lambda x: join(path, x), dirs):
         metadata = dict(common_metadata)
         # TODO make it so this generates the (optional) config? notify if doing so
         # TODO TODO exclude trajectories that don't cover enough ground
-        print 'mta=', mta.__file__
         data, _ = mta.read_hdf5_file_to_pandas.load_and_preprocess_data(f)
         '''
         print 'position_x range', data['position_x'].min(), data['position_x'].max()
@@ -419,8 +426,8 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, y_max_min=None
 
     if display_metrics and not metrics is None:
         # TODO other metrics?
-        text = ''
         if want_time_spent:
+            text = ''
             # TODO make robust to fly #0 getting skipped
             if fly == 0:
                 text += 'pre: %.3f in reinforced\npost: %.3f in reinforced' % \
@@ -429,20 +436,23 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, y_max_min=None
                 text += 'pre: %.3f\npost: %.3f' % \
                     (metrics['fraction_reinforced_pre'], metrics['fraction_reinforced_post'])
 
-        # TODO might want this to the left of the other (not above / below)?
-        if want_preference_index:
-            # TODO was it performance index or preference index?
-            # TODO nicer way to do this? join list w/ newline?
-            if want_time_spent:
-                text += '\n'
+            # TODO scale fontsize w/ # of traces?
+            ax.text(1, 0.75, text, transform=ax.transAxes, fontsize=7, \
+                verticalalignment='top')
 
-            text += 'PI pre: %.3f\nPI post: %.3f' % \
-                (metrics['pre_preference_index'], metrics['post_prefence_index'])
+        # TODO might want this to the left of the other (not above / below)?
+        if want_decision_bias:
+            #if fly == 0:
+            text = 'bias pre: %.3f\nbias post: %.3f' % \
+                (metrics['decision_bias_pre'], metrics['decision_bias_post'])
+
+            ax.text(1.1, 0.75, text, transform=ax.transAxes, fontsize=7, \
+                verticalalignment='top')
+
+        # TODO was preference / performance (?) index distinct from the above?
 
         # no sure i want a box?
         # TODO what does verticalalignment do?
-        ax.text(1, 0.7, text, transform=ax.transAxes, fontsize=8, \
-            verticalalignment='top')
 
     # different name for this flag?
     if show_experiment_labels:
@@ -559,9 +569,6 @@ for fly, data in fly2data.items():
 if new_keys:
     print ''
 
-# TODO delete me
-new_keys = True #
-
 if new_keys:
     for reason in rejects:
         for stamp in rejects[reason]:
@@ -655,7 +662,6 @@ def decision_bias(cropped_times, y_positions, meta, prefix, \
 
     y_vals = map(lambda p: p[1], meta['roi_points'])
     y_mid = np.mean(y_vals)
-    #left = y_positions > y_mid
 
     # TODO use ratio of this height in pixels to mean height in pixels to
     # get more accurate est of real boundaries of decision zone?
@@ -667,9 +673,10 @@ def decision_bias(cropped_times, y_positions, meta, prefix, \
     left_border = y_mid - (choice_zone_pixels / 2)
     right_border = y_mid + (choice_zone_pixels / 2)
 
+    y_positions_in_test = y_positions[test_indices]
     # just need to count all exits from choice zone, separately for each side
-    in_choice_zone = np.logical_and(y_positions >= left_border, \
-        y_positions <= right_border).astype(np.int8)
+    in_choice_zone = np.logical_and(y_positions_in_test >= left_border, \
+        y_positions_in_test <= right_border).astype(np.int8)
 
     # diff is -1 at the end of a run of Trues (1s)
     # TODO debounce at all? filter trajectories better first?
@@ -677,16 +684,24 @@ def decision_bias(cropped_times, y_positions, meta, prefix, \
     towards_left = 0
     towards_right = 0
     for e in exits:
-        if abs(y_positions[e] - left_border) < abs(y_positions[e] - right_border):
+        if abs(y_positions_in_test[e] - left_border) < abs(y_positions_in_test[e] - right_border):
             towards_left += 1
         else:
             towards_right += 1
 
-    print 'decisions toward left', towards_left
-    print 'decisions toward right', towards_right
+    total_decisions = towards_left + towards_right
+    # TODO put behind verbose flag after done debugging
+    if verbose:
+        print 'decisions toward left', towards_left
+        print 'decisions toward right', towards_right
 
-    # TODO TODO is this right?
-    bias_against_left = (towards_left - towards_right) / (towards_left + towards_right)
+    if total_decisions == 0:
+        # TODO does this propagate appropriately
+        bias_against_left = np.nan
+
+    else:
+        # TODO TODO is this right?
+        bias_against_left = (towards_left - towards_right) / total_decisions
 
     # TODO check
     if meta['reinforced_odor'] == meta[prefix + 'test_left_odor']:
@@ -709,7 +724,7 @@ def decision_bias(cropped_times, y_positions, meta, prefix, \
 
 
 def plot_metric_change(metric_pre, metric_post, title='', ylabel='', fly2meta=None, \
-    fly_nums_in_order=None, exps=None, rois=None, filename=None):
+    fly_nums_in_order=None, exps=None, rois=None, filename=None, allow_negative=False):
     """
     """
     group1 = [fly2meta, fly_nums_in_order]
@@ -735,7 +750,11 @@ def plot_metric_change(metric_pre, metric_post, title='', ylabel='', fly2meta=No
     plt.xticks(x, ['Pre', 'Post'])
     ax = plt.gca()
     ax.set_xlim([-.2, 1.2])
-    ax.set_ylim([-.1, 1.1])
+
+    if allow_negative:
+        ax.set_ylim([-1.1, 1.1])
+    else:
+        ax.set_ylim([-.1, 1.1])
 
     if use_group1:
         for fly, pre, post in zip(fly_nums_in_order, metric_pre, metric_post):
@@ -805,14 +824,16 @@ def analyze_group(fly2data, title=''):
     y_max_above_mid = max(y_maxes_above_mid)
     y_min_below_mid = min(y_mins_below_mid)
     mean_y_pixels = np.mean(y_ranges)
-    print 'mean y pixels:', mean_y_pixels
-
+    
     if verbose:
+        print 'mean y pixels:', mean_y_pixels
         print 'y_min_below_mid', y_min_below_mid, 'y_max_above_mid', y_max_above_mid
 
     # TODO divide into mch and oct? make a dataframe including all variables (like side, etc)?
-    fraction_reinforced_pre = []
-    fraction_reinforced_post = []
+    fractions_reinforced_pre = []
+    fractions_reinforced_post = []
+    decision_biases_pre = []
+    decision_biases_post = []
 
     # TODO line up images of ROIs, with drawn midline, to check for those errors
     # TODO label / group by the reinforced odor?
@@ -852,7 +873,8 @@ def analyze_group(fly2data, title=''):
             continue
 
         if verbose:
-            print 'fly', meta['n'], 'from', meta['dir']
+            print 'experiment', split(meta['dir'])[-1], \
+                '({})'.format(experiment2label[meta['dir']]), 'fly', meta['n']
 
         start = meta['times']['pretest_start'] - zero_before_test_by
 
@@ -865,23 +887,28 @@ def analyze_group(fly2data, title=''):
         cropped_indices = (curr_times - start) <= crop_to_seconds
         cropped_times = curr_times[cropped_indices]
 
-        curr_fraction_reinforced_pre, pretest_indices, nonshocked_odor = \
-            fraction_time_reinforced(cropped_times, data['position_y'][cropped_indices], \
-            meta, 'pre')
-        curr_fraction_reinforced_post, posttest_indices, _ = \
-            fraction_time_reinforced(cropped_times, data['position_y'][cropped_indices], \
-            meta, 'post')
+        if want_time_spent:
+            fraction_reinforced_pre, pretest_indices, nonshocked_odor = \
+                fraction_time_reinforced(cropped_times, data['position_y'][cropped_indices], \
+                meta, 'pre')
+            fraction_reinforced_post, posttest_indices, _ = \
+                fraction_time_reinforced(cropped_times, data['position_y'][cropped_indices], \
+                meta, 'post')
 
-        print 'experiment', split(meta['dir'])[-1], 'fly', meta['n']
+            if verbose:
+                print 'fraction time spent in reinforced pre:', fraction_reinforced_pre
+                print 'fraction time spent in reinforced post:', fraction_reinforced_post
 
-        decision_bias_pre, _, _ = decision_bias(cropped_times, \
-            data['position_y'][cropped_indices], meta, 'pre', mean_y_pixels)
-        decision_bias_post, _, _ = decision_bias(cropped_times, \
-            data['position_y'][cropped_indices], meta, 'post', mean_y_pixels)
+        if want_decision_bias:
+            decision_bias_pre, _, _ = decision_bias(cropped_times, \
+                data['position_y'][cropped_indices].as_matrix(), meta, 'pre', mean_y_pixels)
+            decision_bias_post, _, _ = decision_bias(cropped_times, \
+                data['position_y'][cropped_indices].as_matrix(), meta, 'post', mean_y_pixels)
 
-        print 'decision bias pre:', decision_bias_pre
-        print 'decision bias post:', decision_bias_post
-        print ''
+            if verbose:
+                print 'decision bias pre:', decision_bias_pre
+                print 'decision bias post:', decision_bias_post
+                print ''
  
         assert not np.any(np.logical_and(pretest_indices, posttest_indices)), \
             'pre and post test indices overlapped'
@@ -900,16 +927,20 @@ def analyze_group(fly2data, title=''):
                 print 'WARNING! relative difference in timepoints in pre and post test = ' + \
                     str(curr_rel_err)
 
-        fraction_reinforced_pre.append(curr_fraction_reinforced_pre)
-        fraction_reinforced_post.append(curr_fraction_reinforced_post)
+        fractions_reinforced_pre.append(fraction_reinforced_pre)
+        fractions_reinforced_post.append(fraction_reinforced_post)
+        decision_biases_pre.append(decision_bias_pre)
+        decision_biases_post.append(decision_bias_post)
 
         # TODO convert odor + conc to good string representation
         curr_df = pd.DataFrame({'experiment': meta['dir'], \
                       'roi': meta['n'], \
                       'shocked_odor': meta['reinforced_odor'][0], \
                       'nonshocked_odor': nonshocked_odor[0], \
-                      'fraction_reinforced_pre': fraction_reinforced_pre[-1], \
-                      'fraction_reinforced_post': fraction_reinforced_post[-1]}, index=[curr_idx])
+                      'decision_bias_pre': decision_bias_pre, \
+                      'decision_bias_post': decision_bias_post, \
+                      'fraction_reinforced_pre': fraction_reinforced_pre, \
+                      'fraction_reinforced_post': fraction_reinforced_post}, index=[curr_idx])
         dfs.append(curr_df)
 
         # TODO calculate other metric
@@ -922,8 +953,15 @@ def analyze_group(fly2data, title=''):
             # TODO maybe try antialiased=True/False? default?
             # rasterized default?
             ax = axes[curr_idx]
-            metrics = {'fraction_reinforced_pre': fraction_reinforced_pre[-1],
-                       'fraction_reinforced_post': fraction_reinforced_post[-1]}
+            
+            metrics = dict()
+            if want_time_spent:
+                metrics['fraction_reinforced_pre'] = fraction_reinforced_pre
+                metrics['fraction_reinforced_post'] = fraction_reinforced_post
+
+            if want_decision_bias:
+                metrics['decision_bias_pre'] = decision_bias_pre
+                metrics['decision_bias_post'] = decision_bias_post
 
             # relative to start of experiment
             cropped_rel_times = cropped_times - start
@@ -998,16 +1036,33 @@ def analyze_group(fly2data, title=''):
     # how best to break it up?
 
     if make_plots:
-        # TODO maybe deal with plot format inside function?
-        if title == '':
-            filename = 'preference_change.' + plot_format
-        else:
-            filename = title.replace(' ', '_') + '_preference_change.' + plot_format
+        if want_time_spent:
+            # TODO maybe deal with plot format inside function?
+            if title == '':
+                filename = 'time_spent.' + plot_format
+            else:
+                filename = title.replace(' ', '_') + '_time_spent.' + plot_format
 
-        plot_metric_change(fraction_reinforced_pre, fraction_reinforced_post, \
-            title='Conditioned change in preference', ylabel='Proportion of test ' + \
-            'spent in shocked odor', fly2meta=fly2meta, \
-            fly_nums_in_order=fly_nums_in_order, filename=filename)
+            plot_metric_change(fractions_reinforced_pre, fractions_reinforced_post, \
+                title='Conditioned change in time spent', ylabel='Proportion of test ' + \
+                'spent in shocked odor', fly2meta=fly2meta, \
+                fly_nums_in_order=fly_nums_in_order, filename=filename)
+
+        if want_decision_bias:
+            # TODO factor?
+            if title == '':
+                filename = 'decision_bias.' + plot_format
+            else:
+                filename = title.replace(' ', '_') + '_decision_bias.' + plot_format
+
+            # TODO does it currently try to plot anything with only one point for the good trials?
+            # should filter those as well if so
+            plot_metric_change(decision_biases_pre, decision_biases_post, \
+                title='Conditioned change in decision bias', ylabel='Decision bias', \
+                fly2meta=fly2meta, fly_nums_in_order=fly_nums_in_order, \
+                filename=filename, allow_negative=True)
+
+        # TODO also plot their differences for various groups as swarm plots? print?
 
     # TODO ignore_index?
     df = pd.concat(dfs)
@@ -1035,13 +1090,22 @@ for o in all_odors:
     odor_lines.append(formatter.format('{0} good trace{0(s)} with {1} as the ' + \
         'reinforced odor.', len(curr_df), o[0]))
     # TODO handle odor better in filename
-    plot_metric_change(curr_df['fraction_reinforced_pre'], curr_df['fraction_reinforced_post'], \
-        title='Conditioned change in preference, ' + o[0] + ' reinforced', \
-        ylabel='Proportion of test spent in shocked odor', exps=curr_df['experiment'], \
-        rois=curr_df['roi'], filename=o[0] + '_preference_change.' + plot_format)
+
+    if want_time_spent:
+        plot_metric_change(curr_df['fraction_reinforced_pre'], curr_df['fraction_reinforced_post'], \
+            title='Conditioned change in preference, ' + o[0] + ' reinforced', \
+            ylabel='Proportion of test spent in shocked odor', exps=curr_df['experiment'], \
+            rois=curr_df['roi'], filename=o[0] + '_time_spent.' + plot_format)
+
+    if want_decision_bias:
+        plot_metric_change(curr_df['decision_bias_pre'], curr_df['decision_bias_post'], \
+            title='Conditioned change in decision bias, ' + o[0] + ' reinforced', \
+            ylabel='Decision bias', exps=curr_df['experiment'], \
+            rois=curr_df['roi'], filename=o[0] + '_decision_bias.' + \
+            plot_format, allow_negative=True)
 
 reason2formatstr = {'never_active': '{0} fl{0(y,ies)} were never active',
-                    'inactive_after_show': '{0} fl{0(y,ies)} became inactive after a shock',
+                    'inactive_after_shock': '{0} fl{0(y,ies)} became inactive after a shock',
                     'no_sample_either_test': '{0} fl{0(y,ies)} did not come close enough' + \
                         ' to sampling one odor during a test',
                     'no_receive_shock': '{0} fl{0(y,ies)} did not appear to receive a shock', \
@@ -1067,6 +1131,16 @@ for reason, reject_dict in rejects.items():
         lines.append(formatter.format(reason2formatstr[reason], len(bad_fly2data)))
 
     analyze_group(bad_fly2data, title=reason.replace('_', ' '))
+
+if print_version:
+    import git
+    choice_path = os.path.realpath(__file__)
+    repo = git.Repo(choice_path, search_parent_directories=True)
+    current_hash = repo.head.object.hexsha
+    repo_url = 'https://github.com/tom-f-oconnell/choice'
+    diff = repo.index.diff(None, create_patch=True)
+    exactly = 'exactly ' if len(diff) == 0 else ''
+    print 'Generated with {} @ {}{}\n'.format(repo_url, exactly, current_hash)
 
 # TODO format this for evernote & upload
 total_flies = len(fly2data) - rois_without_flies
