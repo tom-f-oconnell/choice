@@ -15,9 +15,12 @@ import sys
 # TODO maybe remove this dependency if it means it cant be run easily on windows?
 import rosparam
 
+# TODO will this work w/ python2?
+from collections import OrderedDict
 # TODO replace rosparam usage w/ this?
 # using this rather than pyyaml, because this supports rejecting duplicate keys
 from ruamel import yaml
+from ruamel.yaml.comments import CommentedSeq
 
 import string
 
@@ -184,6 +187,8 @@ def load_metadata(d):
     metadata['odors'] = set(odors2left_pins.keys()) | set(odors2right_pins.keys())
     return metadata
 
+# TODO refactor so nothing is called on import?
+
 # TODO allow script to be run in directory w/ data
 path = os.path.expanduser('~/data/retracked')
 # TODO just walk from path in future?
@@ -250,16 +255,17 @@ if make_plots:
         odor2color[o] = c
 
 yaml_filename = join(path, 'analysis_rejects.yaml')
+yaml_loader = yaml.YAML()
 
 if os.path.exists(yaml_filename):
     with open(yaml_filename, 'r') as f:
-        yaml_loader = yaml.YAML()
         yaml_loader.allow_duplicate_keys = False
         rejects = yaml_loader.load(f)
-        print rejects
+        if rejects is None:
+            rejects = OrderedDict()
 
 else:
-    rejects = dict()
+    rejects = OrderedDict()
 
 # organize better?
 zero_before_test_by = 60
@@ -504,12 +510,12 @@ for fly, data in fly2data.items():
 
     if nonzero_times.size == 0:
         if not 'no_fly' in rejects:
-            rejects['no_fly'] = dict()
+            rejects['no_fly'] = OrderedDict()
 
         if not stamp in rejects['no_fly']:
-            rejects['no_fly'][stamp] = set()
+            rejects['no_fly'][stamp] = []
 
-        rejects['no_fly'][stamp].add(meta['n'])
+        rejects['no_fly'][stamp].append(meta['n'])
         continue
 
     fig = plt.figure()
@@ -543,26 +549,32 @@ for fly, data in fly2data.items():
         sys.exit()
 
     if not press.group in rejects:
-        rejects[press.group] = dict()
+        rejects[press.group] = OrderedDict()
 
     if not stamp in rejects[press.group]:
-        rejects[press.group][stamp] = set()
+        rejects[press.group][stamp] = []
 
-    rejects[press.group][stamp].add(meta['n'])
+    rejects[press.group][stamp].append(meta['n'])
 
 if new_keys:
     print ''
 
+# TODO delete me
+new_keys = True #
+
 if new_keys:
     for reason in rejects:
         for stamp in rejects[reason]:
-            rejects[reason][stamp] = sorted(list(rejects[reason][stamp]))
+            # TODO problems roundtripping this?
+            rejects[reason][stamp] = CommentedSeq(sorted(list(rejects[reason][stamp])))
+            # TODO current api? still necessary?
+            rejects[reason][stamp].fa.set_flow_style()
 
-    print rejects
     print 'saving to', yaml_filename
     with open(yaml_filename, 'w') as f:
-        # TODO want to convert sets to lists first? sort?
-        yaml.dump(rejects, f)
+        # TODO does roundtripdumper work w/o using roundtriploader?
+        # (should) necessary though?
+        yaml.dump(rejects, f, Dumper=yaml.RoundTripDumper)
 
 bad = dict()
 for reason, reject_dict in rejects.items():
@@ -579,6 +591,121 @@ for reason, reject_dict in rejects.items():
             bad[exp_id] = bad[exp_id] | set(rois)
         else:
             bad[exp_id] = set(rois)
+
+
+def fraction_time_reinforced(cropped_times, y_positions, meta, prefix):
+    """
+    """
+    assert prefix == 'pre' or prefix == 'post'
+
+    # TODO maybe compute these in another function, and pass indexed
+    # times and y_positions to all metric functions?
+
+    # TODO maybe use times from log, rather than these?
+    test_indices = np.logical_and(cropped_times > meta['times'][prefix + 'test_start'], \
+        cropped_times < (meta['times'][prefix + 'test_start'] + \
+        meta['times']['test_duration']))
+
+    assert test_indices.dtype == np.bool, \
+        'later operations assume indices represented as boolean mask'
+
+    # TODO try not to recalculate?
+    y_vals = map(lambda p: p[1], meta['roi_points'])
+    y_mid = np.mean(y_vals)
+    left = y_positions > y_mid
+
+    # TODO include a buffer region that is called in neither direction 
+    # to make this more robust to misspecifying the middle of the arena?
+    # TODO check uniform sampling rate? otherwise it is fraction of indices...
+    fraction_left = np.sum(left[test_indices]) / np.sum(test_indices)
+    #print 'sum ' + prefix + 'test indices on left', np.sum(left[test_indices])
+    #print 'sum ' + prefix + 'test_indices', np.sum(test_indices)
+    if meta['reinforced_odor'] == meta[prefix + 'test_left_odor']:
+        fraction_reinforced = fraction_left
+        if verbose:
+            print(prefix + 'test_left_odor was reinforced')
+        nonshocked_odor = meta[prefix + 'test_right_odor']
+
+    elif meta['reinforced_odor'] == meta[prefix + 'test_right_odor']:
+        fraction_reinforced = 1 - fraction_left
+        if verbose:
+            print(prefix + 'test_left_odor was NOT reinforced')
+        nonshocked_odor = meta[prefix + 'test_left_odor']
+
+    else:
+        assert False, 'neither of ' + prefix + 'test_<left/right>_odor(s) were equal to reinforced odor'
+    assert meta['reinforced_odor'] != nonshocked_odor
+
+    return fraction_reinforced, test_indices, nonshocked_odor
+
+
+def decision_bias(cropped_times, y_positions, meta, prefix, \
+    mean_y_pixels, choice_zone_width_mm=5):
+    """
+    should be signed, unlike that in Parnas, with positive indicating a bias against
+    shocked odor.
+    """
+    assert prefix == 'pre' or prefix == 'post'
+
+    test_indices = np.logical_and(cropped_times > meta['times'][prefix + 'test_start'], \
+        cropped_times < (meta['times'][prefix + 'test_start'] + \
+        meta['times']['test_duration']))
+    assert test_indices.dtype == np.bool, \
+        'later operations assume indices represented as boolean mask'
+
+    y_vals = map(lambda p: p[1], meta['roi_points'])
+    y_mid = np.mean(y_vals)
+    #left = y_positions > y_mid
+
+    # TODO use ratio of this height in pixels to mean height in pixels to
+    # get more accurate est of real boundaries of decision zone?
+    # probably assumes camera is properly calibrated?
+    mean_selected_height_mm = 51
+    # assumes properly calibrated camera (or negligible geometric distortion)
+    choice_zone_pixels = (choice_zone_width_mm / mean_selected_height_mm) * mean_y_pixels
+    # TODO check left / right here is correct. maybe orientation settable via parameter?
+    left_border = y_mid - (choice_zone_pixels / 2)
+    right_border = y_mid + (choice_zone_pixels / 2)
+
+    # just need to count all exits from choice zone, separately for each side
+    in_choice_zone = np.logical_and(y_positions >= left_border, \
+        y_positions <= right_border).astype(np.int8)
+
+    # diff is -1 at the end of a run of Trues (1s)
+    # TODO debounce at all? filter trajectories better first?
+    exits = np.argwhere(np.diff(in_choice_zone) == -1)
+    towards_left = 0
+    towards_right = 0
+    for e in exits:
+        if abs(y_positions[e] - left_border) < abs(y_positions[e] - right_border):
+            towards_left += 1
+        else:
+            towards_right += 1
+
+    print 'decisions toward left', towards_left
+    print 'decisions toward right', towards_right
+
+    # TODO TODO is this right?
+    bias_against_left = (towards_left - towards_right) / (towards_left + towards_right)
+
+    # TODO check
+    if meta['reinforced_odor'] == meta[prefix + 'test_left_odor']:
+        bias_against_reinforced = bias_against_left
+        if verbose:
+            print(prefix + 'test_left_odor was reinforced')
+        nonshocked_odor = meta[prefix + 'test_right_odor']
+
+    elif meta['reinforced_odor'] == meta[prefix + 'test_right_odor']:
+        bias_against_reinforced = (-1) * bias_against_left
+        if verbose:
+            print(prefix + 'test_left_odor was NOT reinforced')
+        nonshocked_odor = meta[prefix + 'test_left_odor']
+
+    else:
+        assert False, 'neither of ' + prefix + 'test_<left/right>_odor(s) were equal to reinforced odor'
+    assert meta['reinforced_odor'] != nonshocked_odor
+
+    return bias_against_reinforced, test_indices, nonshocked_odor
 
 
 def plot_metric_change(metric_pre, metric_post, title='', ylabel='', fly2meta=None, \
@@ -662,6 +789,7 @@ def analyze_group(fly2data, title=''):
     """
     y_maxes_above_mid = []
     y_mins_below_mid = []
+    y_ranges = []
 
     # TODO assert that we are analyzing with dimension that corresponds to long axis of roi
 
@@ -671,10 +799,13 @@ def analyze_group(fly2data, title=''):
         centered_y_vals = map(lambda y: y - curr_mid, y_vals)
         y_maxes_above_mid.append(max(centered_y_vals))
         y_mins_below_mid.append(min(centered_y_vals))
+        y_ranges.append(max(y_vals) - min(y_vals))
 
     # TODO might want to just determine plotting range from these
     y_max_above_mid = max(y_maxes_above_mid)
     y_min_below_mid = min(y_mins_below_mid)
+    mean_y_pixels = np.mean(y_ranges)
+    print 'mean y pixels:', mean_y_pixels
 
     if verbose:
         print 'y_min_below_mid', y_min_below_mid, 'y_max_above_mid', y_max_above_mid
@@ -733,26 +864,27 @@ def analyze_group(fly2data, title=''):
         # because for some of these, the tracking ran much longer than the stimulus presentation
         cropped_indices = (curr_times - start) <= crop_to_seconds
         cropped_times = curr_times[cropped_indices]
-        # relative to start of experiment
-        cropped_rel_times = cropped_times - start
 
-        # TODO maybe use times from log, rather than these?
-        pretest_indices = np.logical_and(cropped_times > meta['times']['pretest_start'], \
-            cropped_times < (meta['times']['pretest_start'] + \
-            meta['times']['test_duration']))
+        curr_fraction_reinforced_pre, pretest_indices, nonshocked_odor = \
+            fraction_time_reinforced(cropped_times, data['position_y'][cropped_indices], \
+            meta, 'pre')
+        curr_fraction_reinforced_post, posttest_indices, _ = \
+            fraction_time_reinforced(cropped_times, data['position_y'][cropped_indices], \
+            meta, 'post')
 
-        posttest_indices = np.logical_and(cropped_times > meta['times']['posttest_start'], \
-            cropped_times < (meta['times']['posttest_start'] + \
-            meta['times']['test_duration']))
+        print 'experiment', split(meta['dir'])[-1], 'fly', meta['n']
 
-        assert pretest_indices.dtype == np.bool, \
-            'later functions assume indices represented as boolean mask'
-        assert posttest_indices.dtype == np.bool, \
-            'later functions assume indices represented as boolean mask'
+        decision_bias_pre, _, _ = decision_bias(cropped_times, \
+            data['position_y'][cropped_indices], meta, 'pre', mean_y_pixels)
+        decision_bias_post, _, _ = decision_bias(cropped_times, \
+            data['position_y'][cropped_indices], meta, 'post', mean_y_pixels)
+
+        print 'decision bias pre:', decision_bias_pre
+        print 'decision bias post:', decision_bias_post
+        print ''
+ 
         assert not np.any(np.logical_and(pretest_indices, posttest_indices)), \
             'pre and post test indices overlapped'
-        # maybe allow some tolerance here
-        assert pretest_indices.size == posttest_indices.size
 
         n_pretest_indices = np.sum(pretest_indices)
         n_posttest_indices = np.sum(posttest_indices)
@@ -768,48 +900,8 @@ def analyze_group(fly2data, title=''):
                 print 'WARNING! relative difference in timepoints in pre and post test = ' + \
                     str(curr_rel_err)
 
-        # TODO try not to recalculate?
-        y_vals = map(lambda p: p[1], meta['roi_points'])
-        y_mid = np.mean(y_vals)
-
-        left = data['position_y'][cropped_indices] > y_mid
-        # TODO TODO factor into function for better consistency / isolation
-        # TODO include a buffer region that is called in neither direction 
-        # to make this more robust to misspecifying the middle of the arena?
-        # TODO check uniform sampling rate?
-        fraction_left_pre = np.sum(left[pretest_indices]) / np.sum(pretest_indices)
-        #print 'sum pretest indices on left', np.sum(left[pretest_indices])
-        #print 'sum pretest_indices', np.sum(pretest_indices)
-        if meta['reinforced_odor'] == meta['pretest_left_odor']:
-            fraction_reinforced_pre.append(fraction_left_pre)
-            if verbose:
-                print('pretest_left_odor was reinforced')
-            nonshocked_odor = meta['pretest_right_odor']
-
-        elif meta['reinforced_odor'] == meta['pretest_right_odor']:
-            fraction_reinforced_pre.append(1 - fraction_left_pre)
-            if verbose:
-                print('pretest_left_odor was NOT reinforced')
-            nonshocked_odor = meta['pretest_left_odor']
-
-        else:
-            assert False, 'neither of pretest_<left/right>_odor(s) were equal to reinforced odor'
-
-        assert meta['reinforced_odor'] != nonshocked_odor
-
-        fraction_left_post = np.sum(left[posttest_indices]) / np.sum(posttest_indices)
-        #print 'sum posttest indices on left', np.sum(left[posttest_indices])
-        #print 'sum posttest_indices', np.sum(posttest_indices)
-        if meta['reinforced_odor'] == meta['posttest_left_odor']:
-            fraction_reinforced_post.append(fraction_left_post)
-            if verbose:
-                print('posttest_left_odor was reinforced')
-        elif meta['reinforced_odor'] == meta['posttest_right_odor']:
-            fraction_reinforced_post.append(1 - fraction_left_post)
-            if verbose:
-                print('posttest_left_odor was NOT reinforced')
-        else:
-            assert False, 'neither of posttest_<left/right>_odor(s) were equal to reinforced odor'
+        fraction_reinforced_pre.append(curr_fraction_reinforced_pre)
+        fraction_reinforced_post.append(curr_fraction_reinforced_post)
 
         # TODO convert odor + conc to good string representation
         curr_df = pd.DataFrame({'experiment': meta['dir'], \
@@ -833,6 +925,8 @@ def analyze_group(fly2data, title=''):
             metrics = {'fraction_reinforced_pre': fraction_reinforced_pre[-1],
                        'fraction_reinforced_post': fraction_reinforced_post[-1]}
 
+            # relative to start of experiment
+            cropped_rel_times = cropped_times - start
             curr_x_min, curr_x_max, curr_y_min, curr_y_max, labels, handles = \
                 plot_trace(cropped_rel_times, data['position_y'][cropped_indices], \
                 meta, metrics=metrics, y_max_min=(y_max_above_mid, y_min_below_mid), ax=ax)
