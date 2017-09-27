@@ -18,6 +18,7 @@ import sys
 import rosparam
 
 # TODO will this work w/ python2?
+# seems to, but may be unnecessary
 from collections import OrderedDict
 # TODO replace rosparam usage w/ this?
 # using this rather than pyyaml, because this supports rejecting duplicate keys
@@ -68,6 +69,7 @@ show_plots = False
 save_plots = True
 plot_format = 'png'
 make_plots = show_plots or save_plots
+sort_traces_by = 'decision_bias'
 
 # TODO it seems these were originally for displaying?
 # separate flags for whether the text should be added to traces plot?
@@ -426,6 +428,12 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, y_max_min=None
 
     if display_metrics and not metrics is None:
         # TODO other metrics?
+        y_pos = 0.77
+        x_0 = 0.99
+        dx = 0.08
+        fontsize = 7
+        valign = 'top'
+        # TODO crop a little tighter and move x_pos to the left?
         if want_time_spent:
             text = ''
             # TODO make robust to fly #0 getting skipped
@@ -437,17 +445,17 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, y_max_min=None
                     (metrics['fraction_reinforced_pre'], metrics['fraction_reinforced_post'])
 
             # TODO scale fontsize w/ # of traces?
-            ax.text(1, 0.75, text, transform=ax.transAxes, fontsize=7, \
-                verticalalignment='top')
+            ax.text(x_0, y_pos, text, transform=ax.transAxes, fontsize=fontsize, \
+                verticalalignment=valign)
 
-        # TODO might want this to the left of the other (not above / below)?
         if want_decision_bias:
             #if fly == 0:
-            text = 'bias pre: %.3f\nbias post: %.3f' % \
+            text = '%.3f\n%.3f' % \
                 (metrics['decision_bias_pre'], metrics['decision_bias_post'])
 
-            ax.text(1.1, 0.75, text, transform=ax.transAxes, fontsize=7, \
-                verticalalignment='top')
+            x_pos = x_0 if not want_time_spent else (x_0 + dx)
+            ax.text(x_pos, y_pos, text, transform=ax.transAxes, fontsize=fontsize, \
+                verticalalignment=valign)
 
         # TODO was preference / performance (?) index distinct from the above?
 
@@ -703,15 +711,17 @@ def decision_bias(cropped_times, y_positions, meta, prefix, \
         # TODO TODO is this right?
         bias_against_left = (towards_left - towards_right) / total_decisions
 
-    # TODO check
+    # convention is negative = aversion to shocked odor, 
+    # positive = attraction to shocked odor
+    # so that changes are in same direction as fraction of time spent in reinforced
     if meta['reinforced_odor'] == meta[prefix + 'test_left_odor']:
-        bias_against_reinforced = bias_against_left
+        bias_against_reinforced = (-1) * bias_against_left
         if verbose:
             print(prefix + 'test_left_odor was reinforced')
         nonshocked_odor = meta[prefix + 'test_right_odor']
 
     elif meta['reinforced_odor'] == meta[prefix + 'test_right_odor']:
-        bias_against_reinforced = (-1) * bias_against_left
+        bias_against_reinforced = bias_against_left
         if verbose:
             print(prefix + 'test_left_odor was NOT reinforced')
         nonshocked_odor = meta[prefix + 'test_left_odor']
@@ -854,6 +864,7 @@ def analyze_group(fly2data, title=''):
             axes = [axes]
 
     dfs = []
+    for_plotting = []
     curr_idx = 0
 
     for fly, data in fly2data.items():
@@ -943,8 +954,6 @@ def analyze_group(fly2data, title=''):
                       'fraction_reinforced_post': fraction_reinforced_post}, index=[curr_idx])
         dfs.append(curr_df)
 
-        # TODO calculate other metric
-
         # TODO only print metrics if not make_plots and display_metrics? just latter?
         if make_plots:
             # TODO TODO filter very high frequency noise out before plotting
@@ -965,9 +974,56 @@ def analyze_group(fly2data, title=''):
 
             # relative to start of experiment
             cropped_rel_times = cropped_times - start
+            if sort_traces_by is None:
+                curr_x_min, curr_x_max, curr_y_min, curr_y_max, labels, handles = \
+                    plot_trace(cropped_rel_times, data['position_y'][cropped_indices], \
+                    meta, metrics=metrics, y_max_min=(y_max_above_mid, y_min_below_mid), ax=ax)
+
+                if plotting_y_max is None or plotting_y_max < curr_y_max:
+                    plotting_y_max = curr_y_max
+
+                if plotting_y_min is None or plotting_y_min > curr_y_min:
+                    plotting_y_min = curr_y_min
+
+                if plotting_x_max is None or plotting_x_max < curr_x_max:
+                    plotting_x_max = curr_x_max
+
+                if plotting_x_min is None or plotting_x_min > curr_x_min:
+                    plotting_x_min = curr_x_min
+
+                axes_to_set_limits.append(ax)
+
+            else:
+                # TODO factor stuff around to avoid this mess?
+                args_to_plot = (cropped_rel_times, data['position_y'][cropped_indices], \
+                    meta)
+                # will need to fill in the ax later. this is to change order of subplots.
+                kwargs_to_plot = {'metrics': metrics, 'y_max_min': (y_max_above_mid, \
+                    y_min_below_mid)}
+                # TODO will redefining these variables change the values already in the list?
+                # probably not?
+                for_plotting.append((args_to_plot, kwargs_to_plot))
+            fly_nums_in_order.append(fly)
+        # TODO just use enumerate instead?
+        curr_idx += 1
+
+    # TODO ignore_index?
+    df = pd.concat(dfs)
+
+    # sort by change in metric and plot subplots in that order
+    if sort_traces_by == 'decision_bias':
+        sort_on = df['decision_bias_pre'] - df['decision_bias_post']
+
+    elif sort_traces_by == 'time_spent':
+        sort_on = df['fraction_reinforced_pre'] - df['fraction_reinforced_post']
+
+    if not sort_traces_by is None:
+        plotting_order = np.argsort(sort_on)
+        for i, si in enumerate(plotting_order):
+            ax = axes[i]
+            args_to_plot, kwargs_to_plot = for_plotting[si]
             curr_x_min, curr_x_max, curr_y_min, curr_y_max, labels, handles = \
-                plot_trace(cropped_rel_times, data['position_y'][cropped_indices], \
-                meta, metrics=metrics, y_max_min=(y_max_above_mid, y_min_below_mid), ax=ax)
+                plot_trace(*args_to_plot, ax=ax, **kwargs_to_plot)
 
             if plotting_y_max is None or plotting_y_max < curr_y_max:
                 plotting_y_max = curr_y_max
@@ -982,10 +1038,9 @@ def analyze_group(fly2data, title=''):
                 plotting_x_min = curr_x_min
 
             axes_to_set_limits.append(ax)
-            fly_nums_in_order.append(fly)
-        curr_idx += 1
 
     if make_plots:
+        # TODO take union of labels & handles returned above?
         fig.legend(handles=handles, labels=labels, loc='lower left', fontsize=9)
 
     if verbose:
@@ -1061,11 +1116,8 @@ def analyze_group(fly2data, title=''):
                 title='Conditioned change in decision bias', ylabel='Decision bias', \
                 fly2meta=fly2meta, fly_nums_in_order=fly_nums_in_order, \
                 filename=filename, allow_negative=True)
-
         # TODO also plot their differences for various groups as swarm plots? print?
 
-    # TODO ignore_index?
-    df = pd.concat(dfs)
     return df
 
 # TODO it seems that running analysis 1 (2?) times after initial scoring, empty plots are gone
@@ -1152,6 +1204,19 @@ print ''
 for line in lines:
     print line
 print ''
+if want_time_spent:
+    print 'Mean difference in time spent in shocked odor:', \
+        (df['fraction_reinforced_pre'] - df['fraction_reinforced_post']).mean()
+    print 'Median difference in time spent in shocked odor:', \
+        (df['fraction_reinforced_pre'] - df['fraction_reinforced_post']).median()
+    print ''
+
+if want_decision_bias:
+    print 'Mean decision bias difference:', \
+        (df['decision_bias_pre'] - df['decision_bias_post']).mean()
+    print 'Median decision bias difference:', \
+        (df['decision_bias_pre'] - df['decision_bias_post']).median()
+    print ''
 
 print 'Experiments represented by each label:'
 label2experiment = {v: k for k, v in experiment2label.items()}
