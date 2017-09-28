@@ -1217,19 +1217,32 @@ print ''
 for line in lines:
     print line
 print ''
+
 if want_time_spent:
+    change = df['fraction_reinforced_pre'] - df['fraction_reinforced_post']
     print 'Mean difference in time spent in shocked odor:', \
-        (df['fraction_reinforced_pre'] - df['fraction_reinforced_post']).mean()
+        change.mean()
     print 'Median difference in time spent in shocked odor:', \
-        (df['fraction_reinforced_pre'] - df['fraction_reinforced_post']).median()
+        change.median()
     print ''
 
+    fig = plt.figure()
+    plt.hist(change[np.logical_not(np.isnan(change))], color='black', bins=30)
+    plt.title('Changes in time spent in CS')
+    fig.savefig('time_spent_change_histogram.' + plot_format, bbox_inches='tight')
+
 if want_decision_bias:
+    change = df['decision_bias_pre'] - df['decision_bias_post']
     print 'Mean decision bias difference:', \
-        (df['decision_bias_pre'] - df['decision_bias_post']).mean()
+        change.mean()
     print 'Median decision bias difference:', \
-        (df['decision_bias_pre'] - df['decision_bias_post']).median()
+        change.median()
     print ''
+
+    fig = plt.figure()
+    plt.hist(change[np.logical_not(np.isnan(change))], color='black', bins=30)
+    plt.title('Changes in decision bias')
+    fig.savefig('bias_change_histogram.' + plot_format, bbox_inches='tight')
 
 print 'Experiments represented by each label:'
 label2experiment = {v: k for k, v in experiment2label.items()}
