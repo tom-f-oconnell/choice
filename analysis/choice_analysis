@@ -27,6 +27,8 @@ from ruamel.yaml.comments import CommentedSeq
 
 import string
 
+import ipdb
+
 # see falsetru's answer at
 # https://stackoverflow.com/questions/21872366/plural-string-formatting
 class PluralFormatter(string.Formatter):
@@ -587,8 +589,6 @@ if new_keys:
 
     print 'saving to', yaml_filename
     with open(yaml_filename, 'w') as f:
-        # TODO does roundtripdumper work w/o using roundtriploader?
-        # (should) necessary though?
         yaml.dump(rejects, f, Dumper=yaml.RoundTripDumper)
 
 bad = dict()
@@ -974,6 +974,8 @@ def analyze_group(fly2data, title=''):
 
             # relative to start of experiment
             cropped_rel_times = cropped_times - start
+            handles = None
+            labels = None
             if sort_traces_by is None:
                 curr_x_min, curr_x_max, curr_y_min, curr_y_max, labels, handles = \
                     plot_trace(cropped_rel_times, data['position_y'][cropped_indices], \
@@ -1018,7 +1020,18 @@ def analyze_group(fly2data, title=''):
         sort_on = df['fraction_reinforced_pre'] - df['fraction_reinforced_post']
 
     if not sort_traces_by is None:
-        plotting_order = np.argsort(sort_on)
+        # despite having np > 1.4, argsort seemed to be misbehaving w/ nans
+        # TODO test case where no entries are nan
+        without_nan = sort_on[np.logical_not(np.isnan(sort_on))]
+        nonnan_order = without_nan.index.to_series().as_matrix()\
+            [np.argsort(without_nan)[::-1]]
+
+        if type(nonnan_order) != np.ndarray:
+            nonnan_order = np.array([nonnan_order])
+
+        plotting_order = np.concatenate([nonnan_order, \
+            np.where(np.isnan(sort_on))[0]])
+
         for i, si in enumerate(plotting_order):
             ax = axes[i]
             args_to_plot, kwargs_to_plot = for_plotting[si]
@@ -1039,7 +1052,7 @@ def analyze_group(fly2data, title=''):
 
             axes_to_set_limits.append(ax)
 
-    if make_plots:
+    if make_plots and (not handles is None) and (not labels is None):
         # TODO take union of labels & handles returned above?
         fig.legend(handles=handles, labels=labels, loc='lower left', fontsize=9)
 
@@ -1145,7 +1158,7 @@ for o in all_odors:
 
     if want_time_spent:
         plot_metric_change(curr_df['fraction_reinforced_pre'], curr_df['fraction_reinforced_post'], \
-            title='Conditioned change in preference, ' + o[0] + ' reinforced', \
+            title='Conditioned change in time spent, ' + o[0] + ' reinforced', \
             ylabel='Proportion of test spent in shocked odor', exps=curr_df['experiment'], \
             rois=curr_df['roi'], filename=o[0] + '_time_spent.' + plot_format)
 
@@ -1189,10 +1202,10 @@ if print_version:
     choice_path = os.path.realpath(__file__)
     repo = git.Repo(choice_path, search_parent_directories=True)
     current_hash = repo.head.object.hexsha
-    repo_url = 'https://github.com/tom-f-oconnell/choice'
     diff = repo.index.diff(None, create_patch=True)
     exactly = 'exactly ' if len(diff) == 0 else ''
-    print 'Generated with {} @ {}{}\n'.format(repo_url, exactly, current_hash)
+    github_url = 'https://github.com/tom-f-oconnell/choice'
+    print 'Generated with {} @ {}{}\n'.format(github_url, exactly, current_hash)
 
 # TODO format this for evernote & upload
 total_flies = len(fly2data) - rois_without_flies
