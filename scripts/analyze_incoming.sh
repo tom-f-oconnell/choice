@@ -4,12 +4,14 @@ DATA_DIR=$HOME/data
 
 while true;
 do
-	echo "waiting for file write"
+	echo "waiting for file write in $DATA_DIR"
+	# TODO why does cp -r not trigger this? would rsync?
 	INCOMING_DATA_DIR=$(inotifywait -r -q --format '%w' -e close_write -- $DATA_DIR)
 	echo "waiting for file writing to stop"
 	while true;
 	do
-		inotifywait -r -q -e close_write -t 30 -- $DATA_DIR
+		# TODO change back to 30
+		inotifywait -r -q -e close_write -t 5 -- $DATA_DIR
 		exit_status=$?
 		echo "exit status was ${exit_status}"
 		if [ $exit_status -eq 2 ]; then
@@ -29,7 +31,8 @@ do
 	done
 	# TODO also run on any directories created after first incoming detected?
 	# run tracking on the video, as recreated from the bag file
-	rosrun multi_tracker retrack ${INCOMING_DATA_DIR}
+	echo "running \"rosrun multi_tracker retrack ${INCOMING_DATA_DIR}\""
+	rosrun multi_tracker retrack ${INCOMING_DATA_DIR} &&
 
 	# -> run analysis pipeline
 	# TODO have that upload all from each experiment to their own evernote thing?
