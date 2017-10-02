@@ -82,9 +82,9 @@ olf/post_pulse_ms: 5000
 # odor valves opening will start ~concurrently with beginning
 # of low period
 # should be ~0.2 Hz
-# and ~0.5 duty cycle?
-zap/shock_ms_on: 2500
-zap/shock_ms_off: 2500
+# TODO test this new wave
+zap/shock_ms_on: 1250
+zap/shock_ms_off: 3750
 # if i can somehow set voltage programmatically...
 #zap/shock_voltage: 90
 # if i plan on changing these kinds of parameters online, then
