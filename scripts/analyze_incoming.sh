@@ -5,23 +5,25 @@ DATA_DIR=$HOME/data
 while true;
 do
 	echo "waiting for file write in $DATA_DIR"
-	# TODO why does cp -r not trigger this? would rsync?
+	# TODO why does cp -r not trigger this?
 	INCOMING_DATA_DIR=$(inotifywait -r -q --format '%w' -e close_write -- $DATA_DIR)
-	echo "waiting for file writing to stop"
+	# TODO maybe make this robust to transfers that finish before we have time to check rsync?
+	if ! lsof +D $INCOMING_DATA_DIR 2>/dev/null | grep -q rsync
+	then
+		# TODO shouldn't i still process it if new directory magically appeared
+		# and it hasn't been tracked? test for that directly? (presence of hdf5)
+		echo "rsync did not appear to have files open in this directory. restarting."
+		continue
+	fi
+	echo "waiting for rsync writing to this directory to finish."
 	while true;
 	do
-		# TODO change back to 30
-		inotifywait -r -q -e close_write -t 5 -- $DATA_DIR
-		exit_status=$?
-		echo "exit status was ${exit_status}"
-		if [ $exit_status -eq 2 ]; then
-			break;
+		if ! lsof +D $INCOMING_DATA_DIR 2>/dev/null | grep -q rsync
+		then
+			echo "rsync writing to this directory finished."
+			break
 		fi
 	done
-	echo "no writes within timeout"
-	# we have reached timeout without another file being closed
-	# so rsync is likely done transfering the data
-
 	echo "waiting for ROS to shutdown"
 	# wait until ROS is no longer running, checking every 10s
 	while true;
