@@ -24,10 +24,9 @@ from collections import OrderedDict
 # using this rather than pyyaml, because this supports rejecting duplicate keys
 from ruamel import yaml
 from ruamel.yaml.comments import CommentedSeq
-
 import string
 
-import ipdb
+import argparse
 
 # see falsetru's answer at
 # https://stackoverflow.com/questions/21872366/plural-string-formatting
@@ -787,7 +786,7 @@ def plot_metric_change(metric_pre, metric_post, title='', ylabel='', fly2meta=No
         assert not filename is None, 'must pass filename to plot_metric_change' + \
             ' if save_plots is True'
         # TODO save at same level as all experiment directories?
-        fig.savefig(filename, bbox_inches='tight')
+        fig.savefig(join(path, filename), bbox_inches='tight')
 
     if show_plots:
         def on_plot_hover(ax, event):
@@ -1096,11 +1095,12 @@ def analyze_group(fly2data, title=''):
     if save_plots:
         # TODO flag to output all figs in current dir? (as well?) symlink?
         if title == '':
-            fig.savefig('traces.' + plot_format)
+            # TODO why are there traces in there that were marked as rejects?
+            fig.savefig(join(path, 'traces.' + plot_format))
 
         else:
             plt.suptitle(title)
-            fig.savefig(title.replace(' ', '_') + '_traces.' + plot_format)
+            fig.savefig(join(path, title.replace(' ', '_') + '_traces.' + plot_format))
 
     if (not show_plots) or only_show_interactive:
         plt.close('all')
@@ -1149,6 +1149,13 @@ for k, v in fly2data.items():
         good_fly2data[k] = v
     elif not fly2meta[k]['n'] in bad[stamp]:
         good_fly2data[k] = v
+
+if verbose:
+    print '\nthe good flies:'
+    for f in good_fly2data:
+        m = fly2meta[f]
+        print '{} {} {} {}'.format(experiment2label[m['dir']], split(m['dir'])[-1], m['n'], f)
+    print ''
 
 df = analyze_group(good_fly2data)
 
@@ -1204,6 +1211,7 @@ for reason, reject_dict in rejects.items():
     analyze_group(bad_fly2data, title=reason.replace('_', ' '))
 
 if print_version:
+    # TODO dont fail if git can't be found, just warn
     import git
     choice_path = os.path.realpath(__file__)
     repo = git.Repo(choice_path, search_parent_directories=True)
@@ -1235,7 +1243,8 @@ if want_time_spent:
     fig = plt.figure()
     plt.hist(change[np.logical_not(np.isnan(change))], color='black', bins=30)
     plt.title('Changes in time spent in CS')
-    fig.savefig('time_spent_change_histogram.' + plot_format, bbox_inches='tight')
+    fig.savefig(join(path, 'time_spent_change_histogram.' + plot_format), \
+        bbox_inches='tight')
 
 if want_decision_bias:
     change = df['decision_bias_pre'] - df['decision_bias_post']
@@ -1248,7 +1257,8 @@ if want_decision_bias:
     fig = plt.figure()
     plt.hist(change[np.logical_not(np.isnan(change))], color='black', bins=30)
     plt.title('Changes in decision bias')
-    fig.savefig('bias_change_histogram.' + plot_format, bbox_inches='tight')
+    fig.savefig(join(path, 'bias_change_histogram.' + plot_format), \
+        bbox_inches='tight')
 
 print 'Experiments represented by each label:'
 label2experiment = {v: k for k, v in experiment2label.items()}
