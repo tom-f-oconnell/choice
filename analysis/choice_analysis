@@ -201,8 +201,13 @@ def load_metadata(d):
 
 # TODO refactor so nothing is called on import?
 
+path = '~/data/retracked'
+if len(sys.argv) >= 2:
+    experiment_subdir = sys.argv[1]
+    path = join(path, experiment_subdir)
+
 # TODO allow script to be run in directory w/ data
-path = os.path.expanduser('~/data/retracked')
+path = os.path.expanduser(path)
 # TODO just walk from path in future?
 
 dirs = [join(path, d) for d in os.listdir(path) if re.match(r'([0-9]){8}_([0-9]){6}', d) \
@@ -551,6 +556,7 @@ for fly, data in fly2data.items():
     #plot_trace(curr_times, data['position_y'], meta, ax=ax)
     # TODO why did this seem to be on a log x scale once?
     plot_trace(cropped_rel_times, data['position_y'][cropped_indices], meta)
+    plt.title('{}, ROI {}'.format(stamp, meta['n']))
 
     press.fig = fig
     press.cid = cid
