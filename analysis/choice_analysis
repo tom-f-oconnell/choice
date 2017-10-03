@@ -26,6 +26,9 @@ from ruamel import yaml
 from ruamel.yaml.comments import CommentedSeq
 import string
 
+from itertools import groupby
+import datetime as dt
+
 import argparse
 
 # see falsetru's answer at
@@ -62,8 +65,6 @@ class PluralFormatter(string.Formatter):
 # not sure i want to make config file mandatory
 
 verbose = False
-
-# TODO flag to just show interactive plot?
 
 only_show_interactive = False
 show_plots = False
@@ -536,7 +537,17 @@ for fly, data in fly2data.items():
         if not 'no_fly' in rejects:
             rejects['no_fly'] = OrderedDict()
 
+        #print stamp
+        # TODO why are they loading as a commentedseq of ordereddicts...
+        # can't easily test whether keys are in there.
         if not stamp in rejects['no_fly']:
+            '''
+            print type(rejects)
+            print type(rejects['no_fly'])
+            print rejects['no_fly']
+            print dir(rejects['no_fly'])
+            print type(rejects['no_fly'][stamp])
+            '''
             rejects['no_fly'][stamp] = []
 
         rejects['no_fly'][stamp].append(meta['n'])
@@ -844,14 +855,12 @@ def analyze_group(fly2data, title=''):
         print 'mean y pixels:', mean_y_pixels
         print 'y_min_below_mid', y_min_below_mid, 'y_max_above_mid', y_max_above_mid
 
-    # TODO divide into mch and oct? make a dataframe including all variables (like side, etc)?
     fractions_reinforced_pre = []
     fractions_reinforced_post = []
     decision_biases_pre = []
     decision_biases_post = []
 
     # TODO line up images of ROIs, with drawn midline, to check for those errors
-    # TODO label / group by the reinforced odor?
 
     plotting_y_max = None
     plotting_y_min = None
@@ -1136,7 +1145,6 @@ def analyze_group(fly2data, title=''):
                 fly2meta=fly2meta, fly_nums_in_order=fly_nums_in_order, \
                 filename=filename, allow_negative=True)
         # TODO also plot their differences for various groups as swarm plots? print?
-
     return df
 
 # TODO it seems that running analysis 1 (2?) times after initial scoring, empty plots are gone
@@ -1210,17 +1218,6 @@ for reason, reject_dict in rejects.items():
 
     analyze_group(bad_fly2data, title=reason.replace('_', ' '))
 
-if print_version:
-    # TODO dont fail if git can't be found, just warn
-    import git
-    choice_path = os.path.realpath(__file__)
-    repo = git.Repo(choice_path, search_parent_directories=True)
-    current_hash = repo.head.object.hexsha
-    diff = repo.index.diff(None, create_patch=True)
-    exactly = 'exactly ' if len(diff) == 0 else ''
-    github_url = 'https://github.com/tom-f-oconnell/choice'
-    print 'Generated with {} @ {}{}\n'.format(github_url, exactly, current_hash)
-
 # TODO format this for evernote & upload
 total_flies = len(fly2data) - rois_without_flies
 print 'Good flies:', str(len(good_fly2data)) + '/' + str(total_flies)
@@ -1266,3 +1263,50 @@ assert len(label2experiment) == len(experiment2label)
 sorted_labels = sorted(label2experiment.keys())
 for k in sorted_labels:
     print k, '-', label2experiment[k]
+
+if print_version:
+    # TODO dont fail if git can't be found, just warn
+    import git
+    choice_path = os.path.realpath(__file__)
+    repo = git.Repo(choice_path, search_parent_directories=True)
+    current_hash = repo.head.object.hexsha
+    diff = repo.index.diff(None, create_patch=True)
+    exactly = 'exactly ' if len(diff) == 0 else ''
+    github_url = 'https://github.com/tom-f-oconnell/choice'
+    print '\nGenerated with {} @ {}{}'.format(github_url, exactly, current_hash)
+
+# TODO also include human readable labels for experiments? as config file in each dir?
+
+print ''
+dirs_and_dts = map(lambda x: (x, dt.datetime.strptime(split(x)[-1], \
+    '%Y%m%d_%H%M%S')), experiment2label.keys())
+
+key_fn = lambda x: x[1].strftime('%W')
+for key, group in groupby(sorted(dirs_and_dts, key=key_fn), key_fn):
+    dirs_and_exp_dates = list(group)
+    one_date = dirs_and_exp_dates[0][1]
+    week_start = one_date - dt.timedelta(days=one_date.weekday())
+    week_end = week_start + dt.timedelta(days=6)
+
+    usable_flies = 0
+    unusable_flies = 0
+    for d, _ in dirs_and_exp_dates:
+        for f in good_fly2data:
+            if fly2meta[f]['dir'] == d:
+                usable_flies += 1
+
+        for reason, reject_dict in rejects.items():
+            if reason == 'good' or reason == 'suspicious' or reason == 'no_fly' \
+                or reject_dict is None:
+                continue
+
+            bad_flies = [k for k in fly2data if fly2meta[k]['dir'] == d and \
+                split(fly2meta[k]['dir'])[-1] in reject_dict and \
+                fly2meta[k]['n'] in reject_dict[split(fly2meta[k]['dir'])[-1]]]
+            unusable_flies += len(bad_flies)
+    flies_this_week = unusable_flies + usable_flies
+
+    print '{}-{}: {} experiments, {} flies, {} good'.format(\
+        week_start.strftime('%m/%d'), week_end.strftime('%m/%d/%Y'), \
+        len(dirs_and_exp_dates), flies_this_week, usable_flies)
+
