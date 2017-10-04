@@ -84,6 +84,7 @@ display_metrics = want_time_spent or want_decision_bias
 show_experiment_labels = True
 
 print_version = True
+digits_after_zero = 3
 
 if make_plots:
     import matplotlib.pyplot as plt
@@ -1231,11 +1232,10 @@ print ''
 
 if want_time_spent:
     change = df['fraction_reinforced_pre'] - df['fraction_reinforced_post']
-    print 'Mean difference in time spent in shocked odor:', \
-        change.mean()
-    print 'Median difference in time spent in shocked odor:', \
-        change.median()
-    print ''
+    print 'Mean difference in time spent in shocked odor: {{:.{}f}}'\
+        .format(digits_after_zero).format(round(change.mean(), digits_after_zero))
+    print 'Median difference in time spent in shocked odor: {{:.{}f}}\n'\
+        .format(digits_after_zero).format(round(change.median(), digits_after_zero))
 
     fig = plt.figure()
     plt.hist(change[np.logical_not(np.isnan(change))], color='black', bins=30)
@@ -1245,11 +1245,12 @@ if want_time_spent:
 
 if want_decision_bias:
     change = df['decision_bias_pre'] - df['decision_bias_post']
-    print 'Mean decision bias difference:', \
-        change.mean()
-    print 'Median decision bias difference:', \
-        change.median()
-    print ''
+    print 'Mean decision bias difference: {{:.{}f}}'.format(digits_after_zero)\
+        .format(round(change.mean(), digits_after_zero))
+    print 'Median decision bias difference: {{:.{}f}}'.format(digits_after_zero)\
+        .format(round(change.median(), digits_after_zero))
+    print 'Mean |decision bias| post: {{:.{}f}}\n'.format(digits_after_zero)\
+        .format(round(np.nanmean(np.abs(df['decision_bias_post'])), digits_after_zero))
 
     fig = plt.figure()
     plt.hist(change[np.logical_not(np.isnan(change))], color='black', bins=30)
