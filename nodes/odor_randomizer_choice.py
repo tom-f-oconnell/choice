@@ -14,6 +14,8 @@ from stimuli.msg import Sequence, Transition, State, DefaultState
 from stimuli.srv import LoadSequenceRequest
 from stimuli_loader import StimuliLoader
 
+import sys
+
 # TODO do i ever want to train the same flies on different pairs of odors sequentially?
 # or maybe expose them to some odors / some sequence of odors first (/ after?)?
 
@@ -96,7 +98,8 @@ if generate:
     rospy.loginfo('did not find saved odors and odor->pin mappings to load')
     #odors = list(odor_panel)
     mock = ('paraffin (mock)', 0)
-    odors = [('4-methylcyclohexanol', -2), ('3-octanol', -2)]
+    #odors = [('4-methylcyclohexanol', -2), ('3-octanol', -2)]
+    odors = [('ethanol', -0.5), ('air', 0)]
     #odors.append(mock)
 
     left_pins = random.sample(left_pins, len(odors))
@@ -279,12 +282,16 @@ t0_sec = gen.current_t0.to_sec()
 trial_structure = [gen.delay(prestimulus_delay_s), \
                    gen.test(), \
                    gen.delay(pretest_to_train_s)] + \
-                  flatten([[f(), gen.delay(inter_train_interval_s)] for f in [gen.train] * (training_blocks - 1)]) + \
-                  ([gen.train()] if training_blocks >= 0 else []) + \
+                  ((flatten([[f(), gen.delay(inter_train_interval_s)] for f \
+                    in [gen.train] * (training_blocks - 1)]) + \
+                  [gen.train()]) if training_blocks > 0 else []) + \
                   [gen.delay(train_to_posttest_s), \
                    gen.test(), \
                    gen.delay(beyond_posttest_s)]
 epoch_labels = ['test'] + ['train'] * training_blocks + ['test']
+print(epoch_labels)
+print(trial_structure)
+sys.exit()
 
 # TODO even if not printed to /rosout, is this saved by default?
 rospy.logdebug('trial_structure', trial_structure)
