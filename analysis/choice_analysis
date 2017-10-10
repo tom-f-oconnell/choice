@@ -28,6 +28,7 @@ import string
 
 from itertools import groupby
 import datetime as dt
+import random
 
 import argparse
 
@@ -142,6 +143,8 @@ def load_metadata(d):
     pretest_left_odor, posttest_left_odor = prepost_odors(odors2left_pins, left_pins, stimuli)
     pretest_right_odor, posttest_right_odor = prepost_odors(odors2right_pins, right_pins, stimuli)
 
+    metadata = dict()
+
     # TODO check that all blocks would yield the same answer
     for block in stimuli[1:-1]:
         odors = []
@@ -154,32 +157,17 @@ def load_metadata(d):
         if len(odors) > 0:
             assert len(odors) == 1
             reinforced_odor = odors.pop()
+            # TODO check
+            metadata['reinforced_odor'] = reinforced_odor
             break
 
-    metadata = dict()
     metadata['times'] = times
     metadata['pretest_left_odor'] = pretest_left_odor
     metadata['posttest_left_odor'] = posttest_left_odor
     metadata['pretest_right_odor'] = pretest_right_odor
     metadata['posttest_right_odor'] = posttest_right_odor
-    # TODO check
-    metadata['reinforced_odor'] = reinforced_odor
-    '''
-    if split(d)[-1] == '20170919_090747':
-        print ''
-        print 'trial_structure', trial_structure
-        print 'experiment:', split(d)[-1]
-        print 'odors2left_pins:', odors2left_pins
-        print 'odors2right_pins:', odors2right_pins
-        print 'pretest left:', odors2left_pins[pretest_left_odor], pretest_left_odor 
-        print 'posttest left:', odors2left_pins[posttest_left_odor], posttest_left_odor 
-        print 'pretest right:', odors2right_pins[pretest_right_odor], pretest_right_odor 
-        print 'posttest right:', odors2right_pins[posttest_right_odor], posttest_right_odor 
-        print 'reinforced odor', reinforced_odor
-        print ''
-        print ''
-    '''
     metadata['stimuli'] = list(stimuli)
+
     # TODO switch to new style
     left_pins2odors = dict((v, k) for k, v in odors2left_pins.items())
     right_pins2odors = dict((v, k) for k, v in odors2right_pins.items())
@@ -198,6 +186,7 @@ def load_metadata(d):
     metadata['left_pins2odors'] = left_pins2odors
     metadata['right_pins2odors'] = right_pins2odors
     metadata['odors'] = set(odors2left_pins.keys()) | set(odors2right_pins.keys())
+
     return metadata
 
 # TODO refactor so nothing is called on import?
@@ -447,10 +436,10 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, y_max_min=None
             # TODO make robust to fly #0 getting skipped
             if fly == 0:
                 text += 'pre: %.3f in reinforced\npost: %.3f in reinforced' % \
-                    (metrics['fraction_reinforced_pre'], metrics['fraction_reinforced_post'])
+                    (metrics['time_fraction_pre'], metrics['time_fraction_post'])
             else:
                 text += 'pre: %.3f\npost: %.3f' % \
-                    (metrics['fraction_reinforced_pre'], metrics['fraction_reinforced_post'])
+                    (metrics['time_fraction_pre'], metrics['time_fraction_post'])
 
             # TODO scale fontsize w/ # of traces?
             ax.text(x_0, y_pos, text, transform=ax.transAxes, fontsize=fontsize, \
@@ -625,7 +614,7 @@ for reason, reject_dict in rejects.items():
             bad[exp_id] = set(rois)
 
 
-def fraction_time_reinforced(cropped_times, y_positions, meta, prefix):
+def fraction_time(cropped_times, y_positions, meta, prefix, odor_of_interest):
     """
     """
     assert prefix == 'pre' or prefix == 'post'
@@ -652,27 +641,38 @@ def fraction_time_reinforced(cropped_times, y_positions, meta, prefix):
     fraction_left = np.sum(left[test_indices]) / np.sum(test_indices)
     #print 'sum ' + prefix + 'test indices on left', np.sum(left[test_indices])
     #print 'sum ' + prefix + 'test_indices', np.sum(test_indices)
-    if meta['reinforced_odor'] == meta[prefix + 'test_left_odor']:
-        fraction_reinforced = fraction_left
-        if verbose:
-            print(prefix + 'test_left_odor was reinforced')
-        nonshocked_odor = meta[prefix + 'test_right_odor']
 
-    elif meta['reinforced_odor'] == meta[prefix + 'test_right_odor']:
-        fraction_reinforced = 1 - fraction_left
+    nonshocked_odor = None
+
+    if odor_of_interest == meta[prefix + 'test_left_odor']:
+        fraction = fraction_left
         if verbose:
-            print(prefix + 'test_left_odor was NOT reinforced')
-        nonshocked_odor = meta[prefix + 'test_left_odor']
+            print(prefix + 'test_left_odor was the odor of interest ' + \
+                '(was reinforced if there was conditioning)')
+
+        if 'reinforced_odor' in meta:
+            nonshocked_odor = meta[prefix + 'test_right_odor']
+
+    elif odor_of_interest == meta[prefix + 'test_right_odor']:
+        fraction = 1 - fraction_left
+        if verbose:
+            print(prefix + 'test_left_odor was NOT the odor of interest ' + \
+                '(not reinforced if there was conditioning)')
+
+        if 'reinforced_odor' in meta:
+            nonshocked_odor = meta[prefix + 'test_left_odor']
 
     else:
-        assert False, 'neither of ' + prefix + 'test_<left/right>_odor(s) were equal to reinforced odor'
-    assert meta['reinforced_odor'] != nonshocked_odor
+        assert False, 'neither of ' + prefix + 'test_<left/right>_odor(s) were equal to odor of interest'
 
-    return fraction_reinforced, test_indices, nonshocked_odor
+    if 'reinforced_odor' in meta:
+        assert meta['reinforced_odor'] != nonshocked_odor
+
+    return fraction, test_indices, nonshocked_odor
 
 
 def decision_bias(cropped_times, y_positions, meta, prefix, \
-    mean_y_pixels, choice_zone_width_mm=5):
+    mean_y_pixels, odor_of_interest, choice_zone_width_mm=5):
     """
     should be signed, unlike that in Parnas, with positive indicating a bias against
     shocked odor.
@@ -728,26 +728,38 @@ def decision_bias(cropped_times, y_positions, meta, prefix, \
         # TODO TODO is this right?
         bias_against_left = (towards_left - towards_right) / total_decisions
 
+    # TODO handle appropriately downstream
+    nonshocked_odor = None
+
     # convention is negative = aversion to shocked odor, 
     # positive = attraction to shocked odor
     # so that changes are in same direction as fraction of time spent in reinforced
-    if meta['reinforced_odor'] == meta[prefix + 'test_left_odor']:
-        bias_against_reinforced = (-1) * bias_against_left
+    if odor_of_interest == meta[prefix + 'test_left_odor']:
+        bias_against = (-1) * bias_against_left
         if verbose:
-            print(prefix + 'test_left_odor was reinforced')
-        nonshocked_odor = meta[prefix + 'test_right_odor']
+            print(prefix + 'test_left_odor was the odor of interest ' + \
+                '(was reinforced if there was conditioning)')
 
-    elif meta['reinforced_odor'] == meta[prefix + 'test_right_odor']:
-        bias_against_reinforced = bias_against_left
+        # TODO maybe calculate this elsewhere? (so as not to repeat in this and time_spent...)
+        if 'reinforced_odor' in meta:
+            nonshocked_odor = meta[prefix + 'test_right_odor']
+
+    elif odor_of_interest == meta[prefix + 'test_right_odor']:
+        bias_against = bias_against_left
         if verbose:
-            print(prefix + 'test_left_odor was NOT reinforced')
-        nonshocked_odor = meta[prefix + 'test_left_odor']
+            print(prefix + 'test_left_odor was NOT the odor of interest ' + \
+                '(not reinforced if there was conditioning)')
+
+        if 'reinforced_odor' in meta:
+            nonshocked_odor = meta[prefix + 'test_left_odor']
 
     else:
-        assert False, 'neither of ' + prefix + 'test_<left/right>_odor(s) were equal to reinforced odor'
-    assert meta['reinforced_odor'] != nonshocked_odor
+        assert False, 'neither of ' + prefix + 'test_<left/right>_odor(s) were equal to odor of interest'
 
-    return bias_against_reinforced, test_indices, nonshocked_odor
+    if 'reinforced_odor' in meta:
+        assert meta['reinforced_odor'] != nonshocked_odor
+
+    return bias_against, test_indices, nonshocked_odor
 
 
 def plot_metric_change(metric_pre, metric_post, title='', ylabel='', fly2meta=None, \
@@ -856,8 +868,8 @@ def analyze_group(fly2data, title=''):
         print 'mean y pixels:', mean_y_pixels
         print 'y_min_below_mid', y_min_below_mid, 'y_max_above_mid', y_max_above_mid
 
-    fractions_reinforced_pre = []
-    fractions_reinforced_post = []
+    time_fractions_pre = []
+    time_fractions_post = []
     decision_biases_pre = []
     decision_biases_post = []
 
@@ -881,6 +893,10 @@ def analyze_group(fly2data, title=''):
     dfs = []
     for_plotting = []
     curr_idx = 0
+
+    had_some_reinforced = False
+    had_some_innate = False
+    odor_A = None
 
     for fly, data in fly2data.items():
         meta = fly2meta[fly]
@@ -913,23 +929,46 @@ def analyze_group(fly2data, title=''):
         cropped_indices = (curr_times - start) <= crop_to_seconds
         cropped_times = curr_times[cropped_indices]
 
+        if 'reinforced_odor' in meta:
+            had_some_reinforced = True
+            odor_of_interest = meta['reinforced_odor']
+
+        else:
+            # TODO this (and probably other logic w/ reinforced) seem to expect only two odors?
+            # per experiment? or across?
+            if odor_A is None:
+                odor_A = random.sample(meta['odors'], 1)[0]
+            had_some_innate = True
+            odor_of_interest = odor_A
+
+        if had_some_reinforced and had_some_innate:
+            raise ValueError('mix of innate tests and conditioning in this group')
+
         if want_time_spent:
-            fraction_reinforced_pre, pretest_indices, nonshocked_odor = \
-                fraction_time_reinforced(cropped_times, data['position_y'][cropped_indices], \
-                meta, 'pre')
-            fraction_reinforced_post, posttest_indices, _ = \
-                fraction_time_reinforced(cropped_times, data['position_y'][cropped_indices], \
-                meta, 'post')
+            time_fraction_pre, pretest_indices, nonshocked_odor = \
+                fraction_time(cropped_times, data['position_y'][cropped_indices], \
+                meta, 'pre', odor_of_interest)
+
+            time_fraction_post, posttest_indices, _ = \
+                fraction_time(cropped_times, data['position_y'][cropped_indices], \
+                meta, 'post', odor_of_interest)
 
             if verbose:
-                print 'fraction time spent in reinforced pre:', fraction_reinforced_pre
-                print 'fraction time spent in reinforced post:', fraction_reinforced_post
+                print 'fraction time spent in {} pre: {}'.format( \
+                    'reinforced' if 'reinforced_odor' in meta else 'odor A', \
+                    time_fraction_pre)
+                print 'fraction time spent in {} post: {}'.format( \
+                    'reinforced' if 'reinforced_odor' in meta else 'odor A', \
+                    time_fraction_post)
 
         if want_decision_bias:
             decision_bias_pre, _, _ = decision_bias(cropped_times, \
-                data['position_y'][cropped_indices].as_matrix(), meta, 'pre', mean_y_pixels)
+                data['position_y'][cropped_indices].as_matrix(), meta, 'pre', \
+                mean_y_pixels, odor_of_interest)
+
             decision_bias_post, _, _ = decision_bias(cropped_times, \
-                data['position_y'][cropped_indices].as_matrix(), meta, 'post', mean_y_pixels)
+                data['position_y'][cropped_indices].as_matrix(), meta, 'post', \
+                mean_y_pixels, odor_of_interest)
 
             if verbose:
                 print 'decision bias pre:', decision_bias_pre
@@ -953,20 +992,31 @@ def analyze_group(fly2data, title=''):
                 print 'WARNING! relative difference in timepoints in pre and post test = ' + \
                     str(curr_rel_err)
 
-        fractions_reinforced_pre.append(fraction_reinforced_pre)
-        fractions_reinforced_post.append(fraction_reinforced_post)
+        time_fractions_pre.append(time_fraction_pre)
+        time_fractions_post.append(time_fraction_post)
         decision_biases_pre.append(decision_bias_pre)
         decision_biases_post.append(decision_bias_post)
 
         # TODO convert odor + conc to good string representation
-        curr_df = pd.DataFrame({'experiment': meta['dir'], \
-                      'roi': meta['n'], \
-                      'shocked_odor': meta['reinforced_odor'][0], \
-                      'nonshocked_odor': nonshocked_odor[0], \
-                      'decision_bias_pre': decision_bias_pre, \
-                      'decision_bias_post': decision_bias_post, \
-                      'fraction_reinforced_pre': fraction_reinforced_pre, \
-                      'fraction_reinforced_post': fraction_reinforced_post}, index=[curr_idx])
+        if 'reinforced_odor' in meta:
+            curr_df = pd.DataFrame({'experiment': meta['dir'], \
+                          'roi': meta['n'], \
+                          'shocked_odor': meta['reinforced_odor'][0], \
+                          'nonshocked_odor': nonshocked_odor[0], \
+                          'decision_bias_pre': decision_bias_pre, \
+                          'decision_bias_post': decision_bias_post, \
+                          'time_fraction_pre': time_fraction_pre, \
+                          'time_fraction_post': time_fraction_post}, index=[curr_idx])
+
+        else:
+            curr_df = pd.DataFrame({'experiment': meta['dir'], \
+                          'roi': meta['n'], \
+                          'odor_A': odor_of_interest[0], \
+                          'decision_bias_pre': decision_bias_pre, \
+                          'decision_bias_post': decision_bias_post, \
+                          'time_fraction_pre': time_fraction_pre, \
+                          'time_fraction_post': time_fraction_post}, index=[curr_idx])
+
         dfs.append(curr_df)
 
         # TODO only print metrics if not make_plots and display_metrics? just latter?
@@ -980,8 +1030,8 @@ def analyze_group(fly2data, title=''):
             
             metrics = dict()
             if want_time_spent:
-                metrics['fraction_reinforced_pre'] = fraction_reinforced_pre
-                metrics['fraction_reinforced_post'] = fraction_reinforced_post
+                metrics['time_fraction_pre'] = time_fraction_pre
+                metrics['time_fraction_post'] = time_fraction_post
 
             if want_decision_bias:
                 metrics['decision_bias_pre'] = decision_bias_pre
@@ -1032,7 +1082,7 @@ def analyze_group(fly2data, title=''):
         sort_on = df['decision_bias_pre'] - df['decision_bias_post']
 
     elif sort_traces_by == 'time_spent':
-        sort_on = df['fraction_reinforced_pre'] - df['fraction_reinforced_post']
+        sort_on = df['time_fraction_pre'] - df['time_fraction_post']
 
     if not sort_traces_by is None:
         # despite having np > 1.4, argsort seemed to be misbehaving w/ nans
@@ -1127,7 +1177,7 @@ def analyze_group(fly2data, title=''):
             else:
                 filename = title.replace(' ', '_') + '_time_spent.' + plot_format
 
-            plot_metric_change(fractions_reinforced_pre, fractions_reinforced_post, \
+            plot_metric_change(time_fractions_pre, time_fractions_post, \
                 title='Conditioned change in time spent', ylabel='Proportion of test ' + \
                 'spent in shocked odor', fly2meta=fly2meta, \
                 fly_nums_in_order=fly_nums_in_order, filename=filename)
@@ -1172,21 +1222,39 @@ formatter = PluralFormatter()
 
 odor_lines = []
 for o in all_odors:
-    curr_df = df[df['shocked_odor'] == o[0]]
-    # TODO how to not need to input positions / kwarg names w/ custom formatter?
-    odor_lines.append(formatter.format('{0} good trace{0(s)} with {1} as the ' + \
-        'reinforced odor.', len(curr_df), o[0]))
+    # for analyzing experiments with aversive conditioning
+    if 'shocked_odor' in df.columns:
+        curr_df = df[df['shocked_odor'] == o[0]]
+        # TODO how to not need to input positions / kwarg names w/ custom formatter?
+        odor_lines.append(formatter.format('{0} good trace{0(s)} with {1} as the ' + \
+            'reinforced odor.', len(curr_df), o[0]))
+        label_insert = 'shocked odor'
+
+    # for assessing innate preference
+    elif 'odor_A' in df.columns:
+        curr_df = df[df['odor_A'] == o[0]]
+        odor_lines.append(formatter.format('{0} good trace{0(s)} with {1} as odor A', \
+            len(curr_df), o[0]))
+        label_insert = 'odor A'
+
+    else:
+        raise ValueError('neither odor_A (if innate preference experiment) nor shocked_odor ' + \
+            '(if experiment with conditioning) in df')
+
     # TODO handle odor better in filename
 
+
     if want_time_spent:
-        plot_metric_change(curr_df['fraction_reinforced_pre'], curr_df['fraction_reinforced_post'], \
-            title='Conditioned change in time spent, ' + o[0] + ' reinforced', \
-            ylabel='Proportion of test spent in shocked odor', exps=curr_df['experiment'], \
+        plot_metric_change(curr_df['time_fraction_pre'], curr_df['time_fraction_post'], \
+            title='Conditioned change in time spent, ' + o[0] + ' {}'.format(label_insert), \
+            ylabel='Proportion of test spent in {}'.format(label_insert), \
+            exps=curr_df['experiment'], \
             rois=curr_df['roi'], filename=o[0] + '_time_spent.' + plot_format)
 
     if want_decision_bias:
+        # TODO use format for all
         plot_metric_change(curr_df['decision_bias_pre'], curr_df['decision_bias_post'], \
-            title='Conditioned change in decision bias, ' + o[0] + ' reinforced', \
+            title='Conditioned change in decision bias, ' + o[0] + ' {}'.format(label_insert), \
             ylabel='Decision bias', exps=curr_df['experiment'], \
             rois=curr_df['roi'], filename=o[0] + '_decision_bias.' + \
             plot_format, allow_negative=True)
@@ -1231,7 +1299,7 @@ for line in lines:
 print ''
 
 if want_time_spent:
-    change = df['fraction_reinforced_pre'] - df['fraction_reinforced_post']
+    change = df['time_fraction_pre'] - df['time_fraction_post']
     print 'Mean difference in time spent in shocked odor: {{:.{}f}}'\
         .format(digits_after_zero).format(round(change.mean(), digits_after_zero))
     print 'Median difference in time spent in shocked odor: {{:.{}f}}\n'\
