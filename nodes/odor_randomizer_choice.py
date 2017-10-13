@@ -289,9 +289,6 @@ trial_structure = [gen.delay(prestimulus_delay_s), \
                    gen.test(), \
                    gen.delay(beyond_posttest_s)]
 epoch_labels = ['test'] + ['train'] * training_blocks + ['test']
-print(epoch_labels)
-print(trial_structure)
-sys.exit()
 
 # TODO even if not printed to /rosout, is this saved by default?
 rospy.logdebug('trial_structure', trial_structure)
