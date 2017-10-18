@@ -33,8 +33,8 @@
     <arg name="camera" value="usb_cam/image_rect" />
   </include>
 
+  <!-- TODO make default to load config from cwd? -->
   <rosparam command="load" file="$(find choice)/example/$(arg params)" />
-  <!-- TODO should i break out the stimulus_loader.py into stimuli package? how to handle? -->
   <node name="stimulus_loader" pkg="choice" type="odor_randomizer_choice.py" output="screen" required="true" />
  
   <!-- TODO is this explicit find syntax idiomatic or is there a simpler way to find .launch files? -->
