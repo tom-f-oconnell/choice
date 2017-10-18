@@ -1,7 +1,8 @@
 *.tar.gz
 *.dxf~
-#*.dxf
+\#*.dxf
 *.swp
+*.swo
 *.pyc
 *.png
 evernote_PRIVATE_DEV_TOKEN
