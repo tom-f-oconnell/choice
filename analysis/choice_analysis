@@ -70,7 +70,7 @@ verbose = False
 only_show_interactive = False
 show_plots = False
 save_plots = True
-plot_format = 'png'
+plot_format = 'svg'
 make_plots = show_plots or save_plots
 sort_traces_by = 'decision_bias'
 
@@ -884,9 +884,10 @@ def analyze_group(fly2data, title=''):
     fly_nums_in_order = []
 
     if make_plots:
-        scale = 12
+        scale = 20
+        aspect_ratio = 1
         fig, axes = plt.subplots(nrows=len(fly2data), sharex=True, sharey=True, \
-            squeeze=True, figsize=(scale * 1, scale * 1))
+            squeeze=True, figsize=(scale * aspect_ratio, scale * len(fly2data)))
         if not type(axes) is np.ndarray:
             axes = [axes]
 
