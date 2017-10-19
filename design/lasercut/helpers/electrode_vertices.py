@@ -22,7 +22,7 @@ x_between_backbone_vertices = electrode_width + (2.0 * between_electrodes)
 #y_grid_total_extent = width_between_backbones + (2.0 * electrode_width)
 
 # we will start with points that intersect center traces
-origin_x = center_x + (between_electrodes / 2.0)
+origin_x = center_x - (electrode_width / 2.0)
 curr_x = origin_x
 points = []
 
