@@ -15,8 +15,8 @@ def electrode_vertices():
     rightmost_tooth_from_top = False
 
     # all units in mm unless otherwise noted
-    center_x = 125.0
-    center_y = 38.7450
+    center_x = 0
+    center_y = 0
     # maybe a little less?
     min_half_length = 25
     min_width = 6.5
@@ -201,55 +201,22 @@ def as_kicad_mod(polylines, filename='../../pcb/choice.pretty/electrode.kicad_mo
         pad = pcbnew.D_PAD(footprint)
         # work for polygon?
         pad.SetShape(pcbnew.PAD_SHAPE_CUSTOM)
-
-        #poly = pcbnew.SHAPE_POLY_SET()
-        #poly.NewOutline()
         pv = pcbnew.wxPoint_Vector()
 
-        last_x = None
-        last_y = None
-        for ic, p in enumerate(pl):
+        for p in pl:
             x, y = map(mm_to_nm, p)
             xs.append(x)
             ys.append(y)
-
-            #poly.Append(x, y)
             pv.append(pcbnew.wxPoint(x, y))
 
-            '''
-            if not last_x is None:
-                thickness = round(1e6 / 3)
-                #thickness = 0
-                pad.AddPrimitive(pcbnew.wxPoint(last_x, last_y), \
-                    pcbnew.wxPoint(x, y), int(thickness))
-            '''
-
-            last_x = x
-            last_y = y
-
-        # TODO reasons not to set the size based on the GetBoundingBox?
-        # TODO what does thru_hole specifier mean?
+        # TODO what all does the smd pad specifier mean? reasons i wouldn't want it?
         # TODO remove mask layer?
-        # TODO how to fill the outline?
 
         thickness = 0
-        # TODO present addprimitive w/ SHAPE_POLY_SET for first arg in swig?
-        #pad.AddPrimitive(poly, thickness)
-
         pad.AddPrimitive(pv, thickness)
 
-        # TODO or should inflate factor (size) maybe be multiplicative identity?
-        # TODO how could i pass a fillable buffer as first arg from python?
-        #pad.BuildPadShapePolygon(???? (had poly, but seems wrong), pcbnew.wxSize(1, 1), 0, 0)
-
-        #assert cpl.GetClosed()
-        #cpl.Hatch()
-        # how to set to F.Cu?
-        #cpl.SetLayer(0)
-
-        #footprint.Add(track)
-        # TODO this reason for not displaying? add a buffer beyond this?
-        pad.SetSize(pcbnew.wxSize(max(xs) - min(xs), max(ys) - min(ys)))
+        #pad.SetSize(pcbnew.wxSize(max(xs) - min(xs), max(ys) - min(ys)))
+        pad.SetSize(pcbnew.wxSize(0, 0))
         # TODO what are these doing? (not changing (at 0 0) expression in pad def)
         #pad.SetX0(int(round(np.mean(xs))))
         #pad.SetY0(int(round(np.mean(ys))))
@@ -269,23 +236,9 @@ def as_kicad_mod(polylines, filename='../../pcb/choice.pretty/electrode.kicad_mo
         pad.SetLayerSet(pcbnew.D_PAD.SMDMask())
         pad.SetAttribute(pcbnew.PAD_ATTRIB_SMD)
 
-        # (?) merge didn't have an effect out output, used this way
-        print 'vertices before merge', pad.GetCustomShapeAsPolygon().TotalVertices()
-        merge_ok = pad.MergePrimitivesAsPolygon()
-        print 'merge to polygon OK' if merge_ok else 'merge to polygon failed'
-        # TODO why is this number so high? much more than it should be...
-        print 'vertices after merge', pad.GetCustomShapeAsPolygon().TotalVertices()
-
-        '''
-        it = pad.GetCustomShapeAsPolygon().IterateSegments()
-        it.own()
-        print dir(it)
-        while True:
-            r = it.next()
-            if r is None:
-                break
-        it.disown()
-        '''
+        # failing. why? when is this necessary?
+        #merge_ok = pad.MergePrimitivesAsPolygon()
+        #print 'merge to polygon OK' if merge_ok else 'merge to polygon failed'
 
         footprint.Add(pad)
 
@@ -297,7 +250,6 @@ def as_kicad_mod(polylines, filename='../../pcb/choice.pretty/electrode.kicad_mo
     fpid = pcbnew.LIB_ID(module_id)
     footprint.SetFPID(fpid)
 
-    # TODO how to set name of kicad_mod file? named parameter in third arg (list?)?
     io().FootprintSave(footprint_lib_dir, footprint)
     
 
