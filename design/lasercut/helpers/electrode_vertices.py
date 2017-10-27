@@ -189,7 +189,9 @@ def as_kicad_mod(polylines, filename='../../pcb/choice.pretty/electrode.kicad_mo
     def mm_to_nm(mm):
         return int(round(1e6 * mm))
 
-    for pl in polylines:
+    xs = []
+    ys = []
+    for i, pl in enumerate(polylines):
         # TODO advantages to using any one of zone_container / d_pad / track?
         # i assume it should be one of these (or include at least one) as they are
         # board_connected_item(s), and i would want this to count as connected
@@ -199,18 +201,28 @@ def as_kicad_mod(polylines, filename='../../pcb/choice.pretty/electrode.kicad_mo
         pad = pcbnew.D_PAD(footprint)
         # work for polygon?
         pad.SetShape(pcbnew.PAD_SHAPE_CUSTOM)
+
         #poly = pcbnew.SHAPE_POLY_SET()
         #poly.NewOutline()
+        pv = pcbnew.wxPoint_Vector()
 
         last_x = None
         last_y = None
         for ic, p in enumerate(pl):
             x, y = map(mm_to_nm, p)
-            #poly.Append(x, y)
+            xs.append(x)
+            ys.append(y)
 
+            #poly.Append(x, y)
+            pv.append(pcbnew.wxPoint(x, y))
+
+            '''
             if not last_x is None:
+                thickness = round(1e6 / 3)
+                #thickness = 0
                 pad.AddPrimitive(pcbnew.wxPoint(last_x, last_y), \
-                    pcbnew.wxPoint(x, y), 0)
+                    pcbnew.wxPoint(x, y), int(thickness))
+            '''
 
             last_x = x
             last_y = y
@@ -220,23 +232,69 @@ def as_kicad_mod(polylines, filename='../../pcb/choice.pretty/electrode.kicad_mo
         # TODO remove mask layer?
         # TODO how to fill the outline?
 
-        '''
         thickness = 0
-        pad.AddPrimitive(poly, thickness)
-        '''
-        #pad.BuildPadShapePoylgon(poly, 0, 0, 0)
+        # TODO present addprimitive w/ SHAPE_POLY_SET for first arg in swig?
+        #pad.AddPrimitive(poly, thickness)
+
+        pad.AddPrimitive(pv, thickness)
+
+        # TODO or should inflate factor (size) maybe be multiplicative identity?
+        # TODO how could i pass a fillable buffer as first arg from python?
+        #pad.BuildPadShapePolygon(???? (had poly, but seems wrong), pcbnew.wxSize(1, 1), 0, 0)
 
         #assert cpl.GetClosed()
         #cpl.Hatch()
         # how to set to F.Cu?
         #cpl.SetLayer(0)
 
-        # (?) merge didn't have an effect out output, used this way
-        #pad.MergePrimitivesAsPolygon()
         #footprint.Add(track)
+        # TODO this reason for not displaying? add a buffer beyond this?
+        pad.SetSize(pcbnew.wxSize(max(xs) - min(xs), max(ys) - min(ys)))
+        # TODO what are these doing? (not changing (at 0 0) expression in pad def)
+        #pad.SetX0(int(round(np.mean(xs))))
+        #pad.SetY0(int(round(np.mean(ys))))
+        # TODO could get from parameters above... (center_*)
+        #pad.SetPos0(pcbnew.wxPoint(int(round(np.mean(xs))), int(round(np.mean(ys)))))
+        #pad.SetPosition(pcbnew.wxPoint(int(round(np.mean(xs))), int(round(np.mean(ys)))))
+        # TODO set module pos too? meaningful w/o board?
+
+        if i == 0:
+            pad.SetName('comm_high_voltage')
+        elif i == 1:
+            pad.SetName('left_low')
+        elif i == 2:
+            pad.SetName('right_low')
+
+        # TODO not clear on what the std layers were?
+        pad.SetLayerSet(pcbnew.D_PAD.SMDMask())
+        pad.SetAttribute(pcbnew.PAD_ATTRIB_SMD)
+
+        # (?) merge didn't have an effect out output, used this way
+        print 'vertices before merge', pad.GetCustomShapeAsPolygon().TotalVertices()
+        merge_ok = pad.MergePrimitivesAsPolygon()
+        print 'merge to polygon OK' if merge_ok else 'merge to polygon failed'
+        # TODO why is this number so high? much more than it should be...
+        print 'vertices after merge', pad.GetCustomShapeAsPolygon().TotalVertices()
+
+        '''
+        it = pad.GetCustomShapeAsPolygon().IterateSegments()
+        it.own()
+        print dir(it)
+        while True:
+            r = it.next()
+            if r is None:
+                break
+        it.disown()
+        '''
+
         footprint.Add(pad)
 
-    fpid = pcbnew.LIB_ID(os.path.split(filename)[-1][:(-1)*len('.kicad_mod')])
+    #footprint.SetPosition(pcbnew.wxPoint(int(round(np.mean(xs))), int(round(np.mean(ys)))))
+
+    module_id = os.path.split(filename)[-1][:(-1)*len('.kicad_mod')]
+    # what is reference used for exactly?
+    footprint.SetReference(module_id)
+    fpid = pcbnew.LIB_ID(module_id)
     footprint.SetFPID(fpid)
 
     # TODO how to set name of kicad_mod file? named parameter in third arg (list?)?
