@@ -23,7 +23,7 @@ $INSBASE
   9
 $EXTMIN
  10
--14.7
+87.5
  20
 -6.5
  30
@@ -31,9 +31,9 @@ $EXTMIN
   9
 $EXTMAX
  10
-264.7
+162.5
  20
-225
+203.5
  30
 0
   9
@@ -91,7 +91,7 @@ STANDARD
   9
 $CLAYER
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   9
 $CELTYPE
   6
@@ -1115,9 +1115,9 @@ AcDbViewportTableRecord
  21
 1
  12
-230.125064856595
+214.4479157788978
  22
-131.6106342325354
+121.9333817154383
  13
 0
  23
@@ -1143,9 +1143,9 @@ AcDbViewportTableRecord
  37
 0
  40
-334.8329370915975
+323.9944142724502
  41
-1.715606936416185
+1.77299880525687
  42
 50
  43
@@ -2373,7 +2373,7 @@ AcDbLayerTableRecord
   2
 2.1_delrin_chambers_and_manifold
  70
-    0
+    1
  62
     1
   6
@@ -2459,7 +2459,7 @@ AcDbSymbolTableRecord
 100
 AcDbLayerTableRecord
   2
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
  70
     0
  62
@@ -2483,7 +2483,7 @@ AcDbLayerTableRecord
   2
 5_support_acrylic
  70
-    0
+    1
  62
     1
   6
@@ -2593,7 +2593,7 @@ AcDbLayerTableRecord
   2
 9_trap_bottomplate
  70
-    5
+    1
  62
     1
   6
@@ -13591,7 +13591,7 @@ ARC
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -13619,7 +13619,7 @@ ARC
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -13647,7 +13647,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -13669,7 +13669,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -13691,7 +13691,7 @@ LINE
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -13715,7 +13715,7 @@ LINE
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -13775,7 +13775,7 @@ HATCH
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -14113,7 +14113,7 @@ LWPOLYLINE
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -14291,7 +14291,7 @@ INSERT
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -14331,7 +14331,7 @@ INSERT
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -14407,7 +14407,7 @@ INSERT
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -14447,7 +14447,7 @@ INSERT
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -23213,7 +23213,7 @@ LWPOLYLINE
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -25809,7 +25809,7 @@ INSERT
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -25849,7 +25849,7 @@ INSERT
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -25889,7 +25889,7 @@ INSERT
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -25929,7 +25929,7 @@ INSERT
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -25969,7 +25969,7 @@ INSERT
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26009,7 +26009,7 @@ INSERT
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26049,7 +26049,7 @@ INSERT
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26089,7 +26089,7 @@ INSERT
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26349,7 +26349,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26371,7 +26371,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26393,7 +26393,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26415,7 +26415,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26437,7 +26437,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26459,7 +26459,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26481,7 +26481,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26503,7 +26503,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26525,7 +26525,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26547,7 +26547,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_floor
+4.2_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26562,326 +26562,6 @@ AcDbCircle
 139.964
  40
 1.7145
-  0
-INSERT
-  5
-34C
-100
-AcDbEntity
-  8
-4.2_pcb_floor
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbBlockReference
-  2
-chamber_grid
- 10
-125.0009852808743
- 20
-32.22790998934676
- 30
-0
- 41
-1
- 42
-1
- 43
-0
- 50
-0
- 70
-    1
- 71
-    1
- 44
-0
- 45
-0
-  0
-INSERT
-  5
-34D
-100
-AcDbEntity
-  8
-4.2_pcb_floor
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbBlockReference
-  2
-chamber_grid
- 10
-124.9950109419819
- 20
-9.727908630959572
- 30
-0
- 41
-1
- 42
-1
- 43
-0
- 50
-0
- 70
-    1
- 71
-    1
- 44
-0
- 45
-0
-  0
-INSERT
-  5
-34E
-100
-AcDbEntity
-  8
-4.2_pcb_floor
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbBlockReference
-  2
-chamber_grid
- 10
-124.9950113857203
- 20
-54.72790986118437
- 30
-0
- 41
-1
- 42
-1
- 43
-0
- 50
-0
- 70
-    1
- 71
-    1
- 44
-0
- 45
-0
-  0
-INSERT
-  5
-34F
-100
-AcDbEntity
-  8
-4.2_pcb_floor
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbBlockReference
-  2
-chamber_grid
- 10
-124.9890374905663
- 20
-77.22790973302199
- 30
-0
- 41
-1
- 42
-1
- 43
-0
- 50
-0
- 70
-    1
- 71
-    1
- 44
-0
- 45
-0
-  0
-INSERT
-  5
-350
-100
-AcDbEntity
-  8
-4.2_pcb_floor
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbBlockReference
-  2
-chamber_grid
- 10
-124.9830635954124
- 20
-99.7279096048596
- 30
-0
- 41
-1
- 42
-1
- 43
-0
- 50
-0
- 70
-    1
- 71
-    1
- 44
-0
- 45
-0
-  0
-INSERT
-  5
-351
-100
-AcDbEntity
-  8
-4.2_pcb_floor
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbBlockReference
-  2
-chamber_grid
- 10
-124.9770897002584
- 20
-122.2279094766972
- 30
-0
- 41
-1
- 42
-1
- 43
-0
- 50
-0
- 70
-    1
- 71
-    1
- 44
-0
- 45
-0
-  0
-INSERT
-  5
-352
-100
-AcDbEntity
-  8
-4.2_pcb_floor
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbBlockReference
-  2
-chamber_grid
- 10
-124.9711158051044
- 20
-144.7279093485348
- 30
-0
- 41
-1
- 42
-1
- 43
-0
- 50
-0
- 70
-    1
- 71
-    1
- 44
-0
- 45
-0
-  0
-INSERT
-  5
-353
-100
-AcDbEntity
-  8
-4.2_pcb_floor
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbBlockReference
-  2
-chamber_grid
- 10
-124.9651419099505
- 20
-167.2279092203725
- 30
-0
- 41
-1
- 42
-1
- 43
-0
- 50
-0
- 70
-    1
- 71
-    1
- 44
-0
- 45
-0
   0
 ENDSEC
   0

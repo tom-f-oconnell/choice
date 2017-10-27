@@ -164,9 +164,10 @@ def as_eagle_footprint(polylines, filename=''):
     raise NotImplementedError
 
 
-def as_kicad_mod(polylines, filename='../../pcb/choice.pretty/electrode.kicad_mod'):
+def as_kicad_mod(polylines, filename='../pcb/choice.pretty/electrode.kicad_mod'):
     import pcbnew
     from pcbnew import PCB_IO as io
+
     # TODO check for library through some pcbnew api call? / catch creation error?
     footprint_lib_dir = os.path.split(os.path.abspath(filename))[0]
     if not os.path.exists(footprint_lib_dir):
@@ -181,23 +182,12 @@ def as_kicad_mod(polylines, filename='../../pcb/choice.pretty/electrode.kicad_mo
         'behavior chamber, for conditioning Drosophila to avoid odors ' + \
         'paired with the shock.')
 
-    # TODO which layers are top and bottom copper?
-    layer_num = 0
-    assert pcbnew.IsCopperLayer(layer_num) and pcbnew.IsValidLayer(layer_num) \
-        and pcbnew.IsFrontLayer(layer_num)
-
     def mm_to_nm(mm):
         return int(round(1e6 * mm))
 
     xs = []
     ys = []
     for i, pl in enumerate(polylines):
-        # TODO advantages to using any one of zone_container / d_pad / track?
-        # i assume it should be one of these (or include at least one) as they are
-        # board_connected_item(s), and i would want this to count as connected
-        # TODO can't seem to put zones in modules, based on apparent BOARD requirement
-        # to construct one? and can't pass None, is there a const for no parent?
-        #track = pcbnew.TRACK(footprint)
         pad = pcbnew.D_PAD(footprint)
         # work for polygon?
         pad.SetShape(pcbnew.PAD_SHAPE_CUSTOM)
@@ -214,16 +204,8 @@ def as_kicad_mod(polylines, filename='../../pcb/choice.pretty/electrode.kicad_mo
 
         thickness = 0
         pad.AddPrimitive(pv, thickness)
-
-        #pad.SetSize(pcbnew.wxSize(max(xs) - min(xs), max(ys) - min(ys)))
+        # this makes the unwanted anchor go away
         pad.SetSize(pcbnew.wxSize(0, 0))
-        # TODO what are these doing? (not changing (at 0 0) expression in pad def)
-        #pad.SetX0(int(round(np.mean(xs))))
-        #pad.SetY0(int(round(np.mean(ys))))
-        # TODO could get from parameters above... (center_*)
-        #pad.SetPos0(pcbnew.wxPoint(int(round(np.mean(xs))), int(round(np.mean(ys)))))
-        #pad.SetPosition(pcbnew.wxPoint(int(round(np.mean(xs))), int(round(np.mean(ys)))))
-        # TODO set module pos too? meaningful w/o board?
 
         if i == 0:
             pad.SetName('comm_high_voltage')
@@ -236,13 +218,7 @@ def as_kicad_mod(polylines, filename='../../pcb/choice.pretty/electrode.kicad_mo
         pad.SetLayerSet(pcbnew.D_PAD.SMDMask())
         pad.SetAttribute(pcbnew.PAD_ATTRIB_SMD)
 
-        # failing. why? when is this necessary?
-        #merge_ok = pad.MergePrimitivesAsPolygon()
-        #print 'merge to polygon OK' if merge_ok else 'merge to polygon failed'
-
         footprint.Add(pad)
-
-    #footprint.SetPosition(pcbnew.wxPoint(int(round(np.mean(xs))), int(round(np.mean(ys)))))
 
     module_id = os.path.split(filename)[-1][:(-1)*len('.kicad_mod')]
     # what is reference used for exactly?
