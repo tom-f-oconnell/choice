@@ -17,6 +17,12 @@ def electrode_vertices():
     # all units in mm unless otherwise noted
     center_x = 0
     center_y = 0
+    '''
+    # this was the center of one of the grids in the librecad document
+    center_x = 125.0
+    center_y = 38.7450
+    '''
+
     # maybe a little less?
     min_half_length = 25
     min_width = 6.5
@@ -164,7 +170,7 @@ def as_eagle_footprint(polylines, filename=''):
     raise NotImplementedError
 
 
-def as_kicad_mod(polylines, filename='../pcb/choice.pretty/electrode.kicad_mod'):
+def as_kicad_mod(polylines, filename='../pcb/footprints.pretty/electrode.kicad_mod'):
     import pcbnew
     from pcbnew import PCB_IO as io
 
@@ -185,34 +191,72 @@ def as_kicad_mod(polylines, filename='../pcb/choice.pretty/electrode.kicad_mod')
     def mm_to_nm(mm):
         return int(round(1e6 * mm))
 
-    xs = []
-    ys = []
     for i, pl in enumerate(polylines):
         pad = pcbnew.D_PAD(footprint)
         # work for polygon?
         pad.SetShape(pcbnew.PAD_SHAPE_CUSTOM)
         pv = pcbnew.wxPoint_Vector()
 
+        xs = []
+        ys = []
         for p in pl:
             x, y = map(mm_to_nm, p)
             xs.append(x)
-            ys.append(y)
-            pv.append(pcbnew.wxPoint(x, y))
+            # custom pads on F.Cu (top / front copper) seem flipped along y (?)
+            ys.append(-y)
+            pv.append(pcbnew.wxPoint(x, -y))
 
         # TODO what all does the smd pad specifier mean? reasons i wouldn't want it?
         # TODO remove mask layer?
+
+        # TODO remove solder paste layer?
 
         thickness = 0
         pad.AddPrimitive(pv, thickness)
         # this makes the unwanted anchor go away
         pad.SetSize(pcbnew.wxSize(0, 0))
 
+        # i think there are supposed to correspond to pin numbers actually?
         if i == 0:
-            pad.SetName('comm_high_voltage')
+            pad.SetName('0')
         elif i == 1:
-            pad.SetName('left_low')
+            pad.SetName('1')
         elif i == 2:
-            pad.SetName('right_low')
+            pad.SetName('2')
+
+        # TODO hopefully this snaps tracks to correct position?
+        # TODO maybe set Pos0? or X0 and Y0? SetOffset?
+        # TODO document how these things differ (if they do?)?
+
+        clearance_nm = mm_to_nm(0.5)
+        # left
+        if max(xs) < 0:
+            print 'left'
+            pad_x = min(xs) + clearance_nm
+            sorted_ys = sorted(list(set(ys)))
+            pad_y = (sorted_ys[0] + sorted_ys[1]) / 2.0
+
+        # right
+        elif min(xs) > 0:
+            print 'right'
+            pad_x = max(xs) - clearance_nm
+            sorted_ys = sorted(list(set(ys)))
+            pad_y = (sorted_ys[0] + sorted_ys[1]) / 2.0
+
+        # center
+        else:
+            print 'center'
+            pad_x = 0.0
+            pad_y = max(ys) - clearance_nm
+
+        # this changed the spacing between the different electrodes...
+        # TODO maybe if it is set before adding the points?
+        #pad.SetPosition(pcbnew.wxPoint(pad_x, pad_y))
+        # and this didn't seem to do anything...
+        #pad.SetPos0(pcbnew.wxPoint(pad_x, pad_y))
+        pad.SetOffset(pcbnew.wxPoint(pad_x, pad_y))
+
+        # TODO how to remove front silkscreen "electrode" label?
 
         # TODO not clear on what the std layers were?
         pad.SetLayerSet(pcbnew.D_PAD.SMDMask())
