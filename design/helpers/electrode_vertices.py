@@ -4,6 +4,7 @@ from __future__ import division
 import numpy as np
 import os
 
+# TODO convert in to kicad footprint wizard
 def electrode_vertices():
     # the electrode with one trace down the center of the arena
     mirror = True
@@ -204,29 +205,6 @@ def as_kicad_mod(polylines, filename='../pcb/footprints.pretty/electrode.kicad_m
             xs.append(x)
             # custom pads on F.Cu (top / front copper) seem flipped along y (?)
             ys.append(-y)
-            pv.append(pcbnew.wxPoint(x, -y))
-
-        # TODO what all does the smd pad specifier mean? reasons i wouldn't want it?
-        # TODO remove mask layer?
-
-        # TODO remove solder paste layer?
-
-        thickness = 0
-        pad.AddPrimitive(pv, thickness)
-        # this makes the unwanted anchor go away
-        pad.SetSize(pcbnew.wxSize(0, 0))
-
-        # i think there are supposed to correspond to pin numbers actually?
-        if i == 0:
-            pad.SetName('0')
-        elif i == 1:
-            pad.SetName('1')
-        elif i == 2:
-            pad.SetName('2')
-
-        # TODO hopefully this snaps tracks to correct position?
-        # TODO maybe set Pos0? or X0 and Y0? SetOffset?
-        # TODO document how these things differ (if they do?)?
 
         clearance_nm = mm_to_nm(0.5)
         # left
@@ -249,18 +227,51 @@ def as_kicad_mod(polylines, filename='../pcb/footprints.pretty/electrode.kicad_m
             pad_x = 0.0
             pad_y = max(ys) - clearance_nm
 
-        # this changed the spacing between the different electrodes...
-        # TODO maybe if it is set before adding the points?
-        #pad.SetPosition(pcbnew.wxPoint(pad_x, pad_y))
-        # and this didn't seem to do anything...
-        #pad.SetPos0(pcbnew.wxPoint(pad_x, pad_y))
-        pad.SetOffset(pcbnew.wxPoint(pad_x, pad_y))
+        # will set position later to compensate for offset
+        # apparently anchor will necessarily be at (0,0)
+        for p in pl:
+            x, y = map(mm_to_nm, p)
+            # TODO sign correct?
+            pv.append(pcbnew.wxPoint(x - pad_x, (-y) - pad_y))
+
+        # TODO what all does the smd pad specifier mean? reasons i wouldn't want it?
+        # TODO remove mask layer?
+
+        # TODO remove solder paste layer?
+
+        thickness = 0
+        pad.AddPrimitive(pv, thickness)
+
+        # this makes the unwanted anchor go away
+        pad.SetSize(pcbnew.wxSize(1.0, 1.0))
+
+        # i think there are supposed to correspond to pin numbers actually?
+        if i == 0:
+            pad.SetName('0')
+        elif i == 1:
+            pad.SetName('1')
+        elif i == 2:
+            pad.SetName('2')
+
+        # TODO hopefully this snaps tracks to correct position?
+        # TODO maybe set Pos0? or X0 and Y0?
+        # TODO document how these things differ (if they do?)?
+
+        # offset is not supposed to be used with polygonal pads
+        # developers said to just place anchor wherever within polygon
+        # TODO how to place anchor though?
 
         # TODO how to remove front silkscreen "electrode" label?
 
         # TODO not clear on what the std layers were?
         pad.SetLayerSet(pcbnew.D_PAD.SMDMask())
         pad.SetAttribute(pcbnew.PAD_ATTRIB_SMD)
+
+        # pad editing in GUI fails if this is not true
+        assert pad.MergePrimitivesAsPolygon(), 'pad could not be merged. would be invalid in GUI.'
+
+        # TODO sign correct?
+        pad.SetPosition(pcbnew.wxPoint(pad_x, pad_y))
 
         footprint.Add(pad)
 

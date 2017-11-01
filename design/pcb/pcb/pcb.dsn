@@ -3,7 +3,7 @@
     (string_quote ")
     (space_in_quoted_tokens on)
     (host_cad "KiCad's Pcbnew")
-    (host_version "no-vcs-found-6300041~61~ubuntu16.04.1")
+    (host_version "(2017-10-31 revision bd73a39)-master")
   )
   (resolution um 10)
   (unit um)
@@ -585,25 +585,17 @@
       (pin Round[A]Pad_1700_um 20 22860 2540)
     )
     (image footprints:electrode
-      (pin "Round[T][0,-4750]Pad_0_um" 0 0 0)
-      (pin Round[T][29000,4750]Pad_0_um 1 0 0)
-      (pin "Round[T][-29000,4750]Pad_0_um" 2 0 0)
+      (pin Round[T]Pad_0.001_um 0 0 -4750)
+      (pin Round[T]Pad_0.001_um 1 29000 4750)
+      (pin Round[T]Pad_0.001_um 2 -29000 4750)
     )
     (image footprints:electrode::1
-      (pin "Round[T][-29000,4750]Pad_0_um" 2 0 0)
-      (pin Round[T][29000,4750]Pad_0_um 1 0 0)
-      (pin "Round[T][0,-4750]Pad_0_um" 0 0 0)
+      (pin Round[T]Pad_0.001_um 2 -29000 4750)
+      (pin Round[T]Pad_0.001_um 1 29000 4750)
+      (pin Round[T]Pad_0.001_um 0 0 -4750)
     )
-    (padstack "Round[T][-29000,4750]Pad_0_um"
-      (shape (circle F.Cu 0 -29000 4750))
-      (attach off)
-    )
-    (padstack "Round[T][0,-4750]Pad_0_um"
-      (shape (circle F.Cu 0 0 -4750))
-      (attach off)
-    )
-    (padstack Round[T][29000,4750]Pad_0_um
-      (shape (circle F.Cu 0 29000 4750))
+    (padstack Round[T]Pad_0.001_um
+      (shape (circle F.Cu 0.001))
       (attach off)
     )
     (padstack Round[A]Pad_1700_um
@@ -637,55 +629,55 @@
       (pins J1-10)
     )
     (net "Net-(J1-Pad9)"
-      (pins J1-9 J3-15 J7-2)
+      (pins J1-9 J3-5 J7-1)
     )
     (net "Net-(J1-Pad8)"
-      (pins J1-8 J3-14 J6-2)
+      (pins J1-8 J3-4 J6-1)
     )
     (net "Net-(J1-Pad7)"
-      (pins J1-7 J3-13 J5-2)
+      (pins J1-7 J3-3 J5-1)
     )
     (net "Net-(J1-Pad6)"
-      (pins J1-6 J3-12 J4-2)
+      (pins J1-6 J3-2 J4-1)
     )
     (net "Net-(J1-Pad5)"
       (pins J1-5 J2-5 J3-1 J4-0 J5-0 J6-0 J7-0 J8-0 J9-0 J10-0 J11-0)
     )
     (net "Net-(J1-Pad4)"
-      (pins J1-4 J3-5 J7-1)
+      (pins J1-4 J3-15 J7-2)
     )
     (net "Net-(J1-Pad3)"
-      (pins J1-3 J3-4 J6-1)
+      (pins J1-3 J3-14 J6-2)
     )
     (net "Net-(J1-Pad2)"
-      (pins J1-2 J3-3 J5-1)
+      (pins J1-2 J3-13 J5-2)
     )
     (net "Net-(J1-Pad1)"
-      (pins J1-1 J3-2 J4-1)
+      (pins J1-1 J3-12 J4-2)
     )
     (net "Net-(J2-Pad1)"
-      (pins J2-1 J3-6 J8-1)
+      (pins J2-1 J3-16 J8-2)
     )
     (net "Net-(J2-Pad2)"
-      (pins J2-2 J3-7 J9-1)
+      (pins J2-2 J3-17 J9-2)
     )
     (net "Net-(J10-Pad1)"
-      (pins J2-3 J3-8 J10-1)
+      (pins J2-8 J3-8 J10-1)
     )
     (net "Net-(J11-Pad1)"
-      (pins J2-4 J3-9 J11-1)
+      (pins J2-9 J3-9 J11-1)
     )
     (net "Net-(J2-Pad6)"
-      (pins J2-6 J3-16 J8-2)
+      (pins J2-6 J3-6 J8-1)
     )
     (net "Net-(J2-Pad7)"
-      (pins J2-7 J3-17 J9-2)
+      (pins J2-7 J3-7 J9-1)
     )
     (net "Net-(J10-Pad2)"
-      (pins J2-8 J3-18 J10-2)
+      (pins J2-3 J3-18 J10-2)
     )
     (net "Net-(J11-Pad2)"
-      (pins J2-9 J3-19 J11-2)
+      (pins J2-4 J3-19 J11-2)
     )
     (net "Net-(J2-Pad10)"
       (pins J2-10)
@@ -714,25 +706,20 @@
     )
   )
   (wiring
-    (wire (path F.Cu 1000  138660 -212600  138660 -204060)(net "Net-(J1-Pad5)")(type protect))
-    (wire (path F.Cu 1000  126300 -201700  125000 -200400)(net "Net-(J1-Pad5)")(type protect))
-    (wire (path F.Cu 1000  136300 -201700  126300 -201700)(net "Net-(J1-Pad5)")(type protect))
-    (wire (path F.Cu 1000  138660 -204060  136300 -201700)(net "Net-(J1-Pad5)")(type protect))
-    (wire (path F.Cu 1000  125000 -200400  125000 -193750)(net "Net-(J1-Pad5)")(type protect))
-    (wire (path F.Cu 1000  125000 -171269  125000 -178500  128100 -181600  128100 -185200
-            125500 -187800)(net "Net-(J1-Pad5)")(type protect))
-    (wire (path F.Cu 1000  125000 -148789  125000 -155500  121300 -159200  121300 -161800
-            125000 -165500)(net "Net-(J1-Pad5)")(type protect))
-    (wire (path F.Cu 1000  125000 -126308  125000 -133500  128300 -136800  128300 -139700
-            125200 -142800)(net "Net-(J1-Pad5)")(type protect))
-    (wire (path F.Cu 1000  125000 -103828  125000 -110500  121800 -113700  121800 -117200
-            125200 -120600)(net "Net-(J1-Pad5)")(type protect))
-    (wire (path F.Cu 1000  125000 -81347  125000 -88600  129300 -92900  129300 -93600
-            124900 -98000)(net "Net-(J1-Pad5)")(type protect))
-    (wire (path F.Cu 1000  125000 -58866.4  125000 -65900  121400 -69500  121400 -71900
-            125000 -75500)(net "Net-(J1-Pad5)")(type protect))
-    (wire (path F.Cu 1000  125000 -36385.8  125000 -43500  129000 -47500  129000 -48800
-            125000 -52800)(net "Net-(J1-Pad5)")(type protect))
-    (wire (path F.Cu 1000  109060 -10700  109060 -14560  125100 -30600)(net "Net-(J1-Pad5)")(type protect))
+    (wire (path B.Cu 1000  115700 -18700  126200 -18700)(net "Net-(J1-Pad5)")(type protect))
+    (wire (path B.Cu 1000  109060 -12060  115700 -18700)(net "Net-(J1-Pad5)")(type protect))
+    (wire (path B.Cu 1000  109060 -10700  109060 -12060)(net "Net-(J1-Pad5)")(type protect))
+    (wire (path B.Cu 1000  126200 -18700  131700 -13200)(net "Net-(J1-Pad5)")(type protect))
+    (wire (path F.Cu 1000  125000 -41135.8  125000 -42900)(net "Net-(J1-Pad5)")(type protect))
+    (wire (path F.Cu 1000  125000 -52500  125000 -63616.4)(net "Net-(J1-Pad5)")(type protect))
+    (wire (path F.Cu 1000  128200 -49300  125000 -52500)(net "Net-(J1-Pad5)")(type protect))
+    (wire (path F.Cu 1000  128200 -46100  128200 -49300)(net "Net-(J1-Pad5)")(type protect))
+    (wire (path F.Cu 1000  125000 -42900  128200 -46100)(net "Net-(J1-Pad5)")(type protect))
+    (wire (path F.Cu 1000  109060 -10700  109060 -15960)(net "Net-(J1-Pad5)")(type protect))
+    (wire (path F.Cu 1000  125000 -29700  125000 -41135.8)(net "Net-(J1-Pad5)")(type protect))
+    (wire (path F.Cu 1000  125800 -28900  125000 -29700)(net "Net-(J1-Pad5)")(type protect))
+    (wire (path F.Cu 1000  122000 -28900  125800 -28900)(net "Net-(J1-Pad5)")(type protect))
+    (wire (path F.Cu 1000  109060 -15960  122000 -28900)(net "Net-(J1-Pad5)")(type protect))
+    (wire (path F.Cu 750  106520 -10700  106520 -21115.8  96000 -31635.8)(net "Net-(J11-Pad2)")(type protect))
   )
 )

@@ -44,7 +44,7 @@ U 1 1 59F76C47
 P 1150 1800
 F 0 "J3" H 1200 2417 50  0000 C CNN
 F 1 "Conn_02x10_Top_Bottom" H 1200 2326 50  0000 C CNN
-F 2 "Connectors_Multicomp:Multicomp_MC9A12-2034_2x10x2.54mm_Straight" H 1150 1800 50  0001 C CNN
+F 2 "footprints:DIP-2x10_2.54mm_1mm_clearance" H 1150 1800 50  0001 C CNN
 F 3 "" H 1150 1800 50  0001 C CNN
 	1    1150 1800
 	1    0    0    -1  
@@ -55,7 +55,7 @@ U 1 1 59F76DF3
 P 1100 4500
 F 0 "J2" H 1206 5078 50  0000 C CNN
 F 1 "Conn_01x10_Male" H 1206 4987 50  0000 C CNN
-F 2 "Connectors_Molex:Molex_KK-6410-10_10x2.54mm_Straight" H 1100 4500 50  0001 C CNN
+F 2 "footprints:SIP-10_2.54mm_1mm_clearance" H 1100 4500 50  0001 C CNN
 F 3 "" H 1100 4500 50  0001 C CNN
 	1    1100 4500
 	1    0    0    -1  
@@ -154,7 +154,7 @@ U 1 1 59F76D5B
 P 1100 3350
 F 0 "J1" H 1206 3928 50  0000 C CNN
 F 1 "Conn_01x10_Male" H 1206 3837 50  0000 C CNN
-F 2 "Connectors_Molex:Molex_KK-6410-10_10x2.54mm_Straight" H 1100 3350 50  0001 C CNN
+F 2 "footprints:SIP-10_2.54mm_1mm_clearance" H 1100 3350 50  0001 C CNN
 F 3 "" H 1100 3350 50  0001 C CNN
 	1    1100 3350
 	1    0    0    -1  
