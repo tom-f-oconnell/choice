@@ -192,11 +192,41 @@ def as_kicad_mod(polylines, filename='../pcb/footprints.pretty/electrode.kicad_m
     def mm_to_nm(mm):
         return int(round(1e6 * mm))
 
+    def remove_neighboring_duplicates(point_list):
+        new_list = list()
+        last = None
+        for p in point_list:
+            if last != p:
+                new_list.append(p)
+            last = p
+        return new_list
+
+    def remove_redundant_ends(point_list):
+        def point_set(pl):
+            return set(map(lambda x: tuple(x), pl))
+
+        len_redundant_tail = 0
+        for i in range(1, len(point_list) // 2):
+            # TODO cases where this might fail?
+            if point_set(point_list[:i]) == point_set(point_list[-i:]):
+                len_redundant_tail = i
+
+        if len_redundant_tail == 0:
+            return point_list
+        else:
+            return point_list[:-len_redundant_tail]
+
     for i, pl in enumerate(polylines):
         pad = pcbnew.D_PAD(footprint)
         # work for polygon?
         pad.SetShape(pcbnew.PAD_SHAPE_CUSTOM)
         pv = pcbnew.wxPoint_Vector()
+
+        # kicad considers polygons to be self intersecting any points are repeated
+        # including having the point list start and end be the same
+        # so we will just exclude the end here
+        pl = remove_neighboring_duplicates(pl)
+        pl = remove_redundant_ends(pl)
 
         xs = []
         ys = []
@@ -209,21 +239,18 @@ def as_kicad_mod(polylines, filename='../pcb/footprints.pretty/electrode.kicad_m
         clearance_nm = mm_to_nm(0.5)
         # left
         if max(xs) < 0:
-            print 'left'
             pad_x = min(xs) + clearance_nm
             sorted_ys = sorted(list(set(ys)))
             pad_y = (sorted_ys[0] + sorted_ys[1]) / 2.0
 
         # right
         elif min(xs) > 0:
-            print 'right'
             pad_x = max(xs) - clearance_nm
             sorted_ys = sorted(list(set(ys)))
             pad_y = (sorted_ys[0] + sorted_ys[1]) / 2.0
 
         # center
         else:
-            print 'center'
             pad_x = 0.0
             pad_y = max(ys) - clearance_nm
 
@@ -239,10 +266,15 @@ def as_kicad_mod(polylines, filename='../pcb/footprints.pretty/electrode.kicad_m
 
         # TODO remove solder paste layer?
 
-        thickness = 0
+        # TODO actually setting thickness to zero seemed to expose a bug?
+        # even though pad dialog in footprint editor seems to indicate zero is the default?
+        thickness = 1
+        # TODO why is the thickness of this primitive listed as 0.15mm in the GUI
+        # though i don't see it mentioned in the pads in the s-expr output
+        # (at least not for the pad, for the reference and stuff i do)
         pad.AddPrimitive(pv, thickness)
 
-        # this makes the unwanted anchor go away
+        # size needs to be nonzero?
         pad.SetSize(pcbnew.wxSize(1.0, 1.0))
 
         # i think there are supposed to correspond to pin numbers actually?
@@ -253,15 +285,10 @@ def as_kicad_mod(polylines, filename='../pcb/footprints.pretty/electrode.kicad_m
         elif i == 2:
             pad.SetName('2')
 
-        # TODO hopefully this snaps tracks to correct position?
-        # TODO maybe set Pos0? or X0 and Y0?
-        # TODO document how these things differ (if they do?)?
-
-        # offset is not supposed to be used with polygonal pads
-        # developers said to just place anchor wherever within polygon
-        # TODO how to place anchor though?
+        # TODO document to set anchor positions for pads
 
         # TODO how to remove front silkscreen "electrode" label?
+        # or move to cmnts layer?
 
         # TODO not clear on what the std layers were?
         pad.SetLayerSet(pcbnew.D_PAD.SMDMask())
@@ -275,9 +302,20 @@ def as_kicad_mod(polylines, filename='../pcb/footprints.pretty/electrode.kicad_m
 
         footprint.Add(pad)
 
+    # TODO name according to input parameters
+    # (would require this function to have knowledge of generating parameters)
     module_id = os.path.split(filename)[-1][:(-1)*len('.kicad_mod')]
     # what is reference used for exactly?
     footprint.SetReference(module_id)
+
+    # TODO not clear on why both setpos0 and setposition are called
+    # in FootprintWizardBase.py
+    footprint.Reference().SetPosition(pcbnew.wxPoint(int(round(0.6 * min(xs))), \
+        int(round(1.3 * min(ys)))))
+
+    footprint.Value().SetPosition(pcbnew.wxPoint(int(round(0.8 * max(xs))), \
+        int(round(1.3 * min(ys)))))
+
     fpid = pcbnew.LIB_ID(module_id)
     footprint.SetFPID(fpid)
 

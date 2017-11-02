@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source /home/tom/catkin/src/choice/design/pcb/pcb/pcb.sch)
-    (date "Wed 01 Nov 2017 01:44:21 PM PDT")
+    (date "Wed 01 Nov 2017 05:07:03 PM PDT")
     (tool "Eeschema (2017-11-01 revision e5c4cfc)-master")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
