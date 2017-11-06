@@ -7,6 +7,8 @@ import sys
 import pcbnew
 from pcbnew import PCB_IO as io
 import numpy as np
+import datetime
+# TODO git
 
 # TODO why did this seem to behave differently just upon re-running this?
 # (all from within KiCAD pcbnew scripting window, via "import make_board")
@@ -45,13 +47,19 @@ y0_center = 16.250
 num_chambers = 8
 y_grid_interval = 22.4806
 
-
-
 # (in KiCAD)
 # top of imported librecad dxf seems to be at |minimum y_coord in librecad|
 # increasing y coordinates are down
 # TODO make it so i don't make to manually calculate this...
 kicad_y_for_librecad_y0 = 216.500 - 6.5
+
+def nm_to_mm(nm):
+    return nm / float(1e6)
+
+def print_placing(name, center):
+    # x and y in wxPointMM are still stored in nm
+    print 'placing {} centered at ({}, {})'.format(name, \
+        nm_to_mm(center.x), nm_to_mm(center.y))
 
 for j, y in enumerate(np.linspace(y0_center, y0_center + num_chambers * \
     y_grid_interval, num=num_chambers, endpoint=False)):
@@ -65,9 +73,60 @@ for j, y in enumerate(np.linspace(y0_center, y0_center + num_chambers * \
     # TODO this clone didn't seem to work, but way to add multiples without reloading?
     #pcb.Add(electrode.clone())
 
-    print 'placing grid centered at ({}, {})'.format(x_center, float(y))
-    electrode.SetPosition(pcbnew.wxPointMM(x_center, \
-        float(kicad_y_for_librecad_y0 - y)))
+    electrode_center = pcbnew.wxPointMM(x_center, \
+        float(kicad_y_for_librecad_y0 - y))
+
+    print_placing('grid', electrode_center)
+    electrode.SetPosition(electrode_center)
 
     #pcb.Add(electrode)
+
+
+# TODO share w/ electrode_vertices.py break into module? pcbnew func?
+def mm_to_nm(mm):
+    return int(round(1e6 * mm))
+
+# sets the position of two of the headers, relative to the boundaries of the board
+# so that their position is symmetric about the board center
+board_edge_x_to_center_mm = 23
+board_edge_y_to_center_mm = 4
+eda_rect = pcb.GetBoardEdgesBoundingBox()
+
+# value returned should be an integer in nm
+left = eda_rect.GetLeft()
+top = eda_rect.GetTop()
+top_conn = pcb.FindModuleByReference('J2')
+top_center = pcbnew.wxPoint(left + mm_to_nm(board_edge_x_to_center_mm), \
+    top + mm_to_nm(board_edge_y_to_center_mm))
+top_conn.SetPosition(top_center)
+print_placing('connector', \
+    pcbnew.wxPointMM(nm_to_mm(top_center.x), nm_to_mm(top_center.y)))
+
+right = eda_rect.GetRight()
+bottom = eda_rect.GetBottom()
+bottom_conn = pcb.FindModuleByReference('J1')
+# TODO is it by center?
+bottom_center = pcbnew.wxPoint(right - mm_to_nm(board_edge_x_to_center_mm), \
+    bottom - mm_to_nm(board_edge_y_to_center_mm))
+bottom_conn.SetPosition(bottom_center)
+print_placing('connector', \
+    pcbnew.wxPointMM(nm_to_mm(bottom_center.x), nm_to_mm(bottom_center.y)))
+
+
+# TODO also place J3 just for completeness? it's basically just the routing left
+# after that...
+
+
+print 'setting title block'
+# TODO only if a title block isn't set?
+tb = pcbnew.TITLE_BLOCK()
+tb.SetTitle('{} chamber shock conditioning grid'.format(num_chambers))
+tb.SetCompany('Hong Lab @ Caltech')
+tb.SetDate(datetime.date.today().strftime('%d-%m-%Y'))
+# TODO git
+#tb.SetRevision()
+# TODO way to set extent of title block to cover whole schematic?
+# does title block include the outer border?
+# TODO why does this not seem to be displaying?
+pcb.SetTitleBlock(tb)
 

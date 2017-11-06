@@ -189,6 +189,17 @@ def as_kicad_mod(polylines, filename='../pcb/footprints.pretty/electrode.kicad_m
         'behavior chamber, for conditioning Drosophila to avoid odors ' + \
         'paired with the shock.')
 
+    def get_layer_id_by_name(name):
+        # TODO how to programmatically get max # of layers?
+        ret = None
+        for i in range(49):
+            n = pcbnew.BOARD_GetStandardLayerName(i)
+            if n == name:
+                ret = i
+        if ret is None:
+            raise ValueError('layer with name {} not found'.format(name))
+        return ret
+
     def mm_to_nm(mm):
         return int(round(1e6 * mm))
 
@@ -216,6 +227,8 @@ def as_kicad_mod(polylines, filename='../pcb/footprints.pretty/electrode.kicad_m
         else:
             return point_list[:-len_redundant_tail]
 
+    all_xs = []
+    all_ys = []
     for i, pl in enumerate(polylines):
         pad = pcbnew.D_PAD(footprint)
         # work for polygon?
@@ -290,8 +303,10 @@ def as_kicad_mod(polylines, filename='../pcb/footprints.pretty/electrode.kicad_m
         # TODO how to remove front silkscreen "electrode" label?
         # or move to cmnts layer?
 
-        # TODO not clear on what the std layers were?
-        pad.SetLayerSet(pcbnew.D_PAD.SMDMask())
+        layer_set = pcbnew.LSET()
+        fcu_layer_id = get_layer_id_by_name('F.Cu')
+        layer_set.addLayer(fcu_layer_id)
+        pad.SetLayerSet(layer_set)
         pad.SetAttribute(pcbnew.PAD_ATTRIB_SMD)
 
         # pad editing in GUI fails if this is not true
@@ -302,6 +317,9 @@ def as_kicad_mod(polylines, filename='../pcb/footprints.pretty/electrode.kicad_m
 
         footprint.Add(pad)
 
+        all_xs.extend(xs)
+        all_ys.extend(ys)
+
     # TODO name according to input parameters
     # (would require this function to have knowledge of generating parameters)
     module_id = os.path.split(filename)[-1][:(-1)*len('.kicad_mod')]
@@ -310,11 +328,15 @@ def as_kicad_mod(polylines, filename='../pcb/footprints.pretty/electrode.kicad_m
 
     # TODO not clear on why both setpos0 and setposition are called
     # in FootprintWizardBase.py
-    footprint.Reference().SetPosition(pcbnew.wxPoint(int(round(0.6 * min(xs))), \
-        int(round(1.3 * min(ys)))))
+    footprint.Reference().SetPosition(pcbnew.wxPoint(int(round(0.6 * min(all_xs))), \
+        int(round(1.1 * min(all_ys)))))
+    footprint.Value().SetPosition(pcbnew.wxPoint(int(round(0.6 * max(all_xs))), \
+        int(round(1.1 * min(all_ys)))))
 
-    footprint.Value().SetPosition(pcbnew.wxPoint(int(round(0.8 * max(xs))), \
-        int(round(1.3 * min(ys)))))
+    # aiming for a visible layer that does not translate into manufacture
+    comment_layer_id = get_layer_id_by_name('Cmts.User')
+    footprint.Reference().SetLayer(comment_layer_id)
+    footprint.Value().SetLayer(comment_layer_id)
 
     fpid = pcbnew.LIB_ID(module_id)
     footprint.SetFPID(fpid)
