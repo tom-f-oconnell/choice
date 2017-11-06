@@ -89,7 +89,7 @@ def mm_to_nm(mm):
 # sets the position of two of the headers, relative to the boundaries of the board
 # so that their position is symmetric about the board center
 board_edge_x_to_center_mm = 23
-board_edge_y_to_center_mm = 4
+board_edge_y_to_center_mm = 7
 eda_rect = pcb.GetBoardEdgesBoundingBox()
 
 # value returned should be an integer in nm
