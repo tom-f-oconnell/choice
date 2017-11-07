@@ -35,7 +35,9 @@
 
   <!-- TODO make default to load config from cwd? -->
   <rosparam command="load" file="$(find choice)/example/$(arg params)" />
-  <node name="stimulus_loader" pkg="choice" type="odor_randomizer_choice.py" output="screen" required="true" />
+
+  <!-- TODO move this into stimulis_arduino launch (and rename)? -->
+  <node name="stimulus_loader" pkg="stimuli" type="odor_randomizer.py" output="screen" required="true" />
  
   <!-- TODO is this explicit find syntax idiomatic or is there a simpler way to find .launch files? -->
   <include file="$(find stimuli)/launch/stimulus_arduino.launch">
