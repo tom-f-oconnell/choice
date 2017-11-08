@@ -4,10 +4,6 @@
   <arg name="port" default="/dev/ttyACM0" />
   <arg name="video_only" default="False" />
   
-  <!-- TODO maybe make this expand to full path? or make more clear that it is relative to package?
-       or another arg that is absolute / a flag to switch? -->
-  <arg name="params" default="stimulus_parameters.yaml" />
-
   <!-- TODO put snapshot_params node in this package, add another node tag -->
   <node name="versionpub" pkg="metatools" type="versionpub.py" unless="$(arg stimuli_only)">
     <rosparam>
@@ -33,8 +29,8 @@
     <arg name="camera" value="usb_cam/image_rect" />
   </include>
 
-  <!-- TODO make default to load config from cwd? -->
-  <rosparam command="load" file="$(find choice)/example/$(arg params)" />
+  <!-- TODO make default to load config from cwd? (no reason to do this indep of ROS_HOME though, right? -->
+  <rosparam command="load" file="stimulus_parameters.yaml" />
 
   <!-- TODO move this into stimulis_arduino launch (and rename)? -->
   <node name="stimulus_loader" pkg="stimuli" type="odor_randomizer.py" output="screen" required="true" />
