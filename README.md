@@ -1,12 +1,12 @@
 
 ### Installation
 
-# Hardware requirements (for running experiments)
-- Arduino MEGA
-   - Any Arduino's with less memory will currently *NOT* work, as there is considerable overhead in the generated ROS libraries.
+#### Hardware requirements (for running experiments)
+- An Arduino MEGA
+   - Arduino's with less memory will currently **NOT** work, as there is considerable overhead in the generated ROS libraries.
 
 
-1. [Install ROS Kinetic](http://wiki.ros.org/kinetic/Installation) on a supported operating system.
+1. [Install ROS Kinetic](http://wiki.ros.org/kinetic/Installation) on a supported operating system.  
    - Tested on [Ubuntu 16.04](https://www.ubuntu.com/download/desktop).
    - You can install Ubuntu alongside Windows with minimal effort.
    - Other ROS versions may work, but tested with Kinetic.
@@ -85,48 +85,48 @@ TODO link to a readme in the design folder / wiki?
 
 ### Running an experiment
 
-# Requirements
-- The current directory has at least the following configuration files:
-   # For tracking
-   - tracker_parameters.yaml
-   - roi_finder.yaml
-   - delta_video_parameters.yaml
+#### Requirements
+The current directory has at least the following configuration files:
+##### For tracking
+- tracker_parameters.yaml
+- roi_finder.yaml
+- delta_video_parameters.yaml
 
-   - If running the tracking in real time:
-      - liveviewer_parameters.yaml
-      - data_association_parameters.yaml
-      - kalman_parameters.py
+- If running the tracking in real time:
+   - liveviewer_parameters.yaml
+   - data_association_parameters.yaml
+   - kalman_parameters.py
 
-   # For stimulus
-   - stimulus_parameters.yaml
+##### For stimulus
+- stimulus_parameters.yaml
 
 Depending on the camera you are using, you may also want to include parameters for your camera node, which you will have to load separately. There are some examples in the `multi_tracker` repository.
 
-- To copy templates for each of these configuration files to your current directory:
-   ```
-   rosrun choice copy_configs.py
-   ```
+To copy templates for each of these configuration files to your current directory:
+```
+rosrun choice copy_configs.py
+```
 
-# To run a full experiment with real-time tracking on the same computer.
+#### To run a full experiment with real-time tracking on the same computer.
 Requires a computer with adequate memory and processor.
 ```
 roslaunch choice choice.launch
 ```
 There are two parameters that currently control the length of the experiment.
 
-# Errors (red text)
+##### Errors (red text)
 The only error message that is normal during startup is one along the lines of `Parameter stimulus_arduino/debug does not exist`. Another other red text means something is likely not working, and you should not ignore it.
 
-# Warnings (yellow text)
+##### Warnings (yellow text)
 `Failed to get param: timeout expired` is normal, as long as the program ultimately stops emitting these warnings. You should be aware of the reasons other warnings occur. Contact Tom with any questions.
 
-# To run an experiment saving a background subtracted video in a ROS bag file, for offline tracking.
+#### To run an experiment saving a background subtracted video in a ROS bag file, for offline tracking.
 Less hardware demands.
 ```
 roslaunch choice choice.launch video_only:=True
 ```
 
-# To run the stimulus presentation that would happen during an experiment, but without any recording or tracking.
+#### To run the stimulus presentation that would happen during an experiment, but without any recording or tracking.
 For measurement / verification / PID purposes.
 ```
 roslaunch choice choice.launch stimuli_only:=True
@@ -144,7 +144,7 @@ Press `<Ctrl>-C` to stop the `test_valves.launch` file.
 
 ### Offline tracking
 
-# Requirements
+#### Requirements
 - The environment variable `DATA_DIR` is set to a path you will keep your data directories beneath.
    - I organize my experiment directories as grandchildren of `DATA_DIR`, grouping them as I see fit with directories (of arbitrary names) just beneath `DATA_DIR`.
    - To test that this is set, you can run `echo $DATA_DIR`, and the path should be printed.
@@ -193,7 +193,7 @@ A valid directory has:
    - a `*_stimuli.p` file
 
 
-# Example
+#### Example
 ```
 rosrun multi_tracker retrack_ros 20170930_164433 2.0
 ```
@@ -204,13 +204,13 @@ export DATA_DIR="$HOME/data"
 ```
 and `/home/tom/data/20170920/20170930_164433` was a valid directory. Note that `20170930_164433` was not a direct child directory of `DATA_DIR`. The code may currently expect the `<experiment_directory>` to be a granchild of `DATA_DIR`, if this option is selected.
 
-## Output
+#### Output
 After running the tracking, the valid directory you provided as input will also have:
 - An HDF5 file with a the variables the tracker is estimating, over time
    - The `position_x` and `position_y`
 
 
-## Copying data from acquisition to tracking / analysis computer
+#### Copying data from acquisition to tracking / analysis computer
 
 You are of course free to copy the files via other means. This may just end up being convenient.
 
@@ -225,14 +225,14 @@ rsync -auvPzr <folder_with_data> user@<server_ip_address>:~/<place_to_put_it>
 
 The rsync command with those flags seems not to work if you include a trailing slash after the `<folder_with_data>` name.
 
-# Example
+#### Example
 ```
 rsync -auvPzr ~/data/. tom@gerty:~/data
 ```
 This example will recursively copy all subdirectories of data, and I keep all my experiment directories nested within here.
 
 
-## Known bugs + workarounds
+#### Known bugs + workarounds
 If you notice your computer working harder than it should when the acquisition / tracking should otherwise have terminated, you can run `top` or some other process manager, and check for a handful of processes, owned by the same user that ran the launch file, with names including:
 - `play`
 - `record`
@@ -248,7 +248,7 @@ Under some circumstances, you may also want to kill all python processes owned b
 
 ### Analysis
 
-# Requirements
+#### Requirements
 (To be added )
 - `DATA_DIR` is set as in offline tracking instructions.
 - `choice` and `multi_tracker` are installed as above (though you don't technically need all of ROS)
@@ -261,7 +261,7 @@ Under some circumstances, you may also want to kill all python processes owned b
    ```
    Again, if you need root access to install via `pip`, use `sudo` as above.
 
-# Running
+#### Running
 ```
 rosrun choice choice_analysis <subdirectory>
 ```
@@ -272,7 +272,7 @@ The output of this labelling should be saved as `$DATA_DIR/retracked/<subdirecto
 
 Currently, if you want labels to apply across groupings of your data, (across analysis runs with different subdirectories as input) you will need to manually merge the `analysis_rejects.yaml` text files.
 
-# Output
+#### Output
 
 Within the `$DATA_DIR/retracked/<subdirectory>`, you should find a number of files in a graphics format (svg by default). For each odor, each reject category, and each preference metric (fraction of time spent and "decision bias"), you will find:
 - `<metric>.svg`
