@@ -1,20 +1,15 @@
 
 ### Installation
-
-#### Hardware requirements (for running experiments)
-- An Arduino MEGA
-   - Arduino's with less memory will currently **NOT** work, as there is considerable overhead in the generated ROS libraries.
-
-
 1. [Install ROS Kinetic](http://wiki.ros.org/kinetic/Installation) on a supported operating system.  
    - Tested on [Ubuntu 16.04](https://www.ubuntu.com/download/desktop).
    - You can install Ubuntu alongside Windows with minimal effort.
    - Other ROS versions may work, but tested with Kinetic.
    - You only need `ros-kinetic-ros-base`.
       - You do *NOT* need everything in `ros-kinetic-desktop-full`, and it takes more disk space and install time.
+  
 
 2. Install the catkin packages.
-   See ROS (tutorial on installing catkin packages)
+   See ROS [tutorial on making a catkin workspace](http://wiki.ros.org/catkin/Tutorials/create_a_workspace).
 
    If you have not already, add a line to your `~/.bashrc` that loads the development setup script (that catkin generates), such as:
    ```
@@ -39,7 +34,7 @@
    On all of the computers in the Hong lab, the catkin workspace can be found at `~/catkin`, for whichever user account was used to run the experiments.
 
    Currently, only installation from source is supported. In the future, I would like to make this installable as a ROS package via apt, but that would likely also require the same of `multi_tracker`, and there are some technical reasons that won't be possible right now with ROS Kinetic.
-
+  
 
 3. Upload the firmware to an Arduino MEGA
    1. Download and unzip Arduino to a path you will remember, or locate it if already installed.
@@ -55,7 +50,7 @@
       - `sudo adduser <username> dialout`
       - Log out and back in for the change to take effect
    7. Connect your Arduino MEGA to the computer.
-      - See hardware requirements above
+      - Arduino's with less memory will currently **NOT** work, as there is considerable overhead in the generated ROS libraries.
    8. Upload code
       In the Arduino IDE, under the `Tools` menu:
       - Select appropriate port
@@ -65,6 +60,7 @@
       - Press the Upload button in the top left of the IDE
          - It looks like a circle with a righward arrow in it.
       - If the TX / RX lights flash on the Arduino, and the Upload seems to finish, you should be good to go.
+  
 
 4. *(Optional)* Set an alias for running `roslaunch` with a different `ROS_HOME` environment variable.
 
@@ -81,7 +77,7 @@ Save and close the file, and reload your terminal environment by typing `. ~/.ba
 ### Manufacture
 
 TODO link to a readme in the design folder / wiki?
-
+  
 
 ### Running an experiment
 
@@ -92,7 +88,7 @@ The current directory has at least the following configuration files:
 - roi_finder.yaml
 - delta_video_parameters.yaml
 
-- If running the tracking in real time:
+- If running the tracking in real-time, also:
    - liveviewer_parameters.yaml
    - data_association_parameters.yaml
    - kalman_parameters.py
@@ -107,12 +103,16 @@ To copy templates for each of these configuration files to your current director
 rosrun choice copy_configs.py
 ```
 
+##### To set the length of the experiment
+In the `stimulus_parameters.yaml` file, set the parameters starting at `olf/training_blocks` and ending at `olf/beyond_posttest_s` to appropriate values.
+
+For now, also make sure that `multi_tracker/record_length_hours`, in `tracker_parameters.yaml`, is at least as large as the total length of your stimulus presentation.
+
 #### To run a full experiment with real-time tracking on the same computer.
 Requires a computer with adequate memory and processor.
 ```
 roslaunch choice choice.launch
 ```
-There are two parameters that currently control the length of the experiment.
 
 ##### Errors (red text)
 The only error message that is normal during startup is one along the lines of `Parameter stimulus_arduino/debug does not exist`. Another other red text means something is likely not working, and you should not ignore it.
@@ -140,7 +140,7 @@ roslaunch choice test_valves.launch
 ```
 
 Press `<Ctrl>-C` to stop the `test_valves.launch` file.
-
+  
 
 ### Offline tracking
 
@@ -214,7 +214,7 @@ After running the tracking, the valid directory you provided as input will also 
 
 You are of course free to copy the files via other means. This may just end up being convenient.
 
-# Requirements
+#### Requirements
 - Both computers have internet access
 - The computer you are trying to connect TO has an SSH server installed and running
    - Look up how to install OpenSSH server for the operating system you are using if you need to do this.
@@ -245,15 +245,15 @@ And assuming you are OK killing all ROS processes currently running on your comp
 - `killall play`
 
 Under some circumstances, you may also want to kill all python processes owned by the user that started the ROS processes, with `killall python`.
+  
 
 ### Analysis
-
 #### Requirements
 (To be added )
 - `DATA_DIR` is set as in offline tracking instructions.
 - `choice` and `multi_tracker` are installed as above (though you don't technically need all of ROS)
 - The experiments you want to analyze together have their data folders grouped within an immediate subdirectory of `$DATA_DIR/retracked`.
-   - If your tracking output comes from real time tracking, it does not need to be treated differently, apart from copying it to a subdirectory beneath `$DATA_DIR/retracked`.
+   - If your tracking output comes from real-time tracking, it does not need to be treated differently, apart from copying it to a subdirectory beneath `$DATA_DIR/retracked`.
 - The `ruamel.yaml` package, which you should be able to get via:
    ```
    cd <choice>
@@ -283,7 +283,7 @@ Within the `$DATA_DIR/retracked/<subdirectory>`, you should find a number of fil
    - For data of all rejects of a certain label / category, pooled across odors
 
 There will also be text output, in the terminal in which you ran the analysis, describing the metrics within and across odors, and the fraction of flies in each reject category.
-
+  
 
 ### Updating code
 
