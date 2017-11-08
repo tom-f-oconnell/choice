@@ -61,10 +61,6 @@ class PluralFormatter(string.Formatter):
 
 # TODO use config file for these flags / command line args
 
-# TODO check current dir -> check for env var -> check that dir
-# what all indications of having data from this kind of experiment?
-# not sure i want to make config file mandatory
-
 verbose = False
 
 only_show_interactive = False
@@ -191,7 +187,14 @@ def load_metadata(d):
 
 # TODO refactor so nothing is called on import?
 
-path = '~/data/retracked'
+# TODO check current dir -> check for env var -> check that dir
+# what all indications of having data from this kind of experiment?
+# not sure i want to make config file mandatory
+# but also check argument as full path? give that priority?
+
+#path = '~/data/retracked'
+path = join(os.environ['DATA_DIR'], 'retracked')
+
 if len(sys.argv) >= 2:
     experiment_subdir = sys.argv[1]
     path = join(path, experiment_subdir)
