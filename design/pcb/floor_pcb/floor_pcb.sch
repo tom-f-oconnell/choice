@@ -23,7 +23,7 @@ LIBS:siliconi
 LIBS:opto
 LIBS:atmel
 LIBS:contrib
-LIBS:pcb-cache
+LIBS:floor_pcb-cache
 EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
@@ -503,4 +503,9 @@ Wire Wire Line
 	1300 4900 2350 4900
 Wire Wire Line
 	2350 4900 2350 2550
+NoConn ~ 1300 3850
+NoConn ~ 1300 5000
+NoConn ~ 950  2300
+NoConn ~ 1450 2300
+NoConn ~ 1450 1400
 $EndSCHEMATC
