@@ -48,191 +48,200 @@ $EndDescr
 $Comp
 L Conn_02x09_Top_Bottom J?
 U 1 1 5A020232
-P 7250 3200
-F 0 "J?" H 7300 3817 50  0000 C CNN
-F 1 "Conn_02x09_Top_Bottom" H 7300 3726 50  0000 C CNN
-F 2 "" H 7250 3200 50  0001 C CNN
-F 3 "~" H 7250 3200 50  0001 C CNN
-	1    7250 3200
+P 8350 4300
+F 0 "J?" H 8400 4917 50  0000 C CNN
+F 1 "Conn_02x09_Top_Bottom" H 8400 4826 50  0000 C CNN
+F 2 "" H 8350 4300 50  0001 C CNN
+F 3 "~" H 8350 4300 50  0001 C CNN
+	1    8350 4300
 	1    0    0    -1  
-$EndComp
-$Comp
-L R R?
-U 1 1 5A020264
-P 2550 2850
-F 0 "R?" V 2350 2750 50  0000 L CNN
-F 1 "150" V 2450 2750 50  0000 L CNN
-F 2 "" V 2480 2850 50  0001 C CNN
-F 3 "" H 2550 2850 50  0001 C CNN
-	1    2550 2850
-	0    1    1    0   
-$EndComp
-$Comp
-L R R?
-U 1 1 5A0202C8
-P 3050 3200
-F 0 "R?" H 3120 3246 50  0000 L CNN
-F 1 "100K" H 3120 3155 50  0000 L CNN
-F 2 "" V 2980 3200 50  0001 C CNN
-F 3 "" H 3050 3200 50  0001 C CNN
-	1    3050 3200
-	1    0    0    -1  
-$EndComp
-$Comp
-L R R?
-U 1 1 5A020329
-P 3650 2100
-F 0 "R?" H 3720 2146 50  0000 L CNN
-F 1 "150K" H 3720 2055 50  0000 L CNN
-F 2 "" V 3580 2100 50  0001 C CNN
-F 3 "" H 3650 2100 50  0001 C CNN
-	1    3650 2100
-	1    0    0    -1  
-$EndComp
-$Comp
-L R R?
-U 1 1 5A020365
-P 4150 1600
-F 0 "R?" V 3950 1500 50  0000 L CNN
-F 1 "160K,0.25W" V 4050 1500 50  0000 L CNN
-F 2 "" V 4080 1600 50  0001 C CNN
-F 3 "" H 4150 1600 50  0001 C CNN
-	1    4150 1600
-	0    1    1    0   
-$EndComp
-$Comp
-L R R?
-U 1 1 5A0203AA
-P 4150 2250
-F 0 "R?" V 3950 2150 50  0000 L CNN
-F 1 "160K,0.25W" V 4050 2150 50  0000 L CNN
-F 2 "" V 4080 2250 50  0001 C CNN
-F 3 "" H 4150 2250 50  0001 C CNN
-	1    4150 2250
-	0    1    1    0   
-$EndComp
-$Comp
-L D D?
-U 1 1 5A020460
-P 4650 1450
-F 0 "D?" V 4600 1600 50  0000 C CNN
-F 1 "D" V 4700 1550 50  0000 C CNN
-F 2 "" H 4650 1450 50  0001 C CNN
-F 3 "" H 4650 1450 50  0001 C CNN
-	1    4650 1450
-	0    1    1    0   
-$EndComp
-$Comp
-L D D?
-U 1 1 5A020509
-P 4650 2100
-F 0 "D?" V 4600 2250 50  0000 C CNN
-F 1 "D" V 4700 2200 50  0000 C CNN
-F 2 "" H 4650 2100 50  0001 C CNN
-F 3 "" H 4650 2100 50  0001 C CNN
-	1    4650 2100
-	0    1    1    0   
 $EndComp
 $Comp
 L Screw_Terminal_01x02 J?
 U 1 1 5A021F0F
-P 7200 2200
-F 0 "J?" H 7280 2192 50  0000 L CNN
-F 1 "Screw_Terminal_01x02" H 7280 2101 50  0000 L CNN
-F 2 "" H 7200 2200 50  0001 C CNN
-F 3 "~" H 7200 2200 50  0001 C CNN
-	1    7200 2200
-	1    0    0    -1  
-$EndComp
-$Comp
-L IRL620 Q?
-U 1 1 5A04EA8A
-P 3550 2850
-F 0 "Q?" H 3756 2896 50  0000 L CNN
-F 1 "IRL620" H 3756 2805 50  0000 L CNN
-F 2 "TO_SOT_Packages_THT:TO-220-3_Vertical" H 3750 2775 50  0001 L CIN
-F 3 "https://www.fairchildsemi.com/datasheets/BS/BSS138.pdf" H 3550 2850 50  0001 L CNN
-	1    3550 2850
-	1    0    0    -1  
-$EndComp
-$Comp
-L GND #PWR?
-U 1 1 5A04F122
-P 3350 3650
-F 0 "#PWR?" H 3350 3400 50  0001 C CNN
-F 1 "GND" H 3355 3477 50  0000 C CNN
-F 2 "" H 3350 3650 50  0001 C CNN
-F 3 "" H 3350 3650 50  0001 C CNN
-	1    3350 3650
-	1    0    0    -1  
-$EndComp
-$Comp
-L VCC #PWR?
-U 1 1 5A04FCD5
-P 4650 1900
-F 0 "#PWR?" H 4650 1750 50  0001 C CNN
-F 1 "VCC" H 4667 2073 50  0000 C CNN
-F 2 "" H 4650 1900 50  0001 C CNN
-F 3 "" H 4650 1900 50  0001 C CNN
-	1    4650 1900
-	1    0    0    -1  
-$EndComp
-$Comp
-L VCC #PWR?
-U 1 1 5A04FD15
-P 4650 1250
-F 0 "#PWR?" H 4650 1100 50  0001 C CNN
-F 1 "VCC" H 4667 1423 50  0000 C CNN
-F 2 "" H 4650 1250 50  0001 C CNN
-F 3 "" H 4650 1250 50  0001 C CNN
-	1    4650 1250
+P 8300 3300
+F 0 "J?" H 8380 3292 50  0000 L CNN
+F 1 "Screw_Terminal_01x02" H 8380 3201 50  0000 L CNN
+F 2 "" H 8300 3300 50  0001 C CNN
+F 3 "~" H 8300 3300 50  0001 C CNN
+	1    8300 3300
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	2700 2850 3350 2850
+	8100 3400 8100 3900
 Wire Wire Line
-	3050 3050 3050 2850
-Connection ~ 3050 2850
-Wire Wire Line
-	3050 3350 3050 3550
-Wire Wire Line
-	3050 3550 3650 3550
-Wire Wire Line
-	3650 3550 3650 3050
-Wire Wire Line
-	3350 3650 3350 3550
-Connection ~ 3350 3550
-Wire Wire Line
-	4300 2250 4650 2250
-Wire Wire Line
-	4000 1600 3650 1600
-Wire Wire Line
-	3650 1600 3650 1950
-Wire Wire Line
-	4300 1600 4650 1600
-Wire Wire Line
-	4650 1300 4650 1250
-Wire Wire Line
-	4650 1950 4650 1900
-Wire Wire Line
-	3650 2250 4000 2250
-Wire Wire Line
-	3650 2250 3650 2650
-Wire Wire Line
-	7000 2300 7000 2800
-Wire Wire Line
-	7000 2800 7050 2800
+	8100 3900 8150 3900
 $Comp
 L GND #PWR?
 U 1 1 5A050B28
-P 6850 2200
-F 0 "#PWR?" H 6850 1950 50  0001 C CNN
-F 1 "GND" H 6855 2027 50  0000 C CNN
-F 2 "" H 6850 2200 50  0001 C CNN
-F 3 "" H 6850 2200 50  0001 C CNN
-	1    6850 2200
+P 7950 3300
+F 0 "#PWR?" H 7950 3050 50  0001 C CNN
+F 1 "GND" H 7955 3127 50  0000 C CNN
+F 2 "" H 7950 3300 50  0001 C CNN
+F 3 "" H 7950 3300 50  0001 C CNN
+	1    7950 3300
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	7000 2200 6850 2200
+	8100 3300 7950 3300
+$Sheet
+S 2150 1050 1050 500 
+U 5A04FD4B
+F0 "switch_and_signal" 60
+F1 "switch_and_signal/switch_and_signal.sch" 60
+F2 "logic_input" I L 2150 1300 60 
+F3 "after_fly" I R 3200 1150 60 
+F4 "ADC+" I R 3200 1350 60 
+F5 "ADC-" I R 3200 1450 60 
+$EndSheet
+$Sheet
+S 2150 1800 1050 500 
+U 5A050208
+F0 "switch_and_signal" 60
+F1 "switch_and_signal/switch_and_signal.sch" 60
+F2 "logic_input" I L 2150 2050 60 
+F3 "after_fly" I R 3200 1900 60 
+F4 "ADC+" I R 3200 2100 60 
+F5 "ADC-" I R 3200 2200 60 
+$EndSheet
+$Sheet
+S 2150 2550 1050 500 
+U 5A0518CC
+F0 "switch_and_signal" 60
+F1 "switch_and_signal/switch_and_signal.sch" 60
+F2 "logic_input" I L 2150 2800 60 
+F3 "after_fly" I R 3200 2650 60 
+F4 "ADC+" I R 3200 2850 60 
+F5 "ADC-" I R 3200 2950 60 
+$EndSheet
+$Sheet
+S 2150 3300 1050 500 
+U 5A0518D2
+F0 "switch_and_signal" 60
+F1 "switch_and_signal/switch_and_signal.sch" 60
+F2 "logic_input" I L 2150 3550 60 
+F3 "after_fly" I R 3200 3400 60 
+F4 "ADC+" I R 3200 3600 60 
+F5 "ADC-" I R 3200 3700 60 
+$EndSheet
+$Sheet
+S 4550 1050 1050 500 
+U 5A0536EA
+F0 "switch_and_signal" 60
+F1 "switch_and_signal/switch_and_signal.sch" 60
+F2 "logic_input" I L 4550 1300 60 
+F3 "after_fly" I R 5600 1150 60 
+F4 "ADC+" I R 5600 1350 60 
+F5 "ADC-" I R 5600 1450 60 
+$EndSheet
+$Sheet
+S 4550 1800 1050 500 
+U 5A0536F0
+F0 "switch_and_signal" 60
+F1 "switch_and_signal/switch_and_signal.sch" 60
+F2 "logic_input" I L 4550 2050 60 
+F3 "after_fly" I R 5600 1900 60 
+F4 "ADC+" I R 5600 2100 60 
+F5 "ADC-" I R 5600 2200 60 
+$EndSheet
+$Sheet
+S 4550 2550 1050 500 
+U 5A0536F6
+F0 "switch_and_signal" 60
+F1 "switch_and_signal/switch_and_signal.sch" 60
+F2 "logic_input" I L 4550 2800 60 
+F3 "after_fly" I R 5600 2650 60 
+F4 "ADC+" I R 5600 2850 60 
+F5 "ADC-" I R 5600 2950 60 
+$EndSheet
+$Sheet
+S 4550 3300 1050 500 
+U 5A0536FC
+F0 "switch_and_signal" 60
+F1 "switch_and_signal/switch_and_signal.sch" 60
+F2 "logic_input" I L 4550 3550 60 
+F3 "after_fly" I R 5600 3400 60 
+F4 "ADC+" I R 5600 3600 60 
+F5 "ADC-" I R 5600 3700 60 
+$EndSheet
+$Sheet
+S 2150 4100 1050 500 
+U 5A0556F6
+F0 "switch_and_signal" 60
+F1 "switch_and_signal/switch_and_signal.sch" 60
+F2 "logic_input" I L 2150 4350 60 
+F3 "after_fly" I R 3200 4200 60 
+F4 "ADC+" I R 3200 4400 60 
+F5 "ADC-" I R 3200 4500 60 
+$EndSheet
+$Sheet
+S 2150 4850 1050 500 
+U 5A0556FC
+F0 "switch_and_signal" 60
+F1 "switch_and_signal/switch_and_signal.sch" 60
+F2 "logic_input" I L 2150 5100 60 
+F3 "after_fly" I R 3200 4950 60 
+F4 "ADC+" I R 3200 5150 60 
+F5 "ADC-" I R 3200 5250 60 
+$EndSheet
+$Sheet
+S 2150 5600 1050 500 
+U 5A055702
+F0 "switch_and_signal" 60
+F1 "switch_and_signal/switch_and_signal.sch" 60
+F2 "logic_input" I L 2150 5850 60 
+F3 "after_fly" I R 3200 5700 60 
+F4 "ADC+" I R 3200 5900 60 
+F5 "ADC-" I R 3200 6000 60 
+$EndSheet
+$Sheet
+S 2150 6350 1050 500 
+U 5A055708
+F0 "switch_and_signal" 60
+F1 "switch_and_signal/switch_and_signal.sch" 60
+F2 "logic_input" I L 2150 6600 60 
+F3 "after_fly" I R 3200 6450 60 
+F4 "ADC+" I R 3200 6650 60 
+F5 "ADC-" I R 3200 6750 60 
+$EndSheet
+$Sheet
+S 4550 4100 1050 500 
+U 5A05570E
+F0 "switch_and_signal" 60
+F1 "switch_and_signal/switch_and_signal.sch" 60
+F2 "logic_input" I L 4550 4350 60 
+F3 "after_fly" I R 5600 4200 60 
+F4 "ADC+" I R 5600 4400 60 
+F5 "ADC-" I R 5600 4500 60 
+$EndSheet
+$Sheet
+S 4550 4850 1050 500 
+U 5A055714
+F0 "switch_and_signal" 60
+F1 "switch_and_signal/switch_and_signal.sch" 60
+F2 "logic_input" I L 4550 5100 60 
+F3 "after_fly" I R 5600 4950 60 
+F4 "ADC+" I R 5600 5150 60 
+F5 "ADC-" I R 5600 5250 60 
+$EndSheet
+$Sheet
+S 4550 5600 1050 500 
+U 5A05571A
+F0 "switch_and_signal" 60
+F1 "switch_and_signal/switch_and_signal.sch" 60
+F2 "logic_input" I L 4550 5850 60 
+F3 "after_fly" I R 5600 5700 60 
+F4 "ADC+" I R 5600 5900 60 
+F5 "ADC-" I R 5600 6000 60 
+$EndSheet
+$Sheet
+S 4550 6350 1050 500 
+U 5A055720
+F0 "switch_and_signal" 60
+F1 "switch_and_signal/switch_and_signal.sch" 60
+F2 "logic_input" I L 4550 6600 60 
+F3 "after_fly" I R 5600 6450 60 
+F4 "ADC+" I R 5600 6650 60 
+F5 "ADC-" I R 5600 6750 60 
+$EndSheet
 $EndSCHEMATC
