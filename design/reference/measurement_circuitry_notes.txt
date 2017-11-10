@@ -1,0 +1,24 @@
+
+from Daniel Winker (personal communication):
+and it says R0 > 160k for power dissipation, but minimum input resistance to the opamp seems to be ~1MOhm, so R0 < 1Meg
+
+so the source (output) resistance and input resistance form a resistive divider. If they're equal, the voltage is halved. etc.
+That's where the input resistance >> output resistance comes from
+
+The approach to ovp seems reasonable. I've used the same thing to protect from inductive kickback, and I've always sort of wondered about the other stuff on the supply line..
+
+I guess the basic idea is, as long as the supply circuit is pretty good, and the current is relatively low, then Vcc won't change much. But if you had like, 200V @1 Amp you would need a beefy regulator.
+
+The 1 Meg input resistance was sort of a pessimistic estimate
+
+Looking at 'Input Current with Input Voltage High' (in the datasheet)
+
+max is +/-1uA, so I just kind of picked 1V so V/I = 1 Meg.
+
+More realistically, it says VA = 2.4V or 15V, so if it can go to 15V and 1uA, then that's 15 Megs
+
+and it says typical is 0.001 uA, so 15V -> 15,000 Megs which is...crazy. (It does say low leakage, so I guess they got that down)
+
+The reason I went with 1 Meg though, is because the lower limit for that resistor was 160k, so it doesn't need to be super huge
+
+
