@@ -1,4 +1,4 @@
-update=Mon 13 Nov 2017 12:18:50 AM PST
+update=Mon 13 Nov 2017 01:07:06 PM PST
 version=1
 last_client=kicad
 [pcbnew]
@@ -28,3 +28,12 @@ version=1
 [eeschema]
 version=1
 LibDir=
+[eeschema/libraries]
+LibName1=/home/tom/catkin/src/choice/design/pcb/schematic_lib/choice_shield
+LibName2=device
+LibName3=Connector
+LibName4=Transistor
+LibName5=analog_devices
+LibName6=analog_switches
+LibName7=atmel
+LibName8=power

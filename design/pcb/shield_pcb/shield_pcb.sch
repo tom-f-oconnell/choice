@@ -1,4 +1,12 @@
-EESchema Schematic File Version 4
+EESchema Schematic File Version 3
+LIBS:choice_shield
+LIBS:device
+LIBS:Connector
+LIBS:Transistor
+LIBS:analog_devices
+LIBS:analog_switches
+LIBS:atmel
+LIBS:power
 LIBS:shield_pcb-cache
 EELAYER 26 0
 EELAYER END

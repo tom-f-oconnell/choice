@@ -1,9 +1,9 @@
 EESchema-DOCLIB  Version 2.0
 #
 $CMP IRL620
-D 50V Vds, 0.22 A Id, N-channel MOSFET, SOT-23
+D 200V Vds, Low Rds(on), Logic level N-channel MOSFET, TO-220AB
 K N-Channel MOSFET
-F https://www.fairchildsemi.com/datasheets/BS/BSS138.pdf
+F https://www.vishay.com/docs/91301/91301.pdf
 $ENDCMP
 #
 #End Doc Library

@@ -12,6 +12,11 @@ import numpy as np
 # w/o an E in the suffix, and the former doesn't have a datasheet link
 # might not matter, b/c the former has 0 currently available... ?
 
+# TODO worth building in alternate route for a current reference to be passed
+# over the sense resistor, for calibration?
+# http://www.resistorguide.com/applications/shunt-resistor/
+# I'm thinking no, for now...
+
 
 # TODO should i add capacitors on the floor pcb to null inductance in the connector wires?
 # or would that not make sense because the driver is also off of the floor pcb?
