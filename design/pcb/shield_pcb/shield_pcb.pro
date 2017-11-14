@@ -1,4 +1,4 @@
-update=Mon 13 Nov 2017 01:07:06 PM PST
+update=Mon 13 Nov 2017 05:56:54 PM PST
 version=1
 last_client=kicad
 [pcbnew]
@@ -37,3 +37,11 @@ LibName5=analog_devices
 LibName6=analog_switches
 LibName7=atmel
 LibName8=power
+LibName9=contrib
+LibName10=linear
+LibName11=Switch
+LibName12=Logic_TTL_IEEE
+LibName13=Logic_74xgxx
+LibName14=Logic_74xx
+LibName15=Logic_CMOS_4000
+LibName16=Logic_CMOS_IEEE

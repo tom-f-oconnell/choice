@@ -7,6 +7,14 @@ LIBS:analog_devices
 LIBS:analog_switches
 LIBS:atmel
 LIBS:power
+LIBS:contrib
+LIBS:linear
+LIBS:Switch
+LIBS:Logic_TTL_IEEE
+LIBS:Logic_74xgxx
+LIBS:Logic_74xx
+LIBS:Logic_CMOS_4000
+LIBS:Logic_CMOS_IEEE
 LIBS:shield_pcb-cache
 EELAYER 26 0
 EELAYER END

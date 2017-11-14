@@ -7,6 +7,14 @@ LIBS:analog_devices
 LIBS:analog_switches
 LIBS:atmel
 LIBS:power
+LIBS:contrib
+LIBS:linear
+LIBS:Switch
+LIBS:Logic_TTL_IEEE
+LIBS:Logic_74xgxx
+LIBS:Logic_74xx
+LIBS:Logic_CMOS_4000
+LIBS:Logic_CMOS_IEEE
 LIBS:shield_pcb-cache
 EELAYER 26 0
 EELAYER END
@@ -220,231 +228,247 @@ Text Notes 9700 1600 0    60   ~ 0
 $Comp
 L Conn_02x10_Top_Bottom J?
 U 1 1 5A05049E
-P 7700 1550
-F 0 "J?" H 7750 2167 50  0000 C CNN
-F 1 "Conn_02x10_Top_Bottom" H 7750 2076 50  0000 C CNN
-F 2 "" H 7700 1550 50  0001 C CNN
-F 3 "~" H 7700 1550 50  0001 C CNN
-	1    7700 1550
+P 7500 1900
+F 0 "J?" H 7550 2517 50  0000 C CNN
+F 1 "Conn_02x10_Top_Bottom" H 7550 2426 50  0000 C CNN
+F 2 "" H 7500 1900 50  0001 C CNN
+F 3 "~" H 7500 1900 50  0001 C CNN
+	1    7500 1900
 	1    0    0    -1  
 $EndComp
 $Comp
 L Screw_Terminal_01x02 J?
 U 1 1 5A05063F
-P 7700 600
-F 0 "J?" H 7780 592 50  0000 L CNN
-F 1 "Screw_Terminal_01x02" H 7780 501 50  0000 L CNN
-F 2 "" H 7700 600 50  0001 C CNN
-F 3 "~" H 7700 600 50  0001 C CNN
-	1    7700 600 
+P 7500 950
+F 0 "J?" H 7580 942 50  0000 L CNN
+F 1 "Screw_Terminal_01x02" H 7580 851 50  0000 L CNN
+F 2 "" H 7500 950 50  0001 C CNN
+F 3 "~" H 7500 950 50  0001 C CNN
+	1    7500 950 
 	1    0    0    -1  
 $EndComp
 $Comp
 L GND #PWR?
 U 1 1 5A0507BB
-P 7300 600
-F 0 "#PWR?" H 7300 350 50  0001 C CNN
-F 1 "GND" H 7305 427 50  0000 C CNN
-F 2 "" H 7300 600 50  0001 C CNN
-F 3 "" H 7300 600 50  0001 C CNN
-	1    7300 600 
+P 6500 950
+F 0 "#PWR?" H 6500 700 50  0001 C CNN
+F 1 "GND" H 6505 777 50  0000 C CNN
+F 2 "" H 6500 950 50  0001 C CNN
+F 3 "" H 6500 950 50  0001 C CNN
+	1    6500 950 
 	1    0    0    -1  
 $EndComp
-NoConn ~ 8000 1150
-NoConn ~ 8000 2050
-NoConn ~ 7500 2050
+NoConn ~ 7800 1500
+NoConn ~ 7800 2400
+NoConn ~ 7300 2400
 $Sheet
-S 1900 1350 1300 500 
+S 1700 1700 1300 500 
 U 5A050A02
 F0 "switch_and_signal" 60
 F1 "switch_and_signal/switch_and_signal.sch" 60
-F2 "logic_input" I L 1900 1600 60 
-F3 "after_fly" I R 3200 1450 60 
-F4 "ADC+" I R 3200 1650 60 
-F5 "ADC-" I R 3200 1750 60 
+F2 "logic_input" I L 1700 2050 60 
+F3 "after_fly" I R 3000 1800 60 
+F4 "ADC+" I R 3000 2000 60 
+F5 "ADC-" I R 3000 2100 60 
+F6 "common_high_voltage" I R 3000 1900 60 
 $EndSheet
 $Sheet
-S 1900 2050 1300 500 
+S 1700 2400 1300 500 
 U 5A0511CA
 F0 "switch_and_signal" 60
 F1 "switch_and_signal/switch_and_signal.sch" 60
-F2 "logic_input" I L 1900 2300 60 
-F3 "after_fly" I R 3200 2150 60 
-F4 "ADC+" I R 3200 2350 60 
-F5 "ADC-" I R 3200 2450 60 
+F2 "logic_input" I L 1700 2750 60 
+F3 "after_fly" I R 3000 2500 60 
+F4 "ADC+" I R 3000 2700 60 
+F5 "ADC-" I R 3000 2800 60 
+F6 "common_high_voltage" I R 3000 2600 60 
 $EndSheet
 $Sheet
-S 1900 2750 1300 500 
+S 1700 3100 1300 500 
 U 5A051596
 F0 "switch_and_signal" 60
 F1 "switch_and_signal/switch_and_signal.sch" 60
-F2 "logic_input" I L 1900 3000 60 
-F3 "after_fly" I R 3200 2850 60 
-F4 "ADC+" I R 3200 3050 60 
-F5 "ADC-" I R 3200 3150 60 
+F2 "logic_input" I L 1700 3450 60 
+F3 "after_fly" I R 3000 3200 60 
+F4 "ADC+" I R 3000 3400 60 
+F5 "ADC-" I R 3000 3500 60 
+F6 "common_high_voltage" I R 3000 3300 60 
 $EndSheet
 $Sheet
-S 1900 3450 1300 500 
+S 1700 3800 1300 500 
 U 5A05159C
 F0 "switch_and_signal" 60
 F1 "switch_and_signal/switch_and_signal.sch" 60
-F2 "logic_input" I L 1900 3700 60 
-F3 "after_fly" I R 3200 3550 60 
-F4 "ADC+" I R 3200 3750 60 
-F5 "ADC-" I R 3200 3850 60 
+F2 "logic_input" I L 1700 4150 60 
+F3 "after_fly" I R 3000 3900 60 
+F4 "ADC+" I R 3000 4100 60 
+F5 "ADC-" I R 3000 4200 60 
+F6 "common_high_voltage" I R 3000 4000 60 
 $EndSheet
 $Sheet
-S 1900 4150 1300 500 
+S 1700 4500 1300 500 
 U 5A052C3C
 F0 "switch_and_signal" 60
 F1 "switch_and_signal/switch_and_signal.sch" 60
-F2 "logic_input" I L 1900 4400 60 
-F3 "after_fly" I R 3200 4250 60 
-F4 "ADC+" I R 3200 4450 60 
-F5 "ADC-" I R 3200 4550 60 
+F2 "logic_input" I L 1700 4850 60 
+F3 "after_fly" I R 3000 4600 60 
+F4 "ADC+" I R 3000 4800 60 
+F5 "ADC-" I R 3000 4900 60 
+F6 "common_high_voltage" I R 3000 4700 60 
 $EndSheet
 $Sheet
-S 1900 4850 1300 500 
+S 1700 5200 1300 500 
 U 5A052C42
 F0 "switch_and_signal" 60
 F1 "switch_and_signal/switch_and_signal.sch" 60
-F2 "logic_input" I L 1900 5100 60 
-F3 "after_fly" I R 3200 4950 60 
-F4 "ADC+" I R 3200 5150 60 
-F5 "ADC-" I R 3200 5250 60 
+F2 "logic_input" I L 1700 5550 60 
+F3 "after_fly" I R 3000 5300 60 
+F4 "ADC+" I R 3000 5500 60 
+F5 "ADC-" I R 3000 5600 60 
+F6 "common_high_voltage" I R 3000 5400 60 
 $EndSheet
 $Sheet
-S 1900 5550 1300 500 
+S 1700 5900 1300 500 
 U 5A052C48
 F0 "switch_and_signal" 60
 F1 "switch_and_signal/switch_and_signal.sch" 60
-F2 "logic_input" I L 1900 5800 60 
-F3 "after_fly" I R 3200 5650 60 
-F4 "ADC+" I R 3200 5850 60 
-F5 "ADC-" I R 3200 5950 60 
+F2 "logic_input" I L 1700 6250 60 
+F3 "after_fly" I R 3000 6000 60 
+F4 "ADC+" I R 3000 6200 60 
+F5 "ADC-" I R 3000 6300 60 
+F6 "common_high_voltage" I R 3000 6100 60 
 $EndSheet
 $Sheet
-S 1900 6250 1300 500 
+S 1700 6600 1300 500 
 U 5A052C4E
 F0 "switch_and_signal" 60
 F1 "switch_and_signal/switch_and_signal.sch" 60
-F2 "logic_input" I L 1900 6500 60 
-F3 "after_fly" I R 3200 6350 60 
-F4 "ADC+" I R 3200 6550 60 
-F5 "ADC-" I R 3200 6650 60 
+F2 "logic_input" I L 1700 6950 60 
+F3 "after_fly" I R 3000 6700 60 
+F4 "ADC+" I R 3000 6900 60 
+F5 "ADC-" I R 3000 7000 60 
+F6 "common_high_voltage" I R 3000 6800 60 
 $EndSheet
 $Sheet
-S 4150 1350 1300 500 
+S 3950 1700 1300 500 
 U 5A053B90
 F0 "switch_and_signal" 60
 F1 "switch_and_signal/switch_and_signal.sch" 60
-F2 "logic_input" I L 4150 1600 60 
-F3 "after_fly" I R 5450 1450 60 
-F4 "ADC+" I R 5450 1650 60 
-F5 "ADC-" I R 5450 1750 60 
+F2 "logic_input" I L 3950 2050 60 
+F3 "after_fly" I R 5250 1800 60 
+F4 "ADC+" I R 5250 2000 60 
+F5 "ADC-" I R 5250 2100 60 
+F6 "common_high_voltage" I R 5250 1900 60 
 $EndSheet
 $Sheet
-S 4150 2050 1300 500 
+S 3950 2400 1300 500 
 U 5A053B96
 F0 "switch_and_signal" 60
 F1 "switch_and_signal/switch_and_signal.sch" 60
-F2 "logic_input" I L 4150 2300 60 
-F3 "after_fly" I R 5450 2150 60 
-F4 "ADC+" I R 5450 2350 60 
-F5 "ADC-" I R 5450 2450 60 
+F2 "logic_input" I L 3950 2750 60 
+F3 "after_fly" I R 5250 2500 60 
+F4 "ADC+" I R 5250 2700 60 
+F5 "ADC-" I R 5250 2800 60 
+F6 "common_high_voltage" I R 5250 2600 60 
 $EndSheet
 $Sheet
-S 4150 2750 1300 500 
+S 3950 3100 1300 500 
 U 5A053B9C
 F0 "switch_and_signal" 60
 F1 "switch_and_signal/switch_and_signal.sch" 60
-F2 "logic_input" I L 4150 3000 60 
-F3 "after_fly" I R 5450 2850 60 
-F4 "ADC+" I R 5450 3050 60 
-F5 "ADC-" I R 5450 3150 60 
+F2 "logic_input" I L 3950 3450 60 
+F3 "after_fly" I R 5250 3200 60 
+F4 "ADC+" I R 5250 3400 60 
+F5 "ADC-" I R 5250 3500 60 
+F6 "common_high_voltage" I R 5250 3300 60 
 $EndSheet
 $Sheet
-S 4150 3450 1300 500 
+S 3950 3800 1300 500 
 U 5A053BA2
 F0 "switch_and_signal" 60
 F1 "switch_and_signal/switch_and_signal.sch" 60
-F2 "logic_input" I L 4150 3700 60 
-F3 "after_fly" I R 5450 3550 60 
-F4 "ADC+" I R 5450 3750 60 
-F5 "ADC-" I R 5450 3850 60 
+F2 "logic_input" I L 3950 4150 60 
+F3 "after_fly" I R 5250 3900 60 
+F4 "ADC+" I R 5250 4100 60 
+F5 "ADC-" I R 5250 4200 60 
+F6 "common_high_voltage" I R 5250 4000 60 
 $EndSheet
 $Sheet
-S 4150 4150 1300 500 
+S 3950 4500 1300 500 
 U 5A053BA8
 F0 "switch_and_signal" 60
 F1 "switch_and_signal/switch_and_signal.sch" 60
-F2 "logic_input" I L 4150 4400 60 
-F3 "after_fly" I R 5450 4250 60 
-F4 "ADC+" I R 5450 4450 60 
-F5 "ADC-" I R 5450 4550 60 
+F2 "logic_input" I L 3950 4850 60 
+F3 "after_fly" I R 5250 4600 60 
+F4 "ADC+" I R 5250 4800 60 
+F5 "ADC-" I R 5250 4900 60 
+F6 "common_high_voltage" I R 5250 4700 60 
 $EndSheet
 $Sheet
-S 4150 4850 1300 500 
+S 3950 5200 1300 500 
 U 5A053BAE
 F0 "switch_and_signal" 60
 F1 "switch_and_signal/switch_and_signal.sch" 60
-F2 "logic_input" I L 4150 5100 60 
-F3 "after_fly" I R 5450 4950 60 
-F4 "ADC+" I R 5450 5150 60 
-F5 "ADC-" I R 5450 5250 60 
+F2 "logic_input" I L 3950 5550 60 
+F3 "after_fly" I R 5250 5300 60 
+F4 "ADC+" I R 5250 5500 60 
+F5 "ADC-" I R 5250 5600 60 
+F6 "common_high_voltage" I R 5250 5400 60 
 $EndSheet
 $Sheet
-S 4150 5550 1300 500 
+S 3950 5900 1300 500 
 U 5A053BB4
 F0 "switch_and_signal" 60
 F1 "switch_and_signal/switch_and_signal.sch" 60
-F2 "logic_input" I L 4150 5800 60 
-F3 "after_fly" I R 5450 5650 60 
-F4 "ADC+" I R 5450 5850 60 
-F5 "ADC-" I R 5450 5950 60 
+F2 "logic_input" I L 3950 6250 60 
+F3 "after_fly" I R 5250 6000 60 
+F4 "ADC+" I R 5250 6200 60 
+F5 "ADC-" I R 5250 6300 60 
+F6 "common_high_voltage" I R 5250 6100 60 
 $EndSheet
 $Sheet
-S 4150 6250 1300 500 
+S 3950 6600 1300 500 
 U 5A053BBA
 F0 "switch_and_signal" 60
 F1 "switch_and_signal/switch_and_signal.sch" 60
-F2 "logic_input" I L 4150 6500 60 
-F3 "after_fly" I R 5450 6350 60 
-F4 "ADC+" I R 5450 6550 60 
-F5 "ADC-" I R 5450 6650 60 
+F2 "logic_input" I L 3950 6950 60 
+F3 "after_fly" I R 5250 6700 60 
+F4 "ADC+" I R 5250 6900 60 
+F5 "ADC-" I R 5250 7000 60 
+F6 "common_high_voltage" I R 5250 6800 60 
 $EndSheet
 Entry Wire Line
-	7100 1100 7200 1200
+	6900 1450 7000 1550
 Entry Wire Line
-	7100 1200 7200 1300
+	6900 1550 7000 1650
 Entry Wire Line
-	7100 1300 7200 1400
+	6900 1650 7000 1750
 Entry Wire Line
-	7100 1400 7200 1500
+	6900 1750 7000 1850
 Entry Wire Line
-	7100 1500 7200 1600
+	6900 1850 7000 1950
 Entry Wire Line
-	7100 1600 7200 1700
+	6900 1950 7000 2050
 Entry Wire Line
-	7100 1700 7200 1800
+	6900 2050 7000 2150
 Entry Wire Line
-	7100 1800 7200 1900
+	6900 2150 7000 2250
 Entry Wire Line
-	8350 1100 8450 1200
+	8150 1450 8250 1550
 Entry Wire Line
-	8350 1250 8450 1350
+	8150 1600 8250 1700
 Entry Wire Line
-	8350 1400 8450 1500
+	8150 1750 8250 1850
 Entry Wire Line
-	8350 1550 8450 1650
+	8150 1900 8250 2000
 Entry Wire Line
-	8350 1700 8450 1800
+	8150 2050 8250 2150
 Entry Wire Line
-	8350 1850 8450 1950
+	8150 2200 8250 2300
 Entry Wire Line
-	8350 2000 8450 2100
+	8150 2350 8250 2450
 Entry Wire Line
-	8350 2150 8450 2250
+	8150 2500 8250 2600
 Wire Notes Line
 	8525 825  9925 825 
 Wire Notes Line
@@ -521,7 +545,9 @@ Wire Wire Line
 Wire Wire Line
 	10300 1500 10300 3150
 Wire Wire Line
-	9300 2100 9300 3150
+	9300 2100 9300 2200
+Wire Wire Line
+	9300 2200 9300 3150
 Wire Notes Line
 	8500 500  8500 3450
 Wire Notes Line
@@ -533,255 +559,475 @@ Wire Notes Line
 Wire Notes Line
 	10700 1000 10700 500 
 Wire Wire Line
-	7500 1150 7500 700 
+	7300 1500 7300 1350
 Wire Wire Line
-	7300 600  7500 600 
+	7300 1350 7300 1050
 Wire Bus Line
-	7100 1000 7100 2300
+	6900 1350 6900 1450
 Wire Bus Line
-	7100 2300 8350 2300
+	6900 1450 6900 1550
 Wire Bus Line
-	8350 2300 8350 1000
-Wire Wire Line
-	7200 1200 7500 1200
-Wire Wire Line
-	7500 1200 7500 1250
-Wire Wire Line
-	7200 1300 7500 1300
-Wire Wire Line
-	7500 1300 7500 1350
-Wire Wire Line
-	7200 1400 7500 1400
-Wire Wire Line
-	7500 1400 7500 1450
-Wire Wire Line
-	7200 1500 7500 1500
-Wire Wire Line
-	7500 1500 7500 1550
-Wire Wire Line
-	7200 1600 7500 1600
-Wire Wire Line
-	7500 1600 7500 1650
-Wire Wire Line
-	7200 1700 7500 1700
-Wire Wire Line
-	7500 1700 7500 1750
-Wire Wire Line
-	7200 1800 7500 1800
-Wire Wire Line
-	7500 1800 7500 1850
-Wire Wire Line
-	7200 1900 7500 1900
-Wire Wire Line
-	7500 1900 7500 1950
-Wire Wire Line
-	8450 1200 8000 1200
-Wire Wire Line
-	8000 1200 8000 1250
-Wire Wire Line
-	8000 1350 8450 1350
-Wire Wire Line
-	8450 1500 8000 1500
-Wire Wire Line
-	8000 1500 8000 1450
-Wire Wire Line
-	8000 1550 8300 1550
-Wire Wire Line
-	8300 1550 8300 1650
-Wire Wire Line
-	8300 1650 8450 1650
-Wire Wire Line
-	8450 1800 8300 1800
-Wire Wire Line
-	8300 1800 8300 1700
-Wire Wire Line
-	8300 1700 8150 1700
-Wire Wire Line
-	8150 1700 8150 1650
-Wire Wire Line
-	8150 1650 8000 1650
-Wire Wire Line
-	8000 1750 8200 1750
-Wire Wire Line
-	8200 1750 8200 1800
-Wire Wire Line
-	8200 1800 8250 1800
-Wire Wire Line
-	8250 1800 8250 1850
-Wire Wire Line
-	8250 1850 8300 1850
-Wire Wire Line
-	8300 1850 8300 1900
-Wire Wire Line
-	8300 1900 8350 1900
-Wire Wire Line
-	8350 1900 8350 1950
-Wire Wire Line
-	8350 1950 8450 1950
-Wire Wire Line
-	8000 1850 8200 1850
-Wire Wire Line
-	8200 1850 8200 1900
-Wire Wire Line
-	8200 1900 8250 1900
-Wire Wire Line
-	8250 1900 8250 1950
-Wire Wire Line
-	8250 1950 8300 1950
-Wire Wire Line
-	8300 1950 8300 2100
-Wire Wire Line
-	8300 2100 8450 2100
-Wire Wire Line
-	8000 1950 8150 1950
-Wire Wire Line
-	8150 1950 8150 2250
-Wire Wire Line
-	8150 2250 8450 2250
+	6900 1550 6900 1650
 Wire Bus Line
-	3550 1000 3550 7000
+	6900 1650 6900 1750
 Wire Bus Line
-	5750 1000 5750 7000
-Entry Wire Line
-	5750 1350 5850 1450
-Entry Wire Line
-	5750 2050 5850 2150
-Entry Wire Line
-	5750 2750 5850 2850
-Entry Wire Line
-	5750 4150 5850 4250
-Entry Wire Line
-	5750 4850 5850 4950
-Entry Wire Line
-	5750 5550 5850 5650
-Entry Wire Line
-	5750 6250 5850 6350
-Entry Wire Line
-	3550 1350 3650 1450
-Entry Wire Line
-	3550 2050 3650 2150
-Entry Wire Line
-	3550 2750 3650 2850
-Entry Wire Line
-	3550 3450 3650 3550
-Entry Wire Line
-	3550 4150 3650 4250
-Entry Wire Line
-	3550 4850 3650 4950
-Entry Wire Line
-	3550 5550 3650 5650
-Entry Wire Line
-	3550 6250 3650 6350
+	6900 1750 6900 1850
+Wire Bus Line
+	6900 1850 6900 1950
+Wire Bus Line
+	6900 1950 6900 2050
+Wire Bus Line
+	6900 2050 6900 2150
+Wire Bus Line
+	6900 2150 6900 2650
+Wire Bus Line
+	6900 2650 8150 2650
+Wire Bus Line
+	8150 2650 8150 2500
+Wire Bus Line
+	8150 2500 8150 2350
+Wire Bus Line
+	8150 2350 8150 2200
+Wire Bus Line
+	8150 2200 8150 2050
+Wire Bus Line
+	8150 2050 8150 1900
+Wire Bus Line
+	8150 1900 8150 1750
+Wire Bus Line
+	8150 1750 8150 1600
+Wire Bus Line
+	8150 1600 8150 1450
+Wire Bus Line
+	8150 1450 8150 1350
 Wire Wire Line
-	3200 1450 3650 1450
+	7000 1550 7300 1550
 Wire Wire Line
-	3200 2150 3650 2150
+	7300 1550 7300 1600
 Wire Wire Line
-	3200 2850 3650 2850
+	7000 1650 7300 1650
 Wire Wire Line
-	3200 3550 3650 3550
+	7300 1650 7300 1700
 Wire Wire Line
-	3200 4250 3650 4250
+	7000 1750 7300 1750
 Wire Wire Line
-	3200 4950 3650 4950
+	7300 1750 7300 1800
 Wire Wire Line
-	3200 5650 3650 5650
+	7000 1850 7300 1850
 Wire Wire Line
-	3200 6350 3650 6350
+	7300 1850 7300 1900
 Wire Wire Line
-	5450 6350 5850 6350
+	7000 1950 7300 1950
 Wire Wire Line
-	5450 5650 5850 5650
+	7300 1950 7300 2000
 Wire Wire Line
-	5450 4950 5850 4950
+	7000 2050 7300 2050
 Wire Wire Line
-	5450 4250 5850 4250
+	7300 2050 7300 2100
 Wire Wire Line
-	5450 2850 5850 2850
+	7000 2150 7300 2150
+Wire Wire Line
+	7300 2150 7300 2200
+Wire Wire Line
+	7000 2250 7300 2250
+Wire Wire Line
+	7300 2250 7300 2300
+Wire Wire Line
+	8250 1550 7800 1550
+Wire Wire Line
+	7800 1550 7800 1600
+Wire Wire Line
+	7800 1700 8250 1700
+Wire Wire Line
+	8250 1850 7800 1850
+Wire Wire Line
+	7800 1850 7800 1800
+Wire Wire Line
+	7800 1900 8100 1900
+Wire Wire Line
+	8100 1900 8100 2000
+Wire Wire Line
+	8100 2000 8250 2000
+Wire Wire Line
+	8250 2150 8100 2150
+Wire Wire Line
+	8100 2150 8100 2050
+Wire Wire Line
+	8100 2050 7950 2050
+Wire Wire Line
+	7950 2050 7950 2000
+Wire Wire Line
+	7950 2000 7800 2000
+Wire Wire Line
+	7800 2100 8000 2100
+Wire Wire Line
+	8000 2100 8000 2150
+Wire Wire Line
+	8000 2150 8050 2150
+Wire Wire Line
+	8050 2150 8050 2200
+Wire Wire Line
+	8050 2200 8100 2200
+Wire Wire Line
+	8100 2200 8100 2250
+Wire Wire Line
+	8100 2250 8150 2250
+Wire Wire Line
+	8150 2250 8150 2300
+Wire Wire Line
+	8150 2300 8250 2300
+Wire Wire Line
+	7800 2200 8000 2200
+Wire Wire Line
+	8000 2200 8000 2250
+Wire Wire Line
+	8000 2250 8050 2250
+Wire Wire Line
+	8050 2250 8050 2300
+Wire Wire Line
+	8050 2300 8100 2300
+Wire Wire Line
+	8100 2300 8100 2450
+Wire Wire Line
+	8100 2450 8250 2450
+Wire Wire Line
+	7800 2300 7950 2300
+Wire Wire Line
+	7950 2300 7950 2600
+Wire Wire Line
+	7950 2600 8250 2600
+Wire Bus Line
+	3350 1350 3350 1700
+Wire Bus Line
+	3350 1700 3350 2000
+Wire Bus Line
+	3350 2000 3350 2400
+Wire Bus Line
+	3350 2400 3350 2700
+Wire Bus Line
+	3350 2700 3350 3100
+Wire Bus Line
+	3350 3100 3350 3400
+Wire Bus Line
+	3350 3400 3350 3800
+Wire Bus Line
+	3350 3800 3350 4100
+Wire Bus Line
+	3350 4100 3350 4500
+Wire Bus Line
+	3350 4500 3350 4800
+Wire Bus Line
+	3350 4800 3350 5200
+Wire Bus Line
+	3350 5200 3350 5500
+Wire Bus Line
+	3350 5500 3350 5900
+Wire Bus Line
+	3350 5900 3350 6200
+Wire Bus Line
+	3350 6200 3350 6600
+Wire Bus Line
+	3350 6600 3350 6900
+Wire Bus Line
+	3350 6900 3350 7350
+Wire Bus Line
+	5550 1350 5550 1700
+Wire Bus Line
+	5550 1700 5550 2000
+Wire Bus Line
+	5550 2000 5550 2400
+Wire Bus Line
+	5550 2400 5550 2700
+Wire Bus Line
+	5550 2700 5550 3100
+Wire Bus Line
+	5550 3100 5550 3400
+Wire Bus Line
+	5550 3400 5550 3800
+Wire Bus Line
+	5550 3800 5550 4100
+Wire Bus Line
+	5550 4100 5550 4500
+Wire Bus Line
+	5550 4500 5550 4800
+Wire Bus Line
+	5550 4800 5550 5200
+Wire Bus Line
+	5550 5200 5550 5500
+Wire Bus Line
+	5550 5500 5550 5900
+Wire Bus Line
+	5550 5900 5550 6200
+Wire Bus Line
+	5550 6200 5550 6600
+Wire Bus Line
+	5550 6600 5550 6900
+Wire Bus Line
+	5550 6900 5550 7350
 Entry Wire Line
-	5750 3450 5850 3550
+	5550 1700 5650 1800
+Entry Wire Line
+	5550 2400 5650 2500
+Entry Wire Line
+	5550 3100 5650 3200
+Entry Wire Line
+	5550 4500 5650 4600
+Entry Wire Line
+	5550 5200 5650 5300
+Entry Wire Line
+	5550 5900 5650 6000
+Entry Wire Line
+	5550 6600 5650 6700
+Entry Wire Line
+	3350 1700 3450 1800
+Entry Wire Line
+	3350 2400 3450 2500
+Entry Wire Line
+	3350 3100 3450 3200
+Entry Wire Line
+	3350 3800 3450 3900
+Entry Wire Line
+	3350 4500 3450 4600
+Entry Wire Line
+	3350 5200 3450 5300
+Entry Wire Line
+	3350 5900 3450 6000
+Entry Wire Line
+	3350 6600 3450 6700
 Wire Wire Line
-	5450 3550 5850 3550
+	3000 1800 3450 1800
 Wire Wire Line
-	5450 1450 5850 1450
+	3000 2500 3450 2500
 Wire Wire Line
-	5450 2150 5850 2150
-Text Label 3600 1450 0    60   ~ 0
+	3000 3200 3450 3200
+Wire Wire Line
+	3000 3900 3450 3900
+Wire Wire Line
+	3000 4600 3450 4600
+Wire Wire Line
+	3000 5300 3450 5300
+Wire Wire Line
+	3000 6000 3450 6000
+Wire Wire Line
+	3000 6700 3450 6700
+Wire Wire Line
+	5250 6700 5650 6700
+Wire Wire Line
+	5250 6000 5650 6000
+Wire Wire Line
+	5250 5300 5650 5300
+Wire Wire Line
+	5250 4600 5650 4600
+Wire Wire Line
+	5250 3200 5650 3200
+Entry Wire Line
+	5550 3800 5650 3900
+Wire Wire Line
+	5250 3900 5650 3900
+Wire Wire Line
+	5250 1800 5650 1800
+Wire Wire Line
+	5250 2500 5650 2500
+Text Label 3400 1800 0    60   ~ 0
 left_1
-Text Label 3600 2150 0    60   ~ 0
+Text Label 3400 2500 0    60   ~ 0
 left_2
-Text Label 3600 2850 0    60   ~ 0
+Text Label 3400 3200 0    60   ~ 0
 left_3
-Text Label 3600 3550 0    60   ~ 0
+Text Label 3400 3900 0    60   ~ 0
 left_4
-Text Label 3600 4250 0    60   ~ 0
+Text Label 3400 4600 0    60   ~ 0
 left_5
-Text Label 3600 4950 0    60   ~ 0
+Text Label 3400 5300 0    60   ~ 0
 left_6
-Text Label 3600 5650 0    60   ~ 0
+Text Label 3400 6000 0    60   ~ 0
 left_7
-Text Label 3600 6350 0    60   ~ 0
+Text Label 3400 6700 0    60   ~ 0
 left_8
-Text Label 5800 1450 0    60   ~ 0
+Text Label 5600 1800 0    60   ~ 0
 right_1
-Text Label 5800 2150 0    60   ~ 0
+Text Label 5600 2500 0    60   ~ 0
 right_2
-Text Label 5800 2850 0    60   ~ 0
+Text Label 5600 3200 0    60   ~ 0
 right_3
-Text Label 5800 3550 0    60   ~ 0
+Text Label 5600 3900 0    60   ~ 0
 right_4
-Text Label 5800 4250 0    60   ~ 0
+Text Label 5600 4600 0    60   ~ 0
 right_5
-Text Label 5800 4950 0    60   ~ 0
+Text Label 5600 5300 0    60   ~ 0
 right_6
-Text Label 5800 5650 0    60   ~ 0
+Text Label 5600 6000 0    60   ~ 0
 right_7
-Text Label 5800 6350 0    60   ~ 0
+Text Label 5600 6700 0    60   ~ 0
 right_8
-Text Label 7200 1200 0    60   ~ 0
+Text Label 7000 1550 0    60   ~ 0
 left_1
-Text Label 7200 1300 0    60   ~ 0
+Text Label 7000 1650 0    60   ~ 0
 left_2
-Text Label 7200 1400 0    60   ~ 0
+Text Label 7000 1750 0    60   ~ 0
 left_3
-Text Label 7200 1500 0    60   ~ 0
+Text Label 7000 1850 0    60   ~ 0
 left_4
-Text Label 7200 1600 0    60   ~ 0
+Text Label 7000 1950 0    60   ~ 0
 left_5
-Text Label 7200 1700 0    60   ~ 0
+Text Label 7000 2050 0    60   ~ 0
 left_6
-Text Label 7200 1800 0    60   ~ 0
+Text Label 7000 2150 0    60   ~ 0
 left_7
-Text Label 7200 1900 0    60   ~ 0
+Text Label 7000 2250 0    60   ~ 0
 left_8
-Text Label 8050 1200 0    60   ~ 0
+Text Label 7850 1550 0    60   ~ 0
 right_1
-Text Label 8050 1350 0    60   ~ 0
+Text Label 7850 1700 0    60   ~ 0
 right_2
-Text Label 8000 1450 0    60   ~ 0
+Text Label 7800 1800 0    60   ~ 0
 right_3
-Text Label 8050 1550 0    60   ~ 0
+Text Label 7850 1900 0    60   ~ 0
 right_4
-Text Label 8050 1650 0    60   ~ 0
+Text Label 7850 2000 0    60   ~ 0
 right_5
-Text Label 8050 1750 0    60   ~ 0
+Text Label 7850 2100 0    60   ~ 0
 right_6
-Text Label 8050 1850 0    60   ~ 0
+Text Label 7850 2200 0    60   ~ 0
 right_7
-Text Label 8050 1950 0    60   ~ 0
+Text Label 7850 2300 0    60   ~ 0
 right_8
 Entry Bus Bus
-	5650 900  5750 1000
+	5450 1250 5550 1350
 Entry Bus Bus
-	7000 900  7100 1000
+	6800 1250 6900 1350
 Entry Bus Bus
-	3450 900  3550 1000
+	3250 1250 3350 1350
 Wire Bus Line
-	3450 900  7000 900 
+	3250 1250 5450 1250
+Wire Bus Line
+	5450 1250 6550 1250
+Wire Bus Line
+	6550 1250 6800 1250
 $Sheet
-S 7750 4600 1600 1400
+S 6900 4400 1600 1400
 U 5A0853B4
 F0 "signals_to_adc" 60
 F1 "signals_to_adc.sch" 60
 $EndSheet
+$Comp
+L Fuse F?
+U 1 1 5A0AC0CB
+P 6950 950
+F 0 "F?" V 6753 950 50  0000 C CNN
+F 1 "Fuse" V 6844 950 50  0000 C CNN
+F 2 "" V 6880 950 50  0001 C CNN
+F 3 "" H 6950 950 50  0001 C CNN
+	1    6950 950 
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	6500 950  6800 950 
+Wire Wire Line
+	7100 950  7300 950 
+Entry Wire Line
+	6550 1250 6650 1350
+Wire Wire Line
+	6650 1350 6900 1350
+Wire Wire Line
+	6900 1350 7300 1350
+Connection ~ 7300 1350
+Text Label 6650 1350 0    60   ~ 0
+HV
+Entry Wire Line
+	3250 1900 3350 2000
+Entry Wire Line
+	3250 3300 3350 3400
+Entry Wire Line
+	3250 4000 3350 4100
+Entry Wire Line
+	3250 4700 3350 4800
+Entry Wire Line
+	3250 5400 3350 5500
+Entry Wire Line
+	3250 6100 3350 6200
+Entry Wire Line
+	5450 5400 5550 5500
+Entry Wire Line
+	5450 4700 5550 4800
+Entry Wire Line
+	5450 4000 5550 4100
+Entry Wire Line
+	5450 3300 5550 3400
+Entry Wire Line
+	5450 2600 5550 2700
+Entry Wire Line
+	5450 1900 5550 2000
+Entry Wire Line
+	3250 2600 3350 2700
+Entry Wire Line
+	5450 6100 5550 6200
+Entry Wire Line
+	5450 6800 5550 6900
+Entry Wire Line
+	3250 6800 3350 6900
+Wire Wire Line
+	5450 2600 5250 2600
+Wire Wire Line
+	5450 3300 5250 3300
+Wire Wire Line
+	5450 4000 5250 4000
+Wire Wire Line
+	5450 4700 5250 4700
+Wire Wire Line
+	5450 5400 5250 5400
+Wire Wire Line
+	5450 6100 5250 6100
+Wire Wire Line
+	5450 6800 5250 6800
+Wire Wire Line
+	5450 1900 5250 1900
+Wire Wire Line
+	3000 1900 3250 1900
+Wire Wire Line
+	3250 2600 3000 2600
+Wire Wire Line
+	3250 3300 3000 3300
+Wire Wire Line
+	3250 4000 3000 4000
+Wire Wire Line
+	3250 4700 3000 4700
+Wire Wire Line
+	3250 5400 3000 5400
+Wire Wire Line
+	3250 6100 3000 6100
+Wire Wire Line
+	3250 6800 3000 6800
+Text Label 3100 1900 0    60   ~ 0
+HV
+Text Label 3100 2600 0    60   ~ 0
+HV
+Text Label 5350 6100 0    60   ~ 0
+HV
+Text Label 5350 5400 0    60   ~ 0
+HV
+Text Label 5350 4700 0    60   ~ 0
+HV
+Text Label 5350 1900 0    60   ~ 0
+HV
+Text Label 5350 2600 0    60   ~ 0
+HV
+Text Label 5350 6800 0    60   ~ 0
+HV
+Text Label 3100 3300 0    60   ~ 0
+HV
+Text Label 5350 4000 0    60   ~ 0
+HV
+Text Label 5350 3300 0    60   ~ 0
+HV
+Text Label 3100 6800 0    60   ~ 0
+HV
+Text Label 3100 6100 0    60   ~ 0
+HV
+Text Label 3100 5400 0    60   ~ 0
+HV
+Text Label 3100 4700 0    60   ~ 0
+HV
+Text Label 3100 4000 0    60   ~ 0
+HV
 $EndSCHEMATC

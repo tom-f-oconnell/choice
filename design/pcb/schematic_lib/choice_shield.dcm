@@ -1,5 +1,11 @@
 EESchema-DOCLIB  Version 2.0
 #
+$CMP CD4052B
+D 20V, 125-470 Ron, 2P4T analog switch, DIP-16
+K analog, switch, multiplexer, demultiplexer
+F http://www.ti.com/lit/ds/symlink/cd4052b.pdf
+$ENDCMP
+#
 $CMP IRL620
 D 200V Vds, Low Rds(on), Logic level N-channel MOSFET, TO-220AB
 K N-Channel MOSFET
