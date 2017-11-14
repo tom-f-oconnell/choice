@@ -29,7 +29,11 @@ adc_bits = 10
 adc_levels = 2**adc_bits
 vmin_adc = 0
 vmax_adc = 5
+# a.k.a. least significant bit (LSB)
 v_per_level = (vmax_adc - vmin_adc) / adc_levels
+# TODO also take in to account errors reported in datasheet (should be in terms of LSB)
+# TODO and are those reported values w/ internal references? could be improved
+# w/ external reference?
 
 # TODO measure
 # maybe w/ oscilloscope? i wasn't really getting readings fast enough w/ a DMM 
@@ -68,8 +72,17 @@ fet_zero_gate_voltage_drain_current = 2.5e-5 # 25 uA
 # should be small enough to not drop a significant fraction of the voltage
 # the fly would be receiving, and large enough to get enough of a voltage
 # to measure
+# TODO set this to have max expected resistance lead to max of range of ADC (5v)
+# (or at least <= 5, assuming we don't want to need an amplifier w/ gain < 1)
+
+# TODO TODO or should i just set this to have an acceptable maximum change in voltage,
+# and then set the amplifier gain appropriately to expand the shunt voltage into
+# the full scale range of the ADC?
+# TODO i guess one reason to go with the former approach is that i may have overestimated
+# the minimum resistance of the flies, but not the maximum, and i stand a chance
+# of detecting them (IF i have more ADC bits than i need...) 
+
 #shunt_resistance = 1.5e5  # (150K ohms)
-shunt_resistance = 1.5e3
 
 # TODO check assumption that resistances connected to shunt through to ADC
 # are negligible b/c high amp input resitance
@@ -111,6 +124,25 @@ print '  @ {}V'.format(max_operation_voltage)
 print '  {:,}'.format(max_shunt_voltage)
 
 
+# assumes that the shunt, FET (D->S), and fly are only important resistances
+# because that's what's in other_series_resistance
+shunt_fraction_in_short = shunt_resistance / other_series_resistance
+fet_fraction_in_short = fet_rds_on / other_series_resistance
+# TODO power dissipated as well? check that shunt isn't going to fail?
+print '\nvoltages across other resistances if electrodes are shorted:'
+print '  @ {}V'.format(typ_operation_voltage)
+print '    across shunt {:,}'.format(shunt_fraction_in_short * \
+    typ_operation_voltage)
+print '    across FET Rds(on) {:,}'.format(fet_fraction_in_short * \
+    typ_operation_voltage)
+
+print '  @ {}V'.format(max_operation_voltage)
+print '    across shunt {:,}'.format(shunt_fraction_in_short * \
+    max_operation_voltage)
+print '    across FET Rds(on) {:,}'.format(fet_fraction_in_short * \
+    max_operation_voltage)
+
+
 def voltage_dynamic_range(max_detectable, min_detectable):
     dr = max_detectable / min_detectable
     # for "field quantities" like voltage, the prefactor of 20 is normal,
@@ -121,25 +153,39 @@ def voltage_dynamic_range(max_detectable, min_detectable):
 required_dynamic_range, required_dynamic_range_db = \
     voltage_dynamic_range(max_shunt_voltage, min_shunt_voltage)
 
-print '\nfrom range of operation voltages and expected range of fly resistances...'
+print '\n***Required ADC***'
+print 'from range of operation voltages and expected range of fly resistances...'
 print 'required dynamic range: {:,} ({}dB)'.format(required_dynamic_range, \
     required_dynamic_range_db)
 # TODO which is likely easier to implement: invertible compression or external ADC?
-print 'minimum bits of ADC to cover this range w/o compression {}'
+min_bits = int(np.ceil(np.log2(required_dynamic_range)))
+print 'minimum bits of ADC to cover this range w/o compression {}'.format( \
+    min_bits)
+print 5.0 / 2**min_bits, min_shunt_voltage
+shunt_voltage_range = max_shunt_voltage - min_shunt_voltage
+# TODO calculate w/ actual (likely 5v) Vdd, not just desired range
+lsb_of_required_adc = shunt_voltage_range / 2**min_bits
+print max_shunt_voltage, shunt_voltage_range, lsb_of_required_adc
 
+# we calculated something wrong if the minimum shunt voltage is not at least
+# one LSB of the minimum resolution ADC that should work
+assert lsb_of_required_adc <= min_shunt_voltage
+
+
+print '\n***Arduino ADC***'
 # TODO should i make the min voltage at least a few ADC levels?
 # (i.e. what will be precision of upstream circuitry + ADC?)
 # set in a principled way?
 # TODO TODO
 #num_levels_for_min = 10
 #min_voltage_to_detect = num_levels_for_min * v_per_level
-print '\nminimum detectable voltage difference @ ADC: {}'.format(v_per_level)
+print 'minimum detectable voltage difference @ ADC: {}'.format(v_per_level)
 
 # because v_per_level is minimum nonzero voltage
 # (0 would be interpreted as no fly / no shock)
 adc_dr, adc_dr_db = voltage_dynamic_range(vmax_adc, v_per_level)
-print 'assuming the lowest nonzero level is above the noise floor'
-print 'the ADC dynamic range would be: {:,} ({}dB)'.format(adc_dr, \
+print '\nassuming the lowest nonzero level (LSB) is above the noise floor'
+print 'the Arduino\'s ADC dynamic range would be: {:,} ({}dB)'.format(adc_dr, \
     adc_dr_db)
 
 # TODO maybe easiest way around this is just using an external ADC with

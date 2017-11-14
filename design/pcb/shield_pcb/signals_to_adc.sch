@@ -30,7 +30,7 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
-Text HLabel 10500 3500 2    60   Input ~ 0
+Text HLabel 9300 3450 2    60   Input ~ 0
 out
 Text HLabel 3450 1250 0    60   Input ~ 0
 in_1+
@@ -229,7 +229,7 @@ Connection ~ 4550 3400
 Wire Wire Line
 	4550 1450 4550 950 
 Wire Wire Line
-	4550 950  5800 950 
+	4550 950  6600 950 
 Wire Wire Line
 	5450 3150 5250 3150
 Wire Wire Line
@@ -455,7 +455,7 @@ Connection ~ 4550 6450
 Wire Wire Line
 	4550 4500 4550 4000
 Wire Wire Line
-	4550 4000 5800 4000
+	4550 4000 6600 4000
 Wire Wire Line
 	5450 6200 5250 6200
 Wire Wire Line
@@ -707,4 +707,155 @@ Wire Wire Line
 	5300 5700 5300 5750
 Wire Wire Line
 	5300 5750 5400 5750
+$Comp
+L AD623 U?
+U 1 1 5A0D1663
+P 8000 3450
+F 0 "U?" H 8441 3496 50  0000 L CNN
+F 1 "AD623" H 8441 3405 50  0000 L CNN
+F 2 "" H 8000 3450 50  0001 C CNN
+F 3 "http://www.analog.com/media/en/technical-documentation/data-sheets/AD623.pdf" H 8000 3450 50  0001 C CNN
+	1    8000 3450
+	1    0    0    -1  
+$EndComp
+Text Notes 7300 2200 0    31   ~ 0
+0.1 uF ceramic SMD and 10uF electrolytic tantalum caps recommended \nfor decoupling Vs+ (in single supply operation)
+Wire Wire Line
+	8400 3450 9300 3450
+$Comp
+L C C?
+U 1 1 5A0D1C12
+P 7450 2550
+F 0 "C?" V 7198 2550 50  0000 C CNN
+F 1 "0.1uF ceramic SMD" V 7289 2550 50  0000 C CNN
+F 2 "" H 7488 2400 50  0001 C CNN
+F 3 "" H 7450 2550 50  0001 C CNN
+	1    7450 2550
+	0    1    1    0   
+$EndComp
+$Comp
+L CP1 C?
+U 1 1 5A0D1EDC
+P 8400 2550
+F 0 "C?" V 8652 2550 50  0000 C CNN
+F 1 "10uF tantalum" V 8561 2550 50  0000 C CNN
+F 2 "" H 8400 2550 50  0001 C CNN
+F 3 "" H 8400 2550 50  0001 C CNN
+	1    8400 2550
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	7900 2450 7900 3150
+Wire Wire Line
+	7600 2550 8250 2550
+Connection ~ 7900 2550
+$Comp
+L GND #PWR?
+U 1 1 5A0D2836
+P 7900 3850
+F 0 "#PWR?" H 7900 3600 50  0001 C CNN
+F 1 "GND" H 7905 3677 50  0000 C CNN
+F 2 "" H 7900 3850 50  0001 C CNN
+F 3 "" H 7900 3850 50  0001 C CNN
+	1    7900 3850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7900 3750 7900 3850
+Text Notes 8050 3200 0    59   ~ 0
+Rg=100kohm/(G-1) \nG=(100kohm/Rg) + 1\nNote: for G=1, the Rg terminals are disconnected
+Wire Wire Line
+	6500 4600 5250 4600
+Wire Wire Line
+	6500 1550 6500 6000
+Wire Wire Line
+	6500 3650 7600 3650
+Wire Wire Line
+	6500 6000 5250 6000
+Connection ~ 6500 4600
+Wire Wire Line
+	5250 1550 6500 1550
+Connection ~ 6500 3650
+Wire Wire Line
+	5250 2950 6500 2950
+Connection ~ 6500 2950
+$Comp
+L GND #PWR?
+U 1 1 5A0D329D
+P 7200 2550
+F 0 "#PWR?" H 7200 2300 50  0001 C CNN
+F 1 "GND" H 7205 2377 50  0000 C CNN
+F 2 "" H 7200 2550 50  0001 C CNN
+F 3 "" H 7200 2550 50  0001 C CNN
+	1    7200 2550
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 5A0D32DA
+P 8700 2550
+F 0 "#PWR?" H 8700 2300 50  0001 C CNN
+F 1 "GND" H 8705 2377 50  0000 C CNN
+F 2 "" H 8700 2550 50  0001 C CNN
+F 3 "" H 8700 2550 50  0001 C CNN
+	1    8700 2550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7200 2550 7300 2550
+Wire Wire Line
+	8550 2550 8700 2550
+$Comp
+L +5V #PWR?
+U 1 1 5A0D353C
+P 7900 2450
+F 0 "#PWR?" H 7900 2300 50  0001 C CNN
+F 1 "+5V" H 7915 2623 50  0000 C CNN
+F 2 "" H 7900 2450 50  0001 C CNN
+F 3 "" H 7900 2450 50  0001 C CNN
+	1    7900 2450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4550 2850 4500 2850
+Wire Wire Line
+	4500 2850 4500 2600
+Wire Wire Line
+	4500 2600 6600 2600
+Wire Wire Line
+	6600 950  6600 5600
+Wire Wire Line
+	6600 3250 7600 3250
+Connection ~ 6600 2600
+Connection ~ 6600 3250
+Wire Wire Line
+	4550 5900 4500 5900
+Wire Wire Line
+	4500 5900 4500 5600
+Wire Wire Line
+	4500 5600 6600 5600
+Connection ~ 6600 4000
+$Comp
+L R R?
+U 1 1 5A0D3C1D
+P 7150 3450
+F 0 "R?" H 7220 3496 50  0000 L CNN
+F 1 "R" H 7220 3405 50  0000 L CNN
+F 2 "" V 7080 3450 50  0001 C CNN
+F 3 "" H 7150 3450 50  0001 C CNN
+	1    7150 3450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7150 3300 7550 3300
+Wire Wire Line
+	7550 3300 7550 3350
+Wire Wire Line
+	7550 3350 7600 3350
+Wire Wire Line
+	7150 3600 7550 3600
+Wire Wire Line
+	7550 3600 7550 3550
+Wire Wire Line
+	7550 3550 7600 3550
 $EndSCHEMATC
