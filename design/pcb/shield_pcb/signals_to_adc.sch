@@ -24,7 +24,7 @@ EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 18 18
+Sheet 18 24
 Title ""
 Date ""
 Rev ""
@@ -1405,4 +1405,6 @@ Wire Wire Line
 	8750 3450 8750 3550
 Wire Wire Line
 	8750 3750 8750 4100
+Text Notes 7000 1100 0    60   ~ 0
+TODO put pull(up/down)s on all important pins\n(definitely the 4556 and 4052, maybe others)
 $EndSCHEMATC

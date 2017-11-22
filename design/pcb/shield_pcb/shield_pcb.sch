@@ -24,7 +24,7 @@ EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 1 18
+Sheet 1 24
 Title ""
 Date "lun. 30 mars 2015"
 Rev ""
@@ -1104,122 +1104,15 @@ F 3 "" H 9050 3700 50  0001 C CNN
 	1    9050 3700
 	1    0    0    -1  
 $EndComp
-$Comp
-L C C?
-U 1 1 5A1E1B3A
-P 1250 3800
-F 0 "C?" V 998 3800 50  0000 C CNN
-F 1 "0.1uF" V 1089 3800 50  0000 C CNN
-F 2 "" H 1288 3650 50  0001 C CNN
-F 3 "" H 1250 3800 50  0001 C CNN
-	1    1250 3800
-	0    1    1    0   
-$EndComp
-$Comp
-L +5VA #PWR?
-U 1 1 5A1E58FE
-P 1000 3800
-F 0 "#PWR?" H 1000 3650 50  0001 C CNN
-F 1 "+5VA" H 1015 3973 50  0000 C CNN
-F 2 "" H 1000 3800 50  0001 C CNN
-F 3 "" H 1000 3800 50  0001 C CNN
-	1    1000 3800
-	1    0    0    -1  
-$EndComp
-$Comp
-L GNDA #PWR?
-U 1 1 5A1EA2D4
-P 1500 5250
-F 0 "#PWR?" H 1500 5000 50  0001 C CNN
-F 1 "GNDA" H 1505 5077 50  0000 C CNN
-F 2 "" H 1500 5250 50  0001 C CNN
-F 3 "" H 1500 5250 50  0001 C CNN
-	1    1500 5250
-	1    0    0    -1  
-$EndComp
-$Comp
-L GNDA #PWR?
-U 1 1 5A1EC4A2
-P 1500 3250
-F 0 "#PWR?" H 1500 3000 50  0001 C CNN
-F 1 "GNDA" H 1505 3077 50  0000 C CNN
-F 2 "" H 1500 3250 50  0001 C CNN
-F 3 "" H 1500 3250 50  0001 C CNN
-	1    1500 3250
-	1    0    0    -1  
-$EndComp
-$Comp
-L TLP2531 U?
-U 1 1 5A218864
-P 1350 1100
-F 0 "U?" H 1350 1625 50  0000 C CNN
-F 1 "TLP2531" H 1350 1534 50  0000 C CNN
-F 2 "Housings_DIP:DIP-8_W7.62mm" H 1150 750 50  0001 L CIN
-F 3 "https://toshiba.semicon-storage.com/info/docget.jsp?did=16833&prodName=TLP2531" H 1311 982 50  0001 L CNN
-	1    1350 1100
-	1    0    0    -1  
-$EndComp
-$Comp
-L 74HC595 U?
-U 1 1 5A224BB2
-P 1500 4400
-F 0 "U?" H 1500 5278 50  0000 C CNN
-F 1 "74HC595" H 1500 5187 50  0000 C CNN
-F 2 "" H 1500 4400 50  0001 C CNN
-F 3 "http://www.nxp.com/documents/data_sheet/74HC_HCT595.pdf" H 1500 4400 50  0001 C CNN
-	1    1500 4400
-	1    0    0    -1  
-$EndComp
-$Comp
-L 74HC595 U?
-U 1 1 5A224F06
-P 1500 2400
-F 0 "U?" H 1500 3278 50  0000 C CNN
-F 1 "74HC595" H 1500 3187 50  0000 C CNN
-F 2 "" H 1500 2400 50  0001 C CNN
-F 3 "http://www.nxp.com/documents/data_sheet/74HC_HCT595.pdf" H 1500 2400 50  0001 C CNN
-	1    1500 2400
-	1    0    0    -1  
-$EndComp
 Text Notes -7300 7350 0    60   ~ 0
 why are both OE and RCLK needed? maybe tie one to GND / 5v? RCLK to SRCLK? SRCLR to 5v?
-Wire Wire Line
-	1450 3700 1500 3700
-Wire Wire Line
-	1450 3700 1450 3800
-Wire Wire Line
-	700  4600 1000 4600
-Wire Wire Line
-	1000 2600 700  2600
-Wire Wire Line
-	750  4300 1000 4300
-Wire Wire Line
-	1000 2300 750  2300
-Wire Wire Line
-	800  2200 1000 2200
-Wire Wire Line
-	1000 4200 800  4200
-Wire Wire Line
-	850  4500 1000 4500
-Wire Wire Line
-	1000 2500 850  2500
-Wire Wire Line
-	900  4000 1000 4000
-Wire Wire Line
-	2000 3050 900  3050
-Wire Wire Line
-	2000 2900 2000 3050
-Wire Wire Line
-	1500 5200 1500 5250
-Wire Wire Line
-	1500 3200 1500 3250
-Wire Wire Line
-	1000 3800 1100 3800
 Connection ~ 9050 3750
 Wire Wire Line
 	9050 3750 9050 3700
 Wire Wire Line
-	8950 3750 9150 3750
+	8950 3750 9050 3750
+Wire Wire Line
+	9050 3750 9150 3750
 Wire Wire Line
 	8600 3750 8600 3800
 Wire Wire Line
@@ -1249,7 +1142,9 @@ Wire Wire Line
 Wire Wire Line
 	9150 4250 9050 4250
 Wire Wire Line
-	8600 4050 9050 4050
+	8600 4050 8750 4050
+Wire Wire Line
+	8750 4050 9050 4050
 Wire Wire Line
 	9050 4050 9050 4150
 Wire Wire Line
@@ -1260,11 +1155,15 @@ Wire Wire Line
 	10950 4050 10950 4100
 Connection ~ 10950 3750
 Wire Wire Line
-	10900 3750 11000 3750
+	10900 3750 10950 3750
+Wire Wire Line
+	10950 3750 11000 3750
 Wire Wire Line
 	10600 4050 10600 4100
 Wire Wire Line
-	9950 3750 10300 3750
+	9950 3750 10050 3750
+Wire Wire Line
+	10050 3750 10300 3750
 Wire Wire Line
 	7100 6150 7150 6150
 Wire Wire Line
@@ -1400,13 +1299,143 @@ Wire Bus Line
 Wire Bus Line
 	7000 6200 6850 6350
 Wire Bus Line
-	7000 2850 7000 6200
+	7000 2850 7000 2950
 Wire Bus Line
-	6150 1950 6150 7550
+	7000 2950 7000 3050
+Wire Bus Line
+	7000 3050 7000 3150
+Wire Bus Line
+	7000 3150 7000 3250
+Wire Bus Line
+	7000 3250 7000 3350
+Wire Bus Line
+	7000 3350 7000 3450
+Wire Bus Line
+	7000 3450 7000 3550
+Wire Bus Line
+	7000 3550 7000 3650
+Wire Bus Line
+	7000 3650 7000 3750
+Wire Bus Line
+	7000 3750 7000 3850
+Wire Bus Line
+	7000 3850 7000 3950
+Wire Bus Line
+	7000 3950 7000 4050
+Wire Bus Line
+	7000 4050 7000 4150
+Wire Bus Line
+	7000 4150 7000 4250
+Wire Bus Line
+	7000 4250 7000 4350
+Wire Bus Line
+	7000 4350 7000 4450
+Wire Bus Line
+	7000 4450 7000 4550
+Wire Bus Line
+	7000 4550 7000 4650
+Wire Bus Line
+	7000 4650 7000 4750
+Wire Bus Line
+	7000 4750 7000 4850
+Wire Bus Line
+	7000 4850 7000 4950
+Wire Bus Line
+	7000 4950 7000 5050
+Wire Bus Line
+	7000 5050 7000 5150
+Wire Bus Line
+	7000 5150 7000 5250
+Wire Bus Line
+	7000 5250 7000 5350
+Wire Bus Line
+	7000 5350 7000 5450
+Wire Bus Line
+	7000 5450 7000 5550
+Wire Bus Line
+	7000 5550 7000 5650
+Wire Bus Line
+	7000 5650 7000 5750
+Wire Bus Line
+	7000 5750 7000 5850
+Wire Bus Line
+	7000 5850 7000 5950
+Wire Bus Line
+	7000 5950 7000 6050
+Wire Bus Line
+	7000 6050 7000 6200
+Wire Bus Line
+	6150 1950 6150 2100
+Wire Bus Line
+	6150 2100 6150 2200
+Wire Bus Line
+	6150 2200 6150 2800
+Wire Bus Line
+	6150 2800 6150 2900
+Wire Bus Line
+	6150 2900 6150 3500
+Wire Bus Line
+	6150 3500 6150 3600
+Wire Bus Line
+	6150 3600 6150 4200
+Wire Bus Line
+	6150 4200 6150 4300
+Wire Bus Line
+	6150 4300 6150 4900
+Wire Bus Line
+	6150 4900 6150 5000
+Wire Bus Line
+	6150 5000 6150 5600
+Wire Bus Line
+	6150 5600 6150 5700
+Wire Bus Line
+	6150 5700 6150 6300
+Wire Bus Line
+	6150 6300 6150 6400
+Wire Bus Line
+	6150 6400 6150 7000
+Wire Bus Line
+	6150 7000 6150 7100
+Wire Bus Line
+	6150 7100 6150 7450
+Wire Bus Line
+	6150 7450 6150 7550
 Wire Bus Line
 	6150 7550 4000 7550
 Wire Bus Line
-	4000 7550 4000 1950
+	4000 7550 4000 7100
+Wire Bus Line
+	4000 7100 4000 7000
+Wire Bus Line
+	4000 7000 4000 6400
+Wire Bus Line
+	4000 6400 4000 6300
+Wire Bus Line
+	4000 6300 4000 5700
+Wire Bus Line
+	4000 5700 4000 5600
+Wire Bus Line
+	4000 5600 4000 5000
+Wire Bus Line
+	4000 5000 4000 4900
+Wire Bus Line
+	4000 4900 4000 4300
+Wire Bus Line
+	4000 4300 4000 4200
+Wire Bus Line
+	4000 4200 4000 3600
+Wire Bus Line
+	4000 3600 4000 3500
+Wire Bus Line
+	4000 3500 4000 2900
+Wire Bus Line
+	4000 2900 4000 2800
+Wire Bus Line
+	4000 2800 4000 2200
+Wire Bus Line
+	4000 2200 4000 2100
+Wire Bus Line
+	4000 2100 4000 1950
 Wire Wire Line
 	4100 6800 3850 6800
 Wire Wire Line
@@ -1441,13 +1470,21 @@ Wire Wire Line
 	6200 2600 6000 2600
 Connection ~ 7300 1350
 Wire Wire Line
-	6650 1350 7300 1350
+	6650 1350 6900 1350
+Wire Wire Line
+	6900 1350 7300 1350
 Wire Wire Line
 	7100 950  7300 950 
 Wire Wire Line
 	6500 950  6800 950 
 Wire Bus Line
-	3250 1250 6800 1250
+	3250 1250 4100 1250
+Wire Bus Line
+	4100 1250 6200 1250
+Wire Bus Line
+	6200 1250 6550 1250
+Wire Bus Line
+	6550 1250 6800 1250
 Wire Wire Line
 	6000 2500 6400 2500
 Wire Wire Line
@@ -1481,9 +1518,73 @@ Wire Wire Line
 Wire Wire Line
 	3850 1800 4300 1800
 Wire Bus Line
-	6300 1350 6300 7350
+	6300 1350 6300 1700
 Wire Bus Line
-	4200 1350 4200 7350
+	6300 1700 6300 2000
+Wire Bus Line
+	6300 2000 6300 2400
+Wire Bus Line
+	6300 2400 6300 2700
+Wire Bus Line
+	6300 2700 6300 3100
+Wire Bus Line
+	6300 3100 6300 3400
+Wire Bus Line
+	6300 3400 6300 3800
+Wire Bus Line
+	6300 3800 6300 4100
+Wire Bus Line
+	6300 4100 6300 4500
+Wire Bus Line
+	6300 4500 6300 4800
+Wire Bus Line
+	6300 4800 6300 5200
+Wire Bus Line
+	6300 5200 6300 5500
+Wire Bus Line
+	6300 5500 6300 5900
+Wire Bus Line
+	6300 5900 6300 6200
+Wire Bus Line
+	6300 6200 6300 6600
+Wire Bus Line
+	6300 6600 6300 6900
+Wire Bus Line
+	6300 6900 6300 7350
+Wire Bus Line
+	4200 1350 4200 1700
+Wire Bus Line
+	4200 1700 4200 2000
+Wire Bus Line
+	4200 2000 4200 2400
+Wire Bus Line
+	4200 2400 4200 2700
+Wire Bus Line
+	4200 2700 4200 3100
+Wire Bus Line
+	4200 3100 4200 3400
+Wire Bus Line
+	4200 3400 4200 3800
+Wire Bus Line
+	4200 3800 4200 4100
+Wire Bus Line
+	4200 4100 4200 4500
+Wire Bus Line
+	4200 4500 4200 4800
+Wire Bus Line
+	4200 4800 4200 5200
+Wire Bus Line
+	4200 5200 4200 5500
+Wire Bus Line
+	4200 5500 4200 5900
+Wire Bus Line
+	4200 5900 4200 6200
+Wire Bus Line
+	4200 6200 4200 6600
+Wire Bus Line
+	4200 6600 4200 6900
+Wire Bus Line
+	4200 6900 4200 7350
 Wire Wire Line
 	7950 2600 8250 2600
 Wire Wire Line
@@ -1581,13 +1682,47 @@ Wire Wire Line
 Wire Wire Line
 	7000 1550 7300 1550
 Wire Bus Line
-	8150 1350 8150 2650
+	8150 1350 8150 1450
+Wire Bus Line
+	8150 1450 8150 1600
+Wire Bus Line
+	8150 1600 8150 1750
+Wire Bus Line
+	8150 1750 8150 1900
+Wire Bus Line
+	8150 1900 8150 2050
+Wire Bus Line
+	8150 2050 8150 2200
+Wire Bus Line
+	8150 2200 8150 2350
+Wire Bus Line
+	8150 2350 8150 2500
+Wire Bus Line
+	8150 2500 8150 2650
 Wire Bus Line
 	8150 2650 6900 2650
 Wire Bus Line
-	6900 2650 6900 1350
+	6900 2650 6900 2150
+Wire Bus Line
+	6900 2150 6900 2050
+Wire Bus Line
+	6900 2050 6900 1950
+Wire Bus Line
+	6900 1950 6900 1850
+Wire Bus Line
+	6900 1850 6900 1750
+Wire Bus Line
+	6900 1750 6900 1650
+Wire Bus Line
+	6900 1650 6900 1550
+Wire Bus Line
+	6900 1550 6900 1450
+Wire Bus Line
+	6900 1450 6900 1350
 Wire Wire Line
-	7300 1050 7300 1500
+	7300 1050 7300 1350
+Wire Wire Line
+	7300 1350 7300 1500
 Wire Notes Line
 	10700 1000 10700 500 
 Wire Notes Line
@@ -1599,7 +1734,9 @@ Wire Notes Line
 Wire Notes Line
 	8500 500  8500 3450
 Wire Wire Line
-	9300 2100 9300 3150
+	9300 2100 9300 2200
+Wire Wire Line
+	9300 2200 9300 3150
 Wire Wire Line
 	10300 1500 10300 3150
 Wire Wire Line
@@ -1675,110 +1812,45 @@ Wire Notes Line
 	9925 825  9925 475 
 Wire Notes Line
 	8525 825  9925 825 
-Wire Wire Line
-	1000 1800 1100 1800
-$Comp
-L +5VA #PWR?
-U 1 1 5A1E5BFE
-P 1000 1800
-F 0 "#PWR?" H 1000 1650 50  0001 C CNN
-F 1 "+5VA" H 1015 1973 50  0000 C CNN
-F 2 "" H 1000 1800 50  0001 C CNN
-F 3 "" H 1000 1800 50  0001 C CNN
-	1    1000 1800
-	1    0    0    -1  
-$EndComp
-$Comp
-L C C?
-U 1 1 5A1E2EEB
-P 1250 1800
-F 0 "C?" V 998 1800 50  0000 C CNN
-F 1 "0.1uF" V 1089 1800 50  0000 C CNN
-F 2 "" H 1288 1650 50  0001 C CNN
-F 3 "" H 1250 1800 50  0001 C CNN
-	1    1250 1800
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	1450 3800 1400 3800
-Wire Wire Line
-	1400 1800 1450 1800
-Wire Wire Line
-	1450 1800 1450 1700
-Wire Wire Line
-	1450 1700 1500 1700
-Wire Wire Line
-	900  3050 900  4000
-Wire Wire Line
-	700  2600 700  4600
-Wire Wire Line
-	850  2500 850  4500
-Wire Wire Line
-	750  2300 750  4300
-Wire Wire Line
-	800  4200 800  2200
-$Comp
-L C C?
-U 1 1 5A262298
-P 1250 5800
-F 0 "C?" V 998 5800 50  0000 C CNN
-F 1 "0.1uF" V 1089 5800 50  0000 C CNN
-F 2 "" H 1288 5650 50  0001 C CNN
-F 3 "" H 1250 5800 50  0001 C CNN
-	1    1250 5800
-	0    1    1    0   
-$EndComp
-$Comp
-L +5VA #PWR?
-U 1 1 5A26229E
-P 1000 5800
-F 0 "#PWR?" H 1000 5650 50  0001 C CNN
-F 1 "+5VA" H 1015 5973 50  0000 C CNN
-F 2 "" H 1000 5800 50  0001 C CNN
-F 3 "" H 1000 5800 50  0001 C CNN
-	1    1000 5800
-	1    0    0    -1  
-$EndComp
-$Comp
-L GNDA #PWR?
-U 1 1 5A2622A4
-P 1500 7250
-F 0 "#PWR?" H 1500 7000 50  0001 C CNN
-F 1 "GNDA" H 1505 7077 50  0000 C CNN
-F 2 "" H 1500 7250 50  0001 C CNN
-F 3 "" H 1500 7250 50  0001 C CNN
-	1    1500 7250
-	1    0    0    -1  
-$EndComp
-$Comp
-L 74HC595 U?
-U 1 1 5A2622AA
-P 1500 6400
-F 0 "U?" H 1500 7278 50  0000 C CNN
-F 1 "74HC595" H 1500 7187 50  0000 C CNN
-F 2 "" H 1500 6400 50  0001 C CNN
-F 3 "http://www.nxp.com/documents/data_sheet/74HC_HCT595.pdf" H 1500 6400 50  0001 C CNN
-	1    1500 6400
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	1450 5700 1500 5700
-Wire Wire Line
-	1450 5700 1450 5800
-Wire Wire Line
-	700  6600 1000 6600
-Wire Wire Line
-	750  6300 1000 6300
-Wire Wire Line
-	1000 6200 800  6200
-Wire Wire Line
-	850  6500 1000 6500
-Wire Wire Line
-	900  6000 1000 6000
-Wire Wire Line
-	1500 7200 1500 7250
-Wire Wire Line
-	1000 5800 1100 5800
-Wire Wire Line
-	1450 5800 1400 5800
+Text Notes 1200 750  0    60   ~ 0
+TODO how to deal with jumper settings in simulator?
+Text Notes 1000 1000 0    60   ~ 0
+TODO can i assert two nets are NOT connected in ERC?\n(GNDA / GND, etc)
+$Sheet
+S 700  3650 1600 2750
+U 5A26B22E
+F0 "digital_input_isolation" 60
+F1 "digital_input_isolation.sch" 60
+F2 "optional_enable_fet_registers" I L 700 6200 60 
+F3 "optional_enable_demux_register" I L 700 6300 60 
+F4 "left_1" I R 2300 3750 60 
+F5 "left_2" I R 2300 3850 60 
+F6 "left_3" I R 2300 3950 60 
+F7 "left_4" I R 2300 4050 60 
+F8 "left_5" I R 2300 4150 60 
+F9 "left_6" I R 2300 4250 60 
+F10 "left_7" I R 2300 4350 60 
+F11 "left_8" I R 2300 4450 60 
+F12 "right_1" I R 2300 4600 60 
+F13 "right_2" I R 2300 4700 60 
+F14 "right_3" I R 2300 4800 60 
+F15 "right_4" I R 2300 4900 60 
+F16 "right_5" I R 2300 5000 60 
+F17 "right_6" I R 2300 5100 60 
+F18 "right_7" I R 2300 5200 60 
+F19 "right_8" I R 2300 5300 60 
+F20 "demux_select_A" I R 2300 5550 60 
+F21 "demux_select_B" I R 2300 5650 60 
+F22 "chan_select_A" I R 2300 5750 60 
+F23 "chan_select_B" I R 2300 5850 60 
+F24 "optional_demux_enable" I R 2300 5950 60 
+F25 "fet_reg_SER" I L 700 3750 60 
+F26 "fet_reg_SRCLK" I L 700 3850 60 
+F27 "fet_reg_SRCLR" I L 700 3950 60 
+F28 "fet_reg_RCLK" I L 700 4050 60 
+F29 "demux_reg_SER" I L 700 4850 60 
+F30 "demux_reg_SRCLK" I L 700 4950 60 
+F31 "demux_reg_SRCLR" I L 700 5050 60 
+F32 "demux_reg_RCLK" I L 700 5150 60 
+$EndSheet
 $EndSCHEMATC

@@ -27,6 +27,10 @@ min_operation_voltage = 20
 max_fractional_voltage_change = 0.05
 
 
+###############################################################################
+# Overvoltage protection
+###############################################################################
+
 # TODO still reasonable at lower operating voltages? probably?
 max_safe_voltage = 200
 zener_drop = 5.1 # V
@@ -53,6 +57,41 @@ print 'using a Zener with Vz={} and capable of dissipating {}W of power'.format(
 print 'maximum overvoltage current of {}A'.format(max_fault_current)
 print 'minimum limit resistance of {:,} ohms'.format(min_limit_resistor)
 print 'this resistor will dissipate {}W of power\n'.format(limit_resistor_power)
+
+
+###############################################################################
+# Digital optoisolators
+###############################################################################
+
+# TODO revisit. see notes in sheet w/ this part.
+'''
+logic_level = 5 # volts
+
+# parameters for TLP2531
+max_led_current = 0.025 # 25mA
+led_current_goal_over_max = 0.8
+
+led_limit_resistor = logic_level / (0.8 * max_led_current)
+
+# current-transfer-ratio (on [0,1])
+ctr_typ = 0.3
+# see https://www.vishay.com/docs/83741/83741.pdf
+extra_ctr_tolerance = 0.8 * 0.75
+# different from min CTR in datasheet (probably more optimistic, too)
+min_expected_ctr = ctr_typ * extra_ctr_tolerance
+
+# from SN74HC595 datasheet
+# actually specified at Vcc=4.5v, so real values are probably a little higher
+# for Vcc=5v (I adjusted a little)
+min_logic_high_voltage = 3.5
+max_logic_low_voltage = 1.5
+'''
+
+
+
+print 'resistor to limit optoisolator LED current: {:,} ohms\n'.format(\
+    led_limit_resistor)
+
 
 #charge_time_at_min_current = 
 # digikey lists some (slightly) different parameters for what they call
