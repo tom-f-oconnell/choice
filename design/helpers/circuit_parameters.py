@@ -3,6 +3,58 @@
 from __future__ import division
 import numpy as np
 
+###############################################################################
+# Assumptions
+###############################################################################
+# TODO measure
+# maybe w/ oscilloscope? i wasn't really getting readings fast enough w/ a DMM 
+# on 20M resistance range
+min_fly_resistance = 1e6
+# could try 1e7-1e9. previously suspected typical was ~29Mohm, which is 2.9e7
+max_fly_resistance = 1e9 # 1Gohm
+
+
+###############################################################################
+# Requirements
+###############################################################################
+max_operation_voltage = 120 # 100?
+typ_operation_voltage = 60
+# ?
+min_operation_voltage = 20
+
+# error relative to nominal value. x100 to get a percentage.
+#max_fractional_voltage_change = 0.01
+max_fractional_voltage_change = 0.05
+
+
+# TODO still reasonable at lower operating voltages? probably?
+max_safe_voltage = 200
+zener_drop = 5.1 # V
+# 1 W = 1 V * 1 A
+zener_power_dissipation = 0.5 # W (500mW)
+# it may get harder to find (small / cheap) resistors to dissipate
+# more power than this
+max_resistor_power = 1 # W
+limit_resistor_voltage = max_safe_voltage - zener_drop
+
+# TODO is this correct?
+max_fault_current = min(zener_power_dissipation / zener_drop, \
+    max_resistor_power / limit_resistor_voltage)
+
+# V = I*R, I=V/R
+min_limit_resistor = max_safe_voltage / max_fault_current
+
+# P = I*V
+limit_resistor_power = limit_resistor_voltage * max_fault_current
+
+print 'for protection against at most {:,}V'.format(max_safe_voltage)
+print 'using a Zener with Vz={} and capable of dissipating {}W of power'.format(\
+    zener_drop, zener_power_dissipation)
+print 'maximum overvoltage current of {}A'.format(max_fault_current)
+print 'minimum limit resistance of {:,} ohms'.format(min_limit_resistor)
+print 'this resistor will dissipate {}W of power\n'.format(limit_resistor_power)
+
+#charge_time_at_min_current = 
 # digikey lists some (slightly) different parameters for what they call
 # Digi-Key PN: CD4051B-DIE-ND, Mfg PN: CD4051B
 # and
@@ -16,7 +68,6 @@ import numpy as np
 # over the sense resistor, for calibration?
 # http://www.resistorguide.com/applications/shunt-resistor/
 # I'm thinking no, for now...
-
 
 # TODO should i add capacitors on the floor pcb to null inductance in the connector wires?
 # or would that not make sense because the driver is also off of the floor pcb?
@@ -34,22 +85,6 @@ v_per_level = (vmax_adc - vmin_adc) / adc_levels
 # TODO also take in to account errors reported in datasheet (should be in terms of LSB)
 # TODO and are those reported values w/ internal references? could be improved
 # w/ external reference?
-
-# TODO measure
-# maybe w/ oscilloscope? i wasn't really getting readings fast enough w/ a DMM 
-# on 20M resistance range
-min_fly_resistance = 1e6
-# could try 1e7-1e9. previously suspected typical was ~29Mohm, which is 2.9e7
-max_fly_resistance = 1e9 # 1Gohm
-#charge_time_at_min_current = 
-
-# TODO should i use the min resistance to calculate appropriate current limit?
-# or maybe use a current source and measure a current that is just barely not 
-# lethal to most flies?
-max_operation_voltage = 120 # 100?
-typ_operation_voltage = 60
-# ?
-min_operation_voltage = 20
 
 # TODO decide whether to shut off at this current, or maybe some multiple of it?
 
@@ -82,11 +117,31 @@ fet_zero_gate_voltage_drain_current = 2.5e-5 # 25 uA
 # the minimum resistance of the flies, but not the maximum, and i stand a chance
 # of detecting them (IF i have more ADC bits than i need...) 
 
+# solving:
+# (1 - (min_fly_resistance / (min_fly_resistance + fet_rds_on + shunt_resistance + \
+#    min_limit_resistor)) = max_fractional_voltage_change
+# for shunt_resistance
+
+# TODO way to round to nearest available / common (precision?) resistor value?
+# (in python?)
+shunt_resistance = (min_fly_resistance / (1 - max_fractional_voltage_change)) - \
+    min_fly_resistance - fet_rds_on - min_limit_resistor
 #shunt_resistance = 1.5e5  # (150K ohms)
+
+assert shunt_resistance > 0, \
+    'other resistances too large to meet max voltage drop requirement'
+
+# expressed as (max deviation within tolerance - nominal value) / (nominal value)
+shunt_resistor_precision = 0.01 # 1%
+
+
+# TODO should i use the min resistance to calculate appropriate current limit?
+# or maybe use a current source and measure a current that is just barely not 
+# lethal to most flies?
 
 # TODO check assumption that resistances connected to shunt through to ADC
 # are negligible b/c high amp input resitance
-other_series_resistance = shunt_resistance + fet_rds_on
+other_series_resistance = shunt_resistance + fet_rds_on + min_limit_resistor
 max_series_resistance = max_fly_resistance + other_series_resistance
 
 min_current = min_operation_voltage / max_series_resistance
@@ -102,8 +157,8 @@ print '\nassuming min fly resistance of {:,} ohms'.format(min_fly_resistance)
 print ('and with other series resistances totalling {:,} ' + \
     'ohms').format(other_series_resistance)
 print 'worst case change in fly voltage drop due to other resistances: ' + \
-    '{} %'.format(100 * min_fly_resistance / \
-    (min_fly_resistance + other_series_resistance))
+    '{} %'.format(100 * (1 - min_fly_resistance / \
+    (min_fly_resistance + other_series_resistance)))
 
 
 print '\nsmallest voltages generated that should be detectable:'
@@ -124,6 +179,8 @@ print '  @ {}V'.format(max_operation_voltage)
 print '  {:,}'.format(max_shunt_voltage)
 
 
+# shouldn't be relevant if zener overvoltage protection is working correctly
+'''
 # assumes that the shunt, FET (D->S), and fly are only important resistances
 # because that's what's in other_series_resistance
 shunt_fraction_in_short = shunt_resistance / other_series_resistance
@@ -141,6 +198,7 @@ print '    across shunt {:,}'.format(shunt_fraction_in_short * \
     max_operation_voltage)
 print '    across FET Rds(on) {:,}'.format(fet_fraction_in_short * \
     max_operation_voltage)
+'''
 
 
 def voltage_dynamic_range(max_detectable, min_detectable):
@@ -212,7 +270,7 @@ diode_leak_current = 0.001
 # is probably a bigger deal than Rds(on). compare to max338 / alternatives
 
 
-# CD4051B properties
+# CD4052B properties
 # taken from http://www.ti.com/lit/ds/symlink/cd4051b.pdf
 # see copy in design/pcb/datasheets
 # all properties taken from measurements w/ Vdd = 5v, where Vdd dependent

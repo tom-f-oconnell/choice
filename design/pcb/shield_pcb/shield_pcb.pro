@@ -1,4 +1,4 @@
-update=Mon 13 Nov 2017 05:56:54 PM PST
+update=Mon 20 Nov 2017 06:20:15 PM PST
 version=1
 last_client=kicad
 [pcbnew]
@@ -25,6 +25,16 @@ version=1
 NetIExt=net
 [general]
 version=1
+[schematic_editor]
+version=1
+PageLayoutDescrFile=
+PlotDirectoryName=
+SubpartIdSeparator=0
+SubpartFirstId=65
+NetFmtName=
+SpiceAjustPassiveValues=0
+LabSize=60
+ERC_TestSimilarLabels=1
 [eeschema]
 version=1
 LibDir=
@@ -45,3 +55,7 @@ LibName13=Logic_74xgxx
 LibName14=Logic_74xx
 LibName15=Logic_CMOS_4000
 LibName16=Logic_CMOS_IEEE
+LibName17=opto
+LibName18=Power_Management
+LibName19=modules
+LibName20=regul

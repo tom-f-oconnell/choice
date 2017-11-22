@@ -1,15 +1,57 @@
 EESchema-DOCLIB  Version 2.0
 #
+$CMP 74HC595
+D 8-bit serial in/out Shift Register 3-State Outputs
+K HCMOS SR 3State
+F http://www.nxp.com/documents/data_sheet/74HC_HCT595.pdf
+$ENDCMP
+#
+$CMP 74LS595
+D 8-bit serial in/out Shift Register 3-State Outputs
+K TTL SR 3State
+F http://www.ti.com/lit/gpn/sn74ls595
+$ENDCMP
+#
+$CMP 74LS596
+D 8-bit serial in/out Shift Register Open Collector outputs
+K HCMOS SR OpenCollector
+F http://www.ti.com/lit/gpn/sn74ls596
+$ENDCMP
+#
+$CMP ACPL-790x
+D Precision Isolation Amplifer, ±3% Gain Tolerance, Bandwidth 200kHz, SSO-8
+K Isolation Amplifer
+F http://docs.avagotech.com/docs/AV02-2460EN
+$ENDCMP
+#
 $CMP CD4052B
 D 20V, 125-470 Ron, 2P4T analog switch, DIP-16
 K analog, switch, multiplexer, demultiplexer
 F http://www.ti.com/lit/ds/symlink/cd4052b.pdf
 $ENDCMP
 #
+$CMP DCP020507P
+D Isolated, unregulated, 5v in 7v out 2W DC/DC converter, DIP-14/SOP-12
+K isolated unregulated dc converter 5v 7v
+F http://www.ti.com/lit/ds/symlink/dcp021212.pdf
+$ENDCMP
+#
 $CMP IRL620
 D 200V Vds, Low Rds(on), Logic level N-channel MOSFET, TO-220AB
 K N-Channel MOSFET
 F https://www.vishay.com/docs/91301/91301.pdf
+$ENDCMP
+#
+$CMP LT1118-5
+D 800mA Low-Dropout Linear Regulator, 5V fixed output, SOT-223/SO-8
+K linear regulator ldo fixed positive sink
+F http://cds.linear.com/docs/en/datasheet/1118fd.pdf
+$ENDCMP
+#
+$CMP TLP2531
+D Dual TTL Optoisolator, DIP-8
+K DC dual optocoupler optoisolator TTL logic
+F https://toshiba.semicon-storage.com/info/docget.jsp?did=16833&prodName=TLP2531
 $ENDCMP
 #
 #End Doc Library
