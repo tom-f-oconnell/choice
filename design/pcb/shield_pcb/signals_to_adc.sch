@@ -24,7 +24,7 @@ EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 18 24
+Sheet 2 24
 Title ""
 Date ""
 Rev ""
@@ -155,15 +155,15 @@ F 3 "" H 2350 1700 60  0001 C CNN
 	1    2350 1700
 	1    0    0    -1  
 $EndComp
-Text HLabel 1350 700  0    60   Input ~ 0
+Text HLabel 1350 600  0    60   Input ~ 0
 demux_select_A
-Text HLabel 1350 850  0    60   Input ~ 0
+Text HLabel 1350 750  0    60   Input ~ 0
 demux_select_B
-Text HLabel 1550 3000 0    60   Input ~ 0
+Text HLabel 1550 4950 0    60   Input ~ 0
 chan_select_A
-Text HLabel 1550 3150 0    60   Input ~ 0
+Text HLabel 1550 5100 0    60   Input ~ 0
 chan_select_B
-Text HLabel 1650 1300 0    60   Input ~ 0
+Text HLabel 1650 2000 0    60   Input ~ 0
 optional_demux_enable
 $Comp
 L AD623 U?
@@ -499,8 +499,6 @@ F 3 "" H 6000 3100 50  0001 C CNN
 	1    6000 3100
 	1    0    0    -1  
 $EndComp
-Text Notes 200  200  0    60   ~ 0
-TODO make input to this 4556 optoisolated\nfix hidden pin (gnd / vss) / (5v / vcc / vdd) connections if necessary
 $Comp
 L GNDA #PWR?
 U 1 1 5A125B42
@@ -526,12 +524,12 @@ $EndComp
 $Comp
 L GNDA #PWR?
 U 1 1 5A1265F6
-P 900 2100
-F 0 "#PWR?" H 900 1850 50  0001 C CNN
-F 1 "GNDA" H 905 1927 50  0000 C CNN
-F 2 "" H 900 2100 50  0001 C CNN
-F 3 "" H 900 2100 50  0001 C CNN
-	1    900  2100
+P 1400 3300
+F 0 "#PWR?" H 1400 3050 50  0001 C CNN
+F 1 "GNDA" H 1405 3127 50  0000 C CNN
+F 2 "" H 1400 3300 50  0001 C CNN
+F 3 "" H 1400 3300 50  0001 C CNN
+	1    1400 3300
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -742,12 +740,10 @@ Wire Wire Line
 	5350 5400 5350 4900
 Wire Wire Line
 	2800 5400 5350 5400
-Connection ~ 2850 3150
 Wire Wire Line
 	5250 3700 5250 3350
 Wire Wire Line
 	2850 3700 5250 3700
-Connection ~ 2800 3000
 Wire Wire Line
 	5350 3250 5250 3250
 Wire Wire Line
@@ -763,7 +759,7 @@ Wire Wire Line
 Wire Wire Line
 	2850 700  2850 6950
 Wire Wire Line
-	1550 3150 2850 3150
+	1550 5100 2850 5100
 Wire Wire Line
 	5300 1850 5250 1850
 Wire Wire Line
@@ -773,7 +769,7 @@ Wire Wire Line
 Wire Wire Line
 	2800 750  2800 7050
 Wire Wire Line
-	1550 3000 2800 3000
+	1550 4950 2800 4950
 Wire Wire Line
 	4450 6200 4550 6200
 Wire Wire Line
@@ -813,25 +809,11 @@ Wire Wire Line
 Wire Wire Line
 	4550 1750 4300 1750
 Wire Wire Line
-	1800 700  1350 700 
+	1800 600  1800 1550
 Wire Wire Line
-	1800 1550 1800 700 
+	1750 750  1750 1650
 Wire Wire Line
-	1750 850  1350 850 
-Wire Wire Line
-	1750 1650 1750 850 
-Wire Wire Line
-	1800 1650 1750 1650
-Wire Wire Line
-	1700 1300 1650 1300
-Wire Wire Line
-	1700 1400 1700 1300
-Wire Wire Line
-	1250 1400 1700 1400
-Wire Wire Line
-	1250 1600 1250 1400
-Wire Wire Line
-	1200 1850 1800 1850
+	1750 1650 1800 1650
 Wire Wire Line
 	4250 5150 5600 5150
 Wire Wire Line
@@ -1376,20 +1358,14 @@ Connection ~ 10900 4550
 $Comp
 L GS3 J?
 U 1 1 5A12D8B7
-P 1050 1850
-F 0 "J?" H 1050 2155 50  0000 C CNN
-F 1 "GS3" H 1050 2064 50  0000 C CNN
-F 2 "Connectors:GS3" V 1138 1776 50  0001 C CNN
-F 3 "" H 1050 1850 50  0001 C CNN
-	1    1050 1850
+P 1600 2850
+F 0 "J?" H 1600 3155 50  0000 C CNN
+F 1 "GS3" H 1600 3064 50  0000 C CNN
+F 2 "Connectors:GS3" V 1688 2776 50  0001 C CNN
+F 3 "" H 1600 2850 50  0001 C CNN
+	1    1600 2850
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	900  1750 900  1600
-Wire Wire Line
-	900  1600 1250 1600
-Wire Wire Line
-	900  1950 900  2100
 $Comp
 L Jumper_NC_Small JP?
 U 1 1 5A12E5AB
@@ -1405,6 +1381,180 @@ Wire Wire Line
 	8750 3450 8750 3550
 Wire Wire Line
 	8750 3750 8750 4100
-Text Notes 7000 1100 0    60   ~ 0
-TODO put pull(up/down)s on all important pins\n(definitely the 4556 and 4052, maybe others)
+$Comp
+L R R?
+U 1 1 5A20AD35
+P 1400 2600
+F 0 "R?" H 1330 2554 50  0000 R CNN
+F 1 "4.7K" H 1330 2645 50  0000 R CNN
+F 2 "" V 1330 2600 50  0001 C CNN
+F 3 "" H 1400 2600 50  0001 C CNN
+	1    1400 2600
+	1    0    0    -1  
+$EndComp
+$Comp
+L R R?
+U 1 1 5A20B57D
+P 1400 3100
+F 0 "R?" H 1330 3054 50  0000 R CNN
+F 1 "4.7K" H 1330 3145 50  0000 R CNN
+F 2 "" V 1330 3100 50  0001 C CNN
+F 3 "" H 1400 3100 50  0001 C CNN
+	1    1400 3100
+	1    0    0    -1  
+$EndComp
+$Comp
+L +5VA #PWR?
+U 1 1 5A20B715
+P 1400 2400
+F 0 "#PWR?" H 1400 2250 50  0001 C CNN
+F 1 "+5VA" H 1415 2573 50  0000 C CNN
+F 2 "" H 1400 2400 50  0001 C CNN
+F 3 "" H 1400 2400 50  0001 C CNN
+	1    1400 2400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1100 2750 1450 2750
+Wire Wire Line
+	1400 2450 1400 2400
+Wire Wire Line
+	1400 2950 1450 2950
+Wire Wire Line
+	1400 3300 1400 3250
+Wire Wire Line
+	1100 2750 1100 2100
+Wire Wire Line
+	1100 2100 1650 2100
+Wire Wire Line
+	1650 2100 1650 2000
+Connection ~ 1400 2750
+$Comp
+L GNDA #PWR?
+U 1 1 5A20C7FE
+P 1950 5550
+F 0 "#PWR?" H 1950 5300 50  0001 C CNN
+F 1 "GNDA" H 1955 5377 50  0000 C CNN
+F 2 "" H 1950 5550 50  0001 C CNN
+F 3 "" H 1950 5550 50  0001 C CNN
+	1    1950 5550
+	1    0    0    -1  
+$EndComp
+$Comp
+L R R?
+U 1 1 5A20C804
+P 1950 5350
+F 0 "R?" H 1880 5304 50  0000 R CNN
+F 1 "4.7K" H 1880 5395 50  0000 R CNN
+F 2 "" V 1880 5350 50  0001 C CNN
+F 3 "" H 1950 5350 50  0001 C CNN
+	1    1950 5350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1950 5550 1950 5500
+$Comp
+L GNDA #PWR?
+U 1 1 5A20C88A
+P 2400 5550
+F 0 "#PWR?" H 2400 5300 50  0001 C CNN
+F 1 "GNDA" H 2405 5377 50  0000 C CNN
+F 2 "" H 2400 5550 50  0001 C CNN
+F 3 "" H 2400 5550 50  0001 C CNN
+	1    2400 5550
+	1    0    0    -1  
+$EndComp
+$Comp
+L R R?
+U 1 1 5A20C890
+P 2400 5350
+F 0 "R?" H 2330 5304 50  0000 R CNN
+F 1 "4.7K" H 2330 5395 50  0000 R CNN
+F 2 "" V 2330 5350 50  0001 C CNN
+F 3 "" H 2400 5350 50  0001 C CNN
+	1    2400 5350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2400 5550 2400 5500
+Wire Wire Line
+	1950 5200 1950 5100
+Connection ~ 1950 5100
+Wire Wire Line
+	2400 5200 2400 4950
+Connection ~ 2400 4950
+Wire Wire Line
+	1350 600  1800 600 
+Wire Wire Line
+	1350 750  1750 750 
+Connection ~ 2800 4950
+Connection ~ 2850 5100
+$Comp
+L GNDA #PWR?
+U 1 1 5A20E3D9
+P 1250 1350
+F 0 "#PWR?" H 1250 1100 50  0001 C CNN
+F 1 "GNDA" H 1255 1177 50  0000 C CNN
+F 2 "" H 1250 1350 50  0001 C CNN
+F 3 "" H 1250 1350 50  0001 C CNN
+	1    1250 1350
+	1    0    0    -1  
+$EndComp
+$Comp
+L R R?
+U 1 1 5A20E3DF
+P 1250 1150
+F 0 "R?" H 1180 1104 50  0000 R CNN
+F 1 "4.7K" H 1180 1195 50  0000 R CNN
+F 2 "" V 1180 1150 50  0001 C CNN
+F 3 "" H 1250 1150 50  0001 C CNN
+	1    1250 1150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1250 1350 1250 1300
+Wire Wire Line
+	1250 1000 1250 950 
+$Comp
+L GNDA #PWR?
+U 1 1 5A20E574
+P 1600 1350
+F 0 "#PWR?" H 1600 1100 50  0001 C CNN
+F 1 "GNDA" H 1605 1177 50  0000 C CNN
+F 2 "" H 1600 1350 50  0001 C CNN
+F 3 "" H 1600 1350 50  0001 C CNN
+	1    1600 1350
+	1    0    0    -1  
+$EndComp
+$Comp
+L R R?
+U 1 1 5A20E57A
+P 1600 1150
+F 0 "R?" H 1530 1104 50  0000 R CNN
+F 1 "4.7K" H 1530 1195 50  0000 R CNN
+F 2 "" V 1530 1150 50  0001 C CNN
+F 3 "" H 1600 1150 50  0001 C CNN
+	1    1600 1150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1600 1350 1600 1300
+Wire Wire Line
+	1600 600  1600 1000
+Wire Wire Line
+	1250 950  1450 950 
+Wire Wire Line
+	1450 950  1450 750 
+Connection ~ 1450 750 
+Connection ~ 1600 600 
+Wire Wire Line
+	1750 2850 1750 1850
+Wire Wire Line
+	1750 1850 1800 1850
+Text Notes 1000 7450 0    60   ~ 0
+TODO may consider getting rid of all but EN pull(up/downs)\nor increasing their values?
+Text Notes 6850 850  0    60   ~ 0
+TODO renumber so that it goes 1L+,1L-, 1R+, 1R-, 2L+, ... ??\nmight want to determine numbering scheme so that would\nmake shifting in the values the simplest
+Text Notes 6850 1200 0    60   ~ 0
+TODO add 7 NC, 7 NO jumpers on CD4556, so that\nif one of two units fails, the other can be used
 $EndSCHEMATC

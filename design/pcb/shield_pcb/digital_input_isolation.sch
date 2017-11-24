@@ -24,7 +24,7 @@ EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 19 24
+Sheet 3 24
 Title ""
 Date ""
 Rev ""
@@ -168,41 +168,8 @@ F 3 "http://www.nxp.com/documents/data_sheet/74HC_HCT595.pdf" H 6850 5900 50  00
 $EndComp
 Text Notes 11900 700  0    60   ~ 0
 TODO make constant delay for shifting in software?\n(to get rid of any possible bias)\n\nor just do it asap, given negligible difference between \ntwo from animal's perspective?
-$Comp
-L R R?
-U 1 1 5A26DC94
-P 5700 2850
-F 0 "R?" H 5770 2896 50  0000 L CNN
-F 1 "4.7K" H 5770 2805 50  0000 L CNN
-F 2 "" V 5630 2850 50  0001 C CNN
-F 3 "" H 5700 2850 50  0001 C CNN
-	1    5700 2850
-	1    0    0    -1  
-$EndComp
-$Comp
-L GNDA #PWR?
-U 1 1 5A26DD81
-P 5700 3050
-F 0 "#PWR?" H 5700 2800 50  0001 C CNN
-F 1 "GNDA" H 5705 2877 50  0000 C CNN
-F 2 "" H 5700 3050 50  0001 C CNN
-F 3 "" H 5700 3050 50  0001 C CNN
-	1    5700 3050
-	1    0    0    -1  
-$EndComp
 Text HLabel 2050 3650 0    60   Input ~ 0
 optional_enable_fet_registers
-$Comp
-L GS2 J?
-U 1 1 5A2706B0
-P 5400 2650
-F 0 "J?" V 5195 2650 50  0000 C CNN
-F 1 "GS2" V 5286 2650 50  0000 C CNN
-F 2 "Connectors:GS2" V 5474 2650 50  0001 C CNN
-F 3 "" H 5400 2650 50  0001 C CNN
-	1    5400 2650
-	0    1    1    0   
-$EndComp
 $Comp
 L R R?
 U 1 1 5A270945
@@ -250,38 +217,27 @@ $EndComp
 $Comp
 L R R?
 U 1 1 5A2711F9
-P 5950 6300
-F 0 "R?" H 6020 6346 50  0000 L CNN
-F 1 "4.7K" H 6020 6255 50  0000 L CNN
-F 2 "" V 5880 6300 50  0001 C CNN
-F 3 "" H 5950 6300 50  0001 C CNN
-	1    5950 6300
+P 5850 7000
+F 0 "R?" H 5920 7046 50  0000 L CNN
+F 1 "4.7K" H 5920 6955 50  0000 L CNN
+F 2 "" V 5780 7000 50  0001 C CNN
+F 3 "" H 5850 7000 50  0001 C CNN
+	1    5850 7000
 	1    0    0    -1  
 $EndComp
 $Comp
 L GNDA #PWR?
 U 1 1 5A2711FF
-P 5950 6500
-F 0 "#PWR?" H 5950 6250 50  0001 C CNN
-F 1 "GNDA" H 5955 6327 50  0000 C CNN
-F 2 "" H 5950 6500 50  0001 C CNN
-F 3 "" H 5950 6500 50  0001 C CNN
-	1    5950 6500
+P 5850 7200
+F 0 "#PWR?" H 5850 6950 50  0001 C CNN
+F 1 "GNDA" H 5855 7027 50  0000 C CNN
+F 2 "" H 5850 7200 50  0001 C CNN
+F 3 "" H 5850 7200 50  0001 C CNN
+	1    5850 7200
 	1    0    0    -1  
 $EndComp
 Text HLabel 2050 3850 0    60   Input ~ 0
 optional_enable_demux_register
-$Comp
-L GS2 J?
-U 1 1 5A271207
-P 5250 6100
-F 0 "J?" V 5045 6100 50  0000 C CNN
-F 1 "GS2" V 5136 6100 50  0000 C CNN
-F 2 "Connectors:GS2" V 5324 6100 50  0001 C CNN
-F 3 "" H 5250 6100 50  0001 C CNN
-	1    5250 6100
-	0    1    1    0   
-$EndComp
 NoConn ~ 7350 6400
 Text Notes 11900 5800 0    60   ~ 0
 TODO add text to board to clarify which\ncombinations of jumper settings, selecting\nwhether all 3 SRs are daisy chained, are valid\n\nis there a standard way to physically only allow\nall of one or all of the other (independent) jumper\nsettings?\n\nmaybe literally install a switch? are there switches\nfor one-time configuration that are hard to change?
@@ -453,14 +409,6 @@ Wire Wire Line
 Wire Wire Line
 	6100 3350 6100 1350
 Wire Wire Line
-	5600 2650 6000 2650
-Connection ~ 6000 2650
-Wire Wire Line
-	5700 3000 5700 3050
-Wire Wire Line
-	5700 2700 5700 2650
-Connection ~ 5700 2650
-Wire Wire Line
 	5550 2200 5650 2200
 Wire Wire Line
 	5950 2200 6050 2200
@@ -468,14 +416,9 @@ Connection ~ 6050 2200
 Wire Wire Line
 	5550 5800 5650 5800
 Wire Wire Line
-	5950 6450 5950 6500
-Wire Wire Line
-	5950 6150 5950 6100
-Connection ~ 5950 6100
+	5850 7150 5850 7200
 Wire Wire Line
 	5950 5800 6350 5800
-Wire Wire Line
-	5450 6100 6350 6100
 Wire Wire Line
 	5850 5200 5850 4650
 Wire Wire Line
@@ -656,17 +599,15 @@ Wire Wire Line
 	4800 2250 4800 1650
 Connection ~ 6150 1650
 Wire Wire Line
-	2850 3650 4000 3650
+	4000 3650 2850 3650
 Wire Wire Line
-	4000 3650 4000 2650
-Wire Wire Line
-	4000 2650 5200 2650
+	4000 2550 4000 3650
 Wire Wire Line
 	2850 3850 4000 3850
 Wire Wire Line
 	4000 3850 4000 6100
 Wire Wire Line
-	4000 6100 5050 6100
+	4000 6100 5700 6100
 Wire Wire Line
 	2550 4750 5650 4750
 Wire Wire Line
@@ -691,4 +632,117 @@ Wire Wire Line
 	3900 5050 4150 5050
 Wire Wire Line
 	4150 5050 4150 5200
+$Comp
+L GS3 J?
+U 1 1 5A20057E
+P 6200 6750
+F 0 "J?" H 6200 7055 50  0000 C CNN
+F 1 "GS3" H 6200 6964 50  0000 C CNN
+F 2 "Connectors:GS3" V 6288 6676 50  0001 C CNN
+F 3 "" H 6200 6750 50  0001 C CNN
+	1    6200 6750
+	1    0    0    -1  
+$EndComp
+$Comp
+L R R?
+U 1 1 5A2020FA
+P 5850 6500
+F 0 "R?" H 5920 6546 50  0000 L CNN
+F 1 "4.7K" H 5920 6455 50  0000 L CNN
+F 2 "" V 5780 6500 50  0001 C CNN
+F 3 "" H 5850 6500 50  0001 C CNN
+	1    5850 6500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5700 6650 6050 6650
+Wire Wire Line
+	6350 6100 6350 6750
+$Comp
+L +5VA #PWR?
+U 1 1 5A2026B5
+P 5850 6300
+F 0 "#PWR?" H 5850 6150 50  0001 C CNN
+F 1 "+5VA" H 5865 6473 50  0000 C CNN
+F 2 "" H 5850 6300 50  0001 C CNN
+F 3 "" H 5850 6300 50  0001 C CNN
+	1    5850 6300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5850 6300 5850 6350
+Wire Wire Line
+	5850 6850 6050 6850
+Wire Wire Line
+	5700 6100 5700 6650
+Connection ~ 5850 6650
+$Comp
+L R R?
+U 1 1 5A205B2E
+P 5050 2900
+F 0 "R?" H 5120 2946 50  0000 L CNN
+F 1 "4.7K" H 5120 2855 50  0000 L CNN
+F 2 "" V 4980 2900 50  0001 C CNN
+F 3 "" H 5050 2900 50  0001 C CNN
+	1    5050 2900
+	1    0    0    -1  
+$EndComp
+$Comp
+L GNDA #PWR?
+U 1 1 5A205B34
+P 5050 3100
+F 0 "#PWR?" H 5050 2850 50  0001 C CNN
+F 1 "GNDA" H 5055 2927 50  0000 C CNN
+F 2 "" H 5050 3100 50  0001 C CNN
+F 3 "" H 5050 3100 50  0001 C CNN
+	1    5050 3100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5050 3050 5050 3100
+$Comp
+L GS3 J?
+U 1 1 5A205B3C
+P 5400 2650
+F 0 "J?" H 5400 2955 50  0000 C CNN
+F 1 "GS3" H 5400 2864 50  0000 C CNN
+F 2 "Connectors:GS3" V 5488 2576 50  0001 C CNN
+F 3 "" H 5400 2650 50  0001 C CNN
+	1    5400 2650
+	1    0    0    -1  
+$EndComp
+$Comp
+L R R?
+U 1 1 5A205B42
+P 5050 2400
+F 0 "R?" H 5120 2446 50  0000 L CNN
+F 1 "4.7K" H 5120 2355 50  0000 L CNN
+F 2 "" V 4980 2400 50  0001 C CNN
+F 3 "" H 5050 2400 50  0001 C CNN
+	1    5050 2400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4000 2550 5250 2550
+$Comp
+L +5VA #PWR?
+U 1 1 5A205B49
+P 5050 2200
+F 0 "#PWR?" H 5050 2050 50  0001 C CNN
+F 1 "+5VA" H 5065 2373 50  0000 C CNN
+F 2 "" H 5050 2200 50  0001 C CNN
+F 3 "" H 5050 2200 50  0001 C CNN
+	1    5050 2200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5050 2750 5250 2750
+Connection ~ 5050 2550
+Wire Wire Line
+	5050 2250 5050 2200
+Wire Wire Line
+	5550 2650 6000 2650
+Connection ~ 6000 2650
+Text Notes 7150 5200 0    60   ~ 0
+TODO maybe replace these four jumpers w/ a chip\nto route the four signals from either source, depending\non the value of one solder jumper?
 $EndSCHEMATC
