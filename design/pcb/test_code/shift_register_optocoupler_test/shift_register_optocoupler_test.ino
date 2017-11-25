@@ -17,6 +17,9 @@
 // our isolation implementation inverts the logic
 #define BYPASS_ISOLATION false
 
+#define SIGA 44
+#define SIGB 45
+
 int val = 0;
 
 void clear_reg() {
@@ -95,7 +98,7 @@ void select_input_channel(boolean left_side, unsigned char c) {
   // "channels" are numbered from 1 to 8, so odd numbers come first
   // B (on CD4052B): 0 -> 0/1 (odd channels), 1 -> 2/3 (even channels)
   // TODO check this
-  shift_in(c % 2);
+  shift_in(1 - c % 2);
   
   // A (on CD4052B): 0 -> lower numbered choice given B (LEFT by my def), 1 -> higher (RIGHT)
   if (left_side) {
@@ -128,6 +131,14 @@ void setup() {
   pinMode(ONE_R, OUTPUT);
 
   pinMode(A0, INPUT);
+
+  // two different PWM signals for verifying on oscilloscope
+  // which channels of the analog switch are selected (assuming chip is working)
+  // TODO can any arbitrary combination of pins be manipulated independently w/ PWM?
+  pinMode(SIGA, OUTPUT);
+  pinMode(SIGB, OUTPUT);
+  analogWrite(SIGA, 240);
+  analogWrite(SIGB, 125);
 
   clear_reg();
   Serial.println("done");
