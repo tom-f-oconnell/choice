@@ -4,10 +4,10 @@
 #define SRCLR 5
 #define RCLK  6
 #define ENBL  7
-#define WAIT_MS 1
+#define WAIT_MS 0
 #define SHIFT_PERIOD_MS 500
 #define DEMUX_WAIT_MS 5000
-#define PRE_SAMPLE_WAIT_MS 1
+//#define PRE_SAMPLE_WAIT_MS 1
 
 #define ONE_L 2
 #define ONE_R 8
@@ -26,21 +26,21 @@ void clear_reg() {
   if (BYPASS_ISOLATION) {
     digitalWrite(SRCLR, LOW);
     digitalWrite(RCLK, LOW);
-    delay(WAIT_MS);
+    //delay(WAIT_MS);
     digitalWrite(RCLK, HIGH);
-    delay(WAIT_MS);
+    //delay(WAIT_MS);
     digitalWrite(RCLK, LOW);
     digitalWrite(SRCLR, HIGH);
-    delay(WAIT_MS);
+    //delay(WAIT_MS);
   } else {
     digitalWrite(SRCLR, HIGH);
     digitalWrite(RCLK, HIGH);
-    delay(WAIT_MS);
+    //delay(WAIT_MS);
     digitalWrite(RCLK, LOW);
-    delay(WAIT_MS);
+    //delay(WAIT_MS);
     digitalWrite(RCLK, HIGH);
     digitalWrite(SRCLR, LOW);
-    delay(WAIT_MS);
+    //delay(WAIT_MS);
   }
 }
 
@@ -52,34 +52,34 @@ void shift_in(unsigned char value) {
   } else {
     digitalWrite(SRCLK, HIGH);
   }
-  delay(WAIT_MS);
+  //delay(WAIT_MS);
   
   if (BYPASS_ISOLATION) {
     digitalWrite(SER, value);
   } else {
     digitalWrite(SER, 1 - value);
   }
-  delay(WAIT_MS);
+  //delay(WAIT_MS);
   
   if (BYPASS_ISOLATION) {
     digitalWrite(SRCLK, HIGH);
   } else {
     digitalWrite(SRCLK, LOW);
   }
-  delay(WAIT_MS);
+  //delay(WAIT_MS);
 }
 
 void update_output() {
   if (BYPASS_ISOLATION) {
     digitalWrite(RCLK, LOW);
-    delay(WAIT_MS);
+    //delay(WAIT_MS);
     digitalWrite(RCLK, HIGH);
-    delay(WAIT_MS);
+    //delay(WAIT_MS);
   } else {
     digitalWrite(RCLK, HIGH);
-    delay(WAIT_MS);
+    //delay(WAIT_MS);
     digitalWrite(RCLK, LOW);
-    delay(WAIT_MS);
+    //delay(WAIT_MS);
   }
 }
 
@@ -117,6 +117,15 @@ void select_input_channel(boolean left_side, unsigned char c) {
   update_output();
 }
 
+void report_reading() {
+  //delay(PRE_SAMPLE_WAIT_MS);
+  // TODO maybe take multiple readings
+  val = analogRead(A0);
+  Serial.print("got reading ");
+  Serial.print(val);
+  Serial.println(" on A0\n");
+}
+
 void setup() {
   Serial.begin(9600);
   Serial.print("initializing... ");
@@ -137,51 +146,52 @@ void setup() {
   // TODO can any arbitrary combination of pins be manipulated independently w/ PWM?
   pinMode(SIGA, OUTPUT);
   pinMode(SIGB, OUTPUT);
-  analogWrite(SIGA, 240);
-  analogWrite(SIGB, 125);
+  //analogWrite(SIGA, 125);
+  //analogWrite(SIGB, 125);
+  digitalWrite(SIGA, LOW);
+  digitalWrite(SIGB, HIGH);
 
   clear_reg();
   Serial.println("done");
 }
 
-void report_reading() {
-  delay(PRE_SAMPLE_WAIT_MS);
-  // TODO maybe take multiple readings
-  val = analogRead(A0);
-  Serial.print("got reading ");
-  Serial.print(val);
-  Serial.println(" on A0\n");
-}
-
 void loop() {
-  Serial.println("selecting input channel 1L");
-  Serial.println("turning on high voltage path for 1L");
+  //Serial.println("selecting input channel 1L");
+  //Serial.println("turning on high voltage path for 1L");
   select_input_channel(true, 1);
+  delay(10);
+  /*
   digitalWrite(ONE_L, HIGH);
   digitalWrite(ONE_R, LOW);
-  report_reading();
+  //report_reading();
   delay(DEMUX_WAIT_MS);
+  */
 
-  Serial.println("selecting input channel 1R");
-  Serial.println("turning on high voltage path for 1R");
+  //Serial.println("selecting input channel 1R");
+  //Serial.println("turning on high voltage path for 1R");
   select_input_channel(false, 1);
+  delay(10);
+  /*
   digitalWrite(ONE_L, LOW);
   digitalWrite(ONE_R, HIGH);
-  report_reading();
+  //report_reading();
   delay(DEMUX_WAIT_MS);
+  */
 
-  Serial.println("selecting input channel 1L");
-  Serial.println("turning off high voltage paths to 1L and 1R");
-  select_input_channel(true, 1);
+  //Serial.println("selecting input channel 1L");
+  //Serial.println("turning off high voltage paths to 1L and 1R");
+  //select_input_channel(true, 1);
+  /*
   digitalWrite(ONE_L, LOW);
   digitalWrite(ONE_R, LOW);
-  report_reading();
+  //report_reading();
   delay(DEMUX_WAIT_MS);
+  */
 
-  Serial.println("selecting input channel 1R");
-  select_input_channel(false, 1);
-  report_reading();
-  delay(DEMUX_WAIT_MS);
+  //Serial.println("selecting input channel 1R");
+  //select_input_channel(false, 1);
+  //report_reading();
+  //delay(DEMUX_WAIT_MS);
 
   // TODO also test setting one pin high and reading other / 
   // addressing other channels / chips

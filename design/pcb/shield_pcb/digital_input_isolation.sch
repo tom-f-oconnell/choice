@@ -35,21 +35,21 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L C C?
+L C C21
 U 1 1 5A26C465
 P 6550 2900
-F 0 "C?" V 6298 2900 50  0000 C CNN
+F 0 "C21" V 6298 2900 50  0000 C CNN
 F 1 "0.1uF" V 6389 2900 50  0000 C CNN
-F 2 "" H 6588 2750 50  0001 C CNN
+F 2 "Capacitors_THT:CP_Radial_D4.0mm_P2.00mm" H 6588 2750 50  0001 C CNN
 F 3 "" H 6550 2900 50  0001 C CNN
 	1    6550 2900
 	0    1    1    0   
 $EndComp
 $Comp
-L +5VA #PWR?
+L +5VA #PWR059
 U 1 1 5A26C46C
 P 6300 2900
-F 0 "#PWR?" H 6300 2750 50  0001 C CNN
+F 0 "#PWR059" H 6300 2750 50  0001 C CNN
 F 1 "+5VA" H 6315 3073 50  0000 C CNN
 F 2 "" H 6300 2900 50  0001 C CNN
 F 3 "" H 6300 2900 50  0001 C CNN
@@ -57,10 +57,10 @@ F 3 "" H 6300 2900 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR?
+L GNDA #PWR062
 U 1 1 5A26C472
 P 6850 4400
-F 0 "#PWR?" H 6850 4150 50  0001 C CNN
+F 0 "#PWR062" H 6850 4150 50  0001 C CNN
 F 1 "GNDA" H 6855 4227 50  0000 C CNN
 F 2 "" H 6850 4400 50  0001 C CNN
 F 3 "" H 6850 4400 50  0001 C CNN
@@ -68,10 +68,10 @@ F 3 "" H 6850 4400 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR?
+L GNDA #PWR061
 U 1 1 5A26C478
 P 6850 2400
-F 0 "#PWR?" H 6850 2150 50  0001 C CNN
+F 0 "#PWR061" H 6850 2150 50  0001 C CNN
 F 1 "GNDA" H 6855 2227 50  0000 C CNN
 F 2 "" H 6850 2400 50  0001 C CNN
 F 3 "" H 6850 2400 50  0001 C CNN
@@ -79,21 +79,21 @@ F 3 "" H 6850 2400 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L 74HC595 U?
+L 74HC595 U10
 U 1 1 5A26C485
 P 6850 3550
-F 0 "U?" H 6850 4428 50  0000 C CNN
+F 0 "U10" H 6850 4428 50  0000 C CNN
 F 1 "74HC595" H 6850 4337 50  0000 C CNN
-F 2 "" H 6850 3550 50  0001 C CNN
-F 3 "http://www.nxp.com/documents/data_sheet/74HC_HCT595.pdf" H 6850 3550 50  0001 C CNN
+F 2 "Housings_DIP:DIP-16_W7.62mm_Socket" H 6850 3550 50  0001 C CNN
+F 3 "" H 6850 3550 50  0001 C CNN
 	1    6850 3550
 	1    0    0    -1  
 $EndComp
 $Comp
-L +5VA #PWR?
+L +5VA #PWR058
 U 1 1 5A26C4A3
 P 6300 900
-F 0 "#PWR?" H 6300 750 50  0001 C CNN
+F 0 "#PWR058" H 6300 750 50  0001 C CNN
 F 1 "+5VA" H 6315 1073 50  0000 C CNN
 F 2 "" H 6300 900 50  0001 C CNN
 F 3 "" H 6300 900 50  0001 C CNN
@@ -101,43 +101,43 @@ F 3 "" H 6300 900 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C C?
+L C C20
 U 1 1 5A26C4A9
 P 6550 900
-F 0 "C?" V 6298 900 50  0000 C CNN
+F 0 "C20" V 6298 900 50  0000 C CNN
 F 1 "0.1uF" V 6389 900 50  0000 C CNN
-F 2 "" H 6588 750 50  0001 C CNN
+F 2 "Capacitors_THT:CP_Radial_D4.0mm_P2.00mm" H 6588 750 50  0001 C CNN
 F 3 "" H 6550 900 50  0001 C CNN
 	1    6550 900 
 	0    1    1    0   
 $EndComp
 $Comp
-L 74HC595 U?
+L 74HC595 U9
 U 1 1 5A26C48C
 P 6850 1550
-F 0 "U?" H 6850 2428 50  0000 C CNN
+F 0 "U9" H 6850 2428 50  0000 C CNN
 F 1 "74HC595" H 6850 2337 50  0000 C CNN
-F 2 "" H 6850 1550 50  0001 C CNN
-F 3 "http://www.nxp.com/documents/data_sheet/74HC_HCT595.pdf" H 6850 1550 50  0001 C CNN
+F 2 "Housings_DIP:DIP-16_W7.62mm_Socket" H 7070 794 50  0001 C CNN
+F 3 "" H 7268 712 50  0001 C CNN
 	1    6850 1550
 	1    0    0    -1  
 $EndComp
 $Comp
-L C C?
+L C C22
 U 1 1 5A26D5CC
 P 6550 5250
-F 0 "C?" V 6298 5250 50  0000 C CNN
+F 0 "C22" V 6298 5250 50  0000 C CNN
 F 1 "0.1uF" V 6389 5250 50  0000 C CNN
-F 2 "" H 6588 5100 50  0001 C CNN
+F 2 "Capacitors_THT:CP_Radial_D4.0mm_P2.00mm" H 6588 5100 50  0001 C CNN
 F 3 "" H 6550 5250 50  0001 C CNN
 	1    6550 5250
 	0    1    1    0   
 $EndComp
 $Comp
-L +5VA #PWR?
+L +5VA #PWR060
 U 1 1 5A26D5D2
 P 6300 5250
-F 0 "#PWR?" H 6300 5100 50  0001 C CNN
+F 0 "#PWR060" H 6300 5100 50  0001 C CNN
 F 1 "+5VA" H 6315 5423 50  0000 C CNN
 F 2 "" H 6300 5250 50  0001 C CNN
 F 3 "" H 6300 5250 50  0001 C CNN
@@ -145,10 +145,10 @@ F 3 "" H 6300 5250 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR?
+L GNDA #PWR063
 U 1 1 5A26D5D8
 P 6850 6750
-F 0 "#PWR?" H 6850 6500 50  0001 C CNN
+F 0 "#PWR063" H 6850 6500 50  0001 C CNN
 F 1 "GNDA" H 6855 6577 50  0000 C CNN
 F 2 "" H 6850 6750 50  0001 C CNN
 F 3 "" H 6850 6750 50  0001 C CNN
@@ -156,13 +156,13 @@ F 3 "" H 6850 6750 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L 74HC595 U?
+L 74HC595 U11
 U 1 1 5A26D5DE
 P 6850 5900
-F 0 "U?" H 6850 6778 50  0000 C CNN
+F 0 "U11" H 6850 6778 50  0000 C CNN
 F 1 "74HC595" H 6850 6687 50  0000 C CNN
-F 2 "" H 6850 5900 50  0001 C CNN
-F 3 "http://www.nxp.com/documents/data_sheet/74HC_HCT595.pdf" H 6850 5900 50  0001 C CNN
+F 2 "Housings_DIP:DIP-16_W7.62mm_Socket" H 6850 5900 50  0001 C CNN
+F 3 "" H 6850 5900 50  0001 C CNN
 	1    6850 5900
 	1    0    0    -1  
 $EndComp
@@ -171,21 +171,21 @@ TODO make constant delay for shifting in software?\n(to get rid of any possible 
 Text HLabel 2050 3650 0    60   Input ~ 0
 optional_enable_fet_registers
 $Comp
-L R R?
+L R R11
 U 1 1 5A270945
 P 5800 2200
-F 0 "R?" V 5593 2200 50  0000 C CNN
+F 0 "R11" V 5593 2200 50  0000 C CNN
 F 1 "4.7K" V 5684 2200 50  0000 C CNN
-F 2 "" V 5730 2200 50  0001 C CNN
+F 2 "Resistors_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" V 5730 2200 50  0001 C CNN
 F 3 "" H 5800 2200 50  0001 C CNN
 	1    5800 2200
 	0    1    1    0   
 $EndComp
 $Comp
-L +5VA #PWR?
+L +5VA #PWR054
 U 1 1 5A2709F9
 P 5550 2200
-F 0 "#PWR?" H 5550 2050 50  0001 C CNN
+F 0 "#PWR054" H 5550 2050 50  0001 C CNN
 F 1 "+5VA" H 5565 2373 50  0000 C CNN
 F 2 "" H 5550 2200 50  0001 C CNN
 F 3 "" H 5550 2200 50  0001 C CNN
@@ -193,21 +193,21 @@ F 3 "" H 5550 2200 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R R?
+L R R12
 U 1 1 5A270D87
 P 5800 5800
-F 0 "R?" V 5593 5800 50  0000 C CNN
+F 0 "R12" V 5593 5800 50  0000 C CNN
 F 1 "4.7K" V 5684 5800 50  0000 C CNN
-F 2 "" V 5730 5800 50  0001 C CNN
+F 2 "Resistors_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" V 5730 5800 50  0001 C CNN
 F 3 "" H 5800 5800 50  0001 C CNN
 	1    5800 5800
 	0    1    1    0   
 $EndComp
 $Comp
-L +5VA #PWR?
+L +5VA #PWR055
 U 1 1 5A270D8D
 P 5550 5800
-F 0 "#PWR?" H 5550 5650 50  0001 C CNN
+F 0 "#PWR055" H 5550 5650 50  0001 C CNN
 F 1 "+5VA" H 5565 5973 50  0000 C CNN
 F 2 "" H 5550 5800 50  0001 C CNN
 F 3 "" H 5550 5800 50  0001 C CNN
@@ -215,21 +215,21 @@ F 3 "" H 5550 5800 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R R?
+L R R14
 U 1 1 5A2711F9
 P 5850 7000
-F 0 "R?" H 5920 7046 50  0000 L CNN
+F 0 "R14" H 5920 7046 50  0000 L CNN
 F 1 "4.7K" H 5920 6955 50  0000 L CNN
-F 2 "" V 5780 7000 50  0001 C CNN
+F 2 "Resistors_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" V 5780 7000 50  0001 C CNN
 F 3 "" H 5850 7000 50  0001 C CNN
 	1    5850 7000
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR?
+L GNDA #PWR057
 U 1 1 5A2711FF
 P 5850 7200
-F 0 "#PWR?" H 5850 6950 50  0001 C CNN
+F 0 "#PWR057" H 5850 6950 50  0001 C CNN
 F 1 "GNDA" H 5855 7027 50  0000 C CNN
 F 2 "" H 5850 7200 50  0001 C CNN
 F 3 "" H 5850 7200 50  0001 C CNN
@@ -242,10 +242,10 @@ NoConn ~ 7350 6400
 Text Notes 11900 5800 0    60   ~ 0
 TODO add text to board to clarify which\ncombinations of jumper settings, selecting\nwhether all 3 SRs are daisy chained, are valid\n\nis there a standard way to physically only allow\nall of one or all of the other (independent) jumper\nsettings?\n\nmaybe literally install a switch? are there switches\nfor one-time configuration that are hard to change?
 $Comp
-L GS3 J?
+L GS3 J8
 U 1 1 5A271CA2
 P 5750 5350
-F 0 "J?" V 5704 5518 50  0000 L CNN
+F 0 "J8" V 5704 5518 50  0000 L CNN
 F 1 "GS3" V 5795 5518 50  0000 L CNN
 F 2 "Connectors:GS3" V 5838 5276 50  0001 C CNN
 F 3 "" H 5750 5350 50  0001 C CNN
@@ -253,10 +253,10 @@ F 3 "" H 5750 5350 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L GS3 J?
+L GS3 J6
 U 1 1 5A272879
 P 5250 5350
-F 0 "J?" V 5204 5518 50  0000 L CNN
+F 0 "J6" V 5204 5518 50  0000 L CNN
 F 1 "GS3" V 5295 5518 50  0000 L CNN
 F 2 "Connectors:GS3" V 5338 5276 50  0001 C CNN
 F 3 "" H 5250 5350 50  0001 C CNN
@@ -264,10 +264,10 @@ F 3 "" H 5250 5350 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L GS3 J?
+L GS3 J5
 U 1 1 5A2728B9
 P 4750 5350
-F 0 "J?" V 4704 5518 50  0000 L CNN
+F 0 "J5" V 4704 5518 50  0000 L CNN
 F 1 "GS3" V 4795 5518 50  0000 L CNN
 F 2 "Connectors:GS3" V 4838 5276 50  0001 C CNN
 F 3 "" H 4750 5350 50  0001 C CNN
@@ -275,10 +275,10 @@ F 3 "" H 4750 5350 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L GS3 J?
+L GS3 J4
 U 1 1 5A273387
 P 4250 5350
-F 0 "J?" V 4204 5518 50  0000 L CNN
+F 0 "J4" V 4204 5518 50  0000 L CNN
 F 1 "GS3" V 4295 5518 50  0000 L CNN
 F 2 "Connectors:GS3" V 4338 5276 50  0001 C CNN
 F 3 "" H 4250 5350 50  0001 C CNN
@@ -335,7 +335,7 @@ fet_reg_SER
 $Sheet
 S 2150 1250 700  450 
 U 5A290F11
-F0 "optoisolator_with_peripherals" 60
+F0 "optoisolator_with_peripherals_1" 60
 F1 "optoisolator_with_peripherals.sch" 60
 F2 "in_1" I L 2150 1400 60 
 F3 "in_2" I L 2150 1600 60 
@@ -510,7 +510,7 @@ fet_reg_SRCLR
 $Sheet
 S 2150 1900 700  450 
 U 5A2933B9
-F0 "optoisolator_with_peripherals" 60
+F0 "optoisolator_with_peripherals_2" 60
 F1 "optoisolator_with_peripherals.sch" 60
 F2 "in_1" I L 2150 2050 60 
 F3 "in_2" I L 2150 2250 60 
@@ -528,7 +528,7 @@ demux_reg_SER
 $Sheet
 S 1850 4600 700  450 
 U 5A2941E3
-F0 "optoisolator_with_peripherals" 60
+F0 "optoisolator_with_peripherals_4" 60
 F1 "optoisolator_with_peripherals.sch" 60
 F2 "in_1" I L 1850 4750 60 
 F3 "in_2" I L 1850 4950 60 
@@ -546,7 +546,7 @@ demux_reg_SRCLR
 $Sheet
 S 1850 5250 700  450 
 U 5A2941ED
-F0 "optoisolator_with_peripherals" 60
+F0 "optoisolator_with_peripherals_5" 60
 F1 "optoisolator_with_peripherals.sch" 60
 F2 "in_1" I L 1850 5400 60 
 F3 "in_2" I L 1850 5600 60 
@@ -562,7 +562,7 @@ Wire Wire Line
 $Sheet
 S 2150 3500 700  450 
 U 5A295681
-F0 "optoisolator_with_peripherals" 60
+F0 "optoisolator_with_peripherals_3" 60
 F1 "optoisolator_with_peripherals.sch" 60
 F2 "in_1" I L 2150 3650 60 
 F3 "in_2" I L 2150 3850 60 
@@ -633,10 +633,10 @@ Wire Wire Line
 Wire Wire Line
 	4150 5050 4150 5200
 $Comp
-L GS3 J?
+L GS3 J9
 U 1 1 5A20057E
 P 6200 6750
-F 0 "J?" H 6200 7055 50  0000 C CNN
+F 0 "J9" H 6200 7055 50  0000 C CNN
 F 1 "GS3" H 6200 6964 50  0000 C CNN
 F 2 "Connectors:GS3" V 6288 6676 50  0001 C CNN
 F 3 "" H 6200 6750 50  0001 C CNN
@@ -644,12 +644,12 @@ F 3 "" H 6200 6750 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R R?
+L R R13
 U 1 1 5A2020FA
 P 5850 6500
-F 0 "R?" H 5920 6546 50  0000 L CNN
+F 0 "R13" H 5920 6546 50  0000 L CNN
 F 1 "4.7K" H 5920 6455 50  0000 L CNN
-F 2 "" V 5780 6500 50  0001 C CNN
+F 2 "Resistors_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" V 5780 6500 50  0001 C CNN
 F 3 "" H 5850 6500 50  0001 C CNN
 	1    5850 6500
 	1    0    0    -1  
@@ -659,10 +659,10 @@ Wire Wire Line
 Wire Wire Line
 	6350 6100 6350 6750
 $Comp
-L +5VA #PWR?
+L +5VA #PWR056
 U 1 1 5A2026B5
 P 5850 6300
-F 0 "#PWR?" H 5850 6150 50  0001 C CNN
+F 0 "#PWR056" H 5850 6150 50  0001 C CNN
 F 1 "+5VA" H 5865 6473 50  0000 C CNN
 F 2 "" H 5850 6300 50  0001 C CNN
 F 3 "" H 5850 6300 50  0001 C CNN
@@ -677,21 +677,21 @@ Wire Wire Line
 	5700 6100 5700 6650
 Connection ~ 5850 6650
 $Comp
-L R R?
+L R R10
 U 1 1 5A205B2E
 P 5050 2900
-F 0 "R?" H 5120 2946 50  0000 L CNN
+F 0 "R10" H 5120 2946 50  0000 L CNN
 F 1 "4.7K" H 5120 2855 50  0000 L CNN
-F 2 "" V 4980 2900 50  0001 C CNN
+F 2 "Resistors_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" V 4980 2900 50  0001 C CNN
 F 3 "" H 5050 2900 50  0001 C CNN
 	1    5050 2900
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR?
+L GNDA #PWR053
 U 1 1 5A205B34
 P 5050 3100
-F 0 "#PWR?" H 5050 2850 50  0001 C CNN
+F 0 "#PWR053" H 5050 2850 50  0001 C CNN
 F 1 "GNDA" H 5055 2927 50  0000 C CNN
 F 2 "" H 5050 3100 50  0001 C CNN
 F 3 "" H 5050 3100 50  0001 C CNN
@@ -701,10 +701,10 @@ $EndComp
 Wire Wire Line
 	5050 3050 5050 3100
 $Comp
-L GS3 J?
+L GS3 J7
 U 1 1 5A205B3C
 P 5400 2650
-F 0 "J?" H 5400 2955 50  0000 C CNN
+F 0 "J7" H 5400 2955 50  0000 C CNN
 F 1 "GS3" H 5400 2864 50  0000 C CNN
 F 2 "Connectors:GS3" V 5488 2576 50  0001 C CNN
 F 3 "" H 5400 2650 50  0001 C CNN
@@ -712,12 +712,12 @@ F 3 "" H 5400 2650 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R R?
+L R R9
 U 1 1 5A205B42
 P 5050 2400
-F 0 "R?" H 5120 2446 50  0000 L CNN
+F 0 "R9" H 5120 2446 50  0000 L CNN
 F 1 "4.7K" H 5120 2355 50  0000 L CNN
-F 2 "" V 4980 2400 50  0001 C CNN
+F 2 "Resistors_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" V 4980 2400 50  0001 C CNN
 F 3 "" H 5050 2400 50  0001 C CNN
 	1    5050 2400
 	1    0    0    -1  
@@ -725,10 +725,10 @@ $EndComp
 Wire Wire Line
 	4000 2550 5250 2550
 $Comp
-L +5VA #PWR?
+L +5VA #PWR052
 U 1 1 5A205B49
 P 5050 2200
-F 0 "#PWR?" H 5050 2050 50  0001 C CNN
+F 0 "#PWR052" H 5050 2050 50  0001 C CNN
 F 1 "+5VA" H 5065 2373 50  0000 C CNN
 F 2 "" H 5050 2200 50  0001 C CNN
 F 3 "" H 5050 2200 50  0001 C CNN
