@@ -24,7 +24,7 @@ EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 2 24
+Sheet 2 22
 Title ""
 Date ""
 Rev ""
@@ -183,8 +183,8 @@ L C C15
 U 1 1 5A0D1C12
 P 7450 2550
 F 0 "C15" V 7198 2550 50  0000 C CNN
-F 1 "0.1uF ceramic SMD" V 7289 2550 50  0000 C CNN
-F 2 "Capacitors_THT:CP_Radial_D4.0mm_P2.00mm" H 7488 2400 50  0001 C CNN
+F 1 "0.1uF ceramic" V 7289 2550 50  0000 C CNN
+F 2 "Capacitors_THT:C_Rect_L4.0mm_W2.5mm_P2.50mm" H 7488 2400 50  0001 C CNN
 F 3 "" H 7450 2550 50  0001 C CNN
 	1    7450 2550
 	0    1    1    0   
@@ -195,7 +195,7 @@ U 1 1 5A0D1EDC
 P 8400 2550
 F 0 "C16" V 8652 2550 50  0000 C CNN
 F 1 "10uF tantalum" V 8561 2550 50  0000 C CNN
-F 2 "Capacitors_THT:CP_Radial_Tantal_D5.0mm_P5.00mm" H 8400 2550 50  0001 C CNN
+F 2 "Capacitors_THT:CP_Radial_Tantal_D4.5mm_P5.00mm" H 8400 2550 50  0001 C CNN
 F 3 "" H 8400 2550 50  0001 C CNN
 	1    8400 2550
 	0    -1   -1   0   
@@ -218,8 +218,8 @@ L C C10
 U 1 1 5A1130E3
 P 5900 1200
 F 0 "C10" V 5648 1200 50  0000 C CNN
-F 1 "0.1uF ceramic SMD" V 5739 1200 50  0000 C CNN
-F 2 "Capacitors_THT:CP_Radial_D4.0mm_P2.00mm" H 5938 1050 50  0001 C CNN
+F 1 "0.1uF ceramic" V 5739 1200 50  0000 C CNN
+F 2 "Capacitors_THT:C_Rect_L4.0mm_W2.5mm_P2.50mm" H 5938 1050 50  0001 C CNN
 F 3 "" H 5900 1200 50  0001 C CNN
 	1    5900 1200
 	1    0    0    -1  
@@ -230,7 +230,7 @@ U 1 1 5A1130EF
 P 6100 1200
 F 0 "C14" V 6352 1200 50  0000 C CNN
 F 1 "10uF tantalum" V 6261 1200 50  0000 C CNN
-F 2 "Capacitors_THT:CP_Radial_Tantal_D5.0mm_P5.00mm" H 6100 1200 50  0001 C CNN
+F 2 "Capacitors_THT:CP_Radial_Tantal_D4.5mm_P5.00mm" H 6100 1200 50  0001 C CNN
 F 3 "" H 6100 1200 50  0001 C CNN
 	1    6100 1200
 	1    0    0    -1  
@@ -240,8 +240,8 @@ L C C8
 U 1 1 5A1132DE
 P 5800 2900
 F 0 "C8" V 5548 2900 50  0000 C CNN
-F 1 "0.1uF ceramic SMD" V 5639 2900 50  0000 C CNN
-F 2 "Capacitors_THT:CP_Radial_D4.0mm_P2.00mm" H 5838 2750 50  0001 C CNN
+F 1 "0.1uF ceramic" V 5639 2900 50  0000 C CNN
+F 2 "Capacitors_THT:C_Rect_L4.0mm_W2.5mm_P2.50mm" H 5838 2750 50  0001 C CNN
 F 3 "" H 5800 2900 50  0001 C CNN
 	1    5800 2900
 	1    0    0    -1  
@@ -252,7 +252,7 @@ U 1 1 5A1132EA
 P 6000 2900
 F 0 "C12" V 6252 2900 50  0000 C CNN
 F 1 "10uF tantalum" V 6161 2900 50  0000 C CNN
-F 2 "Capacitors_THT:CP_Radial_Tantal_D5.0mm_P5.00mm" H 6000 2900 50  0001 C CNN
+F 2 "Capacitors_THT:CP_Radial_Tantal_D4.5mm_P5.00mm" H 6000 2900 50  0001 C CNN
 F 3 "" H 6000 2900 50  0001 C CNN
 	1    6000 2900
 	1    0    0    -1  
@@ -262,8 +262,8 @@ L C C9
 U 1 1 5A1134EF
 P 5800 4300
 F 0 "C9" V 5548 4300 50  0000 C CNN
-F 1 "0.1uF ceramic SMD" V 5639 4300 50  0000 C CNN
-F 2 "Capacitors_THT:CP_Radial_D4.0mm_P2.00mm" H 5838 4150 50  0001 C CNN
+F 1 "0.1uF ceramic" V 5639 4300 50  0000 C CNN
+F 2 "Capacitors_THT:C_Rect_L4.0mm_W2.5mm_P2.50mm" H 5838 4150 50  0001 C CNN
 F 3 "" H 5800 4300 50  0001 C CNN
 	1    5800 4300
 	1    0    0    -1  
@@ -274,7 +274,7 @@ U 1 1 5A1134FB
 P 6000 4300
 F 0 "C13" V 6252 4300 50  0000 C CNN
 F 1 "10uF tantalum" V 6161 4300 50  0000 C CNN
-F 2 "Capacitors_THT:CP_Radial_Tantal_D5.0mm_P5.00mm" H 6000 4300 50  0001 C CNN
+F 2 "Capacitors_THT:CP_Radial_Tantal_D4.5mm_P5.00mm" H 6000 4300 50  0001 C CNN
 F 3 "" H 6000 4300 50  0001 C CNN
 	1    6000 4300
 	1    0    0    -1  
@@ -284,8 +284,8 @@ L C C7
 U 1 1 5A113934
 P 5750 5700
 F 0 "C7" V 5498 5700 50  0000 C CNN
-F 1 "0.1uF ceramic SMD" V 5589 5700 50  0000 C CNN
-F 2 "Capacitors_THT:CP_Radial_D4.0mm_P2.00mm" H 5788 5550 50  0001 C CNN
+F 1 "0.1uF ceramic" V 5589 5700 50  0000 C CNN
+F 2 "Capacitors_THT:C_Rect_L4.0mm_W2.5mm_P2.50mm" H 5788 5550 50  0001 C CNN
 F 3 "" H 5750 5700 50  0001 C CNN
 	1    5750 5700
 	1    0    0    -1  
@@ -296,7 +296,7 @@ U 1 1 5A113940
 P 5950 5700
 F 0 "C11" V 6202 5700 50  0000 C CNN
 F 1 "10uF tantalum" V 6111 5700 50  0000 C CNN
-F 2 "Capacitors_THT:CP_Radial_Tantal_D5.0mm_P5.00mm" H 5950 5700 50  0001 C CNN
+F 2 "Capacitors_THT:CP_Radial_Tantal_D4.5mm_P5.00mm" H 5950 5700 50  0001 C CNN
 F 3 "" H 5950 5700 50  0001 C CNN
 	1    5950 5700
 	1    0    0    -1  
@@ -306,8 +306,8 @@ L C C5
 U 1 1 5A113DC8
 P 2100 750
 F 0 "C5" V 1848 750 50  0000 C CNN
-F 1 "0.1uF ceramic SMD" V 1939 750 50  0000 C CNN
-F 2 "Capacitors_THT:CP_Radial_D4.0mm_P2.00mm" H 2138 600 50  0001 C CNN
+F 1 "0.1uF ceramic" V 1939 750 50  0000 C CNN
+F 2 "Capacitors_THT:C_Rect_L4.0mm_W2.5mm_P2.50mm" H 2138 600 50  0001 C CNN
 F 3 "" H 2100 750 50  0001 C CNN
 	1    2100 750 
 	1    0    0    -1  
@@ -318,7 +318,7 @@ U 1 1 5A113DD4
 P 2350 750
 F 0 "C6" V 2602 750 50  0000 C CNN
 F 1 "10uF tantalum" V 2511 750 50  0000 C CNN
-F 2 "Capacitors_THT:CP_Radial_Tantal_D5.0mm_P5.00mm" H 2350 750 50  0001 C CNN
+F 2 "Capacitors_THT:CP_Radial_Tantal_D4.5mm_P5.00mm" H 2350 750 50  0001 C CNN
 F 3 "" H 2350 750 50  0001 C CNN
 	1    2350 750 
 	1    0    0    -1  
@@ -351,7 +351,7 @@ U 1 1 5A122CC7
 P 9000 4650
 F 0 "C17" H 9115 4696 50  0000 L CNN
 F 1 "22nF" H 9115 4605 50  0000 L CNN
-F 2 "Capacitors_THT:CP_Radial_D4.0mm_P2.00mm" H 9038 4500 50  0001 C CNN
+F 2 "Capacitors_THT:C_Rect_L4.0mm_W2.5mm_P2.50mm" H 9038 4500 50  0001 C CNN
 F 3 "" H 9000 4650 50  0001 C CNN
 	1    9000 4650
 	1    0    0    -1  
@@ -361,8 +361,8 @@ L C C18
 U 1 1 5A122FBA
 P 9200 4050
 F 0 "C18" V 8948 4050 50  0000 C CNN
-F 1 "0.1uF ceramic SMD" V 9039 4050 50  0000 C CNN
-F 2 "Capacitors_THT:CP_Radial_D4.0mm_P2.00mm" H 9238 3900 50  0001 C CNN
+F 1 "0.1uF ceramic" V 9039 4050 50  0000 C CNN
+F 2 "Capacitors_THT:C_Rect_L4.0mm_W2.5mm_P2.50mm" H 9238 3900 50  0001 C CNN
 F 3 "" H 9200 4050 50  0001 C CNN
 	1    9200 4050
 	0    1    1    0   
@@ -372,8 +372,8 @@ L C C19
 U 1 1 5A123078
 P 10150 4050
 F 0 "C19" V 9898 4050 50  0000 C CNN
-F 1 "0.1uF ceramic SMD" V 9989 4050 50  0000 C CNN
-F 2 "Capacitors_THT:CP_Radial_D4.0mm_P2.00mm" H 10188 3900 50  0001 C CNN
+F 1 "0.1uF ceramic" V 9989 4050 50  0000 C CNN
+F 2 "Capacitors_THT:C_Rect_L4.0mm_W2.5mm_P2.50mm" H 10188 3900 50  0001 C CNN
 F 3 "" H 10150 4050 50  0001 C CNN
 	1    10150 4050
 	0    1    1    0   
@@ -1518,10 +1518,10 @@ TODO add 7 NC, 7 NO jumpers on CD4556, so that\nif one of two units fails, the o
 Text Notes 6850 1600 0    60   ~ 0
 TODO add jumpers on CD4052Bs so that they\ncan be substituted for MAX chip Dan \nsuggested if necessary (diff. pinout)
 $Comp
-L GS3 J58
+L GS3 J4
 U 1 1 5A28FFB6
 P 10700 4450
-F 0 "J58" H 10700 4755 50  0000 C CNN
+F 0 "J4" H 10700 4755 50  0000 C CNN
 F 1 "GS3" H 10700 4664 50  0000 C CNN
 F 2 "Connectors:GS3" V 10788 4376 50  0001 C CNN
 F 3 "" H 10700 4450 50  0001 C CNN

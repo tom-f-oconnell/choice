@@ -1,24 +1,51 @@
 
+// uncomment one of these defines to select a test
+//#define TEST_SHIFTREG
+//#define TEST_SWITCH_SELECT (currently not implemented)
+#define TEST_SWITCH_SPEED
+//#define TEST_SWITCH_SLOW
+//#define TEST_ALL
+
 #define SER   3
 #define SRCLK 4
 #define SRCLR 5
 #define RCLK  6
 #define ENBL  7
-#define WAIT_MS 0
-#define SHIFT_PERIOD_MS 500
-#define DEMUX_WAIT_MS 5000
-//#define PRE_SAMPLE_WAIT_MS 1
+
+#ifdef TEST_SHIFTREG
+#define SHIFTREG_PERIOD_MS 50
+#else
+#define SHIFTREG_PERIOD_MS 0
+#endif
+
+// our isolation implementation inverts the logic
+#define BYPASS_ISOLATION false
+
+#ifdef TEST_SHIFTREG
+#define INTERDIGIT_SHIFT_PERIOD_MS 500
+#endif
+
+#if defined TEST_SWITCH_SLOW || defined TEST_SWITCH_SPEED || defined TEST_ALL
+#define MIN_DEMUX_PERIOD_MS 1
+#endif
+
+#if defined TEST_SWITCH_SLOW || defined TEST_SWITCH_SPEED 
+#define SIGA 44
+#define SIGB 45
+#endif
+
+#if defined TEST_SWITCH_SLOW || defined TEST_ALL
+#define PERIOD_PER_CHANNEL_MS 5000
+#endif
+
+#ifdef TEST_ALL
+#define FET_SWITCH_TO_SAMPLE_MS 1
 
 #define ONE_L 2
 #define ONE_R 8
 #define TWO_L 9
 #define TWO_R 10
-
-// our isolation implementation inverts the logic
-#define BYPASS_ISOLATION false
-
-#define SIGA 44
-#define SIGB 45
+#endif
 
 int val = 0;
 
@@ -26,21 +53,33 @@ void clear_reg() {
   if (BYPASS_ISOLATION) {
     digitalWrite(SRCLR, LOW);
     digitalWrite(RCLK, LOW);
-    //delay(WAIT_MS);
+#ifndef TEST_SWITCH_SPEED
+    delay(SHIFTREG_PERIOD_MS);
+#endif
     digitalWrite(RCLK, HIGH);
-    //delay(WAIT_MS);
+#ifndef TEST_SWITCH_SPEED
+    delay(SHIFTREG_PERIOD_MS);
+#endif
     digitalWrite(RCLK, LOW);
     digitalWrite(SRCLR, HIGH);
-    //delay(WAIT_MS);
+#ifndef TEST_SWITCH_SPEED
+    delay(SHIFTREG_PERIOD_MS);
+#endif
   } else {
     digitalWrite(SRCLR, HIGH);
     digitalWrite(RCLK, HIGH);
-    //delay(WAIT_MS);
+#ifndef TEST_SWITCH_SPEED
+    delay(SHIFTREG_PERIOD_MS);
+#endif
     digitalWrite(RCLK, LOW);
-    //delay(WAIT_MS);
+#ifndef TEST_SWITCH_SPEED
+    delay(SHIFTREG_PERIOD_MS);
+#endif
     digitalWrite(RCLK, HIGH);
     digitalWrite(SRCLR, LOW);
-    //delay(WAIT_MS);
+#ifndef TEST_SWITCH_SPEED
+    delay(SHIFTREG_PERIOD_MS);
+#endif
   }
 }
 
@@ -52,34 +91,49 @@ void shift_in(unsigned char value) {
   } else {
     digitalWrite(SRCLK, HIGH);
   }
-  //delay(WAIT_MS);
+  // TODO maybe compile w/o these delays in speed test
+#ifndef TEST_SWITCH_SPEED
+  delay(SHIFTREG_PERIOD_MS);
+#endif
   
   if (BYPASS_ISOLATION) {
     digitalWrite(SER, value);
   } else {
     digitalWrite(SER, 1 - value);
   }
-  //delay(WAIT_MS);
+#ifndef TEST_SWITCH_SPEED
+  delay(SHIFTREG_PERIOD_MS);
+#endif
   
   if (BYPASS_ISOLATION) {
     digitalWrite(SRCLK, HIGH);
   } else {
     digitalWrite(SRCLK, LOW);
   }
-  //delay(WAIT_MS);
+#ifndef TEST_SWITCH_SPEED
+  delay(SHIFTREG_PERIOD_MS);
+#endif
 }
 
 void update_output() {
   if (BYPASS_ISOLATION) {
     digitalWrite(RCLK, LOW);
-    //delay(WAIT_MS);
+#ifndef TEST_SWITCH_SPEED
+    delay(SHIFTREG_PERIOD_MS);
+#endif
     digitalWrite(RCLK, HIGH);
-    //delay(WAIT_MS);
+#ifndef TEST_SWITCH_SPEED
+    delay(SHIFTREG_PERIOD_MS);
+#endif
   } else {
     digitalWrite(RCLK, HIGH);
-    //delay(WAIT_MS);
+#ifndef TEST_SWITCH_SPEED
+    delay(SHIFTREG_PERIOD_MS);
+#endif
     digitalWrite(RCLK, LOW);
-    //delay(WAIT_MS);
+#ifndef TEST_SWITCH_SPEED
+    delay(SHIFTREG_PERIOD_MS);
+#endif
   }
 }
 
@@ -117,14 +171,83 @@ void select_input_channel(boolean left_side, unsigned char c) {
   update_output();
 }
 
+// quickly switches between a HIGH and LOW signal to
+// see how long it takes for the output to reflect the change
+// TODO test w/ port manipulation rather than digitalwrite
+// (to update shift registers and everything)
+#ifdef TEST_SWITCH_SPEED
+void test_analog_switch_speed() {
+  // it seems that for short periods (< about 1ms)
+  // the time it takes to switch depends somewhat on the channel
+  // (such that it spends more time on ch0, for some reason.) digitalWrite?
+  // (try CD4052B 0 HIGH, 1 LOW vs CD4052B 0 LOW, 1 HIGH to see) 
+  select_input_channel(true, 1);
+  delay(MIN_DEMUX_PERIOD_MS);
+  select_input_channel(false, 1);
+  delay(MIN_DEMUX_PERIOD_MS);
+}
+#endif
+
+// slowly switch analog channels to verify visually on oscilloscope
+// (switching slower should also be slightly more robust to failure)
+#ifdef TEST_SWITCH_SLOW
+void test_analog_switch_slow() {
+  select_input_channel(true, 1);
+  delay(MIN_DEMUX_PERIOD_MS);
+  delay(PERIOD_PER_CHANNEL_MS);
+  select_input_channel(false, 1);
+  delay(MIN_DEMUX_PERIOD_MS);
+  delay(PERIOD_PER_CHANNEL_MS);
+}
+#endif
+
+#ifdef TEST_ALL
 void report_reading() {
-  //delay(PRE_SAMPLE_WAIT_MS);
+  delay(FET_SWITCH_TO_SAMPLE_MS);
   // TODO maybe take multiple readings
   val = analogRead(A0);
   Serial.print("got reading ");
   Serial.print(val);
   Serial.println(" on A0\n");
 }
+
+// switches between the first two channels and reports single readings
+// reading 1L/R with FETs as follows: L on, R on, both off, both off
+void test_all() {
+  Serial.println("selecting input channel 1L");
+  Serial.println("turning on high voltage path for 1L");
+  select_input_channel(true, 1);
+  digitalWrite(ONE_L, HIGH);
+  digitalWrite(ONE_R, LOW);
+  report_reading();
+  delay(MIN_DEMUX_PERIOD_MS);
+
+  Serial.println("selecting input channel 1R");
+  Serial.println("turning on high voltage path for 1R");
+  select_input_channel(false, 1);
+  delay(10);
+  digitalWrite(ONE_L, LOW);
+  digitalWrite(ONE_R, HIGH);
+  report_reading();
+  delay(MIN_DEMUX_PERIOD_MS);
+  
+  Serial.println("selecting input channel 1L");
+  Serial.println("turning off high voltage paths to 1L and 1R");
+  select_input_channel(true, 1);
+  digitalWrite(ONE_L, LOW);
+  digitalWrite(ONE_R, LOW);
+  report_reading();
+  delay(MIN_DEMUX_PERIOD_MS);
+
+  Serial.println("selecting input channel 1R");
+  select_input_channel(false, 1);
+  report_reading();
+  delay(MIN_DEMUX_PERIOD_MS);
+  
+  // TODO also test setting one pin high and reading other / 
+  // addressing other channels / chips
+}
+#endif
 
 void setup() {
   Serial.begin(9600);
@@ -136,12 +259,15 @@ void setup() {
   pinMode(RCLK, OUTPUT);
   pinMode(ENBL, OUTPUT);
 
+#ifdef TEST_ALL
   pinMode(ONE_L, OUTPUT);
   pinMode(ONE_R, OUTPUT);
 
   pinMode(A0, INPUT);
+#endif
 
-  // two different PWM signals for verifying on oscilloscope
+#if defined TEST_SWITCH_SPEED || defined TEST_ALL || defined TEST_SWITCH_SLOW
+  // two different signals for verifying on oscilloscope
   // which channels of the analog switch are selected (assuming chip is working)
   // TODO can any arbitrary combination of pins be manipulated independently w/ PWM?
   pinMode(SIGA, OUTPUT);
@@ -150,64 +276,42 @@ void setup() {
   //analogWrite(SIGB, 125);
   digitalWrite(SIGA, LOW);
   digitalWrite(SIGB, HIGH);
+#endif
 
   clear_reg();
   Serial.println("done");
 }
 
 void loop() {
-  //Serial.println("selecting input channel 1L");
-  //Serial.println("turning on high voltage path for 1L");
-  select_input_channel(true, 1);
-  delay(10);
-  /*
-  digitalWrite(ONE_L, HIGH);
-  digitalWrite(ONE_R, LOW);
-  //report_reading();
-  delay(DEMUX_WAIT_MS);
-  */
+#ifdef TEST_SWITCH_SPEED
+  test_analog_switch_speed();
+  
+#elif defined TEST_SWITCH_SLOW
+  test_analog_switch_slow();
+  
+#elif defined TEST_SWITCH_SELECT
+  #error TEST_SWITCH_SELECT needs implemented
 
-  //Serial.println("selecting input channel 1R");
-  //Serial.println("turning on high voltage path for 1R");
-  select_input_channel(false, 1);
-  delay(10);
-  /*
-  digitalWrite(ONE_L, LOW);
-  digitalWrite(ONE_R, HIGH);
-  //report_reading();
-  delay(DEMUX_WAIT_MS);
-  */
-
-  //Serial.println("selecting input channel 1L");
-  //Serial.println("turning off high voltage paths to 1L and 1R");
-  //select_input_channel(true, 1);
-  /*
-  digitalWrite(ONE_L, LOW);
-  digitalWrite(ONE_R, LOW);
-  //report_reading();
-  delay(DEMUX_WAIT_MS);
-  */
-
-  //Serial.println("selecting input channel 1R");
-  //select_input_channel(false, 1);
-  //report_reading();
-  //delay(DEMUX_WAIT_MS);
-
-  // TODO also test setting one pin high and reading other / 
-  // addressing other channels / chips
-  /*
-  //clear_reg();
+#elif defined TEST_ALL
+  test_all();
+  
+#elif defined TEST_SHIFTREG
+  Serial.println("shifting in a 1");
   shift_in(1);
   update_output();
-  delay(SHIFT_PERIOD_MS);
+  delay(INTERDIGIT_SHIFT_PERIOD_MS);
   for (int i=0;i<8;i++) {
+    Serial.println("shifting in a 0");
     shift_in(0);
     update_output();
-    delay(SHIFT_PERIOD_MS);
+    delay(INTERDIGIT_SHIFT_PERIOD_MS);
 //    if (i == 5) {
 //      clear_reg();
 //      break;
 //    }
   }
-  */
+
+#else
+  #error One TEST_* needs to be #defined
+#endif
 }

@@ -1,4 +1,4 @@
-update=Wed 22 Nov 2017 09:06:23 AM PST
+update=Mon 27 Nov 2017 02:53:38 PM PST
 version=1
 last_client=kicad
 [pcbnew]
@@ -52,10 +52,10 @@ LibName20=regul
 [schematic_editor]
 version=1
 PageLayoutDescrFile=
-PlotDirectoryName=
+PlotDirectoryName=/home/tom/Documents/test
 SubpartIdSeparator=0
 SubpartFirstId=65
-NetFmtName=
+NetFmtName=Pcbnew
 SpiceAjustPassiveValues=0
 LabSize=60
 ERC_TestSimilarLabels=1

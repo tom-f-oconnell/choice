@@ -24,7 +24,7 @@ EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 1 24
+Sheet 1 22
 Title ""
 Date "lun. 30 mars 2015"
 Rev ""
@@ -34,10 +34,8 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
-Text Label 8950 1350 1    60   ~ 0
+Text Label 8800 1350 1    60   ~ 0
 Vin
-Text Label 9350 1350 1    60   ~ 0
-IOREF
 Text Label 8900 2550 0    60   ~ 0
 A0
 Text Label 8900 2650 0    60   ~ 0
@@ -78,13 +76,7 @@ Text Label 10550 1700 0    60   ~ 0
 12(MISO)
 Text Label 10550 1600 0    60   ~ 0
 13(SCK)
-Text Label 10550 1400 0    60   ~ 0
-AREF
 NoConn ~ 9400 1500
-Text Label 10550 1300 0    60   ~ 0
-A4(SDA)
-Text Label 10550 1200 0    60   ~ 0
-A5(SCL)
 Text Notes 10850 1000 0    60   ~ 0
 Holes
 Text Notes 8550 750  0    60   ~ 0
@@ -98,19 +90,6 @@ F 1 "Power" V 9700 1800 50  0000 C CNN
 F 2 "Socket_Arduino_Uno:Socket_Strip_Arduino_1x08" V 9750 1800 20  0000 C CNN
 F 3 "" H 9600 1800 50  0000 C CNN
 	1    9600 1800
-	1    0    0    -1  
-$EndComp
-Text Label 8650 1700 0    60   ~ 0
-Reset
-$Comp
-L +3.3V #PWR06
-U 1 1 56D70538
-P 9150 1350
-F 0 "#PWR06" H 9150 1200 50  0001 C CNN
-F 1 "+3.3V" H 9150 1490 50  0000 C CNN
-F 2 "" H 9150 1350 50  0000 C CNN
-F 3 "" H 9150 1350 50  0000 C CNN
-	1    9150 1350
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -230,10 +209,10 @@ $EndComp
 Text Notes 9700 1500 0    60   ~ 0
 1
 $Comp
-L Screw_Terminal_01x02 J1
+L Screw_Terminal_01x02 J2
 U 1 1 5A05063F
 P 1750 1900
-F 0 "J1" H 1830 1892 50  0000 L CNN
+F 0 "J2" H 1830 1892 50  0000 L CNN
 F 1 "Screw_Terminal_01x02" H 1830 1801 50  0000 L CNN
 F 2 "TerminalBlocks_Phoenix:TerminalBlock_Phoenix_MPT-2.54mm_2pol" H 1750 1900 50  0001 C CNN
 F 3 "~" H 1750 1900 50  0001 C CNN
@@ -464,7 +443,7 @@ U 1 1 5A1BC543
 P 10800 5200
 F 0 "C4" H 10915 5246 50  0000 L CNN
 F 1 "1uF" H 10915 5155 50  0000 L CNN
-F 2 "Capacitors_THT:CP_Radial_D8.0mm_P3.80mm" H 10838 5050 50  0001 C CNN
+F 2 "Capacitors_THT:C_Rect_L7.0mm_W4.5mm_P5.00mm" H 10838 5050 50  0001 C CNN
 F 3 "" H 10800 5200 50  0001 C CNN
 	1    10800 5200
 	1    0    0    -1  
@@ -475,7 +454,7 @@ U 1 1 5A1BD6EA
 P 9900 5200
 F 0 "C3" H 10015 5246 50  0000 L CNN
 F 1 "2.2uF" H 10015 5155 50  0000 L CNN
-F 2 "Capacitors_THT:CP_Radial_D4.0mm_P2.00mm" H 9938 5050 50  0001 C CNN
+F 2 "Capacitors_THT:C_Rect_L4.0mm_W2.5mm_P2.50mm" H 9938 5050 50  0001 C CNN
 F 3 "" H 9900 5200 50  0001 C CNN
 	1    9900 5200
 	1    0    0    -1  
@@ -530,7 +509,7 @@ U 1 1 5A1CCE57
 P 8650 5050
 F 0 "C2" V 8398 5050 50  0000 C CNN
 F 1 "2.2uF" V 8489 5050 50  0000 C CNN
-F 2 "Capacitors_THT:CP_Radial_D4.0mm_P2.00mm" H 8688 4900 50  0001 C CNN
+F 2 "Capacitors_THT:C_Rect_L4.0mm_W2.5mm_P2.50mm" H 8688 4900 50  0001 C CNN
 F 3 "" H 8650 5050 50  0001 C CNN
 	1    8650 5050
 	0    1    1    0   
@@ -541,7 +520,7 @@ U 1 1 5A1CD179
 P 8600 5500
 F 0 "C1" H 8715 5546 50  0000 L CNN
 F 1 "1uF" H 8715 5455 50  0000 L CNN
-F 2 "Capacitors_THT:CP_Radial_D8.0mm_P3.80mm" H 8638 5350 50  0001 C CNN
+F 2 "Capacitors_THT:C_Rect_L7.0mm_W4.5mm_P5.00mm" H 8638 5350 50  0001 C CNN
 F 3 "" H 8600 5500 50  0001 C CNN
 	1    8600 5500
 	1    0    0    -1  
@@ -582,43 +561,6 @@ F 3 "" H 8900 5000 50  0001 C CNN
 $EndComp
 Text Notes 5300 -300 0    60   ~ 0
 TODO how to deal with jumper settings in simulator?
-$Sheet
-S 950  3700 1600 2750
-U 5A26B22E
-F0 "digital_input_isolation" 60
-F1 "digital_input_isolation.sch" 60
-F2 "optional_enable_fet_registers" I L 950 6250 60 
-F3 "optional_enable_demux_register" I L 950 6350 60 
-F4 "left_1" I R 2550 3800 60 
-F5 "left_2" I R 2550 3900 60 
-F6 "left_3" I R 2550 4000 60 
-F7 "left_4" I R 2550 4100 60 
-F8 "left_5" I R 2550 4200 60 
-F9 "left_6" I R 2550 4300 60 
-F10 "left_7" I R 2550 4400 60 
-F11 "left_8" I R 2550 4500 60 
-F12 "right_1" I R 2550 4650 60 
-F13 "right_2" I R 2550 4750 60 
-F14 "right_3" I R 2550 4850 60 
-F15 "right_4" I R 2550 4950 60 
-F16 "right_5" I R 2550 5050 60 
-F17 "right_6" I R 2550 5150 60 
-F18 "right_7" I R 2550 5250 60 
-F19 "right_8" I R 2550 5350 60 
-F20 "demux_select_A" I R 2550 5600 60 
-F21 "demux_select_B" I R 2550 5700 60 
-F22 "chan_select_A" I R 2550 5800 60 
-F23 "chan_select_B" I R 2550 5900 60 
-F24 "optional_demux_enable" I R 2550 6000 60 
-F25 "fet_reg_SER" I L 950 3800 60 
-F26 "fet_reg_SRCLK" I L 950 3900 60 
-F27 "fet_reg_SRCLR" I L 950 4000 60 
-F28 "fet_reg_RCLK" I L 950 4100 60 
-F29 "demux_reg_SER" I L 950 4900 60 
-F30 "demux_reg_SRCLK" I L 950 5000 60 
-F31 "demux_reg_SRCLR" I L 950 5100 60 
-F32 "demux_reg_RCLK" I L 950 5200 60 
-$EndSheet
 Entry Wire Line
 	2800 3800 2900 3900
 Entry Wire Line
@@ -955,8 +897,6 @@ Wire Notes Line
 	10700 1000 10700 500 
 Wire Notes Line
 	11200 1000 10700 1000
-Wire Wire Line
-	9400 1700 8650 1700
 Wire Notes Line
 	8500 3450 11200 3450
 Wire Notes Line
@@ -984,12 +924,6 @@ Wire Wire Line
 Wire Wire Line
 	10200 3100 10550 3100
 Wire Wire Line
-	10200 1200 10550 1200
-Wire Wire Line
-	10200 1300 10550 1300
-Wire Wire Line
-	10200 1400 10550 1400
-Wire Wire Line
 	10200 1600 10550 1600
 Wire Wire Line
 	10200 1700 10550 1700
@@ -1014,26 +948,18 @@ Wire Wire Line
 Wire Wire Line
 	9400 2550 8900 2550
 Wire Wire Line
-	9150 1800 9150 1350
-Wire Wire Line
 	9050 1900 9050 1250
 Wire Wire Line
-	8950 2200 8950 1350
+	8800 2200 8800 1350
 Connection ~ 9300 2100
 Wire Wire Line
 	9400 2100 9300 2100
 Wire Wire Line
 	9400 2000 9300 2000
 Wire Wire Line
-	9400 2200 8950 2200
+	9400 2200 8800 2200
 Wire Wire Line
 	9400 1900 9050 1900
-Wire Wire Line
-	9400 1800 9150 1800
-Wire Wire Line
-	9350 1600 9400 1600
-Wire Wire Line
-	9350 1350 9350 1600
 Wire Notes Line
 	9925 825  9925 475 
 Wire Notes Line
@@ -1393,10 +1319,10 @@ Entry Wire Line
 Wire Wire Line
 	8000 4000 8100 4000
 $Comp
-L DB25_Female J2
+L DB25_Female J1
 U 1 1 5A1B90EE
 P 900 2150
-F 0 "J2" H 820 658 50  0000 C CNN
+F 0 "J1" H 820 658 50  0000 C CNN
 F 1 "DB25_Female" H 820 749 50  0000 C CNN
 F 2 "Connectors_DSub:DSUB-25_Female_Horizontal_Pitch2.77x2.84mm_EdgePinOffset7.70mm_Housed_MountingHolesOffset9.12mm" H 900 2150 50  0001 C CNN
 F 3 "" H 900 2150 50  0001 C CNN
@@ -1550,14 +1476,10 @@ F1
 Text GLabel 1450 2150 2    60   Input ~ 0
 HV
 Wire Wire Line
-	1350 2150 1350 2000
-Wire Wire Line
-	1350 2000 1550 2000
+	1350 1900 1350 2150
 Connection ~ 1350 2150
 Wire Wire Line
-	1550 1900 1550 1700
-Wire Wire Line
-	1550 1700 1750 1700
+	1500 1700 1750 1700
 Wire Wire Line
 	2050 1700 2200 1700
 Text Notes 1300 2350 0    39   ~ 0
@@ -1682,30 +1604,6 @@ Text Notes 8650 -50  0    60   ~ 0
 TODO why have buses if you can just place labels,\nand you need labels w/ buses anyway?\n\nwhat is idiomatic?
 Wire Wire Line
 	8900 3650 9500 3650
-Entry Wire Line
-	550  5100 650  5200
-Entry Wire Line
-	550  5000 650  5100
-Entry Wire Line
-	550  4900 650  5000
-Entry Wire Line
-	550  4800 650  4900
-Text Label 650  5200 0    60   ~ 0
-DRCLK
-Text Label 650  5100 0    60   ~ 0
-DSCLR
-Text Label 650  5000 0    60   ~ 0
-DSCLK
-Text Label 650  4900 0    60   ~ 0
-DSER
-Wire Wire Line
-	650  5200 950  5200
-Wire Wire Line
-	650  5100 950  5100
-Wire Wire Line
-	650  5000 950  5000
-Wire Wire Line
-	650  4900 950  4900
 Text Label 8900 3650 0    60   ~ 0
 FSER
 Text Label 9500 3650 0    60   ~ 0
@@ -1742,6 +1640,95 @@ Text Label 9500 4500 0    60   ~ 0
 9(**)
 Text Label 8100 4000 0    60   ~ 0
 A0
-Text Notes 9700 4200 0    39   ~ 0
-None of these pins should be driven\nHIGH by the Arduino bootloader.
+Text Notes 9800 4250 0    39   ~ 0
+None of these pins should be driven\nHIGH by the Arduino bootloader.\n\nTODO test this w/ scope
+Wire Wire Line
+	1350 1900 1550 1900
+Wire Wire Line
+	1500 1700 1500 2000
+Wire Wire Line
+	1500 2000 1550 2000
+NoConn ~ 10550 3100
+NoConn ~ 10550 3000
+NoConn ~ 10550 2900
+NoConn ~ 10550 2800
+NoConn ~ 10550 1900
+NoConn ~ 10550 1800
+NoConn ~ 10550 1700
+NoConn ~ 10550 1600
+NoConn ~ 10200 1400
+NoConn ~ 10200 1300
+NoConn ~ 10200 1200
+NoConn ~ 9400 1600
+NoConn ~ 9400 1700
+NoConn ~ 8800 1350
+NoConn ~ 8900 2650
+NoConn ~ 8900 2750
+NoConn ~ 8900 2850
+NoConn ~ 8900 2950
+NoConn ~ 8900 3050
+$Sheet
+S 950  3700 1600 2750
+U 5A26B22E
+F0 "digital_input_isolation" 60
+F1 "digital_input_isolation.sch" 60
+F2 "optional_enable_fet_registers" I L 950 6250 60 
+F3 "optional_enable_demux_register" I L 950 6350 60 
+F4 "left_1" I R 2550 3800 60 
+F5 "left_2" I R 2550 3900 60 
+F6 "left_3" I R 2550 4000 60 
+F7 "left_4" I R 2550 4100 60 
+F8 "left_5" I R 2550 4200 60 
+F9 "left_6" I R 2550 4300 60 
+F10 "left_7" I R 2550 4400 60 
+F11 "left_8" I R 2550 4500 60 
+F12 "right_1" I R 2550 4650 60 
+F13 "right_2" I R 2550 4750 60 
+F14 "right_3" I R 2550 4850 60 
+F15 "right_4" I R 2550 4950 60 
+F16 "right_5" I R 2550 5050 60 
+F17 "right_6" I R 2550 5150 60 
+F18 "right_7" I R 2550 5250 60 
+F19 "right_8" I R 2550 5350 60 
+F20 "demux_select_A" I R 2550 5600 60 
+F21 "demux_select_B" I R 2550 5700 60 
+F22 "chan_select_A" I R 2550 5800 60 
+F23 "chan_select_B" I R 2550 5900 60 
+F24 "optional_demux_enable" I R 2550 6000 60 
+F25 "fet_reg_SER" I L 950 3800 60 
+F26 "fet_reg_SRCLK" I L 950 3900 60 
+F27 "fet_reg_SRCLR" I L 950 4000 60 
+F28 "fet_reg_RCLK" I L 950 4100 60 
+$EndSheet
+Text Notes 10250 1250 0    60   ~ 0
+A5(SCL)
+Text Notes 10250 1350 0    60   ~ 0
+A4(SDA)
+Text Notes 10250 1450 0    60   ~ 0
+AREF
+Text Notes 9100 1650 0    60   ~ 0
+IOREF
+Text Notes 9100 1750 0    60   ~ 0
+Reset
+Text Notes 9100 1850 0    60   ~ 0
++3.3V
+NoConn ~ 9400 1800
+Text Notes 11750 5300 0    60   ~ 0
+TODO why was this 5V not throwing power\n"no pin to drive this" errors? does it think +Vs is a power output?\nsomething else on that net? fix
+$Comp
+L PWR_FLAG #FLG01
+U 1 1 5A2E9CA9
+P 9400 1300
+F 0 "#FLG01" H 9400 1375 50  0001 C CNN
+F 1 "PWR_FLAG" H 9400 1474 50  0000 C CNN
+F 2 "" H 9400 1300 50  0001 C CNN
+F 3 "" H 9400 1300 50  0001 C CNN
+	1    9400 1300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9050 1350 9400 1350
+Wire Wire Line
+	9400 1350 9400 1300
+Connection ~ 9050 1350
 $EndSCHEMATC
