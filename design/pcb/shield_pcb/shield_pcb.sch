@@ -19,6 +19,7 @@ LIBS:opto
 LIBS:Power_Management
 LIBS:modules
 LIBS:regul
+LIBS:pspice
 LIBS:shield_pcb-cache
 EELAYER 26 0
 EELAYER END
@@ -89,6 +90,7 @@ F 0 "P1" H 9600 2200 50  0000 C CNN
 F 1 "Power" V 9700 1800 50  0000 C CNN
 F 2 "Socket_Arduino_Uno:Socket_Strip_Arduino_1x08" V 9750 1800 20  0000 C CNN
 F 3 "" H 9600 1800 50  0000 C CNN
+F 4 "N" H 9600 1800 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    9600 1800
 	1    0    0    -1  
 $EndComp
@@ -133,6 +135,7 @@ F 0 "P2" H 9600 3050 50  0000 C CNN
 F 1 "Analog" V 9700 2750 50  0000 C CNN
 F 2 "Socket_Arduino_Uno:Socket_Strip_Arduino_1x06" V 9750 2800 20  0000 C CNN
 F 3 "" H 9600 2750 50  0000 C CNN
+F 4 "N" H 9600 2750 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    9600 2750
 	1    0    0    -1  
 $EndComp
@@ -144,6 +147,7 @@ F 0 "P5" V 10900 650 50  0000 C CNN
 F 1 "CONN_01X01" V 10900 650 50  0001 C CNN
 F 2 "Socket_Arduino_Uno:Arduino_1pin" H 10721 724 20  0000 C CNN
 F 3 "" H 10800 650 50  0000 C CNN
+F 4 "N" V 10800 650 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    10800 650 
 	0    -1   -1   0   
 $EndComp
@@ -155,6 +159,7 @@ F 0 "P6" V 11000 650 50  0000 C CNN
 F 1 "CONN_01X01" V 11000 650 50  0001 C CNN
 F 2 "Socket_Arduino_Uno:Arduino_1pin" H 10900 650 20  0001 C CNN
 F 3 "" H 10900 650 50  0000 C CNN
+F 4 "N" V 10900 650 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    10900 650 
 	0    -1   -1   0   
 $EndComp
@@ -166,6 +171,7 @@ F 0 "P7" V 11100 650 50  0000 C CNN
 F 1 "CONN_01X01" V 11100 650 50  0001 C CNN
 F 2 "Socket_Arduino_Uno:Arduino_1pin" V 11000 650 20  0001 C CNN
 F 3 "" H 11000 650 50  0000 C CNN
+F 4 "N" V 11000 650 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    11000 650 
 	0    -1   -1   0   
 $EndComp
@@ -177,6 +183,7 @@ F 0 "P8" V 11200 650 50  0000 C CNN
 F 1 "CONN_01X01" V 11200 650 50  0001 C CNN
 F 2 "Socket_Arduino_Uno:Arduino_1pin" H 11024 572 20  0000 C CNN
 F 3 "" H 11100 650 50  0000 C CNN
+F 4 "N" V 11100 650 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    11100 650 
 	0    -1   -1   0   
 $EndComp
@@ -192,6 +199,7 @@ F 0 "P4" H 10000 3100 50  0000 C CNN
 F 1 "Digital" V 10100 2700 50  0000 C CNN
 F 2 "Socket_Arduino_Uno:Socket_Strip_Arduino_1x08" V 10150 2650 20  0000 C CNN
 F 3 "" H 10000 2700 50  0000 C CNN
+F 4 "N" H 10000 2700 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    10000 2700
 	-1   0    0    -1  
 $EndComp
@@ -203,6 +211,7 @@ F 0 "P3" H 10000 2100 50  0000 C CNN
 F 1 "Digital" V 10100 1600 50  0000 C CNN
 F 2 "Socket_Arduino_Uno:Socket_Strip_Arduino_1x10" V 10150 1600 20  0000 C CNN
 F 3 "" H 10000 1600 50  0000 C CNN
+F 4 "N" H 10000 1600 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    10000 1600
 	-1   0    0    -1  
 $EndComp
@@ -216,6 +225,7 @@ F 0 "J2" H 1830 1892 50  0000 L CNN
 F 1 "Screw_Terminal_01x02" H 1830 1801 50  0000 L CNN
 F 2 "TerminalBlocks_Phoenix:TerminalBlock_Phoenix_MPT-2.54mm_2pol" H 1750 1900 50  0001 C CNN
 F 3 "~" H 1750 1900 50  0001 C CNN
+F 4 "N" H 1750 1900 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    1750 1900
 	1    0    0    -1  
 $EndComp
@@ -227,6 +237,7 @@ F 0 "F1" V 1703 1700 50  0000 C CNN
 F 1 "Fuse" V 1794 1700 50  0000 C CNN
 F 2 "Fuse_Holders_and_Fuses:Fuseholder5x20_horiz_SemiClosed_Casing10x25mm" V 1830 1700 50  0001 C CNN
 F 3 "" H 1900 1700 50  0001 C CNN
+F 4 "N" H 1900 1700 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    1900 1700
 	0    1    1    0   
 $EndComp
@@ -423,6 +434,7 @@ F 0 "U1" H 10450 5292 50  0000 C CNN
 F 1 "LT1118-5" H 10450 5201 50  0000 C CNN
 F 2 "TO_SOT_Packages_SMD:SOT-223" H 10450 5050 50  0001 C CNN
 F 3 "http://cds.linear.com/docs/en/datasheet/1118fd.pdf" H 10450 5050 50  0001 C CNN
+F 4 "N" H 10450 5050 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    10450 5050
 	1    0    0    -1  
 $EndComp
@@ -445,6 +457,7 @@ F 0 "C4" H 10915 5246 50  0000 L CNN
 F 1 "1uF" H 10915 5155 50  0000 L CNN
 F 2 "Capacitors_THT:C_Rect_L7.0mm_W4.5mm_P5.00mm" H 10838 5050 50  0001 C CNN
 F 3 "" H 10800 5200 50  0001 C CNN
+F 4 "N" H 10800 5200 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    10800 5200
 	1    0    0    -1  
 $EndComp
@@ -456,6 +469,7 @@ F 0 "C3" H 10015 5246 50  0000 L CNN
 F 1 "2.2uF" H 10015 5155 50  0000 L CNN
 F 2 "Capacitors_THT:C_Rect_L4.0mm_W2.5mm_P2.50mm" H 9938 5050 50  0001 C CNN
 F 3 "" H 9900 5200 50  0001 C CNN
+F 4 "N" H 9900 5200 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    9900 5200
 	1    0    0    -1  
 $EndComp
@@ -500,6 +514,7 @@ F 0 "PS1" H 9350 5897 60  0000 C CNN
 F 1 "DCP020507P" H 9350 5791 60  0000 C CNN
 F 2 "Housings_DIP:DIP-14_W7.62mm_Socket" H 9150 5600 60  0001 C CNN
 F 3 "" H 9150 5600 60  0001 C CNN
+F 4 "N" H 9350 5350 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    9350 5350
 	1    0    0    -1  
 $EndComp
@@ -511,6 +526,7 @@ F 0 "C2" V 8398 5050 50  0000 C CNN
 F 1 "2.2uF" V 8489 5050 50  0000 C CNN
 F 2 "Capacitors_THT:C_Rect_L4.0mm_W2.5mm_P2.50mm" H 8688 4900 50  0001 C CNN
 F 3 "" H 8650 5050 50  0001 C CNN
+F 4 "N" V 8650 5050 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    8650 5050
 	0    1    1    0   
 $EndComp
@@ -522,6 +538,7 @@ F 0 "C1" H 8715 5546 50  0000 L CNN
 F 1 "1uF" H 8715 5455 50  0000 L CNN
 F 2 "Capacitors_THT:C_Rect_L7.0mm_W4.5mm_P5.00mm" H 8638 5350 50  0001 C CNN
 F 3 "" H 8600 5500 50  0001 C CNN
+F 4 "N" H 8600 5500 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    8600 5500
 	1    0    0    -1  
 $EndComp
@@ -1326,6 +1343,7 @@ F 0 "J1" H 820 658 50  0000 C CNN
 F 1 "DB25_Female" H 820 749 50  0000 C CNN
 F 2 "Connectors_DSub:DSUB-25_Female_Horizontal_Pitch2.77x2.84mm_EdgePinOffset7.70mm_Housed_MountingHolesOffset9.12mm" H 900 2150 50  0001 C CNN
 F 3 "" H 900 2150 50  0001 C CNN
+F 4 "N" H 900 2150 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    900  2150
 	-1   0    0    1   
 $EndComp
@@ -1723,6 +1741,7 @@ F 0 "#FLG01" H 9400 1375 50  0001 C CNN
 F 1 "PWR_FLAG" H 9400 1474 50  0000 C CNN
 F 2 "" H 9400 1300 50  0001 C CNN
 F 3 "" H 9400 1300 50  0001 C CNN
+F 4 "N" H 9400 1300 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    9400 1300
 	1    0    0    -1  
 $EndComp

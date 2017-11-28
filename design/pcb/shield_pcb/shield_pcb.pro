@@ -1,4 +1,4 @@
-update=Mon 27 Nov 2017 02:53:38 PM PST
+update=Mon 27 Nov 2017 07:25:19 PM PST
 version=1
 last_client=kicad
 [pcbnew]
@@ -25,6 +25,16 @@ version=1
 NetIExt=net
 [general]
 version=1
+[schematic_editor]
+version=1
+PageLayoutDescrFile=
+PlotDirectoryName=/home/tom/Documents/test
+SubpartIdSeparator=0
+SubpartFirstId=65
+NetFmtName=Pcbnew
+SpiceAjustPassiveValues=0
+LabSize=60
+ERC_TestSimilarLabels=1
 [eeschema]
 version=1
 LibDir=
@@ -49,13 +59,4 @@ LibName17=opto
 LibName18=Power_Management
 LibName19=modules
 LibName20=regul
-[schematic_editor]
-version=1
-PageLayoutDescrFile=
-PlotDirectoryName=/home/tom/Documents/test
-SubpartIdSeparator=0
-SubpartFirstId=65
-NetFmtName=Pcbnew
-SpiceAjustPassiveValues=0
-LabSize=60
-ERC_TestSimilarLabels=1
+LibName21=pspice

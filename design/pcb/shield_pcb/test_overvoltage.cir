@@ -1,0 +1,44 @@
+*** Basic test of overvoltage protection scheme ***
+
+* gives us a SUBCKT called DI_MMSZ5231B
+* (1=A(node?) 2=K(athode?))
+.include spice_lib/MMSZ5231B.lib
+
+* there does not seem be be a spice model available for the exact FETs I'm using
+* and this was the closest I could find
+* they are also not easily derived from the datasheets...
+* provides irl530n w/ node order: D G S
+* TODO check datasheet to see in which ways this differs from IRL620 / SiHL620
+.include spice_lib/sihl530.lib
+
+Vs 1 0 DC 100V
+
+*Rshort 1 2 0.001
+Rfly 1 2 50000K
+
+Rlim 2 3 39K
+* X is the prefix to address a subckt
+* node 0 should be "GND" (negative terminal of power supply)
+* TODO measure current through this diode
+*Xzener 0 3 DI_MMSZ5231B
+Rsense 3 4 15K
+
+* TODO test with logic low and high
+Vcc 5 0 DC 0V
+
+* consider MOSFET both on and off
+* node order is D, G, S, B (bulk substrate)
+* TODO what to do with B?
+* TODO mosfet parameters? most accurate model?
+*M1 4 6 2 7 MOSN
+Xfet 4 6 0 irl530n
+Rgate 5 6 150
+Rpulldown 6 0 100K
+
+*TODO why are these not executed when loading circuit?
+*.print v(1)
+*.print v(2)
+*.print v(2)
+*.print v(3)
+
+.end

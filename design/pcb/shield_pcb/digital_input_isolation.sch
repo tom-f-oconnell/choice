@@ -19,6 +19,7 @@ LIBS:opto
 LIBS:Power_Management
 LIBS:modules
 LIBS:regul
+LIBS:pspice
 LIBS:shield_pcb-cache
 EELAYER 26 0
 EELAYER END
@@ -86,6 +87,7 @@ F 0 "U10" H 6850 4428 50  0000 C CNN
 F 1 "74HC595" H 6850 4337 50  0000 C CNN
 F 2 "Housings_DIP:DIP-16_W7.62mm_Socket" H 6850 3550 50  0001 C CNN
 F 3 "" H 6850 3550 50  0001 C CNN
+F 4 "N" H 6850 3550 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    6850 3550
 	1    0    0    -1  
 $EndComp
@@ -119,6 +121,7 @@ F 0 "U9" H 6850 2428 50  0000 C CNN
 F 1 "74HC595" H 6850 2337 50  0000 C CNN
 F 2 "Housings_DIP:DIP-16_W7.62mm_Socket" H 7070 794 50  0001 C CNN
 F 3 "" H 7268 712 50  0001 C CNN
+F 4 "N" H 6850 1550 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    6850 1550
 	1    0    0    -1  
 $EndComp
@@ -163,6 +166,7 @@ F 0 "U11" H 6850 6778 50  0000 C CNN
 F 1 "74HC595" H 6850 6687 50  0000 C CNN
 F 2 "Housings_DIP:DIP-16_W7.62mm_Socket" H 6850 5900 50  0001 C CNN
 F 3 "" H 6850 5900 50  0001 C CNN
+F 4 "N" H 6850 5900 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    6850 5900
 	1    0    0    -1  
 $EndComp
@@ -220,6 +224,7 @@ F 0 "R14" H 5920 7046 50  0000 L CNN
 F 1 "4.7K" H 5920 6955 50  0000 L CNN
 F 2 "Resistors_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" V 5780 7000 50  0001 C CNN
 F 3 "" H 5850 7000 50  0001 C CNN
+F 4 "N" H 5850 7000 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    5850 7000
 	1    0    0    -1  
 $EndComp
@@ -506,6 +511,7 @@ F 0 "J6" H 6200 7055 50  0000 C CNN
 F 1 "GS3" H 6200 6964 50  0000 C CNN
 F 2 "Connectors:GS3" V 6288 6676 50  0001 C CNN
 F 3 "" H 6200 6750 50  0001 C CNN
+F 4 "N" H 6200 6750 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    6200 6750
 	1    0    0    -1  
 $EndComp
@@ -550,6 +556,7 @@ F 0 "R10" H 5120 2946 50  0000 L CNN
 F 1 "4.7K" H 5120 2855 50  0000 L CNN
 F 2 "Resistors_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" V 4980 2900 50  0001 C CNN
 F 3 "" H 5050 2900 50  0001 C CNN
+F 4 "N" H 5050 2900 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    5050 2900
 	1    0    0    -1  
 $EndComp
@@ -574,6 +581,7 @@ F 0 "J5" H 5400 2955 50  0000 C CNN
 F 1 "GS3" H 5400 2864 50  0000 C CNN
 F 2 "Connectors:GS3" V 5488 2576 50  0001 C CNN
 F 3 "" H 5400 2650 50  0001 C CNN
+F 4 "N" H 5400 2650 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    5400 2650
 	1    0    0    -1  
 $EndComp

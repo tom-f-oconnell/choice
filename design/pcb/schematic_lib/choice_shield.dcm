@@ -48,6 +48,12 @@ K linear regulator ldo fixed positive sink
 F http://cds.linear.com/docs/en/datasheet/1118fd.pdf
 $ENDCMP
 #
+$CMP MMSZ5231B
+D Zener Diode
+K diode
+F https://en.wikipedia.org/wiki/Zener_diode
+$ENDCMP
+#
 $CMP TLP2531
 D Dual TTL Optoisolator, DIP-8
 K DC dual optocoupler optoisolator TTL logic
