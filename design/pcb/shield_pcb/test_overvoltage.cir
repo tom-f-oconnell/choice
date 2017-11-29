@@ -13,18 +13,49 @@
 
 Vs 1 0 DC 100V
 
+*******************************************************************************
+* working approximation of flies actual resistance
+*******************************************************************************
+*Rfly 1 2 50000K
+*******************************************************************************
+
 *Rshort 1 2 0.001
 Rfly 1 2 50000K
 
 Rlim 2 3 39K
+
+*******************************************************************************
+* TODO the question now is:
+* does the zener completely defeat the point of having a switch?
+* (i.e. if the switch is off, is the fly still getting shocked?)
+* i think the answer is no, if the fly resistance is not way lower than expected
+* because it would take <<39KR upstream of Rlim to have Xzener turn on (get to >4.8V)
+
+* i'm getting less sure... might be the below though?
+*******************************************************************************
+
+*******************************************************************************
+* TODO TODO another big question:
+* even without the Zener, does it matter if the FET is off if the flies resistance
+* is so high? (if ""R""fet_off >> R_fly, then voltage across fly is small, 
+* but if R_fly ~> ""R""fet_off, then voltage across fly can be large even if off)
+
+* is this somewhere where the model for this fet and irl620 diverge?
+* or maybe the spice models don't work well in general?
+* need more than DC analysis?
+*******************************************************************************
+
+
 * X is the prefix to address a subckt
 * node 0 should be "GND" (negative terminal of power supply)
 * TODO measure current through this diode
 *Xzener 0 3 DI_MMSZ5231B
-Rsense 3 4 15K
+
+* also try 100K. others?
+Rsense 3 4 150K
 
 * TODO test with logic low and high
-Vcc 5 0 DC 0V
+Vcc 5 0 DC 5V
 
 * consider MOSFET both on and off
 * node order is D, G, S, B (bulk substrate)

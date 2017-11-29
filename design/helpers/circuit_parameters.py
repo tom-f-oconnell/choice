@@ -9,9 +9,13 @@ import numpy as np
 # TODO measure
 # maybe w/ oscilloscope? i wasn't really getting readings fast enough w/ a DMM 
 # on 20M resistance range
+'''
 min_fly_resistance = 1e6
 # could try 1e7-1e9. previously suspected typical was ~29Mohm, which is 2.9e7
 max_fly_resistance = 1e9 # 1Gohm
+'''
+min_fly_resistance = 5e7 / 5
+max_fly_resistance = 5e7 * 5
 
 
 ###############################################################################
@@ -24,7 +28,7 @@ min_operation_voltage = 20
 
 # error relative to nominal value. x100 to get a percentage.
 #max_fractional_voltage_change = 0.01
-max_fractional_voltage_change = 0.05
+max_fractional_voltage_change = 0.02
 
 
 ###############################################################################
@@ -85,13 +89,10 @@ min_expected_ctr = ctr_typ * extra_ctr_tolerance
 # for Vcc=5v (I adjusted a little)
 min_logic_high_voltage = 3.5
 max_logic_low_voltage = 1.5
-'''
-
-
 
 print 'resistor to limit optoisolator LED current: {:,} ohms\n'.format(\
     led_limit_resistor)
-
+'''
 
 #charge_time_at_min_current = 
 # digikey lists some (slightly) different parameters for what they call
