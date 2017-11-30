@@ -172,29 +172,6 @@ F 4 "N" H 6850 5900 60  0001 C CNN "Spice_Netlist_Enabled"
 $EndComp
 Text HLabel 2050 3650 0    60   Input ~ 0
 optional_enable_fet_registers
-$Comp
-L R R78
-U 1 1 5A2711F9
-P 5850 7000
-F 0 "R78" H 5920 7046 50  0000 L CNN
-F 1 "4.7K" H 5920 6955 50  0000 L CNN
-F 2 "Resistors_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" V 5780 7000 50  0001 C CNN
-F 3 "" H 5850 7000 50  0001 C CNN
-F 4 "N" H 5850 7000 60  0001 C CNN "Spice_Netlist_Enabled"
-	1    5850 7000
-	1    0    0    -1  
-$EndComp
-$Comp
-L GNDA #PWR088
-U 1 1 5A2711FF
-P 5850 7200
-F 0 "#PWR088" H 5850 6950 50  0001 C CNN
-F 1 "GNDA" H 5855 7027 50  0000 C CNN
-F 2 "" H 5850 7200 50  0001 C CNN
-F 3 "" H 5850 7200 50  0001 C CNN
-	1    5850 7200
-	1    0    0    -1  
-$EndComp
 Text HLabel 2050 3850 0    60   Input ~ 0
 optional_enable_demux_register
 NoConn ~ 7350 6400
@@ -284,18 +261,6 @@ $EndSheet
 Text Notes 1050 3350 0    60   ~ 0
 Optional: shift registers always enabled \nif appropriate jumpers are set.
 $Comp
-L GS3 J6
-U 1 1 5A20057E
-P 6200 6750
-F 0 "J6" H 6200 7055 50  0000 C CNN
-F 1 "GS3" H 6200 6964 50  0000 C CNN
-F 2 "Connectors:GS3" V 6288 6676 50  0001 C CNN
-F 3 "" H 6200 6750 50  0001 C CNN
-F 4 "N" H 6200 6750 60  0001 C CNN "Spice_Netlist_Enabled"
-	1    6200 6750
-	1    0    0    -1  
-$EndComp
-$Comp
 L GNDA #PWR091
 U 1 1 5A2DECFB
 P 6350 2850
@@ -369,15 +334,11 @@ Wire Wire Line
 Wire Wire Line
 	6200 2200 6200 3150
 Wire Wire Line
-	6000 1750 6000 3750
-Wire Wire Line
 	6150 1650 6150 3650
 Wire Wire Line
 	6050 1450 6050 3450
 Wire Wire Line
 	6100 3350 6100 1350
-Wire Wire Line
-	5850 7150 5850 7200
 Wire Wire Line
 	5850 5500 5850 4650
 Wire Wire Line
@@ -481,7 +442,7 @@ Connection ~ 6150 1650
 Wire Wire Line
 	4000 3650 2850 3650
 Wire Wire Line
-	4000 2550 4000 3650
+	4000 2650 4000 3650
 Wire Wire Line
 	2850 3850 4000 3850
 Wire Wire Line
@@ -489,18 +450,11 @@ Wire Wire Line
 Wire Wire Line
 	4000 6100 5700 6100
 Wire Wire Line
-	5700 6650 6050 6650
+	5700 6650 6350 6650
 Wire Wire Line
-	6350 6100 6350 6750
-Wire Wire Line
-	5850 6850 6050 6850
+	6350 6650 6350 6100
 Wire Wire Line
 	5700 6100 5700 6650
-Wire Wire Line
-	4000 2550 5250 2550
-Wire Wire Line
-	5550 2650 6000 2650
-Connection ~ 6000 2650
 Wire Wire Line
 	6350 2850 6400 2850
 Connection ~ 6850 2850
@@ -511,42 +465,8 @@ Wire Wire Line
 	6350 850  6400 850 
 Connection ~ 6850 850 
 Wire Wire Line
-	5050 2750 5250 2750
-$Comp
-L GS3 J5
-U 1 1 5A205B3C
-P 5400 2650
-F 0 "J5" H 5400 2955 50  0000 C CNN
-F 1 "GS3" H 5400 2864 50  0000 C CNN
-F 2 "Connectors:GS3" V 5488 2576 50  0001 C CNN
-F 3 "" H 5400 2650 50  0001 C CNN
-F 4 "N" H 5400 2650 60  0001 C CNN "Spice_Netlist_Enabled"
-	1    5400 2650
-	1    0    0    -1  
-$EndComp
+	4000 2650 6000 2650
 Wire Wire Line
-	5050 3050 5050 3100
-$Comp
-L GNDA #PWR084
-U 1 1 5A205B34
-P 5050 3100
-F 0 "#PWR084" H 5050 2850 50  0001 C CNN
-F 1 "GNDA" H 5055 2927 50  0000 C CNN
-F 2 "" H 5050 3100 50  0001 C CNN
-F 3 "" H 5050 3100 50  0001 C CNN
-	1    5050 3100
-	1    0    0    -1  
-$EndComp
-$Comp
-L R R74
-U 1 1 5A205B2E
-P 5050 2900
-F 0 "R74" H 5120 2946 50  0000 L CNN
-F 1 "4.7K" H 5120 2855 50  0000 L CNN
-F 2 "Resistors_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" V 4980 2900 50  0001 C CNN
-F 3 "" H 5050 2900 50  0001 C CNN
-F 4 "N" H 5050 2900 60  0001 C CNN "Spice_Netlist_Enabled"
-	1    5050 2900
-	1    0    0    -1  
-$EndComp
+	6000 1750 6000 3750
+Connection ~ 6000 2650
 $EndSCHEMATC

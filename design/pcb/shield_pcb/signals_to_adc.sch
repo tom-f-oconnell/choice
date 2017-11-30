@@ -416,12 +416,12 @@ $EndComp
 $Comp
 L GNDA #PWR041
 U 1 1 5A1247EB
-P 8100 4200
-F 0 "#PWR041" H 8100 3950 50  0001 C CNN
-F 1 "GNDA" H 8105 4027 50  0000 C CNN
-F 2 "" H 8100 4200 50  0001 C CNN
-F 3 "" H 8100 4200 50  0001 C CNN
-	1    8100 4200
+P 8050 4200
+F 0 "#PWR041" H 8050 3950 50  0001 C CNN
+F 1 "GNDA" H 8055 4027 50  0000 C CNN
+F 2 "" H 8050 4200 50  0001 C CNN
+F 3 "" H 8050 4200 50  0001 C CNN
+	1    8050 4200
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -521,17 +521,6 @@ F 1 "GNDA" H 2355 777 50  0000 C CNN
 F 2 "" H 2350 950 50  0001 C CNN
 F 3 "" H 2350 950 50  0001 C CNN
 	1    2350 950 
-	1    0    0    -1  
-$EndComp
-$Comp
-L GNDA #PWR014
-U 1 1 5A1265F6
-P 1400 3300
-F 0 "#PWR014" H 1400 3050 50  0001 C CNN
-F 1 "GNDA" H 1405 3127 50  0000 C CNN
-F 2 "" H 1400 3300 50  0001 C CNN
-F 3 "" H 1400 3300 50  0001 C CNN
-	1    1400 3300
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -655,8 +644,6 @@ F 3 "" H 2350 2050 50  0001 C CNN
 	1    2350 2050
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	8100 3750 8200 3750
 Wire Wire Line
 	7550 3550 7600 3550
 Wire Wire Line
@@ -1325,18 +1312,6 @@ Wire Wire Line
 	10100 4750 10100 5150
 Wire Wire Line
 	10100 4550 10900 4550
-$Comp
-L GS3 J3
-U 1 1 5A12D8B7
-P 1600 2850
-F 0 "J3" H 1600 3155 50  0000 C CNN
-F 1 "GS3" H 1600 3064 50  0000 C CNN
-F 2 "Connectors:GS3" V 1688 2776 50  0001 C CNN
-F 3 "" H 1600 2850 50  0001 C CNN
-F 4 "N" H 1600 2850 60  0001 C CNN "Spice_Netlist_Enabled"
-	1    1600 2850
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	8750 3450 8750 4100
 $Comp
@@ -1351,18 +1326,6 @@ F 3 "" H 1400 2600 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R R3
-U 1 1 5A20B57D
-P 1400 3100
-F 0 "R3" H 1330 3054 50  0000 R CNN
-F 1 "4.7K" H 1330 3145 50  0000 R CNN
-F 2 "Resistors_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" V 1330 3100 50  0001 C CNN
-F 3 "" H 1400 3100 50  0001 C CNN
-F 4 "N" H 1400 3100 60  0001 C CNN "Spice_Netlist_Enabled"
-	1    1400 3100
-	1    0    0    -1  
-$EndComp
-$Comp
 L +5VA #PWR013
 U 1 1 5A20B715
 P 1400 2400
@@ -1374,13 +1337,9 @@ F 3 "" H 1400 2400 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	1100 2750 1450 2750
+	1100 2750 1750 2750
 Wire Wire Line
 	1400 2450 1400 2400
-Wire Wire Line
-	1400 2950 1450 2950
-Wire Wire Line
-	1400 3300 1400 3250
 Wire Wire Line
 	1100 2750 1100 2100
 Wire Wire Line
@@ -1507,7 +1466,7 @@ Wire Wire Line
 Connection ~ 1450 750 
 Connection ~ 1600 600 
 Wire Wire Line
-	1750 2850 1750 1850
+	1750 2750 1750 1850
 Wire Wire Line
 	1750 1850 1800 1850
 Text Notes 1000 7450 0    60   ~ 0
@@ -1585,36 +1544,38 @@ Wire Wire Line
 	6800 3700 6800 3650
 Connection ~ 6800 3650
 $Comp
-L GS3 J9
-U 1 1 5A1E82EA
-P 8200 4000
-F 0 "J9" V 8246 3812 50  0000 R CNN
-F 1 "GS3" V 8155 3812 50  0000 R CNN
-F 2 "Connectors:GS3" V 8288 3926 50  0001 C CNN
-F 3 "" H 8200 4000 50  0001 C CNN
-	1    8200 4000
-	0    -1   -1   0   
-$EndComp
-Wire Wire Line
-	8200 3750 8200 3850
-Wire Wire Line
-	8100 4150 8100 4200
-$Comp
 L Conn_01x01 J8
 U 1 1 5A1E8838
-P 8100 4650
-F 0 "J8" V 7973 4730 50  0000 L CNN
-F 1 "Conn_01x01" V 8064 4730 50  0000 L CNN
-F 2 "Wire_Pads:SolderWirePad_single_1-2mmDrill" H 8100 4650 50  0001 C CNN
-F 3 "~" H 8100 4650 50  0001 C CNN
-	1    8100 4650
+P 8150 4650
+F 0 "J8" V 8023 4730 50  0000 L CNN
+F 1 "Conn_01x01" V 8114 4730 50  0000 L CNN
+F 2 "Wire_Pads:SolderWirePad_single_1-2mmDrill" H 8150 4650 50  0001 C CNN
+F 3 "~" H 8150 4650 50  0001 C CNN
+	1    8150 4650
 	0    1    1    0   
 $EndComp
-Wire Wire Line
-	8300 4150 8300 4450
-Wire Wire Line
-	8300 4450 8100 4450
 Connection ~ 10650 4550
 Text Notes -1750 5900 0    60   ~ 0
 TODO are these pulldowns redundant now?
+$Comp
+L Conn_01x03_Male J9
+U 1 1 5A2070F2
+P 8350 3900
+F 0 "J9" H 8323 3830 50  0000 R CNN
+F 1 "Conn_01x03_Male" H 8650 3950 50  0000 R CNN
+F 2 "footprints:SIP-3" H 8350 3900 50  0001 C CNN
+F 3 "~" H 8350 3900 50  0001 C CNN
+	1    8350 3900
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	8100 3750 8100 3900
+Wire Wire Line
+	8100 3900 8150 3900
+Wire Wire Line
+	8050 4200 8050 3800
+Wire Wire Line
+	8050 3800 8150 3800
+Wire Wire Line
+	8150 4000 8150 4450
 $EndSCHEMATC
