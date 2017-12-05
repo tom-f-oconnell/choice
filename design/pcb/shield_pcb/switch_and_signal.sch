@@ -25,7 +25,7 @@ EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 4 22
+Sheet 5 22
 Title ""
 Date ""
 Rev ""
@@ -207,7 +207,7 @@ AR Path="/5A188A7A/5A1FFEF2" Ref="#PWR075"  Part="1"
 AR Path="/5A188A49/5A1FFEF2" Ref="#PWR077"  Part="1" 
 AR Path="/5A17981D/5A1FFEF2" Ref="#PWR079"  Part="1" 
 AR Path="/5A179816/5A1FFEF2" Ref="#PWR081"  Part="1" 
-F 0 "#PWR051" H 4000 5150 50  0001 C CNN
+F 0 "#PWR081" H 4000 5150 50  0001 C CNN
 F 1 "GNDA" H 4005 5227 50  0000 C CNN
 F 2 "" H 4000 5400 50  0001 C CNN
 F 3 "" H 4000 5400 50  0001 C CNN
@@ -234,7 +234,7 @@ AR Path="/5A188A7A/5A20015F" Ref="#PWR076"  Part="1"
 AR Path="/5A188A49/5A20015F" Ref="#PWR078"  Part="1" 
 AR Path="/5A17981D/5A20015F" Ref="#PWR080"  Part="1" 
 AR Path="/5A179816/5A20015F" Ref="#PWR082"  Part="1" 
-F 0 "#PWR052" H 5100 2300 50  0001 C CNN
+F 0 "#PWR082" H 5100 2300 50  0001 C CNN
 F 1 "GNDA" V 5105 2422 50  0000 R CNN
 F 2 "" H 5100 2550 50  0001 C CNN
 F 3 "" H 5100 2550 50  0001 C CNN
@@ -247,8 +247,8 @@ Text Notes 900  5650 0    60   ~ 0
 TODO add LED indicators on FET gates,\neither in this sheet or above (if array)
 Text GLabel 3500 1450 0    60   Input ~ 0
 HV
-Text Notes 4450 2700 0    39   ~ 0
-500mW, 5.1V, 5uA max reverse leakage
+Text Notes 4500 2700 0    39   ~ 0
+500mW, 5.1V
 Text Notes 4550 2150 0    39   ~ 0
 5%, 1W
 $Comp
@@ -301,8 +301,8 @@ AR Path="/5A188A49/5A31DEEC" Ref="D28"  Part="1"
 AR Path="/5A17981D/5A31DEEC" Ref="D30"  Part="1" 
 AR Path="/5A179816/5A31DEEC" Ref="D32"  Part="1" 
 F 0 "D2" H 4700 2766 50  0000 C CNN
-F 1 "MMSZ5231B" H 4700 2675 50  0000 C CNN
-F 2 "Diodes_SMD:D_SOD-123" H 4700 2550 50  0001 C CNN
+F 1 "1N5231BTR" H 4700 2675 50  0000 C CNN
+F 2 "Diodes_THT:D_DO-35_SOD27_P2.54mm_Vertical_AnodeUp" H 4700 2550 50  0001 C CNN
 F 3 "https://en.wikipedia.org/wiki/Zener_diode" H 4700 2650 50  0001 C CNN
 F 4 "X" H 4700 2550 60  0001 C CNN "Spice_Primitive"
 F 5 "DI_MMSZ5231B" H 4708 2376 60  0001 C CNN "Spice_Model"
