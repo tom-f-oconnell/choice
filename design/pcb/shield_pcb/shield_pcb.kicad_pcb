@@ -2,7 +2,7 @@
 
   (general
     (thickness 1.6)
-    (drawings 22)
+    (drawings 24)
     (tracks 1075)
     (zones 0)
     (modules 188)
@@ -8189,10 +8189,12 @@
       (net 82 "Net-(F1-Pad2)"))
   )
 
+  (gr_line (start 150 71.8) (end 150 190.2) (layer Edge.Cuts) (width 0.15))
+  (gr_line (start 112.6 71.8) (end 150 71.8) (layer Edge.Cuts) (width 0.15))
   (gr_line (start 44 190.2) (end 44 16.8) (layer Edge.Cuts) (width 0.15) (tstamp 5A1EACC6))
   (gr_line (start 112.6 71.8) (end 112.6 16.8) (layer Edge.Cuts) (width 0.15) (tstamp 5A1E9BBC))
   (gr_line (start 112.6 16.8) (end 44 16.8) (layer Edge.Cuts) (width 0.15) (tstamp 5A1EACC3))
-  (gr_line (start 44 190.2) (end 112.6 190.2) (layer Edge.Cuts) (width 0.15) (tstamp 5A20DBA2))
+  (gr_line (start 44 190.2) (end 150 190.2) (layer Edge.Cuts) (width 0.15) (tstamp 5A20DBA2))
   (gr_text 1 (at 71.738 65.085 90) (layer F.SilkS) (tstamp 5A1F0F68)
     (effects (font (size 1 1) (thickness 0.15)))
   )
