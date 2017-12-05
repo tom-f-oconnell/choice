@@ -6,10 +6,10 @@
    - Lower prefix numbers are layers higher in the assembly.
    - TODO include materials and sources for all layers
 
-- `pcb_outline.dxf`
+- `floor_pcb_edges.dxf` and `ceiling_pcb_edges.dxf`
    - Generated from one version of `olfactory_shock_conditioning_chambers.dxf`
    - Imported into Kicad to the `Edge.Cuts` layer to form the outline and 
-     interior routed / drilled features of the floor circuit board.
+     interior routed / drilled features of the floor and ceiling circuit boards.
 
 - `food_vial_holder_no_slider.svg`
    - A prototype food vial holder, to serve as a source of flies for an automatic

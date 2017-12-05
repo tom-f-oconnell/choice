@@ -68,7 +68,9 @@ for j, y in enumerate(np.linspace(y0_center, y0_center + num_chambers * \
     # load netlist manually, and then move components into place, selecting them
     # with their reference
     #electrode = io().FootprintLoad(footprint_lib_dir, 'electrode')
-    electrode = pcb.FindModuleByReference('J{}'.format(j+4))
+    # TODO count # connectors & assume all at end? or renumber and assume they
+    # are at beginning? maybe take # as a parameter?
+    electrode = pcb.FindModuleByReference('J{}'.format(j+3))
 
     # TODO this clone didn't seem to work, but way to add multiples without reloading?
     #pcb.Add(electrode.clone())
@@ -86,6 +88,7 @@ for j, y in enumerate(np.linspace(y0_center, y0_center + num_chambers * \
 def mm_to_nm(mm):
     return int(round(1e6 * mm))
 
+'''
 # sets the position of two of the headers, relative to the boundaries of the board
 # so that their position is symmetric about the board center
 board_edge_x_to_center_mm = 23
@@ -115,6 +118,7 @@ print_placing('connector', \
 
 # TODO also place J3 just for completeness? it's basically just the routing left
 # after that...
+'''
 
 
 print 'setting title block'
