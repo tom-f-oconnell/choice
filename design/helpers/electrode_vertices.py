@@ -27,7 +27,9 @@ def electrode_vertices():
     # maybe a little less?
     min_half_length = 25
     min_width = 6.5
-    between_electrodes = 1
+    # changed from 1mm of original to 0.6, which is IPC
+    # minimum for up to 150V for uncoated external connectors not at elevation
+    between_electrodes = 0.6
     electrode_width = 1
 
     connections_between_grids = False
@@ -171,7 +173,7 @@ def as_eagle_footprint(polylines, filename=''):
     raise NotImplementedError
 
 
-def as_kicad_mod(polylines, filename='../pcb/footprints.pretty/electrode.kicad_mod'):
+def as_kicad_mod(polylines, filename='../pcb/footprints.pretty/electrodes_clearance0.6mm.kicad_mod'):
     import pcbnew
     from pcbnew import PCB_IO as io
 
