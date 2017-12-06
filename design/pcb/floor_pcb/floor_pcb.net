@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source /home/tom/catkin/src/choice/design/pcb/floor_pcb/floor_pcb.sch)
-    (date "Tue 05 Dec 2017 10:33:31 PM PST")
+    (date "Wed 06 Dec 2017 01:10:12 PM PST")
     (tool "Eeschema (2017-11-10 revision d8f4e35)-HEAD")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
@@ -146,10 +146,10 @@
         (pin (num 1) (name left_grid) (type output))
         (pin (num 2) (name right_grid) (type output)))))
   (libraries
-    (library (logical Connector)
-      (uri /usr/share/kicad/library/Connector.lib))
     (library (logical shock_grid)
-      (uri /home/tom/catkin/src/choice/design/pcb/schematic_lib/shock_grid.lib)))
+      (uri /home/tom/catkin/src/choice/design/pcb/schematic_lib/shock_grid.lib))
+    (library (logical Connector)
+      (uri /usr/share/kicad/library/Connector.lib)))
   (nets
     (net (code 1) (name /HV)
       (node (ref J9) (pin 0))

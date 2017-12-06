@@ -117,7 +117,7 @@ def mm_to_nm(mm):
 
 # should yield a symmetric board
 # assuming grid footprint is symmetric about its origin
-nearest_grid_center_to_conn_center_mm = 12.6
+nearest_grid_center_to_conn_center_mm = 20
 
 # TODO TODO print distances from center of nearest grids to center of j1/2 for ceiling
 # given that it was layed out w/ 6mm from board edges, then use those values for floor
@@ -133,36 +133,14 @@ center = eda_rect.GetCenter()
 offset_x = mm_to_nm(0 if in_ceiling_board else 2.54)
 
 # not clear on why this is necessary, but it is to get the HV pads to line up with
-extra_c10_offset_x = mm_to_nm(-1.22)
+extra_c10_offset_x = mm_to_nm(0 if in_ceiling_board else -1.22)
 
 top_conn = pcb.FindModuleByReference('J2')
 bottom_conn = pcb.FindModuleByReference('J1')
 
-
-# TODO delete me
-# was for switching from board edge reference to nearest grid reference
-# yielded ~12.6-12.7 -> going with 12.6mm
-'''
-if in_ceiling_board:
-    print 'top conn y pos:', nm_to_mm(top_conn.GetPosition().y)
-    print 'top grid center:', kicad_y_for_librecad_y0 - \
-        (y0_center + (num_chambers - 1) * y_grid_interval)
-    print 'top conn y pos to top grid center:', \
-        (kicad_y_for_librecad_y0 - (y0_center + (num_chambers - 1) * \
-        y_grid_interval)) - nm_to_mm(top_conn.GetPosition().y)
-
-    print 'bottom conn y pos:', nm_to_mm(bottom_conn.GetPosition().y)
-    print 'bottom grid center:', kicad_y_for_librecad_y0 - y0_center
-    print 'bottom conn y pos to bottom grid center:', \
-        nm_to_mm(bottom_conn.GetPosition().y) - \
-        (kicad_y_for_librecad_y0 - y0_center)
-'''
-
 # place the top 10 pin connector (between floor and ceiling grids)
 top_grid_center_y = kicad_y_for_librecad_y0 - \
     (y0_center + (num_chambers - 1) * y_grid_interval)
-#if dry_run:
-#    print 'top grid center:', top_grid_center_y
 
 top_center = pcbnew.wxPoint(center.x + offset_x + extra_c10_offset_x, \
     mm_to_nm(top_grid_center_y - nearest_grid_center_to_conn_center_mm))
@@ -175,8 +153,6 @@ if not dry_run:
 
 # place the bottom 10 pin connector (between floor and ceiling grids)
 bottom_grid_center_y = kicad_y_for_librecad_y0 - y0_center
-#if dry_run:
-#    print 'bottom grid center:', bottom_grid_center_y
 
 bottom_center = pcbnew.wxPoint(center.x + offset_x + extra_c10_offset_x, \
     mm_to_nm(bottom_grid_center_y + nearest_grid_center_to_conn_center_mm))
