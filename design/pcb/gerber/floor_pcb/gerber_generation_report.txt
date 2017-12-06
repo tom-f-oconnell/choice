@@ -1,6 +1,0 @@
-Plot file '/home/tom/catkin/src/choice/design/pcb/gerber/floor_pcb/floor_pcb-F.Cu.gbr' created.
-Plot file '/home/tom/catkin/src/choice/design/pcb/gerber/floor_pcb/floor_pcb-B.Cu.gbr' created.
-Plot file '/home/tom/catkin/src/choice/design/pcb/gerber/floor_pcb/floor_pcb-B.SilkS.gbr' created.
-Plot file '/home/tom/catkin/src/choice/design/pcb/gerber/floor_pcb/floor_pcb-F.SilkS.gbr' created.
-Plot file '/home/tom/catkin/src/choice/design/pcb/gerber/floor_pcb/floor_pcb-Edge.Cuts.gbr' created.
-Create Gerber job file '/home/tom/catkin/src/choice/design/pcb/gerber/floor_pcb/floor_pcb-job.gbrjob'
