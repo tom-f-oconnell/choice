@@ -10,7 +10,7 @@
     (options (clearance outline) (anchor circle))
     (primitives
       (gr_poly (pts
-         (xy -0.2 -7) (xy 0.2 -7) (xy 0.2 0.1) (xy 1.8 0.1) (xy 1.8 -7)
+         (xy -0.2 -8) (xy 0.2 -8) (xy 0.2 0.1) (xy 1.8 0.1) (xy 1.8 -7)
          (xy 2.2 -7) (xy 2.2 0.1) (xy 3.8 0.1) (xy 3.8 -7) (xy 4.2 -7)
          (xy 4.2 0.1) (xy 5.8 0.1) (xy 5.8 -7) (xy 6.2 -7) (xy 6.2 0.1)
          (xy 7.8 0.1) (xy 7.8 -7) (xy 8.2 -7) (xy 8.2 0.1) (xy 9.8 0.1)

@@ -9,10 +9,10 @@
     (nets 28)
   )
 
-  (page A4)
+  (page A4 portrait)
   (title_block
     (title "8 chamber shock conditioning grid")
-    (date 04-12-2017)
+    (date 2017-12-05)
     (company "Hong Lab @ Caltech")
   )
 

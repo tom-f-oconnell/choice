@@ -103,7 +103,7 @@ def mm_to_nm(mm):
 # sets the position of two of the headers, relative to the boundaries of the board
 # so that their position is symmetric about the board center
 board_edge_x_to_center_mm = 23
-board_edge_y_to_center_mm = 7
+board_edge_y_to_center_mm = 6
 eda_rect = pcb.GetBoardEdgesBoundingBox()
 
 # value returned should be an integer in nm
@@ -115,15 +115,16 @@ offset_x = mm_to_nm(0 if in_ceiling_board else 2.54)
 
 top = eda_rect.GetTop()
 top_conn = pcb.FindModuleByReference('J2')
-top_center = pcbnew.wxPoint(center + offset_x, top + mm_to_nm(board_edge_y_to_center_mm))
+top_center = pcbnew.wxPoint(center.x + offset_x, top + mm_to_nm(board_edge_y_to_center_mm))
 top_conn.SetPosition(top_center)
 print_placing('top connector', \
     pcbnew.wxPointMM(nm_to_mm(top_center.x), nm_to_mm(top_center.y)))
 
 bottom = eda_rect.GetBottom()
 bottom_conn = pcb.FindModuleByReference('J1')
-# TODO is it by center?
-bottom_center = pcbnew.wxPoint(center + offset_x, bottom - mm_to_nm(board_edge_y_to_center_mm))
+bottom_center = pcbnew.wxPoint(center.x + offset_x, bottom - \
+        mm_to_nm(board_edge_y_to_center_mm))
+
 bottom_conn.SetPosition(bottom_center)
 print_placing('bottom connector', \
     pcbnew.wxPointMM(nm_to_mm(bottom_center.x), nm_to_mm(bottom_center.y)))

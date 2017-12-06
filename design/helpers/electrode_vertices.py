@@ -9,7 +9,7 @@ def electrode_vertices(mirror=True, lengthwise=True, include_other_electrode=Tru
         rightmost_tooth_from_top=False,  center_x=0, center_y=0, \
         min_half_length=25, min_width=6.5, between_electrodes=0.6, \
         electrode_width=0.4, connections_between_grids=False,  \
-        y_between_grid_centers=22.50, extra_center_tooth=0):
+        y_between_grid_centers=22.50, extra_center_tooth=1):
     """
     TODO reword mirror?
     TODO what does rightmost_tooth_from_top do?
@@ -171,11 +171,12 @@ def electrode_vertices(mirror=True, lengthwise=True, include_other_electrode=Tru
             for p in reversed(points[:-3]):
                 # mirror over y=center_y
                 mirrored_points.append([-p[0], p[1]])
+            points = points[:-3]
+
         else:
             for p in reversed(points[1:-1]):
                 mirrored_points.append([2*center_x - p[0], p[1]])
 
-        points = points[:-3]
         for p in mirrored_points:
             points.append(p)
 
@@ -233,7 +234,7 @@ def as_eagle_footprint(polylines, filename=''):
     raise NotImplementedError
 
 
-def as_kicad_mod(polylines, filename='../pcb/footprints.pretty/electrodes_clearance0.6mm_W0.4mm_lengthwise.kicad_mod'):
+def as_kicad_mod(polylines, filename='../pcb/footprints.pretty/electrodes_clearance0.6mm_W0.4mm_centerflush.kicad_mod'):
     import pcbnew
     from pcbnew import PCB_IO as io
 
@@ -408,6 +409,6 @@ def as_kicad_mod(polylines, filename='../pcb/footprints.pretty/electrodes_cleara
 
 if __name__ == '__main__':
     to_output_format = as_kicad_mod
-    to_output_format(electrode_vertices(lengthwise=True, \
+    to_output_format(electrode_vertices(lengthwise=False, \
         include_other_electrode=True, mirror=True))
 

@@ -144,13 +144,13 @@ F13
 Text Label 2250 4500 0    60   ~ 0
 F15
 Text Label 2250 4700 0    60   ~ 0
-F10
-Text Label 2250 4800 0    60   ~ 0
-F12
-Text Label 2250 4900 0    60   ~ 0
-F14
-Text Label 2250 5000 0    60   ~ 0
 F16
+Text Label 2250 4800 0    60   ~ 0
+F14
+Text Label 2250 4900 0    60   ~ 0
+F12
+Text Label 2250 5000 0    60   ~ 0
+F10
 Text Label 3850 5050 0    60   ~ 0
 HV
 Text Label 3850 3900 0    60   ~ 0
