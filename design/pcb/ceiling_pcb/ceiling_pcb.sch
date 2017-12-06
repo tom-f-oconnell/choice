@@ -120,37 +120,37 @@ HV
 Text Label 2250 4600 0    60   ~ 0
 HV
 Text Label 2250 2750 0    60   ~ 0
-F7
-Text Label 2250 2850 0    60   ~ 0
-F5
-Text Label 2250 2950 0    60   ~ 0
-F3
-Text Label 2250 3050 0    60   ~ 0
-F1
-Text Label 2250 3250 0    60   ~ 0
-F2
-Text Label 2250 3350 0    60   ~ 0
-F4
-Text Label 2250 3450 0    60   ~ 0
-F6
-Text Label 2250 3550 0    60   ~ 0
-F8
-Text Label 2250 4200 0    60   ~ 0
-F9
-Text Label 2250 4300 0    60   ~ 0
-F11
-Text Label 2250 4400 0    60   ~ 0
-F13
-Text Label 2250 4500 0    60   ~ 0
-F15
-Text Label 2250 4700 0    60   ~ 0
-F16
-Text Label 2250 4800 0    60   ~ 0
-F14
-Text Label 2250 4900 0    60   ~ 0
-F12
-Text Label 2250 5000 0    60   ~ 0
 F10
+Text Label 2250 2850 0    60   ~ 0
+F12
+Text Label 2250 2950 0    60   ~ 0
+F14
+Text Label 2250 3050 0    60   ~ 0
+F16
+Text Label 2250 3250 0    60   ~ 0
+F15
+Text Label 2250 3350 0    60   ~ 0
+F13
+Text Label 2250 3450 0    60   ~ 0
+F11
+Text Label 2250 3550 0    60   ~ 0
+F9
+Text Label 2250 4200 0    60   ~ 0
+F8
+Text Label 2250 4300 0    60   ~ 0
+F6
+Text Label 2250 4400 0    60   ~ 0
+F4
+Text Label 2250 4500 0    60   ~ 0
+F2
+Text Label 2250 4700 0    60   ~ 0
+F1
+Text Label 2250 4800 0    60   ~ 0
+F3
+Text Label 2250 4900 0    60   ~ 0
+F5
+Text Label 2250 5000 0    60   ~ 0
+F7
 Text Label 3850 5050 0    60   ~ 0
 HV
 Text Label 3850 3900 0    60   ~ 0
@@ -168,37 +168,37 @@ HV
 Text Label 6950 5050 0    60   ~ 0
 HV
 Text Label 3350 1950 0    60   ~ 0
-F2
-Text Label 5350 1950 0    60   ~ 0
-F1
-Text Label 6450 1950 0    60   ~ 0
-F4
-Text Label 8450 1950 0    60   ~ 0
-F3
-Text Label 3350 3400 0    60   ~ 0
-F6
-Text Label 5350 3400 0    60   ~ 0
-F5
-Text Label 6450 3400 0    60   ~ 0
-F8
-Text Label 8450 3400 0    60   ~ 0
-F7
-Text Label 3350 4800 0    60   ~ 0
-F10
-Text Label 5350 4800 0    60   ~ 0
-F9
-Text Label 6450 4800 0    60   ~ 0
-F12
-Text Label 8450 4800 0    60   ~ 0
-F11
-Text Label 8450 5950 0    60   ~ 0
 F15
-Text Label 6450 5950 0    60   ~ 0
+Text Label 5350 1950 0    60   ~ 0
 F16
-Text Label 3350 5950 0    60   ~ 0
-F14
-Text Label 5350 5950 0    60   ~ 0
+Text Label 6450 1950 0    60   ~ 0
 F13
+Text Label 8450 1950 0    60   ~ 0
+F14
+Text Label 3350 3400 0    60   ~ 0
+F11
+Text Label 5350 3400 0    60   ~ 0
+F12
+Text Label 6450 3400 0    60   ~ 0
+F9
+Text Label 8450 3400 0    60   ~ 0
+F10
+Text Label 3350 4800 0    60   ~ 0
+F7
+Text Label 5350 4800 0    60   ~ 0
+F8
+Text Label 6450 4800 0    60   ~ 0
+F5
+Text Label 8450 4800 0    60   ~ 0
+F6
+Text Label 8450 5950 0    60   ~ 0
+F2
+Text Label 6450 5950 0    60   ~ 0
+F1
+Text Label 3350 5950 0    60   ~ 0
+F3
+Text Label 5350 5950 0    60   ~ 0
+F4
 Wire Wire Line
 	4350 950  4350 1250
 Wire Wire Line

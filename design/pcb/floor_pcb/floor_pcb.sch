@@ -19,111 +19,111 @@ $EndDescr
 $Comp
 L Conn_01x10_Male J2
 U 1 1 59F76DF3
-P 1350 3300
-F 0 "J2" H 1456 3878 50  0000 C CNN
-F 1 "Conn_01x10_Male" H 1456 3787 50  0000 C CNN
-F 2 "footprints:SIP-10_2.54mm_1mm_clearance" H 1350 3300 50  0001 C CNN
-F 3 "" H 1350 3300 50  0001 C CNN
-	1    1350 3300
-	1    0    0    -1  
-$EndComp
-$Comp
-L shock_grid J4
-U 1 1 59F778B5
-P 4350 1450
-F 0 "J4" H 5378 1728 60  0000 L CNN
-F 1 "shock_grid" H 5378 1622 60  0000 L CNN
-F 2 "footprints:electrodes_clearance0.6mm_W0.4mm_centerflush" H 4350 1450 60  0001 C CNN
-F 3 "" H 4350 1450 60  0001 C CNN
-	1    4350 1450
-	1    0    0    -1  
-$EndComp
-$Comp
-L shock_grid J6
-U 1 1 59F779C5
-P 4350 2900
-F 0 "J6" H 5378 3178 60  0000 L CNN
-F 1 "shock_grid" H 5378 3072 60  0000 L CNN
-F 2 "footprints:electrodes_clearance0.6mm_W0.4mm_centerflush" H 4350 2900 60  0001 C CNN
-F 3 "" H 4350 2900 60  0001 C CNN
-	1    4350 2900
-	1    0    0    -1  
-$EndComp
-$Comp
-L shock_grid J5
-U 1 1 59F77CE3
-P 7450 1450
-F 0 "J5" H 8478 1728 60  0000 L CNN
-F 1 "shock_grid" H 8478 1622 60  0000 L CNN
-F 2 "footprints:electrodes_clearance0.6mm_W0.4mm_centerflush" H 7450 1450 60  0001 C CNN
-F 3 "" H 7450 1450 60  0001 C CNN
-	1    7450 1450
-	1    0    0    -1  
-$EndComp
-$Comp
-L shock_grid J7
-U 1 1 59F77DC7
-P 7450 2900
-F 0 "J7" H 8478 3178 60  0000 L CNN
-F 1 "shock_grid" H 8478 3072 60  0000 L CNN
-F 2 "footprints:electrodes_clearance0.6mm_W0.4mm_centerflush" H 7450 2900 60  0001 C CNN
-F 3 "" H 7450 2900 60  0001 C CNN
-	1    7450 2900
-	1    0    0    -1  
-$EndComp
-$Comp
-L shock_grid J8
-U 1 1 59F77FF1
-P 4350 4300
-F 0 "J8" H 5378 4578 60  0000 L CNN
-F 1 "shock_grid" H 5378 4472 60  0000 L CNN
-F 2 "footprints:electrodes_clearance0.6mm_W0.4mm_centerflush" H 4350 4300 60  0001 C CNN
-F 3 "" H 4350 4300 60  0001 C CNN
-	1    4350 4300
-	1    0    0    -1  
-$EndComp
-$Comp
-L shock_grid J9
-U 1 1 59F780F5
-P 7450 4300
-F 0 "J9" H 8478 4578 60  0000 L CNN
-F 1 "shock_grid" H 8478 4472 60  0000 L CNN
-F 2 "footprints:electrodes_clearance0.6mm_W0.4mm_centerflush" H 7450 4300 60  0001 C CNN
-F 3 "" H 7450 4300 60  0001 C CNN
-	1    7450 4300
-	1    0    0    -1  
-$EndComp
-$Comp
-L shock_grid J10
-U 1 1 59F78242
-P 4350 5450
-F 0 "J10" H 5378 5728 60  0000 L CNN
-F 1 "shock_grid" H 5378 5622 60  0000 L CNN
-F 2 "footprints:electrodes_clearance0.6mm_W0.4mm_centerflush" H 4350 5450 60  0001 C CNN
-F 3 "" H 4350 5450 60  0001 C CNN
-	1    4350 5450
+P 1350 2100
+F 0 "J2" H 1456 2678 50  0000 C CNN
+F 1 "Conn_01x10_Male" H 1456 2587 50  0000 C CNN
+F 2 "footprints:SIP-10_2.54mm_1mm_clearance" H 1350 2100 50  0001 C CNN
+F 3 "" H 1350 2100 50  0001 C CNN
+	1    1350 2100
 	1    0    0    -1  
 $EndComp
 $Comp
 L shock_grid J11
+U 1 1 59F778B5
+P 4250 1800
+F 0 "J11" H 5278 2078 60  0000 L CNN
+F 1 "shock_grid" H 5278 1972 60  0000 L CNN
+F 2 "footprints:electrodes_clearance0.6mm_W0.4mm_centerflush" H 4250 1800 60  0001 C CNN
+F 3 "" H 4250 1800 60  0001 C CNN
+	1    4250 1800
+	1    0    0    -1  
+$EndComp
+$Comp
+L shock_grid J9
+U 1 1 59F779C5
+P 4250 3250
+F 0 "J9" H 5278 3528 60  0000 L CNN
+F 1 "shock_grid" H 5278 3422 60  0000 L CNN
+F 2 "footprints:electrodes_clearance0.6mm_W0.4mm_centerflush" H 4250 3250 60  0001 C CNN
+F 3 "" H 4250 3250 60  0001 C CNN
+	1    4250 3250
+	1    0    0    -1  
+$EndComp
+$Comp
+L shock_grid J10
+U 1 1 59F77CE3
+P 7350 1800
+F 0 "J10" H 8378 2078 60  0000 L CNN
+F 1 "shock_grid" H 8378 1972 60  0000 L CNN
+F 2 "footprints:electrodes_clearance0.6mm_W0.4mm_centerflush" H 7350 1800 60  0001 C CNN
+F 3 "" H 7350 1800 60  0001 C CNN
+	1    7350 1800
+	1    0    0    -1  
+$EndComp
+$Comp
+L shock_grid J8
+U 1 1 59F77DC7
+P 7350 3250
+F 0 "J8" H 8378 3528 60  0000 L CNN
+F 1 "shock_grid" H 8378 3422 60  0000 L CNN
+F 2 "footprints:electrodes_clearance0.6mm_W0.4mm_centerflush" H 7350 3250 60  0001 C CNN
+F 3 "" H 7350 3250 60  0001 C CNN
+	1    7350 3250
+	1    0    0    -1  
+$EndComp
+$Comp
+L shock_grid J7
+U 1 1 59F77FF1
+P 4250 4650
+F 0 "J7" H 5278 4928 60  0000 L CNN
+F 1 "shock_grid" H 5278 4822 60  0000 L CNN
+F 2 "footprints:electrodes_clearance0.6mm_W0.4mm_centerflush" H 4250 4650 60  0001 C CNN
+F 3 "" H 4250 4650 60  0001 C CNN
+	1    4250 4650
+	1    0    0    -1  
+$EndComp
+$Comp
+L shock_grid J6
+U 1 1 59F780F5
+P 7350 4650
+F 0 "J6" H 8378 4928 60  0000 L CNN
+F 1 "shock_grid" H 8378 4822 60  0000 L CNN
+F 2 "footprints:electrodes_clearance0.6mm_W0.4mm_centerflush" H 7350 4650 60  0001 C CNN
+F 3 "" H 7350 4650 60  0001 C CNN
+	1    7350 4650
+	1    0    0    -1  
+$EndComp
+$Comp
+L shock_grid J5
+U 1 1 59F78242
+P 4250 5800
+F 0 "J5" H 5278 6078 60  0000 L CNN
+F 1 "shock_grid" H 5278 5972 60  0000 L CNN
+F 2 "footprints:electrodes_clearance0.6mm_W0.4mm_centerflush" H 4250 5800 60  0001 C CNN
+F 3 "" H 4250 5800 60  0001 C CNN
+	1    4250 5800
+	1    0    0    -1  
+$EndComp
+$Comp
+L shock_grid J4
 U 1 1 59F7866D
-P 7450 5450
-F 0 "J11" H 8478 5728 60  0000 L CNN
-F 1 "shock_grid" H 8478 5622 60  0000 L CNN
-F 2 "footprints:electrodes_clearance0.6mm_W0.4mm_centerflush" H 7450 5450 60  0001 C CNN
-F 3 "" H 7450 5450 60  0001 C CNN
-	1    7450 5450
+P 7350 5800
+F 0 "J4" H 8378 6078 60  0000 L CNN
+F 1 "shock_grid" H 8378 5972 60  0000 L CNN
+F 2 "footprints:electrodes_clearance0.6mm_W0.4mm_centerflush" H 7350 5800 60  0001 C CNN
+F 3 "" H 7350 5800 60  0001 C CNN
+	1    7350 5800
 	1    0    0    -1  
 $EndComp
 $Comp
 L Conn_01x10_Male J1
 U 1 1 59F76D5B
-P 1350 1850
-F 0 "J1" H 1456 2428 50  0000 C CNN
-F 1 "Conn_01x10_Male" H 1456 2337 50  0000 C CNN
-F 2 "footprints:SIP-10_2.54mm_1mm_clearance" H 1350 1850 50  0001 C CNN
-F 3 "" H 1350 1850 50  0001 C CNN
-	1    1350 1850
+P 1350 3400
+F 0 "J1" H 1456 3978 50  0000 C CNN
+F 1 "Conn_01x10_Male" H 1456 3887 50  0000 C CNN
+F 2 "footprints:SIP-10_2.54mm_1mm_clearance" H 1350 3400 50  0001 C CNN
+F 3 "" H 1350 3400 50  0001 C CNN
+	1    1350 3400
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -179,196 +179,176 @@ Text Label 2100 6800 0    60   ~ 0
 F3
 Text Label 2100 6900 0    60   ~ 0
 F1
-NoConn ~ 1550 3800
-NoConn ~ 1550 2350
-Text Label 1850 1850 0    60   ~ 0
-HV
-Text Label 1850 3300 0    60   ~ 0
-HV
-Text Label 1850 1450 0    60   ~ 0
-F7
-Text Label 1850 1550 0    60   ~ 0
-F5
-Text Label 1850 1650 0    60   ~ 0
-F3
-Text Label 1850 1750 0    60   ~ 0
-F1
-Text Label 1850 1950 0    60   ~ 0
-F2
-Text Label 1850 2050 0    60   ~ 0
-F4
-Text Label 1850 2150 0    60   ~ 0
-F6
-Text Label 1850 2250 0    60   ~ 0
-F8
-Text Label 1850 2900 0    60   ~ 0
-F9
-Text Label 1850 3000 0    60   ~ 0
-F11
-Text Label 1850 3100 0    60   ~ 0
-F13
-Text Label 1850 3200 0    60   ~ 0
-F15
+NoConn ~ 1550 2600
+NoConn ~ 1550 3900
 Text Label 1850 3400 0    60   ~ 0
-F10
+HV
+Text Label 1850 2100 0    60   ~ 0
+HV
+Text Label 1850 3000 0    60   ~ 0
+F9
+Text Label 1850 3100 0    60   ~ 0
+F11
+Text Label 1850 3200 0    60   ~ 0
+F13
+Text Label 1850 3300 0    60   ~ 0
+F15
 Text Label 1850 3500 0    60   ~ 0
-F12
+F16
 Text Label 1850 3600 0    60   ~ 0
 F14
 Text Label 1850 3700 0    60   ~ 0
-F16
-Text Label 3850 5050 0    60   ~ 0
-HV
-Text Label 3850 3900 0    60   ~ 0
-HV
-Text Label 3850 2500 0    60   ~ 0
-HV
-Text Label 3850 950  0    60   ~ 0
-HV
-Text Label 6950 2500 0    60   ~ 0
-HV
-Text Label 6950 1050 0    60   ~ 0
-HV
-Text Label 6950 3900 0    60   ~ 0
-HV
-Text Label 6950 5050 0    60   ~ 0
-HV
-Text Label 3350 1950 0    60   ~ 0
-F2
-Text Label 5350 1950 0    60   ~ 0
-F1
-Text Label 6450 1950 0    60   ~ 0
-F4
-Text Label 8450 1950 0    60   ~ 0
-F3
-Text Label 3350 3400 0    60   ~ 0
-F6
-Text Label 5350 3400 0    60   ~ 0
-F5
-Text Label 6450 3400 0    60   ~ 0
-F8
-Text Label 8450 3400 0    60   ~ 0
-F7
-Text Label 3350 4800 0    60   ~ 0
-F10
-Text Label 5350 4800 0    60   ~ 0
-F9
-Text Label 6450 4800 0    60   ~ 0
 F12
-Text Label 8450 4800 0    60   ~ 0
+Text Label 1850 3800 0    60   ~ 0
+F10
+Text Label 1850 1700 0    60   ~ 0
+F7
+Text Label 1850 1800 0    60   ~ 0
+F5
+Text Label 1850 1900 0    60   ~ 0
+F3
+Text Label 1850 2000 0    60   ~ 0
+F1
+Text Label 1850 2200 0    60   ~ 0
+F2
+Text Label 1850 2300 0    60   ~ 0
+F4
+Text Label 1850 2400 0    60   ~ 0
+F6
+Text Label 1850 2500 0    60   ~ 0
+F8
+Text Label 3750 5400 0    60   ~ 0
+HV
+Text Label 3750 4250 0    60   ~ 0
+HV
+Text Label 3750 2850 0    60   ~ 0
+HV
+Text Label 3750 1300 0    60   ~ 0
+HV
+Text Label 6850 2850 0    60   ~ 0
+HV
+Text Label 6850 1400 0    60   ~ 0
+HV
+Text Label 6850 4250 0    60   ~ 0
+HV
+Text Label 6850 5400 0    60   ~ 0
+HV
+Text Label 3250 2300 0    60   ~ 0
+F2
+Text Label 5250 2300 0    60   ~ 0
+F1
+Text Label 6350 2300 0    60   ~ 0
+F4
+Text Label 8350 2300 0    60   ~ 0
+F3
+Text Label 3250 3750 0    60   ~ 0
+F6
+Text Label 5250 3750 0    60   ~ 0
+F5
+Text Label 6350 3750 0    60   ~ 0
+F8
+Text Label 8350 3750 0    60   ~ 0
+F7
+Text Label 3250 5150 0    60   ~ 0
+F10
+Text Label 5250 5150 0    60   ~ 0
+F9
+Text Label 6350 5150 0    60   ~ 0
+F12
+Text Label 8350 5150 0    60   ~ 0
 F11
-Text Label 8450 5950 0    60   ~ 0
+Text Label 8350 6300 0    60   ~ 0
 F15
-Text Label 6450 5950 0    60   ~ 0
+Text Label 6350 6300 0    60   ~ 0
 F16
-Text Label 3350 5950 0    60   ~ 0
+Text Label 3250 6300 0    60   ~ 0
 F14
-Text Label 5350 5950 0    60   ~ 0
+Text Label 5250 6300 0    60   ~ 0
 F13
 Wire Wire Line
-	4350 950  4350 1250
+	4250 1300 4250 1600
 Wire Wire Line
-	4350 2500 4350 2700
+	4250 2850 4250 3050
 Wire Wire Line
-	7450 2500 7450 2700
+	7350 2850 7350 3050
 Wire Wire Line
-	4350 3900 4350 4100
+	4250 4250 4250 4450
 Wire Wire Line
-	7450 3900 7450 4100
+	7350 4250 7350 4450
 Wire Wire Line
-	4350 5050 4350 5250
+	4250 5400 4250 5600
 Wire Wire Line
-	7450 5050 7450 5250
+	7350 5400 7350 5600
 Wire Wire Line
-	3850 1950 3850 1650
+	3750 2300 3750 2000
 Wire Wire Line
-	3850 3400 3850 3100
+	3750 3750 3750 3450
 Wire Wire Line
-	3850 4800 3850 4500
+	3750 5150 3750 4850
 Wire Wire Line
-	3850 5950 3850 5650
+	3750 6300 3750 6000
 Wire Wire Line
-	6950 1950 6950 1650
+	6850 2300 6850 2000
 Wire Wire Line
-	6950 3400 6950 3100
+	6850 3750 6850 3450
 Wire Wire Line
-	6950 4800 6950 4500
+	6850 5150 6850 4850
 Wire Wire Line
-	6950 5950 6950 5650
+	6850 6300 6850 6000
 Wire Wire Line
-	4850 1950 4850 1650
+	4750 2300 4750 2000
 Wire Wire Line
-	4850 3400 4850 3100
+	4750 3750 4750 3450
 Wire Wire Line
-	4850 4800 4850 4500
+	4750 5150 4750 4850
 Wire Wire Line
-	4850 5950 4850 5650
+	4750 6300 4750 6000
 Wire Wire Line
-	7950 1950 7950 1650
+	7850 2300 7850 2000
 Wire Wire Line
-	7950 3400 7950 3100
+	7850 3750 7850 3450
 Wire Wire Line
-	7950 4800 7950 4500
+	7850 5150 7850 4850
 Wire Wire Line
-	7950 5950 7950 5650
+	7850 6300 7850 6000
 Wire Wire Line
-	7450 1050 7450 1250
+	7350 1400 7350 1600
 Wire Wire Line
-	4350 950  3850 950 
+	4250 1300 3750 1300
 Wire Wire Line
-	4350 2500 3850 2500
+	4250 2850 3750 2850
 Wire Wire Line
-	4350 5050 3850 5050
+	4250 5400 3750 5400
 Wire Wire Line
-	4350 3900 3850 3900
+	4250 4250 3750 4250
 Wire Wire Line
-	7450 5050 6950 5050
+	7350 5400 6850 5400
 Wire Wire Line
-	7450 3900 6950 3900
+	7350 4250 6850 4250
 Wire Wire Line
-	7450 2500 6950 2500
+	7350 2850 6850 2850
 Wire Wire Line
-	7450 1050 6950 1050
+	7350 1400 6850 1400
 Wire Wire Line
-	6950 1950 6450 1950
+	6850 2300 6350 2300
 Wire Wire Line
-	7950 1950 8450 1950
+	7850 2300 8350 2300
 Wire Wire Line
-	7950 4800 8450 4800
+	7850 5150 8350 5150
 Wire Wire Line
-	6950 4800 6450 4800
+	6850 5150 6350 5150
 Wire Wire Line
-	6950 5950 6450 5950
+	6850 6300 6350 6300
 Wire Wire Line
-	7950 5950 8450 5950
+	7850 6300 8350 6300
 Wire Wire Line
-	3850 5950 3350 5950
+	3750 6300 3250 6300
 Wire Wire Line
-	4850 5950 5350 5950
+	4750 6300 5250 6300
 Wire Wire Line
-	4850 4800 5350 4800
+	4750 5150 5250 5150
 Wire Wire Line
-	3850 4800 3350 4800
-Wire Wire Line
-	1550 1450 1850 1450
-Wire Wire Line
-	1550 1550 1850 1550
-Wire Wire Line
-	1550 1650 1850 1650
-Wire Wire Line
-	1550 1750 1850 1750
-Wire Wire Line
-	1550 1850 1850 1850
-Wire Wire Line
-	1550 1950 1850 1950
-Wire Wire Line
-	1550 2050 1850 2050
-Wire Wire Line
-	1550 2150 1850 2150
-Wire Wire Line
-	1550 2250 1850 2250
-Wire Wire Line
-	1550 2900 1850 2900
+	3750 5150 3250 5150
 Wire Wire Line
 	1550 3000 1850 3000
 Wire Wire Line
@@ -385,6 +365,26 @@ Wire Wire Line
 	1550 3600 1850 3600
 Wire Wire Line
 	1550 3700 1850 3700
+Wire Wire Line
+	1550 3800 1850 3800
+Wire Wire Line
+	1550 1700 1850 1700
+Wire Wire Line
+	1550 1800 1850 1800
+Wire Wire Line
+	1550 1900 1850 1900
+Wire Wire Line
+	1550 2000 1850 2000
+Wire Wire Line
+	1550 2100 1850 2100
+Wire Wire Line
+	1550 2200 1850 2200
+Wire Wire Line
+	1550 2300 1850 2300
+Wire Wire Line
+	1550 2400 1850 2400
+Wire Wire Line
+	1550 2500 1850 2500
 Wire Wire Line
 	1850 4500 2100 4500
 Wire Wire Line
@@ -420,15 +420,23 @@ Wire Wire Line
 Wire Wire Line
 	1850 6900 2100 6900
 Wire Wire Line
-	6950 3400 6450 3400
+	6850 3750 6350 3750
 Wire Wire Line
-	7950 3400 8450 3400
+	7850 3750 8350 3750
 Wire Wire Line
-	3850 3400 3350 3400
+	3750 3750 3250 3750
 Wire Wire Line
-	4850 3400 5350 3400
+	4750 3750 5250 3750
 Wire Wire Line
-	3350 1950 3850 1950
+	3250 2300 3750 2300
 Wire Wire Line
-	4850 1950 5350 1950
+	4750 2300 5250 2300
+Text Notes 950  1000 0    60   ~ 0
+Lower pin numbers (red) on the 10\npin connectors are to the left.
+Text Notes 950  1300 0    60   ~ 0
+J2 is currently on top, as seen\nin all design documents.
+Text Notes 3550 7550 0    60   ~ 0
+TODO change shock_grid schematic library part\nso that "left_grid" pin number actually defaults\nto left on footprint. could also change pin numbering\nin footprint.
+Text Notes 3550 7000 0    60   ~ 0
+TODO edit electrode schematic part to show grids\nalso make it smaller. maybe show fly.
 $EndSCHEMATC

@@ -13,6 +13,10 @@ import datetime
 # TODO why did this seem to behave differently just upon re-running this?
 # (all from within KiCAD pcbnew scripting window, via "import make_board")
 
+dry_run = False
+if dry_run:
+    print 'dry run. should not make any modifications.'
+
 if __file__[-1] == 'c':
     this_py_file = __file__[:-1]
 else:
@@ -72,6 +76,10 @@ def print_placing(name, center):
     print 'placing {} centered at ({}, {})'.format(name, \
         nm_to_mm(center.x), nm_to_mm(center.y))
 
+# in kicad's coordinate system, lower y are higher.
+# i would need to change for J<N> with lower N to be higher up (bottom now)
+# TODO redo s.t. lower N start on top in future board versions
+
 for j, y in enumerate(np.linspace(y0_center, y0_center + num_chambers * \
     y_grid_interval, num=num_chambers, endpoint=False)):
 
@@ -90,10 +98,10 @@ for j, y in enumerate(np.linspace(y0_center, y0_center + num_chambers * \
     electrode_center = pcbnew.wxPointMM(x_center, \
         float(kicad_y_for_librecad_y0 - y))
 
-    print_placing('grid', electrode_center)
-    electrode.SetPosition(electrode_center)
-
-    #pcb.Add(electrode)
+    if not dry_run:
+        print_placing('grid', electrode_center)
+        electrode.SetPosition(electrode_center)
+        #pcb.Add(electrode)
 
 
 # TODO share w/ electrode_vertices.py break into module? pcbnew func?
@@ -102,61 +110,133 @@ def mm_to_nm(mm):
 
 # sets the position of two of the headers, relative to the boundaries of the board
 # so that their position is symmetric about the board center
-board_edge_x_to_center_mm = 23
-board_edge_y_to_center_mm = 6
-eda_rect = pcb.GetBoardEdgesBoundingBox()
+# TODO TODO delete everything defined relative to board edge, and replace w/ nearest
+# connector. allows connectors on top and bottom to be aligned despite different edges
+# TODO except maybe J3 on bottom?
 
-# value returned should be an integer in nm
+
+# should yield a symmetric board
+# assuming grid footprint is symmetric about its origin
+nearest_grid_center_to_conn_center_mm = 12.6
+
+# TODO TODO print distances from center of nearest grids to center of j1/2 for ceiling
+# given that it was layed out w/ 6mm from board edges, then use those values for floor
+
+eda_rect = pcb.GetBoardEdgesBoundingBox()
+# still useful for centering with board in x
+# although a constant should also do
 center = eda_rect.GetCenter()
 
 # using a 10 pin spring connector on floor since more available
 # but not using one of the pins, and want to center the top footprint
+# TODO make sure this goes in right direction to leave rightmost pin (10) disconnected
 offset_x = mm_to_nm(0 if in_ceiling_board else 2.54)
 
-top = eda_rect.GetTop()
+# not clear on why this is necessary, but it is to get the HV pads to line up with
+extra_c10_offset_x = mm_to_nm(-1.22)
+
 top_conn = pcb.FindModuleByReference('J2')
-top_center = pcbnew.wxPoint(center.x + offset_x, top + mm_to_nm(board_edge_y_to_center_mm))
-top_conn.SetPosition(top_center)
+bottom_conn = pcb.FindModuleByReference('J1')
+
+
+# TODO delete me
+# was for switching from board edge reference to nearest grid reference
+# yielded ~12.6-12.7 -> going with 12.6mm
+'''
+if in_ceiling_board:
+    print 'top conn y pos:', nm_to_mm(top_conn.GetPosition().y)
+    print 'top grid center:', kicad_y_for_librecad_y0 - \
+        (y0_center + (num_chambers - 1) * y_grid_interval)
+    print 'top conn y pos to top grid center:', \
+        (kicad_y_for_librecad_y0 - (y0_center + (num_chambers - 1) * \
+        y_grid_interval)) - nm_to_mm(top_conn.GetPosition().y)
+
+    print 'bottom conn y pos:', nm_to_mm(bottom_conn.GetPosition().y)
+    print 'bottom grid center:', kicad_y_for_librecad_y0 - y0_center
+    print 'bottom conn y pos to bottom grid center:', \
+        nm_to_mm(bottom_conn.GetPosition().y) - \
+        (kicad_y_for_librecad_y0 - y0_center)
+'''
+
+# place the top 10 pin connector (between floor and ceiling grids)
+top_grid_center_y = kicad_y_for_librecad_y0 - \
+    (y0_center + (num_chambers - 1) * y_grid_interval)
+#if dry_run:
+#    print 'top grid center:', top_grid_center_y
+
+top_center = pcbnew.wxPoint(center.x + offset_x + extra_c10_offset_x, \
+    mm_to_nm(top_grid_center_y - nearest_grid_center_to_conn_center_mm))
+
 print_placing('top connector', \
     pcbnew.wxPointMM(nm_to_mm(top_center.x), nm_to_mm(top_center.y)))
+if not dry_run:
+    top_conn.SetPosition(top_center)
 
-bottom = eda_rect.GetBottom()
-bottom_conn = pcb.FindModuleByReference('J1')
-bottom_center = pcbnew.wxPoint(center.x + offset_x, bottom - \
-        mm_to_nm(board_edge_y_to_center_mm))
 
-bottom_conn.SetPosition(bottom_center)
+# place the bottom 10 pin connector (between floor and ceiling grids)
+bottom_grid_center_y = kicad_y_for_librecad_y0 - y0_center
+#if dry_run:
+#    print 'bottom grid center:', bottom_grid_center_y
+
+bottom_center = pcbnew.wxPoint(center.x + offset_x + extra_c10_offset_x, \
+    mm_to_nm(bottom_grid_center_y + nearest_grid_center_to_conn_center_mm))
+
 print_placing('bottom connector', \
     pcbnew.wxPointMM(nm_to_mm(bottom_center.x), nm_to_mm(bottom_center.y)))
+if not dry_run:
+    bottom_conn.SetPosition(bottom_center)
 
 
-# TODO also place J3 just for completeness? it's basically just the routing left
-# after that...
+# place the 25 pin DSUB connector (to the control / measurement board)
+# beneath (and relative to) the lower 10 pin connector
 if not in_ceiling_board:
-    to_control_conn = pcb.FindModuleByReference('J3')
+    j3 = pcb.FindModuleByReference('J3')
 
+    # TODO maybe don't use bounding box...
+    # (it could be offset a little and overestimate w.r.t. pads)
+
+    # the origin of the DSUB25 footprint I'm using is its pin 1
+    # so I need to compensate to set the position of the center of the pads
+
+    # measured as x difference between pin 1 and 7
+    dsub_x_offset = 16.6200
+    # measured as half y difference between pin 1 and pin beneath it
+    dsub_y_offset = 1.4200
+
+    # offsets that are necessary for alignment, but that I didn't take the time
+    # to understand
+    extra_x_offset = mm_to_nm(-1.27)
+    extra_y_offset = mm_to_nm(-3.6)
+    
     # J3 goes on the bottom
     j1_bbox = bottom_conn.GetBoundingBox()
     # origin is at the top
-    j3_y = j1_bbox.GetBottom() + to_control_conn.GetBoundingBox().GetHeight() / 2
-    
-    j3_pos = pcbnew.wxPoint(center + offset_x, j3_y)
-    bottom_conn.SetPosition(bottom_center)
-    print_placing('offboard connector', \
-        pcbnew.wxPointMM(nm_to_mm(bottom_center.x), nm_to_mm(bottom_center.y)))
+    j3_y = j1_bbox.GetBottom() + (j3.GetPosition().y - \
+        j3.GetBoundingBox().GetTop()) + mm_to_nm(dsub_y_offset)
+
+    j3_pos = pcbnew.wxPoint(bottom_conn.GetPosition().x + \
+        mm_to_nm(dsub_x_offset) + extra_x_offset, j3_y + extra_y_offset)
+
+    #print 'bottom of J1 bounding box:', j1_bbox.GetBottom()
+
+    if not dry_run:
+        j3.SetPosition(j3_pos)
+        print_placing('offboard connector', \
+            pcbnew.wxPointMM(nm_to_mm(j3_pos.x), nm_to_mm(j3_pos.y)))
 
 
-# TODO include ceiling / floor
-print 'setting title block'
 # TODO only if a title block isn't set?
 tb = pcbnew.TITLE_BLOCK()
-tb.SetTitle('{} chamber shock conditioning {} grid'.format(num_chambers, \
-        'ceiling' if in_ceiling_board else 'floor'))
-tb.SetCompany('Hong Lab @ Caltech')
-tb.SetDate(datetime.date.today().strftime('%d-%m-%Y'))
-# TODO git
-#tb.SetRevision()
-# TODO way to set extent of title block to cover whole schematic?
-# does title block include the outer border?
-# TODO why does this not seem to be displaying?
-pcb.SetTitleBlock(tb)
+
+if not dry_run:
+    print 'setting title block'
+    tb.SetTitle('{} chamber shock conditioning {} grid'.format(num_chambers, \
+            'ceiling' if in_ceiling_board else 'floor'))
+    tb.SetCompany('Hong Lab @ Caltech')
+    tb.SetDate(datetime.date.today().strftime('%d-%m-%Y'))
+    # TODO git
+    #tb.SetRevision()
+    # TODO way to set extent of title block to cover whole schematic?
+    # does title block include the outer border?
+    # TODO why does this not seem to be displaying?
+    pcb.SetTitleBlock(tb)
