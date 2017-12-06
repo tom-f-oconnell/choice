@@ -2,7 +2,7 @@
 
   (general
     (thickness 1.6)
-    (drawings 23)
+    (drawings 24)
     (tracks 283)
     (zones 0)
     (modules 10)
@@ -13,7 +13,9 @@
   (title_block
     (title "8 chamber shock conditioning ceiling grid")
     (date 06-12-2017)
+    (rev 0.1)
     (company "Hong Lab @ Caltech")
+    (comment 1 github.com/tom-f-oconnell/choice)
   )
 
   (layers
@@ -70,7 +72,7 @@
     (grid_origin 160.03 66.08)
     (visible_elements FFFFFF7F)
     (pcbplotparams
-      (layerselection 0x00030_ffffffff)
+      (layerselection 0x01000_7fffffff)
       (usegerberextensions false)
       (usegerberattributes true)
       (usegerberadvancedattributes true)
@@ -86,8 +88,8 @@
       (hpglpendiameter 15)
       (psnegative false)
       (psa4output false)
-      (plotreference true)
-      (plotvalue true)
+      (plotreference false)
+      (plotvalue false)
       (plotinvisibletext false)
       (padsonsilk false)
       (subtractmaskfromsilk false)
@@ -95,7 +97,7 @@
       (mirror false)
       (drillshape 0)
       (scaleselection 1)
-      (outputdirectory ""))
+      (outputdirectory ../gerber/floor_pcb/))
   )
 
   (net 0 "")
@@ -589,6 +591,9 @@
       ))
   )
 
+  (gr_text "Board should ideally be 1/8\" (3.175 mm) thick.\n\nOther thicknesses may require different clamps\nto hold ceiling and all layers tight, such that there\nare no gaps due to warping.\n\n\n\n\nThe substrate should be clear, transmitting as much\nIR light as possible.  We used 850 nm IR backlights for\nsome experiments.\n\n\n\n\nSince all the conductors in this board are on one side,\nyou should be able to etch it yourself." (at 49.03 53.58) (layer Cmts.User)
+    (effects (font (size 1.5 1.5) (thickness 0.3)))
+  )
   (gr_text v0.1 (at 102.53 16.58) (layer F.Cu) (tstamp 5A28976C)
     (effects (font (size 1.5 1.5) (thickness 0.3)))
   )

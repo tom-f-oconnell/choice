@@ -26,11 +26,11 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 21 22
-Title ""
-Date ""
-Rev ""
-Comp ""
-Comment1 ""
+Title "Parallel shock delivery and measurement for conditioning"
+Date "lun. 30 mars 2015"
+Rev "0.1"
+Comp "Hong lab @ Caltech"
+Comment1 "github.com/tom-f-oconnell/choice"
 Comment2 ""
 Comment3 ""
 Comment4 ""

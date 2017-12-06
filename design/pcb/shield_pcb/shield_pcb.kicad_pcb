@@ -12,6 +12,7 @@
   (page A4)
   (title_block
     (date "lun. 30 mars 2015")
+    (rev 0.1)
   )
 
   (layers
@@ -65,7 +66,7 @@
     (aux_axis_origin 110.998 126.365)
     (visible_elements FFFFFF7F)
     (pcbplotparams
-      (layerselection 0x00030_80000001)
+      (layerselection 0x010e0_ffffffff)
       (usegerberextensions false)
       (usegerberattributes true)
       (usegerberadvancedattributes true)
@@ -88,9 +89,9 @@
       (subtractmaskfromsilk false)
       (outputformat 1)
       (mirror false)
-      (drillshape 1)
+      (drillshape 0)
       (scaleselection 1)
-      (outputdirectory ""))
+      (outputdirectory ../gerber/shield_pcb/))
   )
 
   (net 0 "")
@@ -8189,13 +8190,13 @@
       (net 50 "Net-(F1-Pad2)"))
   )
 
-  (gr_text v0.1 (at 48 25 90) (layer F.SilkS)
+  (gr_text v0.1 (at 48.5 25 90) (layer F.SilkS)
     (effects (font (size 1.5 1.5) (thickness 0.3)))
   )
-  (gr_text "github.com/tom-f-oconnell/choice @ " (at 53 49 90) (layer F.SilkS)
+  (gr_text "github.com/tom-f-oconnell/choice @ d141ec9f" (at 53 43 90) (layer F.SilkS)
     (effects (font (size 0.6 0.6) (thickness 0.1)))
   )
-  (gr_text "Hong lab @ Caltech" (at 48 43.5 90) (layer F.SilkS)
+  (gr_text "Hong lab @ Caltech" (at 48.5 43 90) (layer F.SilkS)
     (effects (font (size 1.5 1.5) (thickness 0.3)))
   )
   (gr_circle (center 53 123) (end 54 124) (layer Edge.Cuts) (width 0.15) (tstamp 5A284681))
