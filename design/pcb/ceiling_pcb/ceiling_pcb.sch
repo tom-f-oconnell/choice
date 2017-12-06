@@ -22,7 +22,7 @@ U 1 1 59F778B5
 P 4350 1450
 F 0 "J3" H 5378 1728 60  0000 L CNN
 F 1 "shock_grid" H 5378 1622 60  0000 L CNN
-F 2 "footprints:electrodes_clearance0.6mm" H 4350 1450 60  0001 C CNN
+F 2 "footprints:electrodes_clearance0.6mm_W0.4mm_lengthwise" H 4350 1450 60  0001 C CNN
 F 3 "" H 4350 1450 60  0001 C CNN
 	1    4350 1450
 	1    0    0    -1  
@@ -33,7 +33,7 @@ U 1 1 59F779C5
 P 4350 2900
 F 0 "J5" H 5378 3178 60  0000 L CNN
 F 1 "shock_grid" H 5378 3072 60  0000 L CNN
-F 2 "footprints:electrodes_clearance0.6mm" H 4350 2900 60  0001 C CNN
+F 2 "footprints:electrodes_clearance0.6mm_W0.4mm_lengthwise" H 4350 2900 60  0001 C CNN
 F 3 "" H 4350 2900 60  0001 C CNN
 	1    4350 2900
 	1    0    0    -1  
@@ -44,7 +44,7 @@ U 1 1 59F77CE3
 P 7450 1450
 F 0 "J4" H 8478 1728 60  0000 L CNN
 F 1 "shock_grid" H 8478 1622 60  0000 L CNN
-F 2 "footprints:electrodes_clearance0.6mm" H 7450 1450 60  0001 C CNN
+F 2 "footprints:electrodes_clearance0.6mm_W0.4mm_lengthwise" H 7450 1450 60  0001 C CNN
 F 3 "" H 7450 1450 60  0001 C CNN
 	1    7450 1450
 	1    0    0    -1  
@@ -55,7 +55,7 @@ U 1 1 59F77DC7
 P 7450 2900
 F 0 "J6" H 8478 3178 60  0000 L CNN
 F 1 "shock_grid" H 8478 3072 60  0000 L CNN
-F 2 "footprints:electrodes_clearance0.6mm" H 7450 2900 60  0001 C CNN
+F 2 "footprints:electrodes_clearance0.6mm_W0.4mm_lengthwise" H 7450 2900 60  0001 C CNN
 F 3 "" H 7450 2900 60  0001 C CNN
 	1    7450 2900
 	1    0    0    -1  
@@ -66,7 +66,7 @@ U 1 1 59F77FF1
 P 4350 4300
 F 0 "J7" H 5378 4578 60  0000 L CNN
 F 1 "shock_grid" H 5378 4472 60  0000 L CNN
-F 2 "footprints:electrodes_clearance0.6mm" H 4350 4300 60  0001 C CNN
+F 2 "footprints:electrodes_clearance0.6mm_W0.4mm_lengthwise" H 4350 4300 60  0001 C CNN
 F 3 "" H 4350 4300 60  0001 C CNN
 	1    4350 4300
 	1    0    0    -1  
@@ -77,7 +77,7 @@ U 1 1 59F780F5
 P 7450 4300
 F 0 "J8" H 8478 4578 60  0000 L CNN
 F 1 "shock_grid" H 8478 4472 60  0000 L CNN
-F 2 "footprints:electrodes_clearance0.6mm" H 7450 4300 60  0001 C CNN
+F 2 "footprints:electrodes_clearance0.6mm_W0.4mm_lengthwise" H 7450 4300 60  0001 C CNN
 F 3 "" H 7450 4300 60  0001 C CNN
 	1    7450 4300
 	1    0    0    -1  
@@ -88,7 +88,7 @@ U 1 1 59F78242
 P 4350 5450
 F 0 "J9" H 5378 5728 60  0000 L CNN
 F 1 "shock_grid" H 5378 5622 60  0000 L CNN
-F 2 "footprints:electrodes_clearance0.6mm" H 4350 5450 60  0001 C CNN
+F 2 "footprints:electrodes_clearance0.6mm_W0.4mm_lengthwise" H 4350 5450 60  0001 C CNN
 F 3 "" H 4350 5450 60  0001 C CNN
 	1    4350 5450
 	1    0    0    -1  
@@ -99,7 +99,7 @@ U 1 1 59F7866D
 P 7450 5450
 F 0 "J10" H 8478 5728 60  0000 L CNN
 F 1 "shock_grid" H 8478 5622 60  0000 L CNN
-F 2 "footprints:electrodes_clearance0.6mm" H 7450 5450 60  0001 C CNN
+F 2 "footprints:electrodes_clearance0.6mm_W0.4mm_lengthwise" H 7450 5450 60  0001 C CNN
 F 3 "" H 7450 5450 60  0001 C CNN
 	1    7450 5450
 	1    0    0    -1  

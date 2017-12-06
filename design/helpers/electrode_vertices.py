@@ -5,114 +5,155 @@ import numpy as np
 import os
 
 # TODO convert in to kicad footprint wizard
-def electrode_vertices():
-    # the electrode with one trace down the center of the arena
-    mirror = True
+def electrode_vertices(mirror=True, lengthwise=True, include_other_electrode=True, \
+        rightmost_tooth_from_top=False,  center_x=0, center_y=0, \
+        min_half_length=25, min_width=6.5, between_electrodes=0.6, \
+        electrode_width=0.4, connections_between_grids=False,  \
+        y_between_grid_centers=22.50, extra_center_tooth=0):
+    """
+    TODO reword mirror?
+    TODO what does rightmost_tooth_from_top do?
 
-    # not the exact same as the electrode with a bus down the center
-    # there are two disconnected electrodes like these per chamber
-    # but only one common high voltage electrode
-    include_other_electrode = True
-    rightmost_tooth_from_top = False
+    include_other_electrode: not the exact same as the electrode with a bus down the center
+    there are two disconnected electrodes like these per chamber
+    but only one common high voltage electrode
 
-    # all units in mm unless otherwise noted
-    center_x = 0
-    center_y = 0
-    '''
-    # this was the center of one of the grids in the librecad document
-    center_x = 125.0
-    center_y = 38.7450
-    '''
+    between_electrodes: changed from 1mm of original to 0.6, which is IPC
+    minimum for up to 150V for uncoated external connectors not at elevation
 
-    # maybe a little less?
-    min_half_length = 25
-    min_width = 6.5
-    # changed from 1mm of original to 0.6, which is IPC
-    # minimum for up to 150V for uncoated external connectors not at elevation
-    between_electrodes = 0.6
-    electrode_width = 1
+    connections_between_grids: should be false when used for Kicad footprints, 
+    unless you are trying to avoid routing the common high voltage rail in the
+    center. If your board will have holes / routes there, then you can't do this.
 
-    connections_between_grids = False
-    y_between_grid_centers = 22.50
+    y_between_grid_centers : ignored if connections_between_grids is False
 
-    # only does something if connections_between_grids is False
-    # otherwise there is a bus going down the whole center anyway
-    extra_y_center_tooth = 3
+    extra_center_tooth:
+    TODO make this default to flush (nonzero)
+    only does something if connections_between_grids is False
+    otherwise there is a bus going down the whole center anyway
 
-    # derived quantities
-    tooth_length = min_width + between_electrodes
-    width_between_backbones = min_width + (2.0 * between_electrodes)
-    y_backbone = center_y - (width_between_backbones / 2.0)
-    y_tooth_tip = center_y + (width_between_backbones / 2.0) - between_electrodes
-    x_between_backbone_vertices = electrode_width + (2.0 * between_electrodes)
-    #y_grid_total_extent = width_between_backbones + (2.0 * electrode_width)
+    all units in mm unless otherwise noted
+    """
+    # maybe a little less than 25mm min_half_length?
+
+    # between the two close edges
+    # TODO is this the behavior i want for non-lengthwise case?
+    between_backbones = ((min_half_length + between_electrodes - \
+        electrode_width / 2.0) if lengthwise else \
+        (min_width + 2 * between_electrodes))
+
+    backbone = (center_x if lengthwise else center_y) - (between_backbones / 2.0)
+    tooth_tip = (center_x if lengthwise else center_y) + \
+        (between_backbones / 2.0) - between_electrodes
+
+    # TODO maybe rename
+    center = center_y if lengthwise else center_x
+        
+    between_backbone_vertices = electrode_width + (2.0 * between_electrodes)
+
+    #y_grid_total_extent = between_backbones + (2.0 * electrode_width)
 
     if include_other_electrode:
-        opposing_backbone =  y_backbone + width_between_backbones
-        opposing_tooth_tip = y_backbone + between_electrodes
+        opposing_backbone = backbone + between_backbones
+        opposing_tooth_tip = backbone + between_electrodes
 
     # we will start with points that intersect center traces
-    origin_x = center_x - (electrode_width / 2.0)
-    curr_x = origin_x
+    # TODO fix for lengthwise case
+    origin = 0 if lengthwise else (center - (electrode_width / 2.0))
+    curr_pos = origin
     points = []
 
+    swap_if_necessary = (lambda x: [x[1], x[0]]) if lengthwise \
+        else (lambda x: x)
+
     # top left, at intersection with bottom edge of grid unit above
+    # TODO test / fix for lengthwise case
     if connections_between_grids:
-        points.append([curr_x, y_backbone + (y_between_grid_centers - electrode_width)])
-        curr_x += electrode_width
-        points.append([curr_x, y_backbone + (y_between_grid_centers - electrode_width)])
+        points.append([curr_pos, backbone + (y_between_grid_centers - electrode_width)])
+        curr_pos += electrode_width
+        points.append([curr_pos, backbone + (y_between_grid_centers - electrode_width)])
 
     else:
-        points.append([curr_x, y_tooth_tip + extra_y_center_tooth])
-        curr_x += electrode_width
-        points.append([curr_x, y_tooth_tip + extra_y_center_tooth])
+        points.append(swap_if_necessary([curr_pos, \
+            tooth_tip + extra_center_tooth]))
+        curr_pos += electrode_width
+        points.append(swap_if_necessary([curr_pos, \
+            tooth_tip + extra_center_tooth]))
 
+    # TODO check this makes sense for lengthwise
     if include_other_electrode:
         # origin for this will be topleft-most vertex
-        other_electrode_points = [[curr_x + between_electrodes, \
-            opposing_backbone + electrode_width]]
+        other_electrode_points = [swap_if_necessary([curr_pos + \
+            between_electrodes, opposing_backbone + electrode_width])]
 
     # TODO maybe take into account that interleaved comb will add one electrode tooth
     # one one end?
-    while curr_x < (center_x + min_half_length):
+    while curr_pos < center + (min_width if lengthwise else min_half_length):
         if include_other_electrode:
-            opp_x = curr_x + between_electrodes
-            other_electrode_points.append([opp_x, opposing_tooth_tip])
-            opp_x += electrode_width
-            other_electrode_points.append([opp_x, opposing_tooth_tip])
-            other_electrode_points.append([opp_x, opposing_backbone])
-            opp_x += x_between_backbone_vertices 
-            other_electrode_points.append([opp_x, opposing_backbone])
+            opp = curr_pos + between_electrodes
+            other_electrode_points.append(swap_if_necessary([opp, \
+                opposing_tooth_tip]))
+
+            opp += electrode_width
+            other_electrode_points.append(swap_if_necessary([opp, \
+                opposing_tooth_tip]))
+
+            other_electrode_points.append(swap_if_necessary([opp, \
+                opposing_backbone]))
+
+            opp += between_backbone_vertices 
+            other_electrode_points.append(swap_if_necessary([opp, \
+                opposing_backbone]))
 
         # two points along backbone
-        points.append([curr_x, y_backbone])
-        curr_x += x_between_backbone_vertices 
-        points.append([curr_x, y_backbone])
+        points.append(swap_if_necessary([curr_pos, backbone]))
+        curr_pos += between_backbone_vertices 
+        points.append(swap_if_necessary([curr_pos, backbone]))
 
         # two at top edge of tooth
-        points.append([curr_x, y_tooth_tip])
-        curr_x += electrode_width
-        points.append([curr_x, y_tooth_tip])
+        points.append(swap_if_necessary([curr_pos, tooth_tip]))
+        curr_pos += electrode_width
+        points.append(swap_if_necessary([curr_pos, tooth_tip]))
         
-    # should finish with two at top of tooth, and then add 
+    # should finish with two comprising edge of tooth, and then add 
     # the two vertices along the opposite edge of the backbone
-    y_backbone_bottom = y_backbone - electrode_width
-    points.append([curr_x, y_backbone_bottom])
+    backbone_end = backbone - electrode_width
+    points.append(swap_if_necessary([curr_pos, backbone_end]))
 
     # making two points here for easier manual modification / joining
-    points.append([origin_x + electrode_width, y_backbone_bottom])
-    points.append([origin_x, y_backbone_bottom])
+    points.append(swap_if_necessary([origin + electrode_width, backbone_end]))
+    points.append(swap_if_necessary([origin, backbone_end]))
 
     # TODO not sure how i want to finish off opposing electrode yet
     # give it another tooth, or not?
     if include_other_electrode:
+        # TODO describe in docstring
         if rightmost_tooth_from_top:
-            other_electrode_points.append([opp_x, opposing_tooth_tip])
-            opp_x += electrode_width
-            other_electrode_points.append([opp_x, opposing_tooth_tip])
+            other_electrode_points.append(swap_if_necessary([opp, \
+                opposing_tooth_tip]))
 
-        other_electrode_points.append([opp_x, opposing_backbone + electrode_width])
+            opp += electrode_width
+            other_electrode_points.append(swap_if_necessary([opp, \
+                opposing_tooth_tip]))
+
+        other_electrode_points.append(swap_if_necessary([opp, \
+            opposing_backbone + electrode_width]))
+
         other_electrode_points.append(other_electrode_points[0])
+
+    if lengthwise:
+        def offset(orig_points):
+            offset_points = []
+            for p in orig_points:
+                offset_p = []
+                offset_p.append(p[0] - (backbone - (electrode_width / 2)))
+                offset_p.append(p[1] - curr_pos / 2)
+                offset_points.append(offset_p)
+            return offset_points
+        
+        points = offset(points)
+        if include_other_electrode:
+            other_electrode_points = offset(other_electrode_points)
 
     # finish up the central electrode
     if not mirror:
@@ -120,30 +161,49 @@ def electrode_vertices():
         initial_point = points[0]
 
     else: 
+        # mirror the central electrode. this should produce one continuous
+        # electrode symmetric about the X origin.
         mirrored_points = []
-        # excluding the first and last points, which would be redundant
-        for p in reversed(points[1:-1]):
-            # mirror over x=center_x
-            mirrored_points.append([2*center_x - p[0], p[1]])
 
+        # TODO update this comment to be accurate for lengthwise process
+        # excluding the first and last points, which would be redundant
+        if lengthwise:
+            for p in reversed(points[:-3]):
+                # mirror over y=center_y
+                mirrored_points.append([-p[0], p[1]])
+        else:
+            for p in reversed(points[1:-1]):
+                mirrored_points.append([2*center_x - p[0], p[1]])
+
+        points = points[:-3]
         for p in mirrored_points:
             points.append(p)
 
-        # loop will be closed at first vertex listed
-        # that is the the right of center_y
-        initial_point = points[1]
+        if lengthwise:
+            # TODO fix / check
+            initial_point = points[0]
+        else:
+            # loop will be closed at first vertex listed
+            # that is the the right of center_y
+            initial_point = points[1]
 
     # initial point again to close the loop
     points.append(initial_point)
-    
     polylines = [points]
+
+    # mirror outer electrode if we 1) requested the outer (other) electrode
+    # and 2) requested we mirror any electrode
     if include_other_electrode:
         polylines.append(other_electrode_points)
 
         if mirror:
             mirrored_other_points = []
             for p in other_electrode_points:
-                mirrored_other_points.append([2*center_x - p[0], p[1]])
+                if lengthwise:
+                    mirrored_other_points.append([-p[0], p[1]])
+                else:
+                    mirrored_other_points.append([2*center - p[0], p[1]])
+
             polylines.append(mirrored_other_points)
 
     return polylines
@@ -173,7 +233,7 @@ def as_eagle_footprint(polylines, filename=''):
     raise NotImplementedError
 
 
-def as_kicad_mod(polylines, filename='../pcb/footprints.pretty/electrodes_clearance0.6mm.kicad_mod'):
+def as_kicad_mod(polylines, filename='../pcb/footprints.pretty/electrodes_clearance0.6mm_W0.4mm_lengthwise.kicad_mod'):
     import pcbnew
     from pcbnew import PCB_IO as io
 
@@ -348,5 +408,6 @@ def as_kicad_mod(polylines, filename='../pcb/footprints.pretty/electrodes_cleara
 
 if __name__ == '__main__':
     to_output_format = as_kicad_mod
-    to_output_format(electrode_vertices())
+    to_output_format(electrode_vertices(lengthwise=True, \
+        include_other_electrode=True, mirror=True))
 
