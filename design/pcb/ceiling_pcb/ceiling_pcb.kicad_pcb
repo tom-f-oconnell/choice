@@ -97,7 +97,7 @@
       (mirror false)
       (drillshape 0)
       (scaleselection 1)
-      (outputdirectory ../gerber/ceiling_pcb/))
+      (outputdirectory ../gerber/ceiling/))
   )
 
   (net 0 "")

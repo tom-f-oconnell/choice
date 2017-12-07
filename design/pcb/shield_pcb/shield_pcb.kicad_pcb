@@ -66,7 +66,7 @@
     (aux_axis_origin 110.998 126.365)
     (visible_elements FFFFFF7F)
     (pcbplotparams
-      (layerselection 0x000f0_ffffffff)
+      (layerselection 0x000e0_ffffffff)
       (usegerberextensions true)
       (usegerberattributes true)
       (usegerberadvancedattributes true)
@@ -91,7 +91,7 @@
       (mirror false)
       (drillshape 0)
       (scaleselection 1)
-      (outputdirectory ../gerber/shield_pcb/))
+      (outputdirectory ../gerber/shield/))
   )
 
   (net 0 "")

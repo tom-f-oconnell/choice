@@ -71,7 +71,7 @@
     (grid_origin 160.03 66.08)
     (visible_elements FFFFFF7F)
     (pcbplotparams
-      (layerselection 0x000f0_ffffffff)
+      (layerselection 0x000c0_ffffffff)
       (usegerberextensions true)
       (usegerberattributes true)
       (usegerberadvancedattributes true)
@@ -87,7 +87,7 @@
       (hpglpendiameter 15)
       (psnegative false)
       (psa4output false)
-      (plotreference true)
+      (plotreference false)
       (plotvalue false)
       (plotinvisibletext false)
       (padsonsilk false)
@@ -96,7 +96,7 @@
       (mirror false)
       (drillshape 0)
       (scaleselection 1)
-      (outputdirectory ../gerber/floor_pcb/))
+      (outputdirectory ../gerber/floor/))
   )
 
   (net 0 "")
