@@ -234,7 +234,9 @@ def as_eagle_footprint(polylines, filename=''):
     raise NotImplementedError
 
 
-def as_kicad_mod(polylines, filename='../pcb/footprints.pretty/electrodes_clearance0.6mm_W0.4mm_centerflush.kicad_mod'):
+def as_kicad_mod(polylines, filename=None):
+    assert not filename is None
+
     import pcbnew
     from pcbnew import PCB_IO as io
 
@@ -369,6 +371,9 @@ def as_kicad_mod(polylines, filename='../pcb/footprints.pretty/electrodes_cleara
         layer_set = pcbnew.LSET()
         fcu_layer_id = get_layer_id_by_name('F.Cu')
         layer_set.addLayer(fcu_layer_id)
+        fmask_layer_id = get_layer_id_by_name('F.Mask')
+        layer_set.addLayer(fmask_layer_id)
+
         pad.SetLayerSet(layer_set)
         pad.SetAttribute(pcbnew.PAD_ATTRIB_SMD)
 
@@ -408,7 +413,9 @@ def as_kicad_mod(polylines, filename='../pcb/footprints.pretty/electrodes_cleara
     
 
 if __name__ == '__main__':
-    to_output_format = as_kicad_mod
+    filename = '../pcb/footprints.pretty/electrodes_clearance0.6mm_W0.4mm' + \
+        '_centerflush.kicad_mod'
+    to_output_format = lambda *x: as_kicad_mod(*x, filename=filename)
     to_output_format(electrode_vertices(lengthwise=False, \
         include_other_electrode=True, mirror=True))
 

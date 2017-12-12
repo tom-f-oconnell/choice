@@ -1471,26 +1471,10 @@ Wire Wire Line
 	1750 1850 1800 1850
 Text Notes 1000 7450 0    60   ~ 0
 TODO may consider getting rid of all but EN pull(up/downs)\nor increasing their values?
-Text Notes 6850 1200 0    60   ~ 0
-TODO add 7 NC, 7 NO jumpers on CD4556, so that\nif one of two units fails, the other can be used\n(too much board space... something else?)
-Text Notes 6850 1600 0    60   ~ 0
-TODO add jumpers on CD4052Bs so that they\ncan be substituted for MAX chip Dan \nsuggested if necessary (diff. pinout)
 Text Notes 7700 5800 0    60   ~ 0
 Note: the Conn_01x01 are anchors for wire jumpers, if \nyou would like to bypass any stage of the amplification.
-Text Notes 6350 4400 1    39   ~ 0
-tantalum
 Text Notes 900  3800 0    39   ~ 0
 TODO how to consider these jumpers closed \nfor purposes of simulation?
-Text Notes 6300 5850 1    39   ~ 0
-tantalum
-Text Notes 6350 3050 1    39   ~ 0
-tantalum
-Text Notes 6450 1350 1    39   ~ 0
-tantalum
-Text Notes 2700 900  1    39   ~ 0
-tantalum
-Text Notes 8550 2700 2    39   ~ 0
-tantalum
 $Comp
 L Conn_01x01 J10
 U 1 1 5A1E6AFC

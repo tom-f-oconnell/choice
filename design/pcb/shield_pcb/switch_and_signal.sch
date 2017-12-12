@@ -25,7 +25,7 @@ EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 4 22
+Sheet 12 22
 Title "Parallel shock delivery and measurement for conditioning"
 Date "lun. 30 mars 2015"
 Rev "0.1"
@@ -55,7 +55,7 @@ AR Path="/5A188A7A/5A020264" Ref="R57"  Part="1"
 AR Path="/5A188A49/5A020264" Ref="R61"  Part="1" 
 AR Path="/5A17981D/5A020264" Ref="R65"  Part="1" 
 AR Path="/5A179816/5A020264" Ref="R69"  Part="1" 
-F 0 "R9" V 3000 4500 50  0000 L CNN
+F 0 "R45" V 3000 4500 50  0000 L CNN
 F 1 "150" V 3100 4500 50  0000 L CNN
 F 2 "Resistors_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" V 3130 4600 50  0001 C CNN
 F 3 "" H 3200 4600 50  0001 C CNN
@@ -82,10 +82,11 @@ AR Path="/5A188A7A/5A0202C8" Ref="R58"  Part="1"
 AR Path="/5A188A49/5A0202C8" Ref="R62"  Part="1" 
 AR Path="/5A17981D/5A0202C8" Ref="R66"  Part="1" 
 AR Path="/5A179816/5A0202C8" Ref="R70"  Part="1" 
-F 0 "R10" H 3770 4996 50  0000 L CNN
+F 0 "R46" H 3770 4996 50  0000 L CNN
 F 1 "100K" H 3770 4905 50  0000 L CNN
 F 2 "Resistors_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" V 3630 4950 50  0001 C CNN
 F 3 "" H 3700 4950 50  0001 C CNN
+F 4 "5%" H 3700 4950 60  0001 C CNN "Tolerance"
 	1    3700 4950
 	1    0    0    -1  
 $EndComp
@@ -109,10 +110,11 @@ AR Path="/5A188A7A/5A020329" Ref="R60"  Part="1"
 AR Path="/5A188A49/5A020329" Ref="R64"  Part="1" 
 AR Path="/5A17981D/5A020329" Ref="R68"  Part="1" 
 AR Path="/5A179816/5A020329" Ref="R72"  Part="1" 
-F 0 "R12" H 4370 3746 50  0000 L CNN
-F 1 "150K" H 4370 3655 50  0000 L CNN
+F 0 "R48" H 4370 3746 50  0000 L CNN
+F 1 "100K" H 4370 3655 50  0000 L CNN
 F 2 "Resistors_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" V 4230 3700 50  0001 C CNN
 F 3 "" H 4300 3700 50  0001 C CNN
+F 4 "0.1%" H 4300 3700 60  0001 C CNN "Tolerance"
 	1    4300 3700
 	1    0    0    -1  
 $EndComp
@@ -144,7 +146,7 @@ AR Path="/5A188A7A/5A0A33AC" Ref="D25"  Part="1"
 AR Path="/5A188A49/5A0A33AC" Ref="D27"  Part="1" 
 AR Path="/5A17981D/5A0A33AC" Ref="D29"  Part="1" 
 AR Path="/5A179816/5A0A33AC" Ref="D31"  Part="1" 
-F 0 "D1" H 4000 1666 50  0000 C CNN
+F 0 "D19" H 4000 1666 50  0000 C CNN
 F 1 "D" H 4000 1575 50  0000 C CNN
 F 2 "Diodes_THT:D_DO-41_SOD81_P7.62mm_Horizontal" H 4000 1450 50  0001 C CNN
 F 3 "" H 4000 1450 50  0001 C CNN
@@ -180,7 +182,7 @@ AR Path="/5A188A7A/5A0F7E6B" Ref="R59"  Part="1"
 AR Path="/5A188A49/5A0F7E6B" Ref="R63"  Part="1" 
 AR Path="/5A17981D/5A0F7E6B" Ref="R67"  Part="1" 
 AR Path="/5A179816/5A0F7E6B" Ref="R71"  Part="1" 
-F 0 "R11" H 4370 2146 50  0000 L CNN
+F 0 "R47" H 4370 2146 50  0000 L CNN
 F 1 "39K" H 4370 2055 50  0000 L CNN
 F 2 "Resistors_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" V 4230 2100 50  0001 C CNN
 F 3 "" H 4300 2100 50  0001 C CNN
@@ -207,7 +209,7 @@ AR Path="/5A188A7A/5A1FFEF2" Ref="#PWR075"  Part="1"
 AR Path="/5A188A49/5A1FFEF2" Ref="#PWR077"  Part="1" 
 AR Path="/5A17981D/5A1FFEF2" Ref="#PWR079"  Part="1" 
 AR Path="/5A179816/5A1FFEF2" Ref="#PWR081"  Part="1" 
-F 0 "#PWR051" H 4000 5150 50  0001 C CNN
+F 0 "#PWR069" H 4000 5150 50  0001 C CNN
 F 1 "GNDA" H 4005 5227 50  0000 C CNN
 F 2 "" H 4000 5400 50  0001 C CNN
 F 3 "" H 4000 5400 50  0001 C CNN
@@ -234,7 +236,7 @@ AR Path="/5A188A7A/5A20015F" Ref="#PWR076"  Part="1"
 AR Path="/5A188A49/5A20015F" Ref="#PWR078"  Part="1" 
 AR Path="/5A17981D/5A20015F" Ref="#PWR080"  Part="1" 
 AR Path="/5A179816/5A20015F" Ref="#PWR082"  Part="1" 
-F 0 "#PWR052" H 5100 2300 50  0001 C CNN
+F 0 "#PWR070" H 5100 2300 50  0001 C CNN
 F 1 "GNDA" V 5105 2422 50  0000 R CNN
 F 2 "" H 5100 2550 50  0001 C CNN
 F 3 "" H 5100 2550 50  0001 C CNN
@@ -271,7 +273,7 @@ AR Path="/5A188A7A/5A31893D" Ref="Q13"  Part="1"
 AR Path="/5A188A49/5A31893D" Ref="Q14"  Part="1" 
 AR Path="/5A17981D/5A31893D" Ref="Q15"  Part="1" 
 AR Path="/5A179816/5A31893D" Ref="Q16"  Part="1" 
-F 0 "Q1" H 4406 4646 50  0000 L CNN
+F 0 "Q10" H 4406 4646 50  0000 L CNN
 F 1 "IRL620" H 4406 4555 50  0000 L CNN
 F 2 "TO_SOT_Packages_THT:TO-220-3_Vertical" H 4400 4525 50  0001 L CIN
 F 3 "https://www.vishay.com/docs/91301/91301.pdf" H 4400 4675 50  0001 L CNN
@@ -300,7 +302,7 @@ AR Path="/5A188A7A/5A31DEEC" Ref="D26"  Part="1"
 AR Path="/5A188A49/5A31DEEC" Ref="D28"  Part="1" 
 AR Path="/5A17981D/5A31DEEC" Ref="D30"  Part="1" 
 AR Path="/5A179816/5A31DEEC" Ref="D32"  Part="1" 
-F 0 "D2" H 4700 2766 50  0000 C CNN
+F 0 "D20" H 4700 2766 50  0000 C CNN
 F 1 "MMSZ5231B" H 4700 2675 50  0000 C CNN
 F 2 "Diodes_SMD:D_SOD-123" H 4700 2550 50  0001 C CNN
 F 3 "https://en.wikipedia.org/wiki/Zener_diode" H 4700 2650 50  0001 C CNN
@@ -353,4 +355,6 @@ Text Notes 2700 1050 0    39   ~ 0
 TODO what voltage profile to use to\nsimulate long wire getting disconnected?
 Wire Wire Line
 	4150 1450 4300 1450
+Text Notes 4600 3750 0    31   ~ 0
+Was 150K, but seems easier to buy precision 100K resistors.
 $EndSCHEMATC

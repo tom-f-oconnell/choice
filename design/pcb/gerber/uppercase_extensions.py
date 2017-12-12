@@ -8,6 +8,9 @@ for f in os.listdir('.'):
     l[-1] = l[-1].upper()
     n = '.'.join(l)
     if f != n:
+        if os.path.isdir(f):
+            continue
+
         os.rename(f, n)
         print f, '->', n
 
