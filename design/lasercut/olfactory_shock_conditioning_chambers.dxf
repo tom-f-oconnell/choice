@@ -23,17 +23,17 @@ $INSBASE
   9
 $EXTMIN
  10
-87.5
+10000000000
  20
--6.5
+10000000000
  30
 0
   9
 $EXTMAX
  10
-162.5
+-10000000000
  20
-203.5
+-10000000000
  30
 0
   9
@@ -91,7 +91,7 @@ STANDARD
   9
 $CLAYER
   8
-4.2_pcb_edges_and_routing
+1.2b_egress_slider_eighth
   9
 $CELTYPE
   6
@@ -1115,9 +1115,9 @@ AcDbViewportTableRecord
  21
 1
  12
-263.7200792873388
+141.6024970190122
  22
-157.8906623564973
+115.2801875324387
  13
 0
  23
@@ -1143,9 +1143,9 @@ AcDbViewportTableRecord
  37
 0
  40
-492.163686264397
+230.5603750648774
  41
-1.56878612716763
+1.371666666666667
  42
 50
  43
@@ -2263,7 +2263,7 @@ AcDbLayerTableRecord
   2
 0.2a_slider_compression
  70
-    1
+    0
  62
     1
   6
@@ -2307,7 +2307,7 @@ AcDbLayerTableRecord
   2
 1.1_top_acrylic_manifold_sides
  70
-    1
+    0
  62
     1
   6
@@ -2327,9 +2327,9 @@ AcDbSymbolTableRecord
 100
 AcDbLayerTableRecord
   2
-1.2a_ceiling_pcb_noegress
+1.2a_top_pcb_edges_and_routing
  70
-    1
+    0
  62
     7
   6
@@ -2481,9 +2481,9 @@ AcDbSymbolTableRecord
 100
 AcDbLayerTableRecord
   2
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
  70
-    0
+    1
  62
     7
   6
@@ -13649,7 +13649,7 @@ ARC
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -13677,7 +13677,7 @@ ARC
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -13705,7 +13705,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -13727,7 +13727,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -13749,7 +13749,7 @@ LINE
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -13773,7 +13773,7 @@ LINE
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -13833,7 +13833,7 @@ HATCH
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -14171,7 +14171,7 @@ LWPOLYLINE
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -14349,7 +14349,7 @@ INSERT
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -14389,7 +14389,7 @@ INSERT
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -14465,7 +14465,7 @@ INSERT
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -14505,7 +14505,7 @@ INSERT
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -14853,7 +14853,7 @@ CIRCLE
 100
 AcDbEntity
   8
-1.2a_ceiling_pcb_noegress
+1.2a_top_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -14875,7 +14875,7 @@ CIRCLE
 100
 AcDbEntity
   8
-1.2a_ceiling_pcb_noegress
+1.2a_top_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26181,7 +26181,7 @@ INSERT
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26221,7 +26221,7 @@ INSERT
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26261,7 +26261,7 @@ INSERT
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26301,7 +26301,7 @@ INSERT
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26341,7 +26341,7 @@ INSERT
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26381,7 +26381,7 @@ INSERT
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26421,7 +26421,7 @@ INSERT
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26461,7 +26461,7 @@ INSERT
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26721,7 +26721,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26743,7 +26743,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26765,7 +26765,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26787,7 +26787,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26809,7 +26809,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26831,7 +26831,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26853,7 +26853,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26875,7 +26875,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26897,7 +26897,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -26919,7 +26919,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -27101,7 +27101,7 @@ INSERT
 100
 AcDbEntity
   8
-1.2a_ceiling_pcb_noegress
+1.2a_top_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -27141,7 +27141,7 @@ INSERT
 100
 AcDbEntity
   8
-1.2a_ceiling_pcb_noegress
+1.2a_top_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -27181,7 +27181,7 @@ INSERT
 100
 AcDbEntity
   8
-1.2a_ceiling_pcb_noegress
+1.2a_top_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -27221,7 +27221,7 @@ INSERT
 100
 AcDbEntity
   8
-1.2a_ceiling_pcb_noegress
+1.2a_top_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -27261,7 +27261,7 @@ INSERT
 100
 AcDbEntity
   8
-1.2a_ceiling_pcb_noegress
+1.2a_top_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -27301,7 +27301,7 @@ INSERT
 100
 AcDbEntity
   8
-1.2a_ceiling_pcb_noegress
+1.2a_top_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -27341,7 +27341,7 @@ INSERT
 100
 AcDbEntity
   8
-1.2a_ceiling_pcb_noegress
+1.2a_top_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -27381,7 +27381,7 @@ INSERT
 100
 AcDbEntity
   8
-1.2a_ceiling_pcb_noegress
+1.2a_top_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -27421,7 +27421,7 @@ LWPOLYLINE
 100
 AcDbEntity
   8
-1.2a_ceiling_pcb_noegress
+1.2a_top_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -27459,7 +27459,7 @@ LWPOLYLINE
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -27497,7 +27497,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -27519,7 +27519,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -27541,7 +27541,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
@@ -27563,7 +27563,7 @@ CIRCLE
 100
 AcDbEntity
   8
-4.2_pcb_edges_and_routing
+4.2_bottom_pcb_edges_and_routing
   6
 ByLayer
  62
