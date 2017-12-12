@@ -7,6 +7,8 @@ import solid as s
 import os
 
 
+assembly = True
+single_layer_files = True
 # TODO include flag for whether or not to also render PCB outlines
 
 name2material = defaultdict(lambda: 'acrylic_3.175mm')
@@ -58,10 +60,6 @@ for layer in dxf.layers:
     #print layer.has_app_data()
     print layer.valid_dxf_attrib_names()
     '''
-    print name
-    print layer.get_color()
-    print ''
-
     use_layer = False
     if layer.get_color() == nonconstruction_color:
         use_layer = True
@@ -83,8 +81,6 @@ for layer in dxf.layers:
                 name2material[name] = exceptions[e]
 
         layers.append(name)
-
-print name2material
 
 # TODO how to close w/ ezdxf? context manager?
 
@@ -112,13 +108,15 @@ outfile = os.path.split(dxf_filename)[1].split('.')[0] + '.scad'
 print 'writing to {}'.format(outfile)
 
 with open(outfile, 'w') as f:
-    f.write('// Generated with make_3d.py from master DXF, {}'.format(dxf_filename))
-    f.write('\n// Uses ezdxf and solidpython')
-    # not sure if OpenSCAD supports all DXF features we would need...
-    # way to automatically simplify?
-    # what are all the "hatches" it was complaining about? the splines?
-    f.write('\n// It seems solidpython needs to be updated to use import and ' + \
-        'linear extrude, \n// rather than dxf_linear_extrude.\n')
+    if assembly:
+        f.write('// Generated with make_3d.py from master DXF, {}'.format(\
+            dxf_filename))
+        f.write('\n// Uses ezdxf and solidpython')
+        # not sure if OpenSCAD supports all DXF features we would need...
+        # way to automatically simplify?
+        # what are all the "hatches" it was complaining about? the splines?
+        f.write('\n// It seems solidpython needs to be updated to use import ' + \
+            'and linear extrude, \n// rather than dxf_linear_extrude.\n')
 
     for layer in sorted_layers:
         prefix = get_prefix(layer)
@@ -141,5 +139,13 @@ with open(outfile, 'w') as f:
 
         # TODO fix color support? (let it take any string?)
         ce = s.color(color)(e)
-        f.write(s.scad_render(ce))
+
+        if single_layer_files:
+            single_layer_outfile = layer + '.scad'
+            print 'writing to {}'.format(single_layer_outfile)
+            with open(single_layer_outfile, 'w') as fs:
+                fs.write(s.scad_render(ce))
+
+        if assembly:
+            f.write(s.scad_render(ce))
 

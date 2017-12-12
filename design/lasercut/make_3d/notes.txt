@@ -1,0 +1,10 @@
+layers that are having problems in conversion through scad:
+-servo_arm
+-yellow_manifold
+
+-6.2 vacuum trap tops will probably have issues, but it seems it wasn't generated,
+ and i'm not sure why?
+	-may want to handle all layers w/ blue separately?
+	-break in to two layers?
+
+-also, i'm pretty sure it is a block definition (re, the hatch, splines) that is scaring openscad, even if it isn't used in current layer

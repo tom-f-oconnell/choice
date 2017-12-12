@@ -91,7 +91,7 @@ STANDARD
   9
 $CLAYER
   8
-1.2b_egress_slider_eighth
+6.2_vacuum_trap_tops
   9
 $CELTYPE
   6
@@ -1115,9 +1115,9 @@ AcDbViewportTableRecord
  21
 1
  12
-141.6024970190122
+145.4451699367603
  22
-115.2801875324387
+115.0880538865514
  13
 0
  23
@@ -1143,7 +1143,7 @@ AcDbViewportTableRecord
  37
 0
  40
-230.5603750648774
+230.5603750648777
  41
 1.371666666666667
  42
@@ -2551,7 +2551,7 @@ AcDbLayerTableRecord
  70
     1
  62
-    7
+    1
   6
 CONTINUOUS
 370
