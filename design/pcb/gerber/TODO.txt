@@ -1,3 +1,5 @@
 generate interior holes as npth drill files, not (exclusively?) as part of edge cuts
 
-generation / zip / (upload to FreeDFM / other?) scripts
+kicad plotting automation?
+
+(upload to FreeDFM / other?) scripts
