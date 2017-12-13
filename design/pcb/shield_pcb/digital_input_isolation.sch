@@ -1,25 +1,4 @@
-EESchema Schematic File Version 3
-LIBS:choice_shield
-LIBS:device
-LIBS:Connector
-LIBS:Transistor
-LIBS:analog_devices
-LIBS:analog_switches
-LIBS:atmel
-LIBS:power
-LIBS:contrib
-LIBS:linear
-LIBS:Switch
-LIBS:Logic_TTL_IEEE
-LIBS:Logic_74xgxx
-LIBS:Logic_74xx
-LIBS:Logic_CMOS_4000
-LIBS:Logic_CMOS_IEEE
-LIBS:opto
-LIBS:Power_Management
-LIBS:modules
-LIBS:regul
-LIBS:pspice
+EESchema Schematic File Version 4
 LIBS:shield_pcb-cache
 EELAYER 26 0
 EELAYER END
@@ -36,7 +15,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L C C21
+L shield_pcb:C C21
 U 1 1 5A26C465
 P 6550 2850
 F 0 "C21" V 6298 2850 50  0000 C CNN
@@ -47,7 +26,7 @@ F 3 "" H 6550 2850 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L +5VA #PWR097
+L shield_pcb:+5VA #PWR097
 U 1 1 5A26C46C
 P 7200 2850
 F 0 "#PWR097" H 7200 2700 50  0001 C CNN
@@ -58,7 +37,7 @@ F 3 "" H 7200 2850 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR093
+L shield_pcb:GNDA #PWR093
 U 1 1 5A26C472
 P 6850 4400
 F 0 "#PWR093" H 6850 4150 50  0001 C CNN
@@ -69,7 +48,7 @@ F 3 "" H 6850 4400 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR092
+L shield_pcb:GNDA #PWR092
 U 1 1 5A26C478
 P 6850 2400
 F 0 "#PWR092" H 6850 2150 50  0001 C CNN
@@ -80,7 +59,7 @@ F 3 "" H 6850 2400 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L 74HC595 U10
+L shield_pcb:74HC595 U10
 U 1 1 5A26C485
 P 6850 3550
 F 0 "U10" H 6850 4428 50  0000 C CNN
@@ -92,7 +71,7 @@ F 4 "N" H 6850 3550 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    0    0    -1  
 $EndComp
 $Comp
-L +5VA #PWR095
+L shield_pcb:+5VA #PWR095
 U 1 1 5A26C4A3
 P 7150 850
 F 0 "#PWR095" H 7150 700 50  0001 C CNN
@@ -103,7 +82,7 @@ F 3 "" H 7150 850 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C C20
+L shield_pcb:C C20
 U 1 1 5A26C4A9
 P 6550 850
 F 0 "C20" V 6298 850 50  0000 C CNN
@@ -114,7 +93,7 @@ F 3 "" H 6550 850 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L 74HC595 U9
+L shield_pcb:74HC595 U9
 U 1 1 5A26C48C
 P 6850 1550
 F 0 "U9" H 6850 2428 50  0000 C CNN
@@ -126,7 +105,7 @@ F 4 "N" H 6850 1550 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    0    0    -1  
 $EndComp
 $Comp
-L C C22
+L shield_pcb:C C22
 U 1 1 5A26D5CC
 P 6550 5200
 F 0 "C22" V 6298 5200 50  0000 C CNN
@@ -137,7 +116,7 @@ F 3 "" H 6550 5200 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L +5VA #PWR096
+L shield_pcb:+5VA #PWR096
 U 1 1 5A26D5D2
 P 7150 5200
 F 0 "#PWR096" H 7150 5050 50  0001 C CNN
@@ -148,7 +127,7 @@ F 3 "" H 7150 5200 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR094
+L shield_pcb:GNDA #PWR094
 U 1 1 5A26D5D8
 P 6850 6750
 F 0 "#PWR094" H 6850 6500 50  0001 C CNN
@@ -159,7 +138,7 @@ F 3 "" H 6850 6750 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L 74HC595 U11
+L shield_pcb:74HC595 U11
 U 1 1 5A26D5DE
 P 6850 5900
 F 0 "U11" H 6850 6778 50  0000 C CNN
@@ -261,7 +240,7 @@ $EndSheet
 Text Notes 1050 3350 0    60   ~ 0
 Optional: shift registers always enabled \nif appropriate jumpers are set.
 $Comp
-L GNDA #PWR091
+L shield_pcb:GNDA #PWR091
 U 1 1 5A2DECFB
 P 6350 2850
 F 0 "#PWR091" H 6350 2600 50  0001 C CNN
@@ -272,7 +251,7 @@ F 3 "" H 6350 2850 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR089
+L shield_pcb:GNDA #PWR089
 U 1 1 5A2DF8EC
 P 6300 5200
 F 0 "#PWR089" H 6300 4950 50  0001 C CNN
@@ -283,7 +262,7 @@ F 3 "" H 6300 5200 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR090
+L shield_pcb:GNDA #PWR090
 U 1 1 5A2E017B
 P 6350 850
 F 0 "#PWR090" H 6350 600 50  0001 C CNN

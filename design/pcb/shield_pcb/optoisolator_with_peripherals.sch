@@ -1,25 +1,4 @@
-EESchema Schematic File Version 3
-LIBS:choice_shield
-LIBS:device
-LIBS:Connector
-LIBS:Transistor
-LIBS:analog_devices
-LIBS:analog_switches
-LIBS:atmel
-LIBS:power
-LIBS:contrib
-LIBS:linear
-LIBS:Switch
-LIBS:Logic_TTL_IEEE
-LIBS:Logic_74xgxx
-LIBS:Logic_74xx
-LIBS:Logic_CMOS_4000
-LIBS:Logic_CMOS_IEEE
-LIBS:opto
-LIBS:Power_Management
-LIBS:modules
-LIBS:regul
-LIBS:pspice
+EESchema Schematic File Version 4
 LIBS:shield_pcb-cache
 EELAYER 26 0
 EELAYER END
@@ -36,7 +15,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L R R79
+L shield_pcb:R R79
 U 1 1 5A28F73E
 P 5158 3514
 AR Path="/5A26B22E/5A290F11/5A28F73E" Ref="R79"  Part="1" 
@@ -50,7 +29,7 @@ F 3 "" H 5158 3514 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L R R80
+L shield_pcb:R R80
 U 1 1 5A28F745
 P 5158 4014
 AR Path="/5A26B22E/5A290F11/5A28F745" Ref="R80"  Part="1" 
@@ -64,7 +43,7 @@ F 3 "" H 5158 4014 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L TLP2531 U12
+L shield_pcb:TLP2531 U12
 U 1 1 5A28F74C
 P 5808 3814
 AR Path="/5A26B22E/5A290F11/5A28F74C" Ref="U12"  Part="1" 
@@ -79,7 +58,7 @@ F 4 "N" H 5808 3814 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    0    0    -1  
 $EndComp
 $Comp
-L C C23
+L shield_pcb:C C23
 U 1 1 5A28F753
 P 7903 3679
 AR Path="/5A26B22E/5A290F11/5A28F753" Ref="C23"  Part="1" 
@@ -93,7 +72,7 @@ F 3 "" H 7903 3679 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +5VA #PWR0101
+L shield_pcb:+5VA #PWR0101
 U 1 1 5A28F75A
 P 8024 3530
 AR Path="/5A26B22E/5A290F11/5A28F75A" Ref="#PWR0101"  Part="1" 
@@ -107,7 +86,7 @@ F 3 "" H 8024 3530 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR0100
+L shield_pcb:GNDA #PWR0100
 U 1 1 5A28F760
 P 7903 3867
 AR Path="/5A26B22E/5A290F11/5A28F760" Ref="#PWR0100"  Part="1" 
@@ -121,7 +100,7 @@ F 3 "" H 7903 3867 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR099
+L shield_pcb:GNDA #PWR099
 U 1 1 5A28F766
 P 6108 4260
 AR Path="/5A26B22E/5A290F11/5A28F766" Ref="#PWR099"  Part="1" 
@@ -135,7 +114,7 @@ F 3 "" H 6108 4260 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR098
+L shield_pcb:GND #PWR098
 U 1 1 5A28F76C
 P 4878 3714
 AR Path="/5A26B22E/5A290F11/5A28F76C" Ref="#PWR098"  Part="1" 
@@ -149,7 +128,7 @@ F 3 "" H 4878 3714 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R R82
+L shield_pcb:R R82
 U 1 1 5A28F772
 P 7335 3983
 AR Path="/5A26B22E/5A290F11/5A28F772" Ref="R82"  Part="1" 
@@ -163,7 +142,7 @@ F 3 "" H 7335 3983 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R R81
+L shield_pcb:R R81
 U 1 1 5A28F779
 P 7035 3810
 AR Path="/5A26B22E/5A290F11/5A28F779" Ref="R81"  Part="1" 

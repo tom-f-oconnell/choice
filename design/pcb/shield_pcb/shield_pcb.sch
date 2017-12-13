@@ -1,25 +1,4 @@
-EESchema Schematic File Version 3
-LIBS:choice_shield
-LIBS:device
-LIBS:Connector
-LIBS:Transistor
-LIBS:analog_devices
-LIBS:analog_switches
-LIBS:atmel
-LIBS:power
-LIBS:contrib
-LIBS:linear
-LIBS:Switch
-LIBS:Logic_TTL_IEEE
-LIBS:Logic_74xgxx
-LIBS:Logic_74xx
-LIBS:Logic_CMOS_4000
-LIBS:Logic_CMOS_IEEE
-LIBS:opto
-LIBS:Power_Management
-LIBS:modules
-LIBS:regul
-LIBS:pspice
+EESchema Schematic File Version 4
 LIBS:shield_pcb-cache
 EELAYER 26 0
 EELAYER END
@@ -83,7 +62,7 @@ Holes
 Text Notes 8550 750  0    60   ~ 0
 Shield for Arduino that uses\nthe same pin disposition\nlike "Uno" board Rev 3.
 $Comp
-L Conn_01x08 P1
+L shield_pcb:Conn_01x08 P1
 U 1 1 56D70129
 P 9600 1800
 F 0 "P1" H 9600 2200 50  0000 C CNN
@@ -95,7 +74,7 @@ F 4 "N" H 9600 1800 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    0    0    -1  
 $EndComp
 $Comp
-L +5V #PWR05
+L shield_pcb:+5V #PWR05
 U 1 1 56D707BB
 P 9050 1250
 F 0 "#PWR05" H 9050 1100 50  0001 C CNN
@@ -106,7 +85,7 @@ F 3 "" H 9050 1250 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR06
+L shield_pcb:GND #PWR06
 U 1 1 56D70CC2
 P 9300 3200
 F 0 "#PWR06" H 9300 2950 50  0001 C CNN
@@ -117,7 +96,7 @@ F 3 "" H 9300 3200 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR08
+L shield_pcb:GND #PWR08
 U 1 1 56D70CFF
 P 10300 3200
 F 0 "#PWR08" H 10300 2950 50  0001 C CNN
@@ -128,7 +107,7 @@ F 3 "" H 10300 3200 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Conn_01x06 P2
+L shield_pcb:Conn_01x06 P2
 U 1 1 56D70DD8
 P 9600 2750
 F 0 "P2" H 9600 3050 50  0000 C CNN
@@ -140,7 +119,7 @@ F 4 "N" H 9600 2750 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    0    0    -1  
 $EndComp
 $Comp
-L Conn_01x01 P5
+L shield_pcb:Conn_01x01 P5
 U 1 1 56D71177
 P 10800 650
 F 0 "P5" V 10900 650 50  0000 C CNN
@@ -152,7 +131,7 @@ F 4 "N" V 10800 650 60  0001 C CNN "Spice_Netlist_Enabled"
 	0    -1   -1   0   
 $EndComp
 $Comp
-L Conn_01x01 P6
+L shield_pcb:Conn_01x01 P6
 U 1 1 56D71274
 P 10900 650
 F 0 "P6" V 11000 650 50  0000 C CNN
@@ -164,7 +143,7 @@ F 4 "N" V 10900 650 60  0001 C CNN "Spice_Netlist_Enabled"
 	0    -1   -1   0   
 $EndComp
 $Comp
-L Conn_01x01 P7
+L shield_pcb:Conn_01x01 P7
 U 1 1 56D712A8
 P 11000 650
 F 0 "P7" V 11100 650 50  0000 C CNN
@@ -176,7 +155,7 @@ F 4 "N" V 11000 650 60  0001 C CNN "Spice_Netlist_Enabled"
 	0    -1   -1   0   
 $EndComp
 $Comp
-L Conn_01x01 P8
+L shield_pcb:Conn_01x01 P8
 U 1 1 56D712DB
 P 11100 650
 F 0 "P8" V 11200 650 50  0000 C CNN
@@ -192,7 +171,7 @@ NoConn ~ 10900 850
 NoConn ~ 11000 850 
 NoConn ~ 11100 850 
 $Comp
-L Conn_01x08 P4
+L shield_pcb:Conn_01x08 P4
 U 1 1 56D7164F
 P 10000 2700
 F 0 "P4" H 10000 3100 50  0000 C CNN
@@ -204,7 +183,7 @@ F 4 "N" H 10000 2700 60  0001 C CNN "Spice_Netlist_Enabled"
 	-1   0    0    -1  
 $EndComp
 $Comp
-L Conn_01x10 P3
+L shield_pcb:Conn_01x10 P3
 U 1 1 56D721E0
 P 10000 1600
 F 0 "P3" H 10000 2100 50  0000 C CNN
@@ -218,7 +197,7 @@ $EndComp
 Text Notes 9700 1500 0    60   ~ 0
 1
 $Comp
-L Screw_Terminal_01x02 J2
+L shield_pcb:Screw_Terminal_01x02 J2
 U 1 1 5A05063F
 P 1750 1900
 F 0 "J2" H 1830 1892 50  0000 L CNN
@@ -230,7 +209,7 @@ F 4 "N" H 1750 1900 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    0    0    -1  
 $EndComp
 $Comp
-L Fuse F1
+L shield_pcb:Fuse F1
 U 1 1 5A0AC0CB
 P 1900 1700
 F 0 "F1" V 1703 1700 50  0000 C CNN
@@ -416,7 +395,7 @@ Text Label 6400 5850 0    60   ~ 0
 Text Label 6400 6050 0    60   ~ 0
 16-
 $Comp
-L GNDA #PWR01
+L shield_pcb:GNDA #PWR01
 U 1 1 5A1B28C8
 P 2200 1700
 F 0 "#PWR01" H 2200 1450 50  0001 C CNN
@@ -427,7 +406,7 @@ F 3 "" H 2200 1700 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L LT1118-5 U1
+L shield_pcb:LT1118-5 U1
 U 1 1 5A1BB4C3
 P 10450 5050
 F 0 "U1" H 10450 5292 50  0000 C CNN
@@ -439,7 +418,7 @@ F 4 "N" H 10450 5050 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    0    0    -1  
 $EndComp
 $Comp
-L +5VA #PWR011
+L shield_pcb:+5VA #PWR011
 U 1 1 5A1BBB18
 P 10850 5050
 F 0 "#PWR011" H 10850 4900 50  0001 C CNN
@@ -450,7 +429,7 @@ F 3 "" H 10850 5050 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C C4
+L shield_pcb:C C4
 U 1 1 5A1BC543
 P 10800 5200
 F 0 "C4" H 10915 5246 50  0000 L CNN
@@ -462,7 +441,7 @@ F 4 "N" H 10800 5200 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    0    0    -1  
 $EndComp
 $Comp
-L C C3
+L shield_pcb:C C3
 U 1 1 5A1BD6EA
 P 9900 5200
 F 0 "C3" H 10015 5246 50  0000 L CNN
@@ -474,7 +453,7 @@ F 4 "N" H 9900 5200 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR09
+L shield_pcb:GNDA #PWR09
 U 1 1 5A1BF765
 P 10450 5400
 F 0 "#PWR09" H 10450 5150 50  0001 C CNN
@@ -485,7 +464,7 @@ F 3 "" H 10450 5400 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR010
+L shield_pcb:GNDA #PWR010
 U 1 1 5A1C331E
 P 10800 5400
 F 0 "#PWR010" H 10800 5150 50  0001 C CNN
@@ -496,7 +475,7 @@ F 3 "" H 10800 5400 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR07
+L shield_pcb:GNDA #PWR07
 U 1 1 5A1C53D0
 P 9900 5400
 F 0 "#PWR07" H 9900 5150 50  0001 C CNN
@@ -507,7 +486,7 @@ F 3 "" H 9900 5400 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L DCP020507P PS1
+L shield_pcb:DCP020507P PS1
 U 1 1 5A1CBCF6
 P 9350 5350
 F 0 "PS1" H 9350 5897 60  0000 C CNN
@@ -519,7 +498,7 @@ F 4 "N" H 9350 5350 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    0    0    -1  
 $EndComp
 $Comp
-L C C2
+L shield_pcb:C C2
 U 1 1 5A1CCE57
 P 8650 5050
 F 0 "C2" V 8398 5050 50  0000 C CNN
@@ -531,7 +510,7 @@ F 4 "N" V 8650 5050 60  0001 C CNN "Spice_Netlist_Enabled"
 	0    1    1    0   
 $EndComp
 $Comp
-L C C1
+L shield_pcb:C C1
 U 1 1 5A1CD179
 P 8600 5500
 F 0 "C1" H 8715 5546 50  0000 L CNN
@@ -543,7 +522,7 @@ F 4 "N" H 8600 5500 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR03
+L shield_pcb:GNDA #PWR03
 U 1 1 5A1CE08C
 P 8600 5700
 F 0 "#PWR03" H 8600 5450 50  0001 C CNN
@@ -555,7 +534,7 @@ F 3 "" H 8600 5700 50  0001 C CNN
 $EndComp
 NoConn ~ 9700 5050
 $Comp
-L GND #PWR02
+L shield_pcb:GND #PWR02
 U 1 1 5A1D15D5
 P 8450 5100
 F 0 "#PWR02" H 8450 4850 50  0001 C CNN
@@ -566,7 +545,7 @@ F 3 "" H 8450 5100 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +5V #PWR04
+L shield_pcb:+5V #PWR04
 U 1 1 5A1D371C
 P 8900 5000
 F 0 "#PWR04" H 8900 4850 50  0001 C CNN
@@ -941,7 +920,7 @@ Entry Wire Line
 Entry Wire Line
 	8150 3400 8250 3500
 $Comp
-L DB25_Female J1
+L shield_pcb:DB25_Female J1
 U 1 1 5A1B90EE
 P 900 2150
 F 0 "J1" H 820 658 50  0000 C CNN
@@ -1274,7 +1253,7 @@ NoConn ~ 9400 1800
 Text Notes 11750 5300 0    60   ~ 0
 TODO why was this 5V not throwing power\n"no pin to drive this" errors? does it think +Vs is a power output?\nsomething else on that net? fix
 $Comp
-L PWR_FLAG #FLG01
+L shield_pcb:PWR_FLAG #FLG01
 U 1 1 5A2E9CA9
 P 9400 1300
 F 0 "#FLG01" H 9400 1375 50  0001 C CNN
@@ -1289,7 +1268,7 @@ Connection ~ 8900 5050
 Wire Wire Line
 	8900 5050 8900 5000
 Wire Wire Line
-	8800 5050 9000 5050
+	8800 5050 8900 5050
 Wire Wire Line
 	8450 5050 8450 5100
 Wire Wire Line
@@ -1302,8 +1281,6 @@ Wire Wire Line
 	8500 5100 8550 5100
 Wire Wire Line
 	8500 5050 8500 5100
-Connection ~ 8600 5350
-Connection ~ 9900 5050
 Wire Wire Line
 	9800 5950 9800 5050
 Wire Wire Line
@@ -1319,8 +1296,6 @@ Wire Wire Line
 Wire Wire Line
 	9000 5550 8900 5550
 Wire Wire Line
-	8450 5350 8900 5350
-Wire Wire Line
 	8900 5350 8900 5450
 Wire Wire Line
 	8900 5450 9000 5450
@@ -1328,13 +1303,8 @@ Wire Wire Line
 	9900 5350 9900 5400
 Wire Wire Line
 	10800 5350 10800 5400
-Connection ~ 10800 5050
-Wire Wire Line
-	10750 5050 10850 5050
 Wire Wire Line
 	10450 5350 10450 5400
-Wire Wire Line
-	9800 5050 10150 5050
 Wire Wire Line
 	6400 6050 6750 6050
 Wire Wire Line
@@ -1399,8 +1369,6 @@ Wire Wire Line
 	6400 3050 6750 3050
 Wire Wire Line
 	6400 2950 6750 2950
-Wire Bus Line
-	6300 1150 6300 7650
 Wire Notes Line
 	10700 1000 10700 500 
 Wire Notes Line
@@ -1410,7 +1378,7 @@ Wire Notes Line
 Wire Notes Line
 	8500 500  8500 3450
 Wire Wire Line
-	9300 2000 9300 3200
+	9300 2000 9300 2100
 Wire Wire Line
 	10300 1500 10300 3200
 Wire Wire Line
@@ -1456,7 +1424,7 @@ Wire Wire Line
 Wire Wire Line
 	9400 2550 8900 2550
 Wire Wire Line
-	9050 1900 9050 1250
+	9050 1900 9050 1350
 Wire Wire Line
 	8800 2200 8800 1350
 Connection ~ 9300 2100
@@ -1479,13 +1447,9 @@ Wire Wire Line
 Wire Wire Line
 	2800 6000 2550 6000
 Wire Bus Line
-	2900 1150 2900 7650
-Wire Bus Line
 	6800 7650 6800 6400
 Wire Bus Line
 	6800 6400 8250 6400
-Wire Bus Line
-	8250 6400 8250 3000
 Wire Wire Line
 	8000 3400 8150 3400
 Wire Wire Line
@@ -1531,11 +1495,7 @@ Wire Wire Line
 Wire Wire Line
 	2550 4500 2800 4500
 Wire Bus Line
-	4500 1150 4500 7650
-Wire Bus Line
 	550  7650 6800 7650
-Wire Bus Line
-	550  3600 550  7650
 Wire Wire Line
 	650  3800 950  3800
 Wire Wire Line
@@ -1679,7 +1639,7 @@ Wire Wire Line
 Wire Wire Line
 	8000 4000 8100 4000
 Wire Wire Line
-	1200 2150 1450 2150
+	1200 2150 1350 2150
 Wire Wire Line
 	1200 950  1300 950 
 Wire Wire Line
@@ -1746,4 +1706,28 @@ Wire Wire Line
 Connection ~ 9050 1350
 NoConn ~ 1200 2250
 NoConn ~ 1200 2050
+Wire Wire Line
+	8900 5050 9000 5050
+Wire Wire Line
+	9300 2100 9300 3200
+Wire Wire Line
+	1350 2150 1450 2150
+Wire Wire Line
+	9050 1350 9050 1250
+Wire Wire Line
+	8450 5350 8900 5350
+Wire Wire Line
+	10750 5050 10850 5050
+Wire Wire Line
+	9800 5050 10150 5050
+Wire Bus Line
+	8250 3000 8250 6400
+Wire Bus Line
+	550  3600 550  7650
+Wire Bus Line
+	4500 1150 4500 7650
+Wire Bus Line
+	2900 1150 2900 7650
+Wire Bus Line
+	6300 1150 6300 7650
 $EndSCHEMATC

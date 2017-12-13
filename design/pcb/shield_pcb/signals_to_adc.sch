@@ -1,25 +1,4 @@
-EESchema Schematic File Version 3
-LIBS:choice_shield
-LIBS:device
-LIBS:Connector
-LIBS:Transistor
-LIBS:analog_devices
-LIBS:analog_switches
-LIBS:atmel
-LIBS:power
-LIBS:contrib
-LIBS:linear
-LIBS:Switch
-LIBS:Logic_TTL_IEEE
-LIBS:Logic_74xgxx
-LIBS:Logic_74xx
-LIBS:Logic_CMOS_4000
-LIBS:Logic_CMOS_IEEE
-LIBS:opto
-LIBS:Power_Management
-LIBS:modules
-LIBS:regul
-LIBS:pspice
+EESchema Schematic File Version 4
 LIBS:shield_pcb-cache
 EELAYER 26 0
 EELAYER END
@@ -70,7 +49,7 @@ in_7-
 Text HLabel 3650 3250 0    60   Input ~ 0
 in_8-
 $Comp
-L CD4052B U3
+L shield_pcb:CD4052B U3
 U 1 1 5A0CC70D
 P 4900 1550
 F 0 "U3" H 4900 2097 60  0000 C CNN
@@ -81,7 +60,7 @@ F 3 "" H 4900 1550 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CD4052B U4
+L shield_pcb:CD4052B U4
 U 1 1 5A0CC774
 P 4900 2950
 F 0 "U4" H 4900 3497 60  0000 C CNN
@@ -124,7 +103,7 @@ in_15-
 Text HLabel 3650 6300 0    60   Input ~ 0
 in_16-
 $Comp
-L CD4052B U5
+L shield_pcb:CD4052B U5
 U 1 1 5A0CE8AC
 P 4900 4600
 F 0 "U5" H 4900 5147 60  0000 C CNN
@@ -135,7 +114,7 @@ F 3 "" H 4900 4600 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CD4052B U6
+L shield_pcb:CD4052B U6
 U 1 1 5A0CE8B2
 P 4900 6000
 F 0 "U6" H 4900 6547 60  0000 C CNN
@@ -146,7 +125,7 @@ F 3 "" H 4900 6000 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L 4556 U2
+L shield_pcb:4556 U2
 U 1 1 5A0CEB7C
 P 2350 1700
 F 0 "U2" H 2350 2166 50  0000 C CNN
@@ -167,7 +146,7 @@ chan_select_B
 Text HLabel 1650 2000 0    60   Input ~ 0
 optional_demux_enable
 $Comp
-L AD623 U7
+L shield_pcb:AD623 U7
 U 1 1 5A0D1663
 P 8000 3450
 F 0 "U7" H 8441 3496 50  0000 L CNN
@@ -180,7 +159,7 @@ $EndComp
 Text Notes 7300 2200 0    31   ~ 0
 0.1 uF ceramic SMD and 10uF electrolytic tantalum caps recommended \nfor decoupling Vs+ (in single supply operation)
 $Comp
-L C C15
+L shield_pcb:C C15
 U 1 1 5A0D1C12
 P 7450 2550
 F 0 "C15" V 7198 2550 50  0000 C CNN
@@ -191,7 +170,7 @@ F 3 "" H 7450 2550 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L CP1 C16
+L shield_pcb:CP1 C16
 U 1 1 5A0D1EDC
 P 8400 2550
 F 0 "C16" V 8652 2550 50  0000 C CNN
@@ -204,7 +183,7 @@ $EndComp
 Text Notes 7950 3100 0    59   ~ 0
 Rg=100kohm/(G-1) \nG=(100kohm/Rg) + 1\nNote: for G=1, the Rg terminals can be disconnected
 $Comp
-L R R7
+L shield_pcb:R R7
 U 1 1 5A0D3C1D
 P 7150 3450
 F 0 "R7" H 7220 3496 50  0000 L CNN
@@ -216,7 +195,7 @@ F 4 "N" H 7150 3450 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    0    0    -1  
 $EndComp
 $Comp
-L C C10
+L shield_pcb:C C10
 U 1 1 5A1130E3
 P 5900 1200
 F 0 "C10" V 5648 1200 50  0000 C CNN
@@ -227,7 +206,7 @@ F 3 "" H 5900 1200 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CP1 C14
+L shield_pcb:CP1 C14
 U 1 1 5A1130EF
 P 6100 1200
 F 0 "C14" V 6352 1200 50  0000 C CNN
@@ -238,7 +217,7 @@ F 3 "" H 6100 1200 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C C8
+L shield_pcb:C C8
 U 1 1 5A1132DE
 P 5800 2900
 F 0 "C8" V 5548 2900 50  0000 C CNN
@@ -249,7 +228,7 @@ F 3 "" H 5800 2900 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CP1 C12
+L shield_pcb:CP1 C12
 U 1 1 5A1132EA
 P 6000 2900
 F 0 "C12" V 6252 2900 50  0000 C CNN
@@ -260,7 +239,7 @@ F 3 "" H 6000 2900 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C C9
+L shield_pcb:C C9
 U 1 1 5A1134EF
 P 5800 4300
 F 0 "C9" V 5548 4300 50  0000 C CNN
@@ -271,7 +250,7 @@ F 3 "" H 5800 4300 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CP1 C13
+L shield_pcb:CP1 C13
 U 1 1 5A1134FB
 P 6000 4300
 F 0 "C13" V 6252 4300 50  0000 C CNN
@@ -282,7 +261,7 @@ F 3 "" H 6000 4300 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C C7
+L shield_pcb:C C7
 U 1 1 5A113934
 P 5750 5700
 F 0 "C7" V 5498 5700 50  0000 C CNN
@@ -293,7 +272,7 @@ F 3 "" H 5750 5700 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CP1 C11
+L shield_pcb:CP1 C11
 U 1 1 5A113940
 P 5950 5700
 F 0 "C11" V 6202 5700 50  0000 C CNN
@@ -304,7 +283,7 @@ F 3 "" H 5950 5700 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C C5
+L shield_pcb:C C5
 U 1 1 5A113DC8
 P 2100 750
 F 0 "C5" V 1848 750 50  0000 C CNN
@@ -315,7 +294,7 @@ F 3 "" H 2100 750 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CP1 C6
+L shield_pcb:CP1 C6
 U 1 1 5A113DD4
 P 2350 750
 F 0 "C6" V 2602 750 50  0000 C CNN
@@ -326,7 +305,7 @@ F 3 "" H 2350 750 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L ACPL-790x U8
+L shield_pcb:ACPL-790x U8
 U 1 1 5A12224A
 P 9700 4650
 F 0 "U8" H 10141 4696 50  0000 L CNN
@@ -337,7 +316,7 @@ F 3 "http://docs.avagotech.com/docs/AV02-2460EN" H 9745 4655 50  0001 L CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R R8
+L shield_pcb:R R8
 U 1 1 5A122803
 P 8700 4450
 F 0 "R8" V 8493 4450 50  0000 C CNN
@@ -348,7 +327,7 @@ F 3 "" H 8700 4450 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L C C17
+L shield_pcb:C C17
 U 1 1 5A122CC7
 P 9000 4650
 F 0 "C17" H 9115 4696 50  0000 L CNN
@@ -359,7 +338,7 @@ F 3 "" H 9000 4650 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C C18
+L shield_pcb:C C18
 U 1 1 5A122FBA
 P 9200 4050
 F 0 "C18" V 8948 4050 50  0000 C CNN
@@ -370,7 +349,7 @@ F 3 "" H 9200 4050 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L C C19
+L shield_pcb:C C19
 U 1 1 5A123078
 P 10150 4050
 F 0 "C19" V 9898 4050 50  0000 C CNN
@@ -381,7 +360,7 @@ F 3 "" H 10150 4050 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L GND #PWR050
+L shield_pcb:GND #PWR050
 U 1 1 5A123A35
 P 10400 4050
 F 0 "#PWR050" H 10400 3800 50  0001 C CNN
@@ -392,7 +371,7 @@ F 3 "" H 10400 4050 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR042
+L shield_pcb:GNDA #PWR042
 U 1 1 5A124511
 P 8500 4850
 F 0 "#PWR042" H 8500 4600 50  0001 C CNN
@@ -403,7 +382,7 @@ F 3 "" H 8500 4850 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR040
+L shield_pcb:GNDA #PWR040
 U 1 1 5A1247AE
 P 7900 3850
 F 0 "#PWR040" H 7900 3600 50  0001 C CNN
@@ -414,7 +393,7 @@ F 3 "" H 7900 3850 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR041
+L shield_pcb:GNDA #PWR041
 U 1 1 5A1247EB
 P 8050 4200
 F 0 "#PWR041" H 8050 3950 50  0001 C CNN
@@ -425,7 +404,7 @@ F 3 "" H 8050 4200 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR038
+L shield_pcb:GNDA #PWR038
 U 1 1 5A12493B
 P 7200 2550
 F 0 "#PWR038" H 7200 2300 50  0001 C CNN
@@ -436,7 +415,7 @@ F 3 "" H 7200 2550 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR043
+L shield_pcb:GNDA #PWR043
 U 1 1 5A124ABD
 P 8700 2550
 F 0 "#PWR043" H 8700 2300 50  0001 C CNN
@@ -447,7 +426,7 @@ F 3 "" H 8700 2550 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR044
+L shield_pcb:GNDA #PWR044
 U 1 1 5A124C40
 P 8950 4050
 F 0 "#PWR044" H 8950 3800 50  0001 C CNN
@@ -458,7 +437,7 @@ F 3 "" H 8950 4050 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR046
+L shield_pcb:GNDA #PWR046
 U 1 1 5A124C7D
 P 9600 5150
 F 0 "#PWR046" H 9600 4900 50  0001 C CNN
@@ -469,7 +448,7 @@ F 3 "" H 9600 5150 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR048
+L shield_pcb:GND #PWR048
 U 1 1 5A124CBA
 P 9800 5150
 F 0 "#PWR048" H 9800 4900 50  0001 C CNN
@@ -480,7 +459,7 @@ F 3 "" H 9800 5150 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR027
+L shield_pcb:GNDA #PWR027
 U 1 1 5A124FFC
 P 5800 3100
 F 0 "#PWR027" H 5800 2850 50  0001 C CNN
@@ -491,7 +470,7 @@ F 3 "" H 5800 3100 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR031
+L shield_pcb:GNDA #PWR031
 U 1 1 5A12506B
 P 6000 3100
 F 0 "#PWR031" H 6000 2850 50  0001 C CNN
@@ -502,7 +481,7 @@ F 3 "" H 6000 3100 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR017
+L shield_pcb:GNDA #PWR017
 U 1 1 5A125B42
 P 2100 950
 F 0 "#PWR017" H 2100 700 50  0001 C CNN
@@ -513,7 +492,7 @@ F 3 "" H 2100 950 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR018
+L shield_pcb:GNDA #PWR018
 U 1 1 5A125CAB
 P 2350 950
 F 0 "#PWR018" H 2350 700 50  0001 C CNN
@@ -524,7 +503,7 @@ F 3 "" H 2350 950 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR022
+L shield_pcb:GNDA #PWR022
 U 1 1 5A127384
 P 4550 2150
 F 0 "#PWR022" H 4550 1900 50  0001 C CNN
@@ -535,7 +514,7 @@ F 3 "" H 4550 2150 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR023
+L shield_pcb:GNDA #PWR023
 U 1 1 5A12740C
 P 4550 3600
 F 0 "#PWR023" H 4550 3350 50  0001 C CNN
@@ -546,7 +525,7 @@ F 3 "" H 4550 3600 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR024
+L shield_pcb:GNDA #PWR024
 U 1 1 5A1274C6
 P 4550 5200
 F 0 "#PWR024" H 4550 4950 50  0001 C CNN
@@ -557,7 +536,7 @@ F 3 "" H 4550 5200 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR025
+L shield_pcb:GNDA #PWR025
 U 1 1 5A1275CB
 P 4550 6650
 F 0 "#PWR025" H 4550 6400 50  0001 C CNN
@@ -568,7 +547,7 @@ F 3 "" H 4550 6650 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR029
+L shield_pcb:GNDA #PWR029
 U 1 1 5A1277FC
 P 5900 1400
 F 0 "#PWR029" H 5900 1150 50  0001 C CNN
@@ -579,7 +558,7 @@ F 3 "" H 5900 1400 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR033
+L shield_pcb:GNDA #PWR033
 U 1 1 5A1278E8
 P 6100 1400
 F 0 "#PWR033" H 6100 1150 50  0001 C CNN
@@ -590,7 +569,7 @@ F 3 "" H 6100 1400 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR028
+L shield_pcb:GNDA #PWR028
 U 1 1 5A127925
 P 5800 4500
 F 0 "#PWR028" H 5800 4250 50  0001 C CNN
@@ -601,7 +580,7 @@ F 3 "" H 5800 4500 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR032
+L shield_pcb:GNDA #PWR032
 U 1 1 5A127A75
 P 6000 4500
 F 0 "#PWR032" H 6000 4250 50  0001 C CNN
@@ -612,7 +591,7 @@ F 3 "" H 6000 4500 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR030
+L shield_pcb:GNDA #PWR030
 U 1 1 5A127AE4
 P 5950 5900
 F 0 "#PWR030" H 5950 5650 50  0001 C CNN
@@ -623,7 +602,7 @@ F 3 "" H 5950 5900 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR026
+L shield_pcb:GNDA #PWR026
 U 1 1 5A127B85
 P 5750 5900
 F 0 "#PWR026" H 5750 5650 50  0001 C CNN
@@ -634,7 +613,7 @@ F 3 "" H 5750 5900 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR019
+L shield_pcb:GNDA #PWR019
 U 1 1 5A127CEE
 P 2350 2050
 F 0 "#PWR019" H 2350 1800 50  0001 C CNN
@@ -1208,7 +1187,7 @@ Wire Wire Line
 Wire Wire Line
 	9800 5050 9800 5150
 $Comp
-L +5VA #PWR021
+L shield_pcb:+5VA #PWR021
 U 1 1 5A129C20
 P 2650 600
 F 0 "#PWR021" H 2650 450 50  0001 C CNN
@@ -1219,7 +1198,7 @@ F 3 "" H 2650 600 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +5VA #PWR037
+L shield_pcb:+5VA #PWR037
 U 1 1 5A129CAF
 P 6400 1050
 F 0 "#PWR037" H 6400 900 50  0001 C CNN
@@ -1230,7 +1209,7 @@ F 3 "" H 6400 1050 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +5VA #PWR035
+L shield_pcb:+5VA #PWR035
 U 1 1 5A129E18
 P 6300 2750
 F 0 "#PWR035" H 6300 2600 50  0001 C CNN
@@ -1241,7 +1220,7 @@ F 3 "" H 6300 2750 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +5VA #PWR036
+L shield_pcb:+5VA #PWR036
 U 1 1 5A129F4F
 P 6300 4150
 F 0 "#PWR036" H 6300 4000 50  0001 C CNN
@@ -1252,7 +1231,7 @@ F 3 "" H 6300 4150 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +5VA #PWR034
+L shield_pcb:+5VA #PWR034
 U 1 1 5A12A06D
 P 6250 5550
 F 0 "#PWR034" H 6250 5400 50  0001 C CNN
@@ -1263,7 +1242,7 @@ F 3 "" H 6250 5550 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +5VA #PWR039
+L shield_pcb:+5VA #PWR039
 U 1 1 5A12A5A5
 P 7900 2450
 F 0 "#PWR039" H 7900 2300 50  0001 C CNN
@@ -1274,7 +1253,7 @@ F 3 "" H 7900 2450 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +5VA #PWR045
+L shield_pcb:+5VA #PWR045
 U 1 1 5A12AC8C
 P 9600 3800
 F 0 "#PWR045" H 9600 3650 50  0001 C CNN
@@ -1285,7 +1264,7 @@ F 3 "" H 9600 3800 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +5V #PWR047
+L shield_pcb:+5V #PWR047
 U 1 1 5A12ADDA
 P 9800 3800
 F 0 "#PWR047" H 9800 3650 50  0001 C CNN
@@ -1298,7 +1277,7 @@ $EndComp
 Connection ~ 9600 4050
 Connection ~ 9800 4050
 $Comp
-L GND #PWR049
+L shield_pcb:GND #PWR049
 U 1 1 5A12B379
 P 10100 5150
 F 0 "#PWR049" H 10100 4900 50  0001 C CNN
@@ -1315,7 +1294,7 @@ Wire Wire Line
 Wire Wire Line
 	8750 3450 8750 4100
 $Comp
-L R R2
+L shield_pcb:R R2
 U 1 1 5A20AD35
 P 1400 2600
 F 0 "R2" H 1330 2554 50  0000 R CNN
@@ -1326,7 +1305,7 @@ F 3 "" H 1400 2600 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +5VA #PWR013
+L shield_pcb:+5VA #PWR013
 U 1 1 5A20B715
 P 1400 2400
 F 0 "#PWR013" H 1400 2250 50  0001 C CNN
@@ -1348,7 +1327,7 @@ Wire Wire Line
 	1650 2100 1650 2000
 Connection ~ 1400 2750
 $Comp
-L GNDA #PWR016
+L shield_pcb:GNDA #PWR016
 U 1 1 5A20C7FE
 P 1950 5550
 F 0 "#PWR016" H 1950 5300 50  0001 C CNN
@@ -1359,7 +1338,7 @@ F 3 "" H 1950 5550 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R R5
+L shield_pcb:R R5
 U 1 1 5A20C804
 P 1950 5350
 F 0 "R5" H 1880 5304 50  0000 R CNN
@@ -1372,7 +1351,7 @@ $EndComp
 Wire Wire Line
 	1950 5550 1950 5500
 $Comp
-L GNDA #PWR020
+L shield_pcb:GNDA #PWR020
 U 1 1 5A20C88A
 P 2400 5550
 F 0 "#PWR020" H 2400 5300 50  0001 C CNN
@@ -1383,7 +1362,7 @@ F 3 "" H 2400 5550 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R R6
+L shield_pcb:R R6
 U 1 1 5A20C890
 P 2400 5350
 F 0 "R6" H 2330 5304 50  0000 R CNN
@@ -1408,7 +1387,7 @@ Wire Wire Line
 Connection ~ 2800 4950
 Connection ~ 2850 5100
 $Comp
-L GNDA #PWR012
+L shield_pcb:GNDA #PWR012
 U 1 1 5A20E3D9
 P 1250 1350
 F 0 "#PWR012" H 1250 1100 50  0001 C CNN
@@ -1419,7 +1398,7 @@ F 3 "" H 1250 1350 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R R1
+L shield_pcb:R R1
 U 1 1 5A20E3DF
 P 1250 1150
 F 0 "R1" H 1180 1104 50  0000 R CNN
@@ -1434,7 +1413,7 @@ Wire Wire Line
 Wire Wire Line
 	1250 1000 1250 950 
 $Comp
-L GNDA #PWR015
+L shield_pcb:GNDA #PWR015
 U 1 1 5A20E574
 P 1600 1350
 F 0 "#PWR015" H 1600 1100 50  0001 C CNN
@@ -1445,7 +1424,7 @@ F 3 "" H 1600 1350 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R R4
+L shield_pcb:R R4
 U 1 1 5A20E57A
 P 1600 1150
 F 0 "R4" H 1530 1104 50  0000 R CNN
@@ -1476,7 +1455,7 @@ Note: the Conn_01x01 are anchors for wire jumpers, if \nyou would like to bypass
 Text Notes 900  3800 0    39   ~ 0
 TODO how to consider these jumpers closed \nfor purposes of simulation?
 $Comp
-L Conn_01x01 J10
+L shield_pcb:Conn_01x01 J10
 U 1 1 5A1E6AFC
 P 8950 3450
 F 0 "J10" H 9030 3492 50  0000 L CNN
@@ -1489,7 +1468,7 @@ $EndComp
 Wire Wire Line
 	8400 3450 8750 3450
 $Comp
-L Conn_01x01 J7
+L shield_pcb:Conn_01x01 J7
 U 1 1 5A1E7123
 P 6800 3900
 F 0 "J7" V 6673 3980 50  0000 L CNN
@@ -1500,7 +1479,7 @@ F 3 "~" H 6800 3900 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L Conn_01x01 J4
+L shield_pcb:Conn_01x01 J4
 U 1 1 5A1E72DA
 P 6800 3000
 F 0 "J4" V 6766 2912 50  0000 R CNN
@@ -1511,7 +1490,7 @@ F 3 "~" H 6800 3000 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L Conn_01x01 J11
+L shield_pcb:Conn_01x01 J11
 U 1 1 5A1E744A
 P 10650 4750
 F 0 "J11" V 10523 4830 50  0000 L CNN
@@ -1528,7 +1507,7 @@ Wire Wire Line
 	6800 3700 6800 3650
 Connection ~ 6800 3650
 $Comp
-L Conn_01x01 J8
+L shield_pcb:Conn_01x01 J8
 U 1 1 5A1E8838
 P 8150 4650
 F 0 "J8" V 8023 4730 50  0000 L CNN
@@ -1542,7 +1521,7 @@ Connection ~ 10650 4550
 Text Notes -1750 5900 0    60   ~ 0
 TODO are these pulldowns redundant now?
 $Comp
-L Conn_01x03_Male J9
+L shield_pcb:Conn_01x03_Male J9
 U 1 1 5A2070F2
 P 8350 3900
 F 0 "J9" H 8323 3830 50  0000 R CNN

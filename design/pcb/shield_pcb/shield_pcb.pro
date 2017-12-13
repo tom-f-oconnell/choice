@@ -1,4 +1,4 @@
-update=Mon 27 Nov 2017 07:25:19 PM PST
+update=Tue 12 Dec 2017 11:59:48 PM PST
 version=1
 last_client=kicad
 [pcbnew]
@@ -38,25 +38,3 @@ ERC_TestSimilarLabels=1
 [eeschema]
 version=1
 LibDir=
-[eeschema/libraries]
-LibName1=/home/tom/catkin/src/choice/design/pcb/schematic_lib/choice_shield
-LibName2=device
-LibName3=Connector
-LibName4=Transistor
-LibName5=analog_devices
-LibName6=analog_switches
-LibName7=atmel
-LibName8=power
-LibName9=contrib
-LibName10=linear
-LibName11=Switch
-LibName12=Logic_TTL_IEEE
-LibName13=Logic_74xgxx
-LibName14=Logic_74xx
-LibName15=Logic_CMOS_4000
-LibName16=Logic_CMOS_IEEE
-LibName17=opto
-LibName18=Power_Management
-LibName19=modules
-LibName20=regul
-LibName21=pspice

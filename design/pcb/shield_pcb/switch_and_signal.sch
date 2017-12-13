@@ -1,25 +1,4 @@
-EESchema Schematic File Version 3
-LIBS:choice_shield
-LIBS:device
-LIBS:Connector
-LIBS:Transistor
-LIBS:analog_devices
-LIBS:analog_switches
-LIBS:atmel
-LIBS:power
-LIBS:contrib
-LIBS:linear
-LIBS:Switch
-LIBS:Logic_TTL_IEEE
-LIBS:Logic_74xgxx
-LIBS:Logic_74xx
-LIBS:Logic_CMOS_4000
-LIBS:Logic_CMOS_IEEE
-LIBS:opto
-LIBS:Power_Management
-LIBS:modules
-LIBS:regul
-LIBS:pspice
+EESchema Schematic File Version 4
 LIBS:shield_pcb-cache
 EELAYER 26 0
 EELAYER END
@@ -36,7 +15,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L R R9
+L shield_pcb:R R9
 U 1 1 5A020264
 P 3200 4600
 AR Path="/5A053B90/5A020264" Ref="R9"  Part="1" 
@@ -63,7 +42,7 @@ F 3 "" H 3200 4600 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L R R10
+L shield_pcb:R R10
 U 1 1 5A0202C8
 P 3700 4950
 AR Path="/5A053B90/5A0202C8" Ref="R10"  Part="1" 
@@ -91,7 +70,7 @@ F 4 "5%" H 3700 4950 60  0001 C CNN "Tolerance"
 	1    0    0    -1  
 $EndComp
 $Comp
-L R R12
+L shield_pcb:R R12
 U 1 1 5A020329
 P 4300 3700
 AR Path="/5A053B90/5A020329" Ref="R12"  Part="1" 
@@ -127,7 +106,7 @@ ADC+
 Text HLabel 5050 4150 2    60   Input ~ 0
 ADC-
 $Comp
-L D D1
+L shield_pcb:D D1
 U 1 1 5A0A33AC
 P 4000 1450
 AR Path="/5A053B90/5A0A33AC" Ref="D1"  Part="1" 
@@ -163,7 +142,7 @@ Limits FET switching time to recommended.
 Text Notes 3300 3950 0    28   ~ 0
 Low value "shunt" resistor, relative to high \nresistance fly. Converts current through fly \n(and circuit) to measurable voltage.
 $Comp
-L R R11
+L shield_pcb:R R11
 U 1 1 5A0F7E6B
 P 4300 2100
 AR Path="/5A053B90/5A0F7E6B" Ref="R11"  Part="1" 
@@ -190,7 +169,7 @@ F 3 "" H 4300 2100 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR051
+L shield_pcb:GNDA #PWR051
 U 1 1 5A1FFEF2
 P 4000 5400
 AR Path="/5A053B90/5A1FFEF2" Ref="#PWR051"  Part="1" 
@@ -217,7 +196,7 @@ F 3 "" H 4000 5400 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDA #PWR052
+L shield_pcb:GNDA #PWR052
 U 1 1 5A20015F
 P 5100 2550
 AR Path="/5A053B90/5A20015F" Ref="#PWR052"  Part="1" 
@@ -254,7 +233,7 @@ Text Notes 4450 2700 0    39   ~ 0
 Text Notes 4550 2150 0    39   ~ 0
 5%, 1W
 $Comp
-L IRL620 Q1
+L shield_pcb:IRL620 Q1
 U 1 1 5A31893D
 P 4200 4600
 AR Path="/5A053B90/5A31893D" Ref="Q1"  Part="1" 
@@ -283,7 +262,7 @@ F 5 "Y" H 4200 4600 60  0001 C CNN "Spice_Netlist_Enabled"
 	1    0    0    -1  
 $EndComp
 $Comp
-L MMSZ5231B D2
+L shield_pcb:MMSZ5231B D2
 U 1 1 5A31DEEC
 P 4700 2550
 AR Path="/5A053B90/5A31DEEC" Ref="D2"  Part="1" 

@@ -1,11 +1,11 @@
 EESchema-LIBRARY Version 2.4
 #encoding utf-8
 #
-# shield_pcb:+5V
+# +5V
 #
-DEF shield_pcb:+5V #PWR 0 0 Y Y 1 F P
+DEF +5V #PWR 0 0 Y Y 1 F P
 F0 "#PWR" 0 -150 50 H I C CNN
-F1 "shield_pcb:+5V" 0 140 50 H V C CNN
+F1 "+5V" 0 140 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 DRAW
@@ -16,11 +16,11 @@ X +5V 1 0 0 0 U 50 50 1 1 W N
 ENDDRAW
 ENDDEF
 #
-# shield_pcb:+5VA
+# +5VA
 #
-DEF shield_pcb:+5VA #PWR 0 0 Y Y 1 F P
+DEF +5VA #PWR 0 0 Y Y 1 F P
 F0 "#PWR" 0 -150 50 H I C CNN
-F1 "shield_pcb:+5VA" 0 140 50 H V C CNN
+F1 "+5VA" 0 140 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 DRAW
@@ -31,11 +31,11 @@ X +5VA 1 0 0 0 U 50 50 1 1 W N
 ENDDRAW
 ENDDEF
 #
-# shield_pcb:4556
+# 4556
 #
-DEF shield_pcb:4556 U 0 30 Y Y 2 F N
+DEF 4556 U 0 30 Y Y 2 F N
 F0 "U" 200 350 50 H V C CNN
-F1 "shield_pcb:4556" 250 -350 50 H V C CNN
+F1 "4556" 250 -350 50 H V C CNN
 F2 "" 0 0 60 H I C CNN
 F3 "" 0 0 60 H I C CNN
 DRAW
@@ -59,11 +59,11 @@ X ~Q3 9 550 -150 300 L 50 50 2 1 O I
 ENDDRAW
 ENDDEF
 #
-# shield_pcb:74HC595
+# 74HC595
 #
-DEF shield_pcb:74HC595 U 0 40 Y Y 1 L N
+DEF 74HC595 U 0 40 Y Y 1 L N
 F0 "U" -300 550 50 H V C CNN
-F1 "shield_pcb:74HC595" -300 -650 50 H V C CNN
+F1 "74HC595" -300 -650 50 H V C CNN
 F2 "Housings_DIP:DIP-16_W7.62mm_Socket" 220 -756 50 H I C CNN
 F3 "" 418 -838 50 H I C CNN
 $FPLIST
@@ -90,11 +90,11 @@ X ~QH 9 500 -500 200 L 50 50 1 0 O
 ENDDRAW
 ENDDEF
 #
-# shield_pcb:ACPL-790x
+# ACPL-790x
 #
-DEF shield_pcb:ACPL-790x U 0 0 Y N 1 F N
+DEF ACPL-790x U 0 0 Y N 1 F N
 F0 "U" -200 425 50 H V R CNN
-F1 "shield_pcb:ACPL-790x" -200 350 50 H V R CNN
+F1 "ACPL-790x" -200 350 50 H V R CNN
 F2 "Housings_DIP:DIP-8_W7.62mm_Socket" 150 -350 50 H I L CIN
 F3 "" 45 5 50 H I L CNN
 $FPLIST
@@ -132,11 +132,11 @@ X VDD2 8 100 400 100 D 50 50 1 1 W
 ENDDRAW
 ENDDEF
 #
-# shield_pcb:AD623
+# AD623
 #
-DEF shield_pcb:AD623 U 0 20 Y Y 1 F N
+DEF AD623 U 0 20 Y Y 1 F N
 F0 "U" 150 300 50 H V C CNN
-F1 "shield_pcb:AD623" 150 200 50 H V C CNN
+F1 "AD623" 150 200 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -156,11 +156,11 @@ X Rg 8 -400 -100 100 R 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# shield_pcb:C
+# C
 #
-DEF shield_pcb:C C 0 10 N Y 1 F N
+DEF C C 0 10 N Y 1 F N
 F0 "C" 25 100 50 H V L CNN
-F1 "shield_pcb:C" 25 -100 50 H V L CNN
+F1 "C" 25 -100 50 H V L CNN
 F2 "" 38 -150 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -174,11 +174,11 @@ X ~ 2 0 -150 110 U 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# shield_pcb:CD4052B
+# CD4052B
 #
-DEF shield_pcb:CD4052B U 0 40 Y Y 1 F N
+DEF CD4052B U 0 40 Y Y 1 F N
 F0 "U" -4 492 60 H V C CNN
-F1 "shield_pcb:CD4052B" 6 402 60 H V C CNN
+F1 "CD4052B" 6 402 60 H V C CNN
 F2 "Housings_DIP:DIP-16_W7.62mm_Socket" 94 -558 60 H I C CNN
 F3 "" 0 0 60 H I C CNN
 $FPLIST
@@ -205,11 +205,11 @@ X B 9 350 -400 100 L 50 50 1 1 I
 ENDDRAW
 ENDDEF
 #
-# shield_pcb:CP1
+# CP1
 #
-DEF shield_pcb:CP1 C 0 10 N N 1 F N
+DEF CP1 C 0 10 N N 1 F N
 F0 "C" 25 100 50 H V L CNN
-F1 "shield_pcb:CP1" 25 -100 50 H V L CNN
+F1 "CP1" 25 -100 50 H V L CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -225,11 +225,11 @@ X ~ 2 0 -150 130 U 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# shield_pcb:Conn_01x01
+# Conn_01x01
 #
-DEF shield_pcb:Conn_01x01 J 0 40 Y N 1 F N
+DEF Conn_01x01 J 0 40 Y N 1 F N
 F0 "J" 0 100 50 H V C CNN
-F1 "shield_pcb:Conn_01x01" 0 -100 50 H V C CNN
+F1 "Conn_01x01" 0 -100 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -247,11 +247,11 @@ X Pin_1 1 -200 0 150 R 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# shield_pcb:Conn_01x03_Male
+# Conn_01x03_Male
 #
-DEF shield_pcb:Conn_01x03_Male J 0 40 Y N 1 F N
+DEF Conn_01x03_Male J 0 40 Y N 1 F N
 F0 "J" 0 200 50 H V C CNN
-F1 "shield_pcb:Conn_01x03_Male" 0 -200 50 H V C CNN
+F1 "Conn_01x03_Male" 0 -200 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -273,11 +273,11 @@ X Pin_3 3 200 -100 150 L 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# shield_pcb:Conn_01x06
+# Conn_01x06
 #
-DEF shield_pcb:Conn_01x06 J 0 40 Y N 1 F N
+DEF Conn_01x06 J 0 40 Y N 1 F N
 F0 "J" 0 300 50 H V C CNN
-F1 "shield_pcb:Conn_01x06" 0 -400 50 H V C CNN
+F1 "Conn_01x06" 0 -400 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -305,11 +305,11 @@ X Pin_6 6 -200 -300 150 R 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# shield_pcb:Conn_01x08
+# Conn_01x08
 #
-DEF shield_pcb:Conn_01x08 J 0 40 Y N 1 F N
+DEF Conn_01x08 J 0 40 Y N 1 F N
 F0 "J" 0 400 50 H V C CNN
-F1 "shield_pcb:Conn_01x08" 0 -500 50 H V C CNN
+F1 "Conn_01x08" 0 -500 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -341,11 +341,11 @@ X Pin_8 8 -200 -400 150 R 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# shield_pcb:Conn_01x10
+# Conn_01x10
 #
-DEF shield_pcb:Conn_01x10 J 0 40 Y N 1 F N
+DEF Conn_01x10 J 0 40 Y N 1 F N
 F0 "J" 0 500 50 H V C CNN
-F1 "shield_pcb:Conn_01x10" 0 -600 50 H V C CNN
+F1 "Conn_01x10" 0 -600 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -381,11 +381,11 @@ X Pin_9 9 -200 -400 150 R 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# shield_pcb:D
+# D
 #
-DEF shield_pcb:D D 0 40 N N 1 F N
+DEF D D 0 40 N N 1 F N
 F0 "D" 0 100 50 H V C CNN
-F1 "shield_pcb:D" 0 -100 50 H V C CNN
+F1 "D" 0 -100 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -404,11 +404,11 @@ X A 2 150 0 100 L 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# shield_pcb:DB25_Female
+# DB25_Female
 #
-DEF shield_pcb:DB25_Female J 0 40 Y N 1 F N
+DEF DB25_Female J 0 40 Y N 1 F N
 F0 "J" 0 1350 50 H V C CNN
-F1 "shield_pcb:DB25_Female" 0 -1375 50 H V C CNN
+F1 "DB25_Female" 0 -1375 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -494,11 +494,11 @@ X 9 9 -300 -400 150 R 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# shield_pcb:DCP020507P
+# DCP020507P
 #
-DEF shield_pcb:DCP020507P PS 0 40 Y Y 1 F N
+DEF DCP020507P PS 0 40 Y Y 1 F N
 F0 "PS" 0 550 60 H V C CNN
-F1 "shield_pcb:DCP020507P" 0 450 60 H V C CNN
+F1 "DCP020507P" 0 450 60 H V C CNN
 F2 "Housings_DIP:DIP-14_W7.62mm_Socket" 138 -414 60 H I C CNN
 F3 "" -200 250 60 H I C CNN
 DRAW
@@ -516,11 +516,11 @@ X -Vout 6 -350 -200 100 R 50 50 1 1 O
 ENDDRAW
 ENDDEF
 #
-# shield_pcb:Fuse
+# Fuse
 #
-DEF shield_pcb:Fuse F 0 0 N Y 1 F N
+DEF Fuse F 0 0 N Y 1 F N
 F0 "F" 80 0 50 V V C CNN
-F1 "shield_pcb:Fuse" -75 0 50 V V C CNN
+F1 "Fuse" -75 0 50 V V C CNN
 F2 "" -70 0 50 V I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -534,11 +534,11 @@ X ~ 2 0 -150 50 U 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# shield_pcb:GND
+# GND
 #
-DEF shield_pcb:GND #PWR 0 0 Y Y 1 F P
+DEF GND #PWR 0 0 Y Y 1 F P
 F0 "#PWR" 0 -250 50 H I C CNN
-F1 "shield_pcb:GND" 0 -150 50 H V C CNN
+F1 "GND" 0 -150 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 DRAW
@@ -547,11 +547,11 @@ X GND 1 0 0 0 D 50 50 1 1 W N
 ENDDRAW
 ENDDEF
 #
-# shield_pcb:GNDA
+# GNDA
 #
-DEF shield_pcb:GNDA #PWR 0 0 Y Y 1 F P
+DEF GNDA #PWR 0 0 Y Y 1 F P
 F0 "#PWR" 0 -250 50 H I C CNN
-F1 "shield_pcb:GNDA" 0 -150 50 H V C CNN
+F1 "GNDA" 0 -150 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 DRAW
@@ -560,11 +560,11 @@ X GNDA 1 0 0 0 D 50 50 1 1 W N
 ENDDRAW
 ENDDEF
 #
-# shield_pcb:IRL620
+# IRL620
 #
-DEF shield_pcb:IRL620 Q 0 0 Y N 1 F N
+DEF IRL620 Q 0 0 Y N 1 F N
 F0 "Q" 200 75 50 H V L CNN
-F1 "shield_pcb:IRL620" 200 0 50 H V L CNN
+F1 "IRL620" 200 0 50 H V L CNN
 F2 "TO_SOT_Packages_THT:TO-220-3_Vertical" 200 -75 50 H I L CIN
 F3 "" 200 75 50 H I L CNN
 F4 "M" 0 0 60 H I C CNN "Spice_Primitive"
@@ -596,11 +596,11 @@ X D 3 100 200 100 D 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# shield_pcb:LT1118-5
+# LT1118-5
 #
-DEF shield_pcb:LT1118-5 U 0 10 Y Y 1 F N
+DEF LT1118-5 U 0 10 Y Y 1 F N
 F0 "U" -150 125 50 H V C CNN
-F1 "shield_pcb:LT1118-5" 0 125 50 H V L CNN
+F1 "LT1118-5" 0 125 50 H V L CNN
 F2 "TO_SOT_Packages_SMD:SOT-223" -696 -258 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 F4 "N" -50 225 39 H V C CNN "Spice_Netlist_Enabled"
@@ -616,11 +616,11 @@ X VI 3 -300 0 100 R 50 50 1 1 W
 ENDDRAW
 ENDDEF
 #
-# shield_pcb:MMSZ5231B
+# MMSZ5231B
 #
-DEF shield_pcb:MMSZ5231B D 0 40 N N 1 F N
+DEF MMSZ5231B D 0 40 N N 1 F N
 F0 "D" 0 100 50 H V C CNN
-F1 "shield_pcb:MMSZ5231B" 0 -100 50 H V C CNN
+F1 "MMSZ5231B" 0 -100 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 100 50 H I C CNN
 F4 "X" 0 0 60 H I C CNN "Spice_Primitive"
@@ -642,11 +642,11 @@ X A 2 150 0 100 L 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# shield_pcb:PWR_FLAG
+# PWR_FLAG
 #
-DEF shield_pcb:PWR_FLAG #FLG 0 0 N N 1 F P
+DEF PWR_FLAG #FLG 0 0 N N 1 F P
 F0 "#FLG" 0 75 50 H I C CNN
-F1 "shield_pcb:PWR_FLAG" 0 150 50 H V C CNN
+F1 "PWR_FLAG" 0 150 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 DRAW
@@ -655,11 +655,11 @@ X pwr 1 0 0 0 U 50 50 0 0 w
 ENDDRAW
 ENDDEF
 #
-# shield_pcb:R
+# R
 #
-DEF shield_pcb:R R 0 0 N Y 1 F N
+DEF R R 0 0 N Y 1 F N
 F0 "R" 80 0 50 V V C CNN
-F1 "shield_pcb:R" 0 0 50 V V C CNN
+F1 "R" 0 0 50 V V C CNN
 F2 "" -70 0 50 V I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -673,11 +673,11 @@ X ~ 2 0 -150 50 U 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# shield_pcb:Screw_Terminal_01x02
+# Screw_Terminal_01x02
 #
-DEF shield_pcb:Screw_Terminal_01x02 J 0 40 Y N 1 F N
+DEF Screw_Terminal_01x02 J 0 40 Y N 1 F N
 F0 "J" 0 100 50 H V C CNN
-F1 "shield_pcb:Screw_Terminal_01x02" 0 -200 50 H V C CNN
+F1 "Screw_Terminal_01x02" 0 -200 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -697,11 +697,11 @@ X Pin_2 2 -200 -100 150 R 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# shield_pcb:TLP2531
+# TLP2531
 #
-DEF shield_pcb:TLP2531 U 0 40 Y Y 1 F N
+DEF TLP2531 U 0 40 Y Y 1 F N
 F0 "U" -200 400 50 H V L CNN
-F1 "shield_pcb:TLP2531" 0 400 50 H V L CNN
+F1 "TLP2531" 0 400 50 H V L CNN
 F2 "Housings_DIP:DIP-8_W7.62mm_Socket" -504 -346 50 H I L CIN
 F3 "" -39 -118 50 H I L CNN
 $FPLIST
