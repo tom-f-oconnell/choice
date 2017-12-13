@@ -1,4 +1,4 @@
-update=Mon 04 Dec 2017 04:57:54 PM PST
+update=Wed 13 Dec 2017 02:42:18 PM PST
 version=1
 last_client=kicad
 [general]
@@ -30,6 +30,3 @@ NetIExt=net
 [eeschema]
 version=1
 LibDir=
-[eeschema/libraries]
-LibName1=Connector
-LibName2=/home/tom/catkin/src/choice/design/pcb/schematic_lib/shock_grid

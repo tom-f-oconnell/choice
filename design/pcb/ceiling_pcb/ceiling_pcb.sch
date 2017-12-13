@@ -1,6 +1,4 @@
-EESchema Schematic File Version 3
-LIBS:Connector
-LIBS:shock_grid
+EESchema Schematic File Version 4
 LIBS:ceiling_pcb-cache
 EELAYER 26 0
 EELAYER END
@@ -17,7 +15,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L shock_grid J3
+L shock_electrodes:shock_grid J3
 U 1 1 59F778B5
 P 4350 1450
 F 0 "J3" H 5378 1728 60  0000 L CNN
@@ -28,7 +26,7 @@ F 3 "" H 4350 1450 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L shock_grid J5
+L shock_electrodes:shock_grid J5
 U 1 1 59F779C5
 P 4350 2900
 F 0 "J5" H 5378 3178 60  0000 L CNN
@@ -39,7 +37,7 @@ F 3 "" H 4350 2900 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L shock_grid J4
+L shock_electrodes:shock_grid J4
 U 1 1 59F77CE3
 P 7450 1450
 F 0 "J4" H 8478 1728 60  0000 L CNN
@@ -50,7 +48,7 @@ F 3 "" H 7450 1450 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L shock_grid J6
+L shock_electrodes:shock_grid J6
 U 1 1 59F77DC7
 P 7450 2900
 F 0 "J6" H 8478 3178 60  0000 L CNN
@@ -61,7 +59,7 @@ F 3 "" H 7450 2900 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L shock_grid J7
+L shock_electrodes:shock_grid J7
 U 1 1 59F77FF1
 P 4350 4300
 F 0 "J7" H 5378 4578 60  0000 L CNN
@@ -72,7 +70,7 @@ F 3 "" H 4350 4300 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L shock_grid J8
+L shock_electrodes:shock_grid J8
 U 1 1 59F780F5
 P 7450 4300
 F 0 "J8" H 8478 4578 60  0000 L CNN
@@ -83,7 +81,7 @@ F 3 "" H 7450 4300 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L shock_grid J9
+L shock_electrodes:shock_grid J9
 U 1 1 59F78242
 P 4350 5450
 F 0 "J9" H 5378 5728 60  0000 L CNN
@@ -94,7 +92,7 @@ F 3 "" H 4350 5450 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L shock_grid J10
+L shock_electrodes:shock_grid J10
 U 1 1 59F7866D
 P 7450 5450
 F 0 "J10" H 8478 5728 60  0000 L CNN
@@ -105,7 +103,7 @@ F 3 "" H 7450 5450 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Conn_01x09 J1
+L ceiling_pcb:Conn_01x09 J1
 U 1 1 59F76D5B
 P 1750 3150
 F 0 "J1" H 1750 2450 50  0000 C CNN
@@ -332,7 +330,7 @@ Wire Wire Line
 Wire Wire Line
 	4850 1950 5350 1950
 $Comp
-L Conn_01x09 J2
+L ceiling_pcb:Conn_01x09 J2
 U 1 1 5A268DBE
 P 1750 4600
 F 0 "J2" H 1750 3900 50  0000 C CNN

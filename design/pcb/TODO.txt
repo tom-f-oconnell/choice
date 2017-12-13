@@ -1,4 +1,3 @@
-is LIBS at top of sch still not used? (wikibooks)
-should cache be in there?
+decide whether to keep shield sch / footprint lib above, and then make sure versions in project
+dir are current if deleting old masters
 
-can paths (relative to KIPRJMOD, in sym-lib-table for example) include /../? (for schematic_lib)
