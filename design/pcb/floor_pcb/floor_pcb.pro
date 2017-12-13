@@ -1,10 +1,6 @@
 update=Wed 13 Dec 2017 01:47:21 PM PST
 version=1
 last_client=kicad
-[general]
-version=1
-RootSch=
-BoardNm=
 [pcbnew]
 version=1
 LastNetListRead=
