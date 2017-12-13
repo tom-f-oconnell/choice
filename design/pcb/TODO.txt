@@ -1,0 +1,4 @@
+is LIBS at top of sch still not used? (wikibooks)
+should cache be in there?
+
+can paths (relative to KIPRJMOD, in sym-lib-table for example) include /../? (for schematic_lib)

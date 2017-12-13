@@ -1,7 +1,7 @@
 EESchema Schematic File Version 3
+LIBS:shock_electrodes
+LIBS:floor_pcb
 LIBS:Connector
-LIBS:shock_grid
-LIBS:floor_pcb-cache
 EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
@@ -28,7 +28,7 @@ F 3 "" H 1350 2100 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L shock_grid J11
+L shock_electrodes:shock_grid J11
 U 1 1 59F778B5
 P 4250 1800
 F 0 "J11" H 5278 2078 60  0000 L CNN
@@ -39,7 +39,7 @@ F 3 "" H 4250 1800 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L shock_grid J9
+L shock_electrodes:shock_grid J9
 U 1 1 59F779C5
 P 4250 3250
 F 0 "J9" H 5278 3528 60  0000 L CNN
@@ -50,7 +50,7 @@ F 3 "" H 4250 3250 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L shock_grid J10
+L shock_electrodes:shock_grid J10
 U 1 1 59F77CE3
 P 7350 1800
 F 0 "J10" H 8378 2078 60  0000 L CNN
@@ -61,7 +61,7 @@ F 3 "" H 7350 1800 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L shock_grid J8
+L shock_electrodes:shock_grid J8
 U 1 1 59F77DC7
 P 7350 3250
 F 0 "J8" H 8378 3528 60  0000 L CNN
@@ -72,7 +72,7 @@ F 3 "" H 7350 3250 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L shock_grid J7
+L shock_electrodes:shock_grid J7
 U 1 1 59F77FF1
 P 4250 4650
 F 0 "J7" H 5278 4928 60  0000 L CNN
@@ -83,7 +83,7 @@ F 3 "" H 4250 4650 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L shock_grid J6
+L shock_electrodes:shock_grid J6
 U 1 1 59F780F5
 P 7350 4650
 F 0 "J6" H 8378 4928 60  0000 L CNN
@@ -94,7 +94,7 @@ F 3 "" H 7350 4650 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L shock_grid J5
+L shock_electrodes:shock_grid J5
 U 1 1 59F78242
 P 4250 5800
 F 0 "J5" H 5278 6078 60  0000 L CNN
@@ -105,7 +105,7 @@ F 3 "" H 4250 5800 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L shock_grid J4
+L shock_electrodes:shock_grid J4
 U 1 1 59F7866D
 P 7350 5800
 F 0 "J4" H 8378 6078 60  0000 L CNN
@@ -436,7 +436,7 @@ Lower pin numbers (red) on the 10\npin connectors are to the left.
 Text Notes 950  1300 0    60   ~ 0
 J2 is currently on top, as seen\nin all design documents.
 Text Notes 3550 7550 0    60   ~ 0
-TODO change shock_grid schematic library part\nso that "left_grid" pin number actually defaults\nto left on footprint. could also change pin numbering\nin footprint.
+TODO change shock_electrodes:shock_grid schematic library part\nso that "left_grid" pin number actually defaults\nto left on footprint. could also change pin numbering\nin footprint.
 Text Notes 3550 7000 0    60   ~ 0
 TODO edit electrode schematic part to show grids\nalso make it smaller. maybe show fly.
 $EndSCHEMATC
