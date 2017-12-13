@@ -47,7 +47,6 @@ do
 
         elif [ "$pass_drill_through_gerbv" = false ]; then
             # could also probably use symlinks
-            cp ${d}/*DRL ${gerbv_export_dir}
             find ${d} -type f -iname '*drl' -exec cp {} ${gerbv_export_dir} \;
         fi
     fi
@@ -55,19 +54,13 @@ do
     if [ "$pass_gerbers_through_gerbv" = true ]; then
         # TODO check output is the same
         # TODO make sure to handle if gerbv actually crashes
-        find ${d} -type f ! \( -iname '*drl' \) -printf "%f\0" | \
-            xargs -0 -If echo gerbv ${d}f --export=rs274x -o ${gerbv_export_dir}/f \
-            2> gerbv_gerber_errors.txt
-        find ${d} -type f ! \( -iname '*drl' \) -printf "%f\0" | \
-            xargs -0 -If gerbv ${d}f --export=rs274x -o ${gerbv_export_dir}/f \
+        find ${d} -type f ! \( -iname '*drl' \) -printf "%f\n" | \
+            xargs -I{} gerbv ${d}{} --export=rs274x -o ${gerbv_export_dir}/{} \
             2> gerbv_gerber_errors.txt
     fi
     if [ "$pass_drill_through_gerbv" = true ]; then
         find ${d} -type f -iname '*drl' -printf "%f\0" | \
-            xargs -0 -If echo gerbv ${d}f --export=drill -o ${gerbv_export_dir}/f \
-            2> gerbv_drill_errors.txt
-        find ${d} -type f -iname '*drl' -printf "%f\0" | \
-            xargs -0 -If gerbv ${d}f --export=drill -o ${gerbv_export_dir}/f \
+            xargs -0 -I{} gerbv ${d}{} --export=drill -o ${gerbv_export_dir}/{} \
             2> gerbv_drill_errors.txt
     fi
 done
