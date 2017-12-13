@@ -1,4 +1,4 @@
-EESchema Schematic File Version 3
+EESchema Schematic File Version 4
 LIBS:shock_electrodes
 LIBS:floor_pcb
 LIBS:Connector
@@ -17,7 +17,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L Conn_01x10_Male J2
+L floor_pcb:Conn_01x10_Male J2
 U 1 1 59F76DF3
 P 1350 2100
 F 0 "J2" H 1456 2678 50  0000 C CNN
@@ -116,7 +116,7 @@ F 3 "" H 7350 5800 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Conn_01x10_Male J1
+L floor_pcb:Conn_01x10_Male J1
 U 1 1 59F76D5B
 P 1350 3400
 F 0 "J1" H 1456 3978 50  0000 C CNN
@@ -127,7 +127,7 @@ F 3 "" H 1350 3400 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L DB25_Male J3
+L floor_pcb:DB25_Male J3
 U 1 1 5A2622A3
 P 1550 5700
 F 0 "J3" H 1470 4208 50  0000 C CNN
