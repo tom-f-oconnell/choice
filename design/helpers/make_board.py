@@ -216,3 +216,8 @@ if not dry_run:
     # does title block include the outer border?
     # TODO why does this not seem to be displaying?
     pcb.SetTitleBlock(tb)
+
+# TODO what is proper way to redraw board? are arguments optional?
+# which arguments do i need?
+pcb.Draw()
+

@@ -1,1 +1,15 @@
 remember to git subtree push / script it
+git subtree push --prefix=design/helpers/kicad_holes hole_fixing_plugin master
+
+are there existing plugins to take input of component coordinates or something and place
+components?
+	-maybe turn make_board into something like that?
+
+maybe also add support to existing arraying tools s.t. a route between two can be copied to 
+others?
+	-commercial ways this is done? seems ugly to not have it repeated
+	-alternatives w/in kicad? just copy somehow?
+	-maybe also allow for things like flipping every other (which i might need)
+	 to avoid mounting holes and stuff
+
+
