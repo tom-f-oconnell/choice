@@ -1,6 +1,6 @@
 
 from __future__ import division
-
+import pcbnew
 
 def nm_to_mm(nm):
     return nm / float(1e6)
