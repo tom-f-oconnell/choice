@@ -239,6 +239,7 @@ def as_kicad_mod(polylines, filename=None):
 
     import pcbnew
     from pcbnew import PCB_IO as io
+    from kicad_util import *
 
     # TODO check for library through some pcbnew api call? / catch creation error?
     footprint_lib_dir = os.path.split(os.path.abspath(filename))[0]
@@ -253,20 +254,6 @@ def as_kicad_mod(polylines, filename=None):
     footprint.SetDescription('Electrodes for shocking either side of one ' + \
         'behavior chamber, for conditioning Drosophila to avoid odors ' + \
         'paired with the shock.')
-
-    def get_layer_id_by_name(name):
-        # TODO how to programmatically get max # of layers?
-        ret = None
-        for i in range(49):
-            n = pcbnew.BOARD_GetStandardLayerName(i)
-            if n == name:
-                ret = i
-        if ret is None:
-            raise ValueError('layer with name {} not found'.format(name))
-        return ret
-
-    def mm_to_nm(mm):
-        return int(round(1e6 * mm))
 
     def remove_neighboring_duplicates(point_list):
         new_list = list()

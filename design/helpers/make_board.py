@@ -10,6 +10,8 @@ import numpy as np
 import datetime
 # TODO git
 
+from kicad_util import *
+
 # TODO why did this seem to behave differently just upon re-running this?
 # (all from within KiCAD pcbnew scripting window, via "import make_board")
 
@@ -68,9 +70,6 @@ else:
     in_ceiling_board = False
 
 
-def nm_to_mm(nm):
-    return nm / float(1e6)
-
 def print_placing(name, center):
     # x and y in wxPointMM are still stored in nm
     print 'placing {} centered at ({}, {})'.format(name, \
@@ -102,11 +101,6 @@ for j, y in enumerate(np.linspace(y0_center, y0_center + num_chambers * \
         print_placing('grid', electrode_center)
         electrode.SetPosition(electrode_center)
         #pcb.Add(electrode)
-
-
-# TODO share w/ electrode_vertices.py break into module? pcbnew func?
-def mm_to_nm(mm):
-    return int(round(1e6 * mm))
 
 # sets the position of two of the headers, relative to the boundaries of the board
 # so that their position is symmetric about the board center
