@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# TODO what was this for again? document
+
 from __future__ import division
 
 # as usual, all units in mm
