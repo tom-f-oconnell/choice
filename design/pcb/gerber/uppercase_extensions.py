@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
+
 import os
 import sys
 
@@ -12,5 +14,5 @@ for f in os.listdir('.'):
             continue
 
         os.rename(f, n)
-        print f, '->', n
+        print(f + ' -> ' + n)
 

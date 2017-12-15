@@ -52,7 +52,7 @@ do
     fi
 
     if [ "$pass_gerbers_through_gerbv" = true ]; then
-        # TODO check output is the same
+        # TODO check output is the same as if run with GUI
         # TODO make sure to handle if gerbv actually crashes
         find ${d} -type f ! \( -iname '*drl' \) -printf "%f\n" | \
             xargs -I{} gerbv ${d}{} --export=rs274x -o ${gerbv_export_dir}/{} \
