@@ -1,0 +1,35 @@
+-redesign frame to eliminate need for flat inside corner connectors
+ (the ones with the nubs that are cheaper, particularly for 20mm)
+
+-redesign side panelling to snap on? magnets?
+
+-redo LED mounts to not require / benefit from milling mounting slots
+
+-redo bottom of enclosure s.t. does not depend on extending to table
+ surface for being light proof
+
+-better light proof entries for wire / tubing than what I use now
+ (gaffers tape)
+
+-BOM and instructions!!
+
+-are risers still required for mounting chambers flush?
+ -redo to eliminate need for them if so
+ -otherwise include design files for them
+
+-add designs showing mounting slots in aluminum sheet, where to put LEDs,
+ and maybe add holes for possibly mounting a heatsink
+	-good way to attach LED strips to it? get thermal paste / epoxy?
+	 does their sticky coating null that?
+
+-is way LEDs are wired up likely to cause illumination / temperature gradient?
+
+-what's an appropriate way to power them? do people just use constant current
+ drivers to achieve more brightness or what? control? wouldn't higher voltage
+ have same effect of constant current or not?
+	-if i'm going to stick with wall wart, filter output?
+	 (i.e. is the power supply, camera, or the LEDs the most likely reason
+	  K sometimes has lighting flickers? more than the one?)
+
+-some way to basically make this a one click order thing? / useful BoM format?
+

@@ -1,3 +1,17 @@
 decide whether to keep shield sch / footprint lib above, and then make sure versions in project
 dir are current if deleting old masters
 
+resolve conflicts between "rescue" (kicad dev v4->v5) derived project specific
+schematic libraries with same-level schematic library i had made before
+-PARTS SHOULD ONLY BE IN ONE OR THE OTHER, SAME-LEVEL IF SHARED...
+
+make silkscreen prettier on shield board
+	-(better) orientation information for FETs and diodes
+	-less overlap / more consistency in orientation
+	-larger github reference
+	-isolation barrier depiction
+	-warnings / descriptions of test points / bypass
+
+don't have zone on B.Cu overlap with any metal parts on arduino
+	-other ways to improve isolation?
+
