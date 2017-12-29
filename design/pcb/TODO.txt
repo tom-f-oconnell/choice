@@ -51,3 +51,7 @@ add LEDs to indicate:
 
 -auto fill git repo information into version field on pcb during plotting
 
+-make one version of shield board that is all surface mount?
+	-would be interested in cost difference
+-change diodes to through hole on existing through hole board
+

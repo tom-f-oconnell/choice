@@ -4,6 +4,8 @@
 import FreeCAD
 import Draft
 
+# TODO TODO script the install of the dxf export libraries if necessary
+
 doc = 'test_array'
 App.newDocument(doc)
 App.setActiveDocument(doc)
@@ -39,11 +41,15 @@ c = Draft.makeCircle(radius=r, placement=pl, face=False, support=None)
 # are default units mm? why does lowest allowed seem to be 1? can use um or something?
 # or just mm / in?
 c.LineWidth = 1 # way to specify units here?
+# TODO note there can (must?) be a 4th element to color (transparency).
+# but not used? implement?
 c.LineColor = tuple(color)
+
 # TODO what is deviation property?
 
 # TODO set properties before or after arraying? copy array in y?
 # TODO how to vary something along axis of array (doable in freecad?) (the alpha / intensity)
+# TODO TODO maybe use Transparency or DiffuseColor properties? test them
 
 # TODO how exactly is array different from makeArray? 
 # the latter makes one of the former, it seems, but "parametric"? how diff?
@@ -51,5 +57,5 @@ c.LineColor = tuple(color)
 
 # TODO do i want the freecad file?
 # TODO encode same way prefix of u'' does
-App.getDocument(doc).saveAs(freecad_intermediate_output)
+#App.getDocument(doc).saveAs(freecad_intermediate_output)
 
