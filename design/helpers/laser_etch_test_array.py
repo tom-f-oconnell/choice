@@ -11,7 +11,7 @@ msp = dxf.modelspace()
 
 ###############################################################################
 # for concentric squares
-inner_width_mm = 5
+inner_width_mm = 2
 border_width_mm = 0.6
 between_mm = 2
 
