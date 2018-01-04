@@ -55,3 +55,9 @@ add LEDs to indicate:
 	-would be interested in cost difference
 -change diodes to through hole on existing through hole board
 
+-space 10uF caps further from ICs (just a little)
+
+-put in headers last
+-slightly more space for measurement / maybe dissiation resistor (lengthwise)
+-indicate zener direction
+
