@@ -136,7 +136,7 @@ To test the valves (I run this before and after each experiment, to make sure no
 - The number of the pin to be switched will be printed in the terminal you run the launch file from.
 - I attach higher pressure air to all valves and check manually for air flow at each pin that should be switched.
 ```
-roslaunch choice test_valves.launch
+roslaunch stimuli test_valves.launch
 ```
 
 Press `<Ctrl>-C` to stop the `test_valves.launch` file.
