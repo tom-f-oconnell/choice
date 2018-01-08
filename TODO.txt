@@ -18,3 +18,10 @@ hook
 -should i start retracking locally under any circumstances? (leaning towards no, if aiming for max experiment uptime)
 
 why were some experiments mising roi_NX.yaml files, but not others?
+
+-install script (rosinstall?) for tracking and everything
+ (w/ verified versions of dependencies!)
+ -zip up all code and host / backup?
+-maybe make a subset of the code installable for analysis w/o ROS
+ -at least another install script, maybe pip?
+

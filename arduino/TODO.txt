@@ -1,0 +1,5 @@
+maybe break this stuff out in to its own repo
+	-and subtree / module it? or just keep separate?
+
+(might make some people think this is arduino code for stimulus here, as is)
+

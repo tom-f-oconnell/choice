@@ -33,3 +33,12 @@
 
 -some way to basically make this a one click order thing? / useful BoM format?
 
+-include a script with calculations related to the optics
+	-e.g. lenses, sensor size / pixels, fly size / pixels, distances, etc
+-test new cameras when they come
+ (M7 lens mount seems more common now, so cheaper, but board 
+  seems almost identical)
+ -possible problems with current camera / driver?
+
+-find source for darkout cloth we had -> possibly cheaper replacement. sail?
+ -> add to bom
