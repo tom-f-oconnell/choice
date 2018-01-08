@@ -1,5 +1,5 @@
 EESchema Schematic File Version 4
-LIBS:shield_pcb
+LIBS:shield_pcb-cache
 EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
@@ -1720,16 +1720,6 @@ Wire Wire Line
 	10750 5050 10800 5050
 Wire Wire Line
 	9800 5050 9900 5050
-Wire Bus Line
-	8250 3000 8250 6400
-Wire Bus Line
-	550  3600 550  7650
-Wire Bus Line
-	4500 1150 4500 7650
-Wire Bus Line
-	2900 1150 2900 7650
-Wire Bus Line
-	6300 1150 6300 7650
 Connection ~ 10800 5050
 Wire Wire Line
 	10800 5050 10850 5050
@@ -1741,4 +1731,19 @@ Wire Wire Line
 	8600 5350 8900 5350
 Connection ~ 8600 5650
 Connection ~ 8500 5050
+Wire Wire Line
+	10550 5350 10550 5400
+Wire Wire Line
+	10550 5400 10450 5400
+Wire Bus Line
+	8250 3000 8250 6400
+Wire Bus Line
+	550  3600 550  7650
+Wire Bus Line
+	4500 1150 4500 7650
+Wire Bus Line
+	2900 1150 2900 7650
+Wire Bus Line
+	6300 1150 6300 7650
+Connection ~ 10450 5400
 $EndSCHEMATC
