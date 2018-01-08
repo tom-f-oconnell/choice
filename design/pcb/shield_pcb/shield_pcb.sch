@@ -512,24 +512,13 @@ $EndComp
 $Comp
 L shield_pcb:C C1
 U 1 1 5A1CD179
-P 8600 5500
-F 0 "C1" H 8715 5546 50  0000 L CNN
-F 1 "1uF" H 8715 5455 50  0000 L CNN
-F 2 "Capacitors_THT:C_Rect_L7.0mm_W4.5mm_P5.00mm" H 8638 5350 50  0001 C CNN
-F 3 "" H 8600 5500 50  0001 C CNN
-F 4 "N" H 8600 5500 60  0001 C CNN "Spice_Netlist_Enabled"
-	1    8600 5500
-	1    0    0    -1  
-$EndComp
-$Comp
-L shield_pcb:GNDA #PWR03
-U 1 1 5A1CE08C
-P 8600 5700
-F 0 "#PWR03" H 8600 5450 50  0001 C CNN
-F 1 "GNDA" H 8605 5527 50  0000 C CNN
-F 2 "" H 8600 5700 50  0001 C CNN
-F 3 "" H 8600 5700 50  0001 C CNN
-	1    8600 5700
+P 8700 5650
+F 0 "C1" H 8815 5696 50  0000 L CNN
+F 1 "1uF" H 8815 5605 50  0000 L CNN
+F 2 "Capacitors_THT:C_Rect_L7.0mm_W4.5mm_P5.00mm" H 8738 5500 50  0001 C CNN
+F 3 "" H 8700 5650 50  0001 C CNN
+F 4 "N" H 8700 5650 60  0001 C CNN "Spice_Netlist_Enabled"
+	1    8700 5650
 	1    0    0    -1  
 $EndComp
 NoConn ~ 9700 5050
@@ -1282,24 +1271,6 @@ Wire Wire Line
 Wire Wire Line
 	8500 5050 8500 5100
 Wire Wire Line
-	9800 5950 9800 5050
-Wire Wire Line
-	8450 5950 9800 5950
-Wire Wire Line
-	8450 5350 8450 5950
-Wire Wire Line
-	8600 5650 8600 5700
-Wire Wire Line
-	8900 5650 8600 5650
-Wire Wire Line
-	8900 5550 8900 5650
-Wire Wire Line
-	9000 5550 8900 5550
-Wire Wire Line
-	8900 5350 8900 5450
-Wire Wire Line
-	8900 5450 9000 5450
-Wire Wire Line
 	9900 5350 9900 5400
 Wire Wire Line
 	10800 5350 10800 5400
@@ -1715,8 +1686,6 @@ Wire Wire Line
 Wire Wire Line
 	9050 1350 9050 1250
 Wire Wire Line
-	8450 5350 8600 5350
-Wire Wire Line
 	10750 5050 10800 5050
 Wire Wire Line
 	9800 5050 9900 5050
@@ -1726,15 +1695,36 @@ Wire Wire Line
 Connection ~ 9900 5050
 Wire Wire Line
 	9900 5050 10150 5050
-Connection ~ 8600 5350
-Wire Wire Line
-	8600 5350 8900 5350
-Connection ~ 8600 5650
 Connection ~ 8500 5050
 Wire Wire Line
 	10550 5350 10550 5400
 Wire Wire Line
 	10550 5400 10450 5400
+Connection ~ 10450 5400
+$Comp
+L shield_pcb:GNDA #PWR03
+U 1 1 5A1CE08C
+P 8400 5500
+F 0 "#PWR03" H 8400 5250 50  0001 C CNN
+F 1 "GNDA" H 8405 5327 50  0000 C CNN
+F 2 "" H 8400 5500 50  0001 C CNN
+F 3 "" H 8400 5500 50  0001 C CNN
+	1    8400 5500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9000 5500 8700 5500
+Wire Wire Line
+	8700 5500 8400 5500
+Connection ~ 8700 5500
+Wire Wire Line
+	9000 5600 9000 5800
+Wire Wire Line
+	9000 5800 8700 5800
+Wire Wire Line
+	9800 5050 9800 5800
+Wire Wire Line
+	9800 5800 9000 5800
 Wire Bus Line
 	8250 3000 8250 6400
 Wire Bus Line
@@ -1745,5 +1735,5 @@ Wire Bus Line
 	2900 1150 2900 7650
 Wire Bus Line
 	6300 1150 6300 7650
-Connection ~ 10450 5400
+Connection ~ 9000 5800
 $EndSCHEMATC
