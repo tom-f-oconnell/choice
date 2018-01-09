@@ -1,16 +1,25 @@
 
+// TODO move most of the functions implemented here to a library
+// and call that code. (not sure how to handle debug-flag-type settings?)
+
 // uncomment one of these defines to select a test
+#define TEST_ISOLATORS
 //#define TEST_SHIFTREG
 //#define TEST_SWITCH_SELECT (currently not implemented)
-#define TEST_SWITCH_SPEED
+//#define TEST_SWITCH_SPEED
 //#define TEST_SWITCH_SLOW
 //#define TEST_ALL
 
-#define SER   3
-#define SRCLK 4
-#define SRCLR 5
-#define RCLK  6
-#define ENBL  7
+#ifdef TEST_ISOLATORS
+#define ISOLATED_PIN_TEST_PERIOD_MS 3000
+#endif
+
+#define SER   4
+#define SRCLK 5
+#define SRCLR 6
+#define RCLK  7
+#define FET_ENBL   8
+#define DEMUX_ENBL 9 
 
 #ifdef TEST_SHIFTREG
 #define SHIFTREG_PERIOD_MS 50
@@ -22,6 +31,7 @@
 #define BYPASS_ISOLATION false
 
 #ifdef TEST_SHIFTREG
+#define SHIFT_REGISTER_BITS 16
 #define INTERDIGIT_SHIFT_PERIOD_MS 500
 #endif
 
@@ -41,13 +51,14 @@
 #ifdef TEST_ALL
 #define FET_SWITCH_TO_SAMPLE_MS 1
 
+/*
+// TODO delete or redefine (i'm using those pins now)
 #define ONE_L 2
 #define ONE_R 8
 #define TWO_L 9
 #define TWO_R 10
+*/
 #endif
-
-int val = 0;
 
 void clear_reg() {
   if (BYPASS_ISOLATION) {
@@ -86,12 +97,12 @@ void clear_reg() {
 // takes HIGH (1) or LOW (0) as input
 void shift_in(unsigned char value) {
   // logic should be inverted IF USING optoisolator
+  // TODO if i'm not passing it in, maybe just use preprocessor conditional?
   if (BYPASS_ISOLATION) {
     digitalWrite(SRCLK, LOW);
   } else {
     digitalWrite(SRCLK, HIGH);
   }
-  // TODO maybe compile w/o these delays in speed test
 #ifndef TEST_SWITCH_SPEED
   delay(SHIFTREG_PERIOD_MS);
 #endif
@@ -203,6 +214,7 @@ void test_analog_switch_slow() {
 
 #ifdef TEST_ALL
 void report_reading() {
+  int val;
   delay(FET_SWITCH_TO_SAMPLE_MS);
   // TODO maybe take multiple readings
   val = analogRead(A0);
@@ -257,7 +269,26 @@ void setup() {
   pinMode(SRCLK, OUTPUT);
   pinMode(SRCLR, OUTPUT);
   pinMode(RCLK, OUTPUT);
-  pinMode(ENBL, OUTPUT);
+  pinMode(FET_ENBL, OUTPUT);
+  pinMode(DEMUX_ENBL, OUTPUT);
+  pinMode(LED_BUILTIN, OUTPUT);
+  // LOW on output enable enables the shift register
+  // and the isolation inverts the logic
+  // TODO maybe include bypass isolation option
+
+  // TODO include tests of behavior without settings pin states correctly initially?
+
+#ifndef TEST_ISOLATORS
+  digitalWrite(SER, HIGH);
+  digitalWrite(SRCLK, HIGH);
+  // sending this s.r. pin LOW clears the bits
+  digitalWrite(SRCLR, LOW);
+  digitalWrite(RCLK, HIGH);
+  
+  // TODO include a test enabling all combinations of these
+  digitalWrite(FET_ENBL, HIGH);
+  digitalWrite(DEMUX_ENBL, HIGH);
+#endif
 
 #ifdef TEST_ALL
   pinMode(ONE_L, OUTPUT);
@@ -278,7 +309,9 @@ void setup() {
   digitalWrite(SIGB, HIGH);
 #endif
 
+#ifndef TEST_ISOLATORS
   clear_reg();
+#endif
   Serial.println("done");
 }
 
@@ -300,7 +333,7 @@ void loop() {
   shift_in(1);
   update_output();
   delay(INTERDIGIT_SHIFT_PERIOD_MS);
-  for (int i=0;i<8;i++) {
+  for (int i=0;i<SHIFT_REGISTER_BITS;i++) {
     Serial.println("shifting in a 0");
     shift_in(0);
     update_output();
@@ -310,7 +343,26 @@ void loop() {
 //      break;
 //    }
   }
+#elif defined TEST_ISOLATORS
 
+  digitalWrite(SER, HIGH);
+  digitalWrite(SRCLK, HIGH);
+  digitalWrite(SRCLR, HIGH);
+  digitalWrite(RCLK, HIGH);
+  digitalWrite(FET_ENBL, HIGH);
+  digitalWrite(DEMUX_ENBL, HIGH);
+  digitalWrite(LED_BUILTIN, LOW);
+  delay(ISOLATED_PIN_TEST_PERIOD_MS);
+  
+  digitalWrite(SER, LOW);
+  digitalWrite(SRCLK, LOW);
+  digitalWrite(SRCLR, LOW);
+  digitalWrite(RCLK, LOW);
+  digitalWrite(FET_ENBL, LOW);
+  digitalWrite(DEMUX_ENBL, LOW);
+  digitalWrite(LED_BUILTIN, HIGH);
+  delay(ISOLATED_PIN_TEST_PERIOD_MS);
+  
 #else
   #error One TEST_* needs to be #defined
 #endif

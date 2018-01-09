@@ -1725,6 +1725,7 @@ Wire Wire Line
 	9800 5050 9800 5800
 Wire Wire Line
 	9800 5800 9000 5800
+Connection ~ 9000 5800
 Wire Bus Line
 	8250 3000 8250 6400
 Wire Bus Line
@@ -1735,5 +1736,6 @@ Wire Bus Line
 	2900 1150 2900 7650
 Wire Bus Line
 	6300 1150 6300 7650
-Connection ~ 9000 5800
+Text Notes -3050 4000 0    60   ~ 0
+TODO rename from F<shift register pin name> to just the name,\nbecause i'm chaining together all three shift registers
 $EndSCHEMATC

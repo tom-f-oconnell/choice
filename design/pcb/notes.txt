@@ -1,0 +1,45 @@
+
+power usage (measured):
+-v0.1 (manually fixed pinswaps on both power supply ICs)
+-all digital chips in, no analog
+-all other caps and resistors attached
+-2 channels worth of FET / measurement resistors + diodes fully attached
+-150R gate resistor on all other channels
+-LEDs + 100R with + side on gate and - side on S, in each mosfet socket
+-Uno 5V -> 10A fused connection on radioshack true rms meter, negative meter -> shield 5v
+ Uno gnd <-> shield gnd
+-Uno powered with 12v, 1A wall-wart. no USB cable connected.
+-optoisolator inputs floating
+
+~0.54 A on radioshack meter (on range w/ 1 digit to left of decimal point. in Amps.)
+voltage at Vin +/- on DCP020507P (measured with a second meter): ~4.4-(4.6?)v
+
+same, but w/ Mega R3 from Elegoo
+v=(~4.4-4.3)->4.2->4.17->still dropping by hundreths of volts after test discontinued 
+after a few seconds
+I=0.5->0.32
+
+(these two tests actually had the LED + resistors going from gate to drain,
+ and so doing nothing, because there was no h.v. power supply attached.
+ this was because pinswap of D and S by mistake in v0.1)
+
+TODO why such poor regulation? 12v leaves plenty of headroom, shouldn't it?
+
+TODO do some tests w/ better 5v bench supply, see what current draw would be
+
+-> getting close to needing a separate supply, maybe doing away with the dcp020507
+   and just having the lt1118 downstream of a wall wart or something (would need
+   this power supply to provide isolation though...)
+
+now with Uno and LED + resistors actually connected from gate to source
+V=4.7->4.6ish
+I=.625->.6
+over maybe 10 seconds
+
+in each of these tests, the Arduino's regulators have gotten fairly hot.
+-maybe use diff input voltage?
+
+optoisolator test (on PCB):
+-using Uno w/ same wall-wart as above
+-test code w/ TEST_ISOLATORS, 3000ms period, all isolator pins on/off
+-

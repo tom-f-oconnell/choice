@@ -61,3 +61,15 @@ add LEDs to indicate:
 -slightly more space for measurement / maybe dissiation resistor (lengthwise)
 -indicate zener direction
 
+-account for all current. maybe shut down and indicate if over current
+ (could use oscillator enable pin on DCP020507)
+-maybe sense lt1118 temperature and do the same? i assume it is most likely to overheat?
+
+-include jumper for bridging iso-gnd with gnd, for testing? warn?
+ maybe a single female pin for iso-gnd
+
+-include (optional?) power jack (with / in-place of DCP020507 or equiv, depending
+ on whether we can get isolation guarantee or not w/ external) + config switch
+
+-do i want to protect against ICs coming loose in sockets w/ extra pull-up/downs?
+
