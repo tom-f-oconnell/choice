@@ -70,6 +70,11 @@ add LEDs to indicate:
 
 -include (optional?) power jack (with / in-place of DCP020507 or equiv, depending
  on whether we can get isolation guarantee or not w/ external) + config switch
+-even if not to avoid going over USB current limits (which it seems we would)
+ , maybe disable 5-to-7 volt converter if arduino is just on USB power for easier
+ programming (without risking overcurrent / brownout / etc. during programming)?
+ -typical implementation?
+-switch setting to disconnect power during programming?
 
 -do i want to protect against ICs coming loose in sockets w/ extra pull-up/downs?
 

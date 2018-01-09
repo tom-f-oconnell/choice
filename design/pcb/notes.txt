@@ -42,4 +42,10 @@ in each of these tests, the Arduino's regulators have gotten fairly hot.
 optoisolator test (on PCB):
 -using Uno w/ same wall-wart as above
 -test code w/ TEST_ISOLATORS, 3000ms period, all isolator pins on/off
--
+-all digital ICs other than optoisolators (also) disconnected
+
+voltage on output pins of isolators (~0.23, 5) (low, high)
+only arduino regulator seems to be getting hot, but not as much as it has
+(felt through Arduino PCB)
+
+

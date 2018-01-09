@@ -44,3 +44,6 @@ known bugs / workarounds
 
 TODO identify / fix root cause / confirm it is no longer an issue
 wasn't there a different command i used to kill all python for some reason? subprocesses?
+
+move explanations of warnings / errors to another section? re-order?
+kind of breaks up flow, as is.

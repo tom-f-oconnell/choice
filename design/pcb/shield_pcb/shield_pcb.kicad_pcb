@@ -2,7 +2,7 @@
 
   (general
     (thickness 1.6)
-    (drawings 28)
+    (drawings 29)
     (tracks 2242)
     (zones 0)
     (modules 191)
@@ -16,7 +16,7 @@
   )
 
   (layers
-    (0 F.Cu signal)
+    (0 F.Cu signal hide)
     (31 B.Cu signal)
     (32 B.Adhes user)
     (33 F.Adhes user)
@@ -7333,7 +7333,7 @@
     (descr "8-lead though-hole mounted DIP package, row spacing 7.62 mm (300 mils), Socket")
     (tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil Socket")
     (path /5A0853B4/5A0D1663)
-    (fp_text reference U7 (at 3.45 10.3 180) (layer F.SilkS)
+    (fp_text reference U7 (at -1.975 10.15 180) (layer F.SilkS)
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (fp_text value AD623 (at 3.8 8.05 90) (layer F.Fab)
@@ -8155,7 +8155,7 @@
   (module Wire_Pads:SolderWirePad_single_1-2mmDrill (layer F.Cu) (tedit 0) (tstamp 5A210EC8)
     (at 80.1 102.075 90)
     (path /5A0853B4/5A1E72DA)
-    (fp_text reference J4 (at 1.15 -2.35 180) (layer F.SilkS)
+    (fp_text reference J4 (at 0.025 -2.5 180) (layer F.SilkS)
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (fp_text value Conn_01x01 (at -2.7 -2.55 180) (layer F.Fab)
@@ -8168,7 +8168,7 @@
   (module Wire_Pads:SolderWirePad_single_1-2mmDrill (layer F.Cu) (tedit 0) (tstamp 5A210FB8)
     (at 84.25 102.125 90)
     (path /5A0853B4/5A1E7123)
-    (fp_text reference J7 (at 1.1 2.4 180) (layer F.SilkS)
+    (fp_text reference J7 (at 0.075 2.6 180) (layer F.SilkS)
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (fp_text value Conn_01x01 (at -2.55 2.95 180) (layer F.Fab)
@@ -8204,10 +8204,10 @@
       (net 4 /A0))
   )
 
-  (module footprints:SIP-3 (layer F.Cu) (tedit 0) (tstamp 5A200AC4)
+  (module footprints:SIP-3 (layer F.Cu) (tedit 0) (tstamp 5A54A7E2)
     (at 89.05 91.725 90)
     (path /5A0853B4/5A2070F2)
-    (fp_text reference J9 (at 0 2.25 90) (layer F.SilkS)
+    (fp_text reference J9 (at -4.325 0.05 180) (layer F.SilkS)
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (fp_text value Conn_01x03_Male (at -3.525 1.075 90) (layer F.Fab)
@@ -8254,6 +8254,9 @@
       (net 49 "Net-(F1-Pad2)"))
   )
 
+  (gr_text "REF\nSELECT" (at 89.1 97.55) (layer F.SilkS)
+    (effects (font (size 0.6 0.6) (thickness 0.1)))
+  )
   (gr_text "TODO fix hole size on H.V. power supply connector\n(needs to be larger to accomodate screw terms we have)" (at 6.35 186.55) (layer Cmts.User)
     (effects (font (size 1.5 1.5) (thickness 0.3)))
   )

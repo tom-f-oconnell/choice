@@ -2,13 +2,17 @@
 // TODO move most of the functions implemented here to a library
 // and call that code. (not sure how to handle debug-flag-type settings?)
 
-// uncomment one of these defines to select a test
-#define TEST_ISOLATORS
+/*****************************************************************************/
+/* uncomment one of these #defines to select a test **************************/
+/*****************************************************************************/
+//#define TEST_ISOLATORS
+#define TEST_SHIFT_ALTERNATING
 //#define TEST_SHIFTREG
 //#define TEST_SWITCH_SELECT (currently not implemented)
 //#define TEST_SWITCH_SPEED
 //#define TEST_SWITCH_SLOW
 //#define TEST_ALL
+/*****************************************************************************/
 
 #ifdef TEST_ISOLATORS
 #define ISOLATED_PIN_TEST_PERIOD_MS 3000
@@ -21,7 +25,7 @@
 #define FET_ENBL   8
 #define DEMUX_ENBL 9 
 
-#ifdef TEST_SHIFTREG
+#if defined TEST_SHIFTREG || defined TEST_SHIFT_ALTERNATING
 #define SHIFTREG_PERIOD_MS 50
 #else
 #define SHIFTREG_PERIOD_MS 0
@@ -30,9 +34,12 @@
 // our isolation implementation inverts the logic
 #define BYPASS_ISOLATION false
 
+#if defined TEST_SHIFTREG || defined TEST_SHIFT_ALTERNATING
+#define INTERDIGIT_SHIFT_PERIOD_MS 500
+#endif
+
 #ifdef TEST_SHIFTREG
 #define SHIFT_REGISTER_BITS 16
-#define INTERDIGIT_SHIFT_PERIOD_MS 500
 #endif
 
 #if defined TEST_SWITCH_SLOW || defined TEST_SWITCH_SPEED || defined TEST_ALL
@@ -97,7 +104,7 @@ void clear_reg() {
 // takes HIGH (1) or LOW (0) as input
 void shift_in(unsigned char value) {
   // logic should be inverted IF USING optoisolator
-  // TODO if i'm not passing it in, maybe just use preprocessor conditional?
+  // TODO if i'm not passing BYPASS_ISOLATION, maybe just use preprocessor conditional?
   if (BYPASS_ISOLATION) {
     digitalWrite(SRCLK, LOW);
   } else {
@@ -327,6 +334,19 @@ void loop() {
 
 #elif defined TEST_ALL
   test_all();
+
+#elif defined TEST_SHIFT_ALTERNATING
+  Serial.println("shifting in a 1");
+  digitalWrite(LED_BUILTIN, HIGH);
+  shift_in(1);
+  update_output();
+  delay(INTERDIGIT_SHIFT_PERIOD_MS);
+
+  Serial.println("shifting in a 0");
+  digitalWrite(LED_BUILTIN, LOW);
+  shift_in(0);
+  update_output();
+  delay(INTERDIGIT_SHIFT_PERIOD_MS);
   
 #elif defined TEST_SHIFTREG
   Serial.println("shifting in a 1");
@@ -343,8 +363,8 @@ void loop() {
 //      break;
 //    }
   }
-#elif defined TEST_ISOLATORS
 
+#elif defined TEST_ISOLATORS
   digitalWrite(SER, HIGH);
   digitalWrite(SRCLK, HIGH);
   digitalWrite(SRCLR, HIGH);
