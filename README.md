@@ -118,7 +118,9 @@ roslaunch choice choice.launch
 The only error message that is normal during startup is one along the lines of `Parameter stimulus_arduino/debug does not exist`. Another other red text means something is likely not working, and you should not ignore it.
 
 ##### Warnings (yellow text)
-`Failed to get param: timeout expired` is normal, as long as the program ultimately stops emitting these warnings. You should be aware of the reasons other warnings occur. Contact Tom with any questions.
+`Failed to get param: timeout expired` is normal, as long as the program ultimately stops 
+emitting these warnings. You should be aware of the reasons other warnings occur. 
+Contact Tom with any questions.
 
 #### To run an experiment saving a background subtracted video in a ROS bag file, for offline tracking.
 Less hardware demands.
@@ -126,11 +128,23 @@ Less hardware demands.
 roslaunch choice choice.launch video_only:=True
 ```
 
-#### To run the stimulus presentation that would happen during an experiment, but without any recording or tracking.
-For measurement / verification / PID purposes.
+### Stimulus Validation
+
+To run the stimulus presentation that would happen during an experiment, but without any 
+recording or tracking. For measurement / verification / PID purposes.
 ```
 roslaunch choice choice.launch stimuli_only:=True
 ```
+
+To run simpler pulse trains of a given duration, without changing the code on the Arduino. 
+This launch file will also look for a `stimulus_parameters.yaml` file in the same path, but
+with slightly different parameters.
+```
+roslaunch stimuli pid.launch seconds:=30
+```
+
+See [this repo](https://github.com/tom-f-oconnell/stimuli#validation) for more information 
+on the parameters and launch file arguments for `pid.launch`.
 
 To test the valves (I run this before and after each experiment, to make sure no connections came loose. With more robust electronics this might be less of a concern.)
 - The number of the pin to be switched will be printed in the terminal you run the launch file from.
