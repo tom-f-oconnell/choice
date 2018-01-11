@@ -468,4 +468,6 @@ Wire Wire Line
 	6850 850  7150 850 
 Wire Wire Line
 	6000 2650 6000 3750
+Text Notes 1050 3000 0    60   ~ 0
+TODO make true again, or delete note
 $EndSCHEMATC

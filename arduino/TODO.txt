@@ -1,5 +1,17 @@
-maybe break this stuff out in to its own repo
+maybe break this stuff out in to its own repo (for sure, the shock library)
 	-and subtree / module it? or just keep separate?
 
 (might make some people think this is arduino code for stimulus here, as is)
 
+3. (maybe using one of the makefile solutions) put test code, using the library,
+   in the same level as lib / libraries (this directory)
+   -include instructions on how to build it (reference install if want to use 
+    arduino IDE, because stupid lack of support for sketch-relative library 
+    includes)
+   -maybe fix Arduino sketch-relative library imports and pull request?
+    , or otherwise determine why that hasn't been done yet
+   -maybe don't use any build solution that needs other tools, and include a 
+    script to just copy library / symlink into test code sketch directory?
+
+4. maybe also try to get it in Library Manager and reference that option
+5. include a zip of it?

@@ -2,29 +2,7 @@
 // TODO move most of the functions implemented here to a library
 // and call that code. (not sure how to handle debug-flag-type settings?)
 
-/*****************************************************************************/
-/* uncomment one of these #defines to select a test **************************/
-/*****************************************************************************/
-//#define TEST_ISOLATORS
-#define TEST_SHIFT_ALTERNATING
-//#define TEST_SHIFTREG
-//#define TEST_SWITCH_SELECT (currently not implemented)
-//#define TEST_SWITCH_SPEED
-//#define TEST_SWITCH_SLOW
-//#define TEST_ALL
-/*****************************************************************************/
-
-#ifdef TEST_ISOLATORS
-#define ISOLATED_PIN_TEST_PERIOD_MS 3000
-#endif
-
-#define SER   4
-#define SRCLK 5
-#define SRCLR 6
-#define RCLK  7
-#define FET_ENBL   8
-#define DEMUX_ENBL 9 
-
+// TODO make sure these defines take priority over library ones (when test specific)
 #if defined TEST_SHIFTREG || defined TEST_SHIFT_ALTERNATING
 #define SHIFTREG_PERIOD_MS 50
 #else
@@ -36,10 +14,6 @@
 
 #if defined TEST_SHIFTREG || defined TEST_SHIFT_ALTERNATING
 #define INTERDIGIT_SHIFT_PERIOD_MS 500
-#endif
-
-#ifdef TEST_SHIFTREG
-#define SHIFT_REGISTER_BITS 16
 #endif
 
 #if defined TEST_SWITCH_SLOW || defined TEST_SWITCH_SPEED || defined TEST_ALL
@@ -66,128 +40,6 @@
 #define TWO_R 10
 */
 #endif
-
-void clear_reg() {
-  if (BYPASS_ISOLATION) {
-    digitalWrite(SRCLR, LOW);
-    digitalWrite(RCLK, LOW);
-#ifndef TEST_SWITCH_SPEED
-    delay(SHIFTREG_PERIOD_MS);
-#endif
-    digitalWrite(RCLK, HIGH);
-#ifndef TEST_SWITCH_SPEED
-    delay(SHIFTREG_PERIOD_MS);
-#endif
-    digitalWrite(RCLK, LOW);
-    digitalWrite(SRCLR, HIGH);
-#ifndef TEST_SWITCH_SPEED
-    delay(SHIFTREG_PERIOD_MS);
-#endif
-  } else {
-    digitalWrite(SRCLR, HIGH);
-    digitalWrite(RCLK, HIGH);
-#ifndef TEST_SWITCH_SPEED
-    delay(SHIFTREG_PERIOD_MS);
-#endif
-    digitalWrite(RCLK, LOW);
-#ifndef TEST_SWITCH_SPEED
-    delay(SHIFTREG_PERIOD_MS);
-#endif
-    digitalWrite(RCLK, HIGH);
-    digitalWrite(SRCLR, LOW);
-#ifndef TEST_SWITCH_SPEED
-    delay(SHIFTREG_PERIOD_MS);
-#endif
-  }
-}
-
-// takes HIGH (1) or LOW (0) as input
-void shift_in(unsigned char value) {
-  // logic should be inverted IF USING optoisolator
-  // TODO if i'm not passing BYPASS_ISOLATION, maybe just use preprocessor conditional?
-  if (BYPASS_ISOLATION) {
-    digitalWrite(SRCLK, LOW);
-  } else {
-    digitalWrite(SRCLK, HIGH);
-  }
-#ifndef TEST_SWITCH_SPEED
-  delay(SHIFTREG_PERIOD_MS);
-#endif
-  
-  if (BYPASS_ISOLATION) {
-    digitalWrite(SER, value);
-  } else {
-    digitalWrite(SER, 1 - value);
-  }
-#ifndef TEST_SWITCH_SPEED
-  delay(SHIFTREG_PERIOD_MS);
-#endif
-  
-  if (BYPASS_ISOLATION) {
-    digitalWrite(SRCLK, HIGH);
-  } else {
-    digitalWrite(SRCLK, LOW);
-  }
-#ifndef TEST_SWITCH_SPEED
-  delay(SHIFTREG_PERIOD_MS);
-#endif
-}
-
-void update_output() {
-  if (BYPASS_ISOLATION) {
-    digitalWrite(RCLK, LOW);
-#ifndef TEST_SWITCH_SPEED
-    delay(SHIFTREG_PERIOD_MS);
-#endif
-    digitalWrite(RCLK, HIGH);
-#ifndef TEST_SWITCH_SPEED
-    delay(SHIFTREG_PERIOD_MS);
-#endif
-  } else {
-    digitalWrite(RCLK, HIGH);
-#ifndef TEST_SWITCH_SPEED
-    delay(SHIFTREG_PERIOD_MS);
-#endif
-    digitalWrite(RCLK, LOW);
-#ifndef TEST_SWITCH_SPEED
-    delay(SHIFTREG_PERIOD_MS);
-#endif
-  }
-}
-
-// TODO store side information as another bit in a uchar / decode
-// c should be between 0 and 7
-// TODO include bypass_isolation flags in here (way to handle more uniformly?)
-void select_input_channel(boolean left_side, unsigned char c) {
-  // need to shift in starting with last value (QD; optional_demux_enable)
-  // optional_demux_enable -> chan_select_B -> chan_select_A ->
-  // demux_select_B -> demux_select_A
-  clear_reg();
-  
-  // will always want to enable analog switch output
-  shift_in(0);
-
-  // "channels" are numbered from 1 to 8, so odd numbers come first
-  // B (on CD4052B): 0 -> 0/1 (odd channels), 1 -> 2/3 (even channels)
-  // TODO check this
-  shift_in(1 - c % 2);
-  
-  // A (on CD4052B): 0 -> lower numbered choice given B (LEFT by my def), 1 -> higher (RIGHT)
-  if (left_side) {
-    shift_in(1);
-  } else {
-    shift_in(0);
-  }
-
-  // CD4556 (B): 0 -> Q0/Q1 (channels 1-2/3-4), 1 -> Q2/Q3 (channels 5-6/7-8)
-  shift_in(c > 4);
-
-  // CD4556 (A): 0 -> lower of above, 1 -> higher
-  // TODO replace w/ one bitwise operation (at least verify)
-  shift_in(c == 3 || c == 4 || c == 7 || c == 8);
-
-  update_output();
-}
 
 // quickly switches between a HIGH and LOW signal to
 // see how long it takes for the output to reflect the change
@@ -272,31 +124,12 @@ void setup() {
   Serial.begin(9600);
   Serial.print("initializing... ");
   
-  pinMode(SER, OUTPUT);
-  pinMode(SRCLK, OUTPUT);
-  pinMode(SRCLR, OUTPUT);
-  pinMode(RCLK, OUTPUT);
-  pinMode(FET_ENBL, OUTPUT);
-  pinMode(DEMUX_ENBL, OUTPUT);
-  pinMode(LED_BUILTIN, OUTPUT);
-  // LOW on output enable enables the shift register
-  // and the isolation inverts the logic
-  // TODO maybe include bypass isolation option
-
   // TODO include tests of behavior without settings pin states correctly initially?
-
-#ifndef TEST_ISOLATORS
-  digitalWrite(SER, HIGH);
-  digitalWrite(SRCLK, HIGH);
-  // sending this s.r. pin LOW clears the bits
-  digitalWrite(SRCLR, LOW);
-  digitalWrite(RCLK, HIGH);
+  // TODO include a test enabling all combinations of these (at least that low disables)
+  // TODO TODO are these not actually enabling output appropriately?
+  // even after installing appropriate bypass cap, 
+  // demux s.r. doesn't seem to send output high consistently. why?
   
-  // TODO include a test enabling all combinations of these
-  digitalWrite(FET_ENBL, HIGH);
-  digitalWrite(DEMUX_ENBL, HIGH);
-#endif
-
 #ifdef TEST_ALL
   pinMode(ONE_L, OUTPUT);
   pinMode(ONE_R, OUTPUT);
@@ -316,9 +149,7 @@ void setup() {
   digitalWrite(SIGB, HIGH);
 #endif
 
-#ifndef TEST_ISOLATORS
   clear_reg();
-#endif
   Serial.println("done");
 }
 
@@ -364,25 +195,6 @@ void loop() {
 //    }
   }
 
-#elif defined TEST_ISOLATORS
-  digitalWrite(SER, HIGH);
-  digitalWrite(SRCLK, HIGH);
-  digitalWrite(SRCLR, HIGH);
-  digitalWrite(RCLK, HIGH);
-  digitalWrite(FET_ENBL, HIGH);
-  digitalWrite(DEMUX_ENBL, HIGH);
-  digitalWrite(LED_BUILTIN, LOW);
-  delay(ISOLATED_PIN_TEST_PERIOD_MS);
-  
-  digitalWrite(SER, LOW);
-  digitalWrite(SRCLK, LOW);
-  digitalWrite(SRCLR, LOW);
-  digitalWrite(RCLK, LOW);
-  digitalWrite(FET_ENBL, LOW);
-  digitalWrite(DEMUX_ENBL, LOW);
-  digitalWrite(LED_BUILTIN, HIGH);
-  delay(ISOLATED_PIN_TEST_PERIOD_MS);
-  
 #else
   #error One TEST_* needs to be #defined
 #endif

@@ -78,3 +78,5 @@ add LEDs to indicate:
 
 -do i want to protect against ICs coming loose in sockets w/ extra pull-up/downs?
 
+-TODO label which isolators control what, label s.r.s the same
+and say which # chambers s.r.s control / which other pins, and label those too
