@@ -105,6 +105,14 @@ void ms_init();
 void ms_start_shock(chamber_num_t chamber_num);
 void ms_stop_shock(chamber_num_t chamber_num);
 
+// TODO maybe make LEFT/RIGHT special chamber nums and pass those into 
+// start/stop_shock?
+void ms_start_shock_left();
+void ms_stop_shock_left();
+
+void ms_start_shock_right();
+void ms_stop_shock_right();
+
 measurement_t ms_measure(chamber_num_t chamber_num);
 
 // TODO below / above / both? both, but prohibit mixing somehow?

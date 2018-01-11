@@ -2,7 +2,7 @@
 
   (general
     (thickness 1.6)
-    (drawings 42)
+    (drawings 43)
     (tracks 592)
     (zones 0)
     (modules 41)
@@ -1353,6 +1353,9 @@
       ))
   )
 
+  (gr_text "TODO match f_ labels to those in shield\n(as is w/ v0.1, shield F1 is actually bottom right, F2 is left, ...)\n\nmaybe change in field to match this?" (at 44.78 41.83) (layer Cmts.User)
+    (effects (font (size 1.5 1.5) (thickness 0.3)))
+  )
   (gr_text "Board should be 1/16\" thick (1.5875 mm)\n\nMight benefit from some kind of gold finish, to lower\ncontact resistance and prevent changes in resistance \ndue to oxidation.\n\nHard gold seems more well suited. Could probably\nwithstand more cleaning cycles. ENIG may be fine." (at 49.53 97.08) (layer Cmts.User)
     (effects (font (size 1.5 1.5) (thickness 0.3)))
   )

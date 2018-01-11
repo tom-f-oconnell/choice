@@ -926,8 +926,8 @@ NoConn ~ 1200 1950
 NoConn ~ 1200 2350
 NoConn ~ 1200 2450
 NoConn ~ 1200 2550
-Text Notes 3400 1000 0    60   ~ 0
-Note: chambers are numbered from the top left,\nproceeding to the right, then down
+Text Notes 3400 1100 0    60   ~ 0
+Note: chambers are numbered from the bottom \nright, proceeding left, then up.  With the floor pcb \noriented such that the D-Sub connector is down.\n\nVerified with v0.1, and should not change.
 Text Label 3000 1850 0    60   ~ 0
 IN1
 Text Label 4600 1850 0    60   ~ 0
@@ -1726,6 +1726,8 @@ Wire Wire Line
 Wire Wire Line
 	9800 5800 9000 5800
 Connection ~ 9000 5800
+Text Notes -3050 4000 0    60   ~ 0
+TODO rename from F<shift register pin name> to just the name,\nbecause i'm chaining together all three shift registers
 Wire Bus Line
 	8250 3000 8250 6400
 Wire Bus Line
@@ -1736,6 +1738,4 @@ Wire Bus Line
 	2900 1150 2900 7650
 Wire Bus Line
 	6300 1150 6300 7650
-Text Notes -3050 4000 0    60   ~ 0
-TODO rename from F<shift register pin name> to just the name,\nbecause i'm chaining together all three shift registers
 $EndSCHEMATC

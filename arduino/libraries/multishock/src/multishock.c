@@ -42,11 +42,22 @@
 #define NUM_SHIFT_REGISTERS 3
 #define NUM_CHANNELS 16
 
+// maybe make this a const
+// TODO maybe fill out this alternating pattern w/ a macro or something?
+// would it be any easier w/ all 1s and 0s grouped? (would be grouped in 8 bits too, 
+// without changing number of channels) could change future circuit boards, if so.
+// see: https://gcc.gnu.org/onlinedocs/cpp/Concatenation.html and
+// https://gcc.gnu.org/onlinedocs/cpp/Macro-Pitfalls.html
+#define ALL_LEFT 0b01010101
+#define ALL_RIGHT
+
 static unsigned char reg_bits[NUM_SHIFT_REGISTERS];
 
 // TODO i think i want a bit vector of 0/1 with each being whether the channel
 // with that index is being shocked? conversion functions
 // or do i only want to convert to bit vector just before moving to shift regs?
+// TODO maybe only as shifting in each digit?
+//static unsigned char shocking_chamber[NUM_CHANNELS];
 
 // to facilitate cycling between channels for measurement. better way?
 static chamber_num_t to_measure[NUM_CHANNELS];
@@ -85,6 +96,13 @@ void ms_init() {
 	}
 }
 
+// TODO does arduino compiler support 0b01010... binary notation?
+// way to check? #error if not?
+
+// SR pins go from F1-16 in order through first two SRs
+// in v0.1, F1=bottom right, F2=bottom left (w/ D-Sub connector of floor down)
+// ..., F16=top left
+
 void ms_start_shock(chamber_num_t chamber_num) {
 	// TODO worth using custom chamber_num type if i need to cast here?
 	// do i need to cast? worries about going from signed to unsigned, etc?
@@ -93,6 +111,24 @@ void ms_start_shock(chamber_num_t chamber_num) {
 
 void ms_stop_shock(chamber_num_t chamber_num) {
 	
+}
+
+// TODO implement differently, to avoid combinatorial group of 6 functions?
+void ms_start_shock_left() {
+	// TODO check / maybe fix side. test w/ board.
+	
+}
+
+void ms_stop_shock_left() {
+
+}
+
+void ms_start_shock_right() {
+
+}
+
+void ms_stop_shock_right() {
+
 }
 
 measurement_t ms_measure(chamber_num_t chamber_num) {
@@ -145,6 +181,9 @@ void clear_reg() {
 #endif
   }
 }
+
+// TODO TODO consider grouping pins on shield st port manipulations can switch
+// pins that generally / always change state together at the same time
 
 // takes HIGH (1) or LOW (0) as input
 void shift_in(unsigned char value) {
