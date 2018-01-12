@@ -1,0 +1,2 @@
+maybe include Uno + Mega linear regulators, to indicate operating temperature range and current
+limits / worst case voltage drops, etc
