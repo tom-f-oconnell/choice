@@ -1,5 +1,5 @@
 /*
- * multishock.h - Wiring/Arduino library to control shock delivery and 
+ * multishock.cpp - Wiring/Arduino library to control shock delivery and 
  * measurement board. Can deliver up to 150v to 16 channels, and measure 
  * current through each of them.
  *
@@ -21,7 +21,7 @@
  * design/pcb/shield_pcb), and supporting files
  */
 
-// TODO unit tests off arduino
+// TODO unit tests, off any microcontroller
 
 // maybe get rid of this, if it interferes w/ compilation outside of Arduino IDE?
 // maybe just check that alternate flags are NOT set?
@@ -67,10 +67,11 @@ namespace msk {
     // ints are 16 bits on ATmega based boards, but 32 on Due / SAMD / maybe others
     // TODO maybe handle differently? not sure what would stop someone from compiling
     // on Due for now, if still AVR? **explicitly use 16bit type?**
-    // 
     // maybe just make one macro to repeat 8 times? (n times seems harder / 
     // impossible? w/o boost preprocessor lib?)
     // TODO maybe use uintN_t just to be clear on sizes (that is what is important)
+    // TODO maybe don't rely on 
+    // TODO maybe define in init, checking odd?
     typedef unsigned int fet_mask_t;
     static const fet_mask_t all_fets  = 0b1111111111111111;
     static const fet_mask_t no_fets   = 0;
@@ -86,24 +87,27 @@ namespace msk {
     // with bank of two fet registers preceeding the single demux reg
     static const unsigned char fet_bits = 16;
     static const unsigned char demux_bits = 5;
+    // TODO TODO include constants to help understanding purpose of each demux_bit
 
-    static const unsigned char measurement_bits
+    // TODO compile time assert that measurement_bits + channel_bits is less than
+    // sizeof(channel_measurement_t) * 8?
 
     // 16 bits
     static fet_mask_t fet_states;
-    // 8 bits, the first 5 of which will matter to us
+    // 8 bits, the rightmost (? TODO) 5 of which are used
     static unsigned char demux_states;
 
     // wanted to also use this to defined sizes of masks, 
     // but it proved difficult
     static unsigned char num_channels = 16;
-    // to facilitate cycling between channels for measurement. better way?
     // TODO could do as a mask? (same size as fet_mask_t)
+    // to facilitate cycling between channels for measurement. better way?
     static channel_t to_measure[num_channels];
-
-    // limits us to 256 channels
-    // (though other things are currently more limiting)
+    // this line requires channel_t to be at least 8 bits (more if signed)
+    // TODO -1 work without this limitation?
+    static const channel_t no_channel = 255;
     static unsigned char curr_channel_index;
+    static unsigned char next_free_index;
 
     // TODO should i declare all of the other functions static? does it matter?
     // (as long as they aren't in the header?)
@@ -194,7 +198,7 @@ namespace msk {
      */
     static inline void update_registers() {
         // could shift zeros for last three demux pins here (but disconnected)
-        // TODO TODO shift everything in reverse order!!!
+        // TODO TODO TODO TODO shift everything in reverse order!!!
         // if forward order is more readily unrolled, store state in reverse?
         for (unsigned char i=0;i<demux_bits;i++) {
             shift((demux_states >> i) & 1);
@@ -213,7 +217,7 @@ namespace msk {
         update_output();
     }
 
-    // TODO fix
+    // TODO TODO TODO fix
     /*
     static inline void select_input_channel(channel_t channel) {
         // need to shift in starting with last value (QD; optional_demux_enable)
@@ -250,6 +254,8 @@ namespace msk {
     }
     */
 
+    // TODO might want to move this to the top if i don't end up needing other functions
+    // only declared in here
     void init() {
         // TODO maybe check if we are using certain boardtypes w/ Arduino
         // defines to use port manipulation optimizations?
@@ -281,6 +287,11 @@ namespace msk {
         fet_states = 0;
         demux_states = 0;
 
+        curr_channel_index = 0;
+        next_free_index = 0;
+        for (unsigned char i=0;i<num_channels;i++) {
+            to_measure[i] = no_channel;
+        }
         // maybe define some bit pattern (effective) constants here?
         // particularly if i'm having trouble w/ binary literals
     }
@@ -414,17 +425,21 @@ namespace msk {
         digitalWrite(demux_enbl, LOW);
     }
 
-    // TODO consider returning channel_measurement_t type regardless
-    // or offering both. might depend on whether processing responses
-    // in real time (w/ host sending channel nums)
-    /* TODO
+    /* Returns a measurement_t (>= measurement_bits bits in type) read
+     * as soon as possible, without interacting with to_measure queue.
+     * 
      * Assumes inputs are already enabled. (?)
      */
     measurement_t measure(channel_t channel) {
-
+        measurement_t measurement;
+        measurement = analogRead(current_signal);
+        return measurement;
     }
 
-    /*
+    // TODO consider returning channel_measurement_t type regardless
+    // or offering both. might depend on whether processing responses
+    // in real time (w/ host sending channel nums)
+    /* (like this)
     channel_measurement_t measure(channel_t channel) {
         channel_measurement_t ret;
         // TODO need to set to zero? just a waste of a cycle?
@@ -436,18 +451,140 @@ namespace msk {
     // TODO below / above / both? both, but prohibit mixing somehow?
     // maybe compile time flag to pick one?
 
-    // TODO need to decide whether to check (double adding would be bad)
-    /* TODO
+    /* Returns 1 (which evaluates true) if channel is already queued to be 
+     * measured. Returns 0 (which evaluates false), otherwise.
      */
-    void queue_measurement(channel_t channel) {
-
+    unsigned char will_be_measured(channel_t channel) {
+        // TODO unit test
+        // TODO maybe get rid of these ugly premature optimizations
+        channel_t c;
+        // could maybe get smaller overall code by making another function
+        // that returns index, and then wrapping it here, just returning if 
+        // index in range. then, could use index find in stop_measurement too.
+        for (unsigned char i=0;i<num_channels;i++) {
+            c = to_measure[i];
+            if (c == no_channel) {
+                return 0;
+            } else if (c == channel) {
+                return 1;
+            }
+        }
+        return 0;
     }
 
-    // measure_next? is this overloading? supported?
-    /* TODO
+    // TODO change language back to queue / dequeue? or similar
+    // (so it is clear measurement isn't happening upon this call)
+
+    /* Adds channel to channels being measured. See measure() documentation.
+     *
+     * If CHECK_Q_DUPLICATES is true, and channel is already in to_measure,
+     * this function will return without taking any action. Will not change
+     * priority of that channel in the queue.
+     *
+     * If compiled without forcing the check, you can manually check
+     * will_be_measured(channel) first, and then decide to queue.
+     */
+    void start_measurement(channel_t channel) {
+        // TODO unit test
+        // TODO maybe change flag to FORCE_/ALWAYS_...?
+        #ifdef CHECK_Q_DUPLICATES
+            if (will_be_measured(channel)) {
+                return;
+            }
+            // TODO or is it more important to check next_free_index < num_channels?
+        #endif
+        to_measure[next_free_index] = channel;
+        next_free_index++;
+    }
+
+    /* Removes channel from channels to being measured.
+     * See measure() documentation.
+     */
+    void stop_measurement(channel_t channel) {
+        unsigned char i;
+        channel_t c;
+        // find the current index of channel (if it exists)
+        for (i=0;i<num_channels;i++) {
+            // TODO unit test. bounds, not there, etc
+            c = to_measure[i];
+            if (c == channel) {
+                // i = index of element we want to remove
+                break;
+            } else if (c == no_channel) {
+                return;
+            }
+        }
+        
+        // TODO maybe circularly shift / something to prevent some from getting
+        // read more than others if there are lots of deletes
+        // TODO think more seriously about whether that could happen / 
+        // do some tests to see if it does. unit test?
+
+        // move other channels, all the way to the end of the array,
+        // left to fill this position
+        while (i < (num_channels - 1)) {
+            to_measure[i] = to_measure[i+1];
+            i++;
+        }
+        // TODO unit test
+        // handle last element, if we to_measure was previously full
+        // (we were trying to measure all of the channels)
+        if (i == (num_channels - 1)) {
+            to_measure[i] = no_channel;
+        }
+        next_free_index--;
+    }
+
+    /* Measures current correlate on next channel.
+     *
+     * The next channel is to_measure[curr_channel_index]. The channel index
+     * is incremented, wrapping around if the next channel would be the
+     * constant "no_channel".
+     *
+     * Returns channel and measurement as one (16 bit) numeric type.
+     * Channel should be leftmost 6 bits and measurement should be rightmost 10.
+     * See "channel_bits" and "measurement_bits" in "multishock.hpp".
      */
     channel_measurement_t measure() {
+        // TODO need to explicitly zero this first?
+        channel_measurement_t channel_measurement;
+        measurement_t measurement;
+        channel_t channel = to_measure[curr_channel_index];
 
+        // switch the analog demultiplexers to the channel
+        // TODO and enable them? do i ever want to disable them?
+        select_input_channel(channel);
+
+        // TODO directly call AVR functions?
+        measurement = analogRead(current_signal);
+
+        // shift channel up to it's position in the bits of the number
+        // to be returned, and OR it in
+        channel_measurement |= channel << measurement_bits;
+
+        // If >10 bits, and you had not made other modifications to accomodate
+        // that, you could shift measurement right two bits to get 10 most
+        // significant bits.
+        
+        // OR in measurement bits. assuming it is 10 bits for now.
+        // TODO check will only compile on Arduino's w/ 10 bit ADCs
+        // or warn and force setting ADC resolution to 10 bits / truncate
+        channel_measurement |= measurement;
+
+        // increment current channel index, to measure another channel on the
+        // next call to this function
+        // TODO maybe replace curr_channel_index w/ channel_index?
+        curr_channel_index++;
+        // TODO unit test
+        if (curr_channel_index >= num_channels || \
+            to_measure[curr_channel_index] == no_channel) {
+
+            curr_channel_index = 0;
+        }
+        return channel_measurement;
     }
+
+    // TODO is it worth a "measure_all" function?
+    // return type might be more complicated...
 }
 #endif

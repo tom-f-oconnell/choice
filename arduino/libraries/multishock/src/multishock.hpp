@@ -22,6 +22,9 @@
  * design/pcb/shield_pcb), and supporting files
  */
 
+// TODO look at some open source devices that use shift registers similarly
+// their layout, their code
+
 #ifndef SHOCK_HPP
 #define SHOCK_HPP
 
@@ -81,9 +84,11 @@ namespace msk {
     typedef unsigned int measurement_t;
     typedef unsigned int channel_measurement_t;
 
-    // Since I think want more than 2^4 channels (on one Arduino) is more likely 
-    // than wanting better than 10 bits of resolution on the current the flies 
-    // receive, I'm allotting 6 bits (64 total channels -> 32 flies) to channel ID.
+    // Since I think wanting more than 2^4 channels (on one Arduino) is more 
+    // likely than wanting better than 10 bits of resolution on the current 
+    // through each channel, I'm allotting 6 bits (64 total channels -> 
+    // 32 chambers with left and right) to channel ID.
+
     // If you require more than 10 bits of resolution on the current, the integer
     // type will (and / or the masks) will need to change.
 
@@ -91,12 +96,14 @@ namespace msk {
 
     // TODO compile flag to use either 6 or 4 bits for channels?
     
-
+    // TODO maybe use hex (stick to C, rather than GCC features) or B?
+    // check __GNUC__?
     // only exactly the 10 bits the cheaper Arduinos have
-    const channel_measurement_t measurement_mask = 0b0000111111111111;
-    // TODO this bit operation work at compile time?
-    // remaining 6 bits
-    const channel_measurement_t channel_mask = ~measurement_mask;
+    
+    // TODO maybe make it easier for people to modify this?
+    // allow re-defining somehow?
+    const unsigned char measurement_bits = 10;
+    const unsigned char channel_bits = 6;
 
     void init();
 
@@ -137,8 +144,9 @@ namespace msk {
 
     // TODO below / above / both? both, but prohibit mixing somehow?
 
-    // TODO need to decide whether to check (double adding would be bad)
-    void queue_measurement(channel_t channel);
+    unsigned char will_be_measured(channel_t channel);
+    void start_measurement(channel_t channel);
+    void stop_measurement(channel_t channel);
 
     // measure_next?
     channel_measurement_t measure();
