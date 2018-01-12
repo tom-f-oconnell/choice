@@ -88,6 +88,8 @@ namespace msk {
     static const unsigned char fet_bits = 16;
     static const unsigned char demux_bits = 5;
     // TODO TODO include constants to help understanding purpose of each demux_bit
+    static const unsigned char lowest_demux_state_bit = 1;
+    static const unsigned char demux_enable_bit = 0;
 
     // TODO compile time assert that measurement_bits + channel_bits is less than
     // sizeof(channel_measurement_t) * 8?
@@ -197,13 +199,15 @@ namespace msk {
      * Should (replace with "Does" after checking) not enable or disable output.
      */
     static inline void update_registers() {
-        // could shift zeros for last three demux pins here (but disconnected)
-        // TODO TODO TODO TODO shift everything in reverse order!!!
+        // shift all bits to registers ***in reverse order*** (well... demux...)
+        // TODO actually... check this order is correct. especially for demux flags.
         // if forward order is more readily unrolled, store state in reverse?
-        for (unsigned char i=0;i<demux_bits;i++) {
+        for (unsigned char i=0; i<demux_bits; i++) {
             shift((demux_states >> i) & 1);
         }
-        for (unsigned char i=0;i<fet_bits;i++) {
+
+        // TODO TODO > 0 or >= 0? test!!
+        for (unsigned char i = (fet_bits - 1); i >= 0; fet_bits; i--) {
             // TODO i assume using more space (8 bit type per channel)
             // would make this part faster? at expense of maybe setting bits in
             // local variable slower? (even out?)
@@ -217,42 +221,43 @@ namespace msk {
         update_output();
     }
 
-    // TODO TODO TODO fix
-    /*
     static inline void select_input_channel(channel_t channel) {
         // need to shift in starting with last value (QD; optional_demux_enable)
         // optional_demux_enable -> chan_select_B -> chan_select_A ->
         // demux_select_B -> demux_select_A
-        clear_reg();
+
+        // TODO make sure order in here is correct...
+        // related to other note, maybe pick order that allows forward shifting
         
         // will always want to enable analog switch output
-        shift(0);
+        // TODO true? compile options for this / enable each time / enable when
+        // anything in queue?
+        // TODO if demux enable if is MSB (and all 5 bits are LS of this byte)
+        // is that order consistent w/ fet_states? maybe just redefine those,
+        // and numbering, as long as demux_enable goes in right place?
+        // TODO if i want to change back to forward order, demux_enable 
+        // should be 0, i think
+        demux_states |= 1 << demux_enable_bit;
       
         // TODO update note on numbering
         // "channels" are numbered from 1 to 8, so odd numbers come first
         // B (on CD4052B): 0 -> 0/1 (odd channels), 1 -> 2/3 (even channels)
         // TODO check this
         // TODO TODO is this trying to deal with the negation twice?
-        // what is purpose of 1 - here?
-        shift(1 - c % 2);
-        
-        // A (on CD4052B): 0 -> lower numbered choice given B (LEFT by my def), 1 -> higher (RIGHT)
-        if (left_side) {
-          shift(1);
-        } else {
-          shift(0);
-        }
-      
-        // CD4556 (B): 0 -> Q0/Q1 (channels 1-2/3-4), 1 -> Q2/Q3 (channels 5-6/7-8)
-        shift(c > 4);
-      
-        // CD4556 (A): 0 -> lower of above, 1 -> higher
-        // TODO replace w/ one bitwise operation (at least verify)
-        shift(c == 3 || c == 4 || c == 7 || c == 8);
-      
-        update_output();
+        // what was purpose of 1 - here?
+        //shift(1 - c % 2);
+
+        // TODO TODO maybe redo numbering s.t. requires minimal bitwise operations
+        // to set demux_states
+        // TODO i suppose if all 4(-6) bit channel numbers are valid, i could just
+        // directly translate those to demux_states, and see what that numbering is?
+
+        demux_states |= channel << lowest_demux_state_bit;
+
+        // update values in shift registers
+        // we only changed bits on last one, but they are all daisy chained.
+        update_registers();
     }
-    */
 
     // TODO might want to move this to the top if i don't end up needing other functions
     // only declared in here
@@ -411,6 +416,10 @@ namespace msk {
         digitalWrite(fet_enbl, LOW);
     }
 
+    // TODO auto-enable if measuring at all / disable if not? or do it each 
+    // measurement? check 4052 datasheet for time / other penalties involved 
+    // or for reasons to disable at all...
+    
     /* TODO
      */
     void enable_inputs() {
