@@ -72,7 +72,7 @@ namespace msk {
     // TODO maybe use uintN_t just to be clear on sizes (that is what is important)
     // TODO maybe don't rely on 
     // TODO maybe define in init, checking odd?
-    typedef unsigned int fet_mask_t;
+    typedef uint16_t fet_mask_t;
     static const fet_mask_t all_fets  = 0b1111111111111111;
     static const fet_mask_t no_fets   = 0;
     static const fet_mask_t all_left  = 0b0101010101010101;
@@ -85,11 +85,11 @@ namespace msk {
     // could i use this to define masks compile time? (prob not, but maybe)
     // number of bits used in each bank of shift registers
     // with bank of two fet registers preceeding the single demux reg
-    static const unsigned char fet_bits = 16;
-    static const unsigned char demux_bits = 5;
+    static const uint8_t fet_bits = 16;
+    static const uint8_t demux_bits = 5;
     // TODO TODO include constants to help understanding purpose of each demux_bit
-    static const unsigned char lowest_demux_state_bit = 1;
-    static const unsigned char demux_enable_bit = 0;
+    static const uint8_t lowest_demux_state_bit = 1;
+    static const uint8_t demux_enable_bit = 0;
 
     // TODO compile time assert that measurement_bits + channel_bits is less than
     // sizeof(channel_measurement_t) * 8?
@@ -97,19 +97,19 @@ namespace msk {
     // 16 bits
     static fet_mask_t fet_states;
     // 8 bits, the rightmost (? TODO) 5 of which are used
-    static unsigned char demux_states;
+    static uint8_t demux_states;
 
     // wanted to also use this to defined sizes of masks, 
     // but it proved difficult
-    static unsigned char num_channels = 16;
+    static uint8_t num_channels = 16;
     // TODO could do as a mask? (same size as fet_mask_t)
     // to facilitate cycling between channels for measurement. better way?
     static channel_t to_measure[num_channels];
     // this line requires channel_t to be at least 8 bits (more if signed)
     // TODO -1 work without this limitation?
     static const channel_t no_channel = 255;
-    static unsigned char curr_channel_index;
-    static unsigned char next_free_index;
+    static uint8_t curr_channel_index;
+    static uint8_t next_free_index;
 
     // TODO should i declare all of the other functions static? does it matter?
     // (as long as they aren't in the header?)
@@ -161,7 +161,7 @@ namespace msk {
 
     // takes HIGH (1) or LOW (0) as input (w/ way i had started implementing 
     // BYPASS_ISOLATION, this would not necessarily be the case)
-    static inline void shift(unsigned char bit) {
+    static inline void shift(uint8_t bit) {
         // logic should be inverted IF USING optoisolator
         digitalWrite(srclk, HIGH);
         #ifndef SR_NODELAY
@@ -202,12 +202,12 @@ namespace msk {
         // shift all bits to registers ***in reverse order*** (well... demux...)
         // TODO actually... check this order is correct. especially for demux flags.
         // if forward order is more readily unrolled, store state in reverse?
-        for (unsigned char i=0; i<demux_bits; i++) {
+        for (uint8_t i=0; i<demux_bits; i++) {
             shift((demux_states >> i) & 1);
         }
 
         // TODO TODO > 0 or >= 0? test!!
-        for (unsigned char i = (fet_bits - 1); i >= 0; fet_bits; i--) {
+        for (uint8_t i = (fet_bits - 1); i >= 0; fet_bits; i--) {
             // TODO i assume using more space (8 bit type per channel)
             // would make this part faster? at expense of maybe setting bits in
             // local variable slower? (even out?)
@@ -294,7 +294,7 @@ namespace msk {
 
         curr_channel_index = 0;
         next_free_index = 0;
-        for (unsigned char i=0;i<num_channels;i++) {
+        for (uint8_t i=0;i<num_channels;i++) {
             to_measure[i] = no_channel;
         }
         // maybe define some bit pattern (effective) constants here?
@@ -392,6 +392,13 @@ namespace msk {
         update_registers();
     }
 
+    // TODO TODO TODO make sure "disabling" the shift registers (which should
+    // put the pins in a HIGH IMPEDANCE state) works to keep all FETs off, and
+    // the demultiplexers in the most harmless or lowest power consumption 
+    // state possible
+    // TODO if it does not in one case (especially FET), can not just toggle
+    // enable to get faster switching. will need to rethink
+
     /* Enables output of the two shock control shift registers, using their
      * OE (output enable) pins, which are tied together on the PCB.
      *
@@ -463,14 +470,14 @@ namespace msk {
     /* Returns 1 (which evaluates true) if channel is already queued to be 
      * measured. Returns 0 (which evaluates false), otherwise.
      */
-    unsigned char will_be_measured(channel_t channel) {
+    uint8_t will_be_measured(channel_t channel) {
         // TODO unit test
         // TODO maybe get rid of these ugly premature optimizations
         channel_t c;
         // could maybe get smaller overall code by making another function
         // that returns index, and then wrapping it here, just returning if 
         // index in range. then, could use index find in stop_measurement too.
-        for (unsigned char i=0;i<num_channels;i++) {
+        for (uint8_t i=0;i<num_channels;i++) {
             c = to_measure[i];
             if (c == no_channel) {
                 return 0;
@@ -500,7 +507,8 @@ namespace msk {
             if (will_be_measured(channel)) {
                 return;
             }
-            // TODO or is it more important to check next_free_index < num_channels?
+            // TODO or is it more important to check next_free_index <
+            // num_channels?
         #endif
         to_measure[next_free_index] = channel;
         next_free_index++;
@@ -510,7 +518,7 @@ namespace msk {
      * See measure() documentation.
      */
     void stop_measurement(channel_t channel) {
-        unsigned char i;
+        uint8_t i;
         channel_t c;
         // find the current index of channel (if it exists)
         for (i=0;i<num_channels;i++) {

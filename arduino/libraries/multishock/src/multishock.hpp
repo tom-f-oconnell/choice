@@ -31,6 +31,8 @@
 // TODO no Arduino issues using .hpp are there?
 // I want to because using namespace in here
 
+// TODO do i have the uint8_t type things be default?
+
 namespace msk {
     /*
     * Pins to control three 74HC595 shift registers, all daisy chained together.
@@ -56,33 +58,33 @@ namespace msk {
     // TODO does the user of the library actually need / want these?
     // maybe move to .c?
     // TODO more clear to suffix w/ "pin"?
-    const unsigned char ser        = 4;
-    const unsigned char srclk      = 5;
-    const unsigned char srclr      = 6;
-    const unsigned char rclk       = 7;
-    const unsigned char fet_enbl   = 8;
-    const unsigned char demux_enbl = 9;
+    const uint8_t ser        = 4;
+    const uint8_t srclk      = 5;
+    const uint8_t srclr      = 6;
+    const uint8_t rclk       = 7;
+    const uint8_t fet_enbl   = 8;
+    const uint8_t demux_enbl = 9;
 
     // the input from the isolation amplifier
     // should be proportional to the current the fly received (on whichever 
     // demultiplexer channels is currently selected), within the working range
-    const unsigned char current_signal = A0;
+    const uint8_t current_signal = A0;
 
-    //const unsigned char shift_register_bits = 21;
-    const unsigned int shiftreg_period_ms = 50;
+    //const uint8_t shift_register_bits = 21;
+    const uint16_t shiftreg_period_ms = 50;
 
     // TODO how were these used differently?
-    //const unsigned int min_demux_period_ms = 1;
-    const unsigned int period_per_channel_ms = 5000;
-    //const unsigned int fet_switch_to_sample_ms = 1;
+    //const uint16_t min_demux_period_ms = 1;
+    const uint16_t period_per_channel_ms = 5000;
+    //const uint16_t fet_switch_to_sample_ms = 1;
 
     // TODO to what extent / should i use namespaces? for things like constants?
     // functions? (vs. prefix?)
 
     // TODO organize typdefs all at top, or just above their use?
-    typedef unsigned char channel_t;
-    typedef unsigned int measurement_t;
-    typedef unsigned int channel_measurement_t;
+    typedef uint8_t channel_t;
+    typedef uint16_t measurement_t;
+    typedef uint16_t channel_measurement_t;
 
     // Since I think wanting more than 2^4 channels (on one Arduino) is more 
     // likely than wanting better than 10 bits of resolution on the current 
@@ -102,8 +104,8 @@ namespace msk {
     
     // TODO maybe make it easier for people to modify this?
     // allow re-defining somehow?
-    const unsigned char measurement_bits = 10;
-    const unsigned char channel_bits = 6;
+    const uint8_t measurement_bits = 10;
+    const uint8_t channel_bits = 6;
 
     void init();
 
@@ -144,7 +146,7 @@ namespace msk {
 
     // TODO below / above / both? both, but prohibit mixing somehow?
 
-    unsigned char will_be_measured(channel_t channel);
+    uint8_t will_be_measured(channel_t channel);
     void start_measurement(channel_t channel);
     void stop_measurement(channel_t channel);
 
