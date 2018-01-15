@@ -116,9 +116,6 @@ namespace msk {
     // TODO could do as a mask? (same size as fet_mask_t)
     // to facilitate cycling between channels for measurement. better way?
     static channel_t to_measure[num_channels];
-    // this line requires channel_t to be at least 8 bits (more if signed)
-    // TODO -1 work without this limitation?
-    static const channel_t no_channel = 255;
     static uint8_t curr_channel_index;
     static uint8_t next_free_index;
 
@@ -599,8 +596,8 @@ namespace msk {
             // num_channels?
         #endif
         to_measure[next_free_index] = channel;
-    // TODO way to inspect this internal state (but only in the context
-    // of unit testing, otherwise disallow)?
+        // TODO way to inspect this internal state (but only in the context
+        // of unit testing, otherwise disallow)?
         next_free_index++;
     }
 
@@ -618,6 +615,8 @@ namespace msk {
                 // i = index of element we want to remove
                 break;
             } else if (c == no_channel) {
+                // so next_free_index won't decrease below zero
+                // TODO unit test and try to make it, though
                 return;
             }
         }
@@ -633,7 +632,6 @@ namespace msk {
             to_measure[i] = to_measure[i+1];
             i++;
         }
-        // TODO unit test
         // handle last element, if we to_measure was previously full
         // (we were trying to measure all of the channels)
         if (i == (num_channels - 1)) {
@@ -658,12 +656,38 @@ namespace msk {
         // TODO + unit test
         channel_measurement_t channel_measurement;
         measurement_t measurement;
+        channel_measurement = 0;
+
+        // we don't have any channels in the to_measure queue
+        // return no_channel error code, w/ zero measurement
+        if (next_free_index == 0) {
+            // TODO include unit / integration tests that detect this error
+            // status
+            channel_measurement = (channel_measurement_t) (channel_measurement \
+                | ((channel_measurement_t) no_channel) << measurement_bits);
+            return channel_measurement;
+        }
+
         // I would have thought it was zero-initialized by default, but the
         // compiler was complaining as if it wasn't.
-        channel_measurement = 0;
         channel_t channel = to_measure[curr_channel_index];
         // TODO TODO if no measurement is queued, need to return here w/o
         // selecting channel or reporting measurement
+       
+        // if the current index (and perhaps also adjacent lower indices) have
+        // had their channels removed, reset the channel to the lowest (zero)
+        // index.
+        // this may be another avenue by which channels with lower indices get
+        // priority over others...
+        // TODO measure / test in some capacity
+        if (channel == no_channel) {
+            // return data with channel code set to no_channel
+            curr_channel_index = 0;
+            channel = to_measure[curr_channel_index];
+            
+            // could probably move the above to stop_measurment, if I wanted
+            // the timing of measure() to be more consistent that start/stop
+        }
 
         /*
         // TODO delete me

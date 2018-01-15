@@ -61,6 +61,7 @@ TEST_F(MSKTest, StartStopMeasurements) {
 // pathological states like one channel not being measured, etc
 
 // TODO TODO no state is carrying over test-to-test is it?
+// TODO more descriptive test name
 TEST_F(MSKTest, MeasureWithQueue) {
     channel_measurement_t cm; // uint16_t
     channel_t c;              // uint8_t
@@ -147,6 +148,7 @@ TEST_F(MSKTest, MeasureWithQueue) {
     }
 }
 
+// TODO use a variable for all of these 0x3FF measurement placeholders
 
 TEST_F(MSKTest, StartStopMeasureLast) {
     channel_measurement_t cm; // uint16_t
@@ -179,7 +181,7 @@ TEST_F(MSKTest, StartStopMeasureLast) {
     m = (measurement_t) (cm & m_mask);
     ASSERT_EQ(m, 0x3FF);
     c = (channel_t) (cm >> measurement_bits);
-    ASSERT_EQ(c, num_channels - 1);
+    ASSERT_EQ(c, 0);
 
     // then will test we can re-populate this position
     start_measurement(num_channels - 1);

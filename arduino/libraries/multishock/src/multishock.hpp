@@ -43,8 +43,7 @@
 // TODO no Arduino issues using .hpp are there?
 // I want to because using namespace in here
 
-// TODO do i have the uint8_t type things be default?
-
+// [M]ulti[S]hoc[K]
 namespace msk {
     /*
     * Pins to control three 74HC595 shift registers, all daisy chained together.
@@ -103,6 +102,12 @@ namespace msk {
     typedef uint16_t channel_measurement_t;
 
     const uint8_t num_channels = 16;
+
+    // this line requires channel_t to be at least 8 bits (more if signed)
+    // TODO -1 work without this limitation?
+    // is using -1 to get the max value of an unsigned field portable? other?
+    // (w/o include, ideally)
+    const channel_t no_channel = 255;
 
     // Since I think wanting more than 2^4 channels (on one Arduino) is more 
     // likely than wanting better than 10 bits of resolution on the current 
