@@ -40,10 +40,16 @@
 // unit tests, since I'm not testing the stuff involving Arduino hardware calls
 // but, I am not sure how to break up the code, s.t. hardware stuff is separate
 // (to avoid compilation problems compiling w/o Arduino functions)
+// TODO but i probably should break up the code?
 #elif defined(UNIT_TESTING)
 // TODO how to find / get this in a portable way?
 // want this for the fixed bit-length types
 #include <stdint.h>
+
+// TODO delete me
+#include <iostream>
+#include <bitset>
+
 /*
 #include <limits.h>
 #define str_helper(x) #x
@@ -107,9 +113,6 @@ namespace msk {
     // 8 bits, the rightmost (? TODO) 5 of which are used
     static uint8_t demux_states;
 
-    // wanted to also use this to defined sizes of masks, 
-    // but it proved difficult
-    static const uint8_t num_channels = 16;
     // TODO could do as a mask? (same size as fet_mask_t)
     // to facilitate cycling between channels for measurement. better way?
     static channel_t to_measure[num_channels];
@@ -305,14 +308,14 @@ namespace msk {
         // and numbering, as long as demux_enable goes in right place?
         // TODO if i want to change back to forward order, demux_enable 
         // should be 0, i think
-	
-	// TODO TODO TODO why is this not causing a Werror conversion err?
-	// types:
-	// demux_states - uint8_t
-	// 1 - int?
-	// demux_enable_bit - (static const) uint8_t
+    
+    // TODO TODO TODO why is this not causing a Werror conversion err?
+    // types:
+    // demux_states - uint8_t
+    // 1 - int?
+    // demux_enable_bit - (static const) uint8_t
         demux_states |= ((uint8_t) 1) << demux_enable_bit;
-	//demux_states
+    //demux_states
       
         // TODO update note on numbering
         // "channels" are numbered from 1 to 8, so odd numbers come first
@@ -324,31 +327,43 @@ namespace msk {
 
         // TODO TODO maybe redo numbering s.t. requires minimal bitwise operations
         // to set demux_states (keep in mind FET and demux numbering needs to match.
-	// maybe matching is would be the most important constraint?)
+    // maybe matching is would be the most important constraint?)
         // TODO i suppose if all 4(-6) bit channel numbers are valid, i could just
         // directly translate those to demux_states, and see what that numbering is?
 
-	// types:
-	// demux_states - uint8_t
-	// channel - channel_t (uint8_t)
-	// lowest_demux_state_bit - (static const) uint8_t
-	// TODO so why is any part of this operation 'int'?
-	// error: conversion to ‘uint8_t {aka unsigned char}’ from ‘int’ may 
-	// alter its value [-Werror=conversion]
+    // types:
+    // demux_states - uint8_t
+    // channel - channel_t (uint8_t)
+    // lowest_demux_state_bit - (static const) uint8_t
+    // TODO so why is any part of this operation 'int'?
+    // error: conversion to ‘uint8_t {aka unsigned char}’ from ‘int’ may 
+    // alter its value [-Werror=conversion]
         //demux_states |= channel << lowest_demux_state_bit;
         demux_states = (uint8_t) (demux_states | channel << lowest_demux_state_bit);
 
         // update values in shift registers
         // we only changed bits on last one, but they are all daisy chained.
-	#if defined(ARDUINO)
+    #if defined(ARDUINO)
             update_registers();
-	#endif
+    #endif
     }
 
     // TODO might want to move this to the top if i don't end up needing other functions
     // only declared in here
     void init() {
-	#if defined(ARDUINO)
+        // TODO TODO do SRs lose state upon reboot (for sure)? explicitly clear?
+        fet_states = 0;
+        demux_states = 0;
+
+        curr_channel_index = 0;
+        next_free_index = 0;
+        for (uint8_t i=0;i<num_channels;i++) {
+            to_measure[i] = no_channel;
+        }
+
+        // maybe define some bit pattern (effective) constants here?
+        // particularly if i'm having trouble w/ binary literals
+    #if defined(ARDUINO)
             // TODO maybe check if we are using certain boardtypes w/ Arduino
             // defines to use port manipulation optimizations?
             pinMode(ser, OUTPUT);
@@ -374,19 +389,7 @@ namespace msk {
             // and the isolation inverts the logic
             digitalWrite(fet_enbl, HIGH);
             digitalWrite(demux_enbl, HIGH);
-	#endif
-
-        // TODO TODO do SRs lose state upon reboot (for sure)? explicitly clear?
-        fet_states = 0;
-        demux_states = 0;
-
-        curr_channel_index = 0;
-        next_free_index = 0;
-        for (uint8_t i=0;i<num_channels;i++) {
-            to_measure[i] = no_channel;
-        }
-        // maybe define some bit pattern (effective) constants here?
-        // particularly if i'm having trouble w/ binary literals
+    #endif
     }
 
     // SR pins go from F1-16 in order through first two SRs
@@ -400,26 +403,26 @@ namespace msk {
         // get the bit that corresponds to this channel number
         // and OR in the bit for this channel number (make it a 1 if it wasn't)
         // to the bit-vector holding state of the two stimulus shift registers
-	// TODO fix Werror conversion error / warning
-	// "to ‘msk::fet_mask_t {aka short unsigned int}’ from ‘int’"
-	// types:
-	// fet_states - fet_mask_t (uint16_t)
-	// 1 - (int? what is 0x1? way to get a char literal?)
-	// channel - channel_t (uint8_t)
+    // TODO fix Werror conversion error / warning
+    // "to ‘msk::fet_mask_t {aka short unsigned int}’ from ‘int’"
+    // types:
+    // fet_states - fet_mask_t (uint16_t)
+    // 1 - (int? what is 0x1? way to get a char literal?)
+    // channel - channel_t (uint8_t)
         //fet_states |= (uint16_t) (((uint16_t) 1) << ((uint16_t) channel));
-	//
-	// TODO no errors here, so does that mean that (uint16_t | uint16_t) 
-	// is not uint16_t?
-	// TODO TODO the question now is just whether the error *was* actually 
-	// something to worry about, and this is just masking it.
-	// is there a chance of this not being what I'd expect?
+    //
+    // TODO no errors here, so does that mean that (uint16_t | uint16_t) 
+    // is not uint16_t?
+    // TODO TODO the question now is just whether the error *was* actually 
+    // something to worry about, and this is just masking it.
+    // is there a chance of this not being what I'd expect?
         fet_states = (uint16_t) (fet_states | (((uint16_t) 1) << channel));
-	//
-	// neither of these lines cause a Werror conversion err:
-	// fet_states = (uint16_t) fet_states;
-	// fet_states = (uint16_t) (((uint16_t) 1) << channel);
+    //
+    // neither of these lines cause a Werror conversion err:
+    // fet_states = (uint16_t) fet_states;
+    // fet_states = (uint16_t) (((uint16_t) 1) << channel);
         //fet_states = (uint16_t) fet_states | (uint16_t) (((uint16_t) 1) << channel);
-	// TODO so this is because | operands are promoted to "int"? 
+    // TODO so this is because | operands are promoted to "int"? 
         
         // TODO does actually passing the parameter make things more 
         // complicated to optimize? (to shift_out) might save on code size
@@ -427,9 +430,9 @@ namespace msk {
         
         // shift all the bits out (from fet_states to registers) again
         // including (and starting with) the 5 measurement-related bits
-	#if defined(ARDUINO)
+    #if defined(ARDUINO)
             update_registers();
-	#endif
+    #endif
     }
 
     /* TODO 
@@ -437,9 +440,9 @@ namespace msk {
      */
     void stop_shock(channel_t channel) {
         fet_states &= 0 << channel;
-	#if defined(ARDUINO)
+    #if defined(ARDUINO)
             update_registers();
-	#endif
+    #endif
     }
 
     // just assuming for now there may be cases where someone wants to actually
@@ -452,9 +455,9 @@ namespace msk {
      */
     void start_all_shock() {
         fet_states = all_fets;
-	#if defined(ARDUINO)
+    #if defined(ARDUINO)
             update_registers();
-	#endif
+    #endif
     }
 
     /* Sets bits such that (even) when the FET shift registers are enabled, NO
@@ -462,9 +465,9 @@ namespace msk {
      */
     void stop_all_shock() {
         fet_states = no_fets;
-	#if defined(ARDUINO)
+    #if defined(ARDUINO)
             update_registers();
-	#endif
+    #endif
     }
 
     /* Sets bits such that (only) when the FET shift registers are enabled, 
@@ -474,9 +477,9 @@ namespace msk {
      */
     void start_shock_left() {
         fet_states |= all_left;
-	#if defined(ARDUINO)
+    #if defined(ARDUINO)
             update_registers();
-	#endif
+    #endif
     }
 
     /* Sets bits such that (even) when the FET shift registers are enabled, the 
@@ -486,9 +489,9 @@ namespace msk {
      */
     void stop_shock_left() {
         fet_states &= all_right;
-	#if defined(ARDUINO)
+    #if defined(ARDUINO)
             update_registers();
-	#endif
+    #endif
     }
 
     /* Sets bits such that (only) when the FET shift registers are enabled, 
@@ -498,9 +501,9 @@ namespace msk {
      */
     void start_shock_right() {
         fet_states |= all_right;
-	#if defined(ARDUINO)
+    #if defined(ARDUINO)
             update_registers();
-	#endif
+    #endif
     }
 
     /* Sets bits such that (even) when the FET shift registers are enabled, the 
@@ -510,9 +513,9 @@ namespace msk {
      */
     void stop_shock_right() {
         fet_states &= all_left;
-	#if defined(ARDUINO)
+    #if defined(ARDUINO)
             update_registers();
-	#endif
+    #endif
     }
 
     /* Returns a measurement_t (>= measurement_bits bits in type) read
@@ -523,17 +526,17 @@ namespace msk {
     measurement_t measure(channel_t channel) {
         measurement_t measurement;
         select_input_channel(channel);
-	// TODO how to replace things like analogRead in a good way for testing?
-	// would kind of like to replace it w/ boundary cases + expected cases
-	// but I'd probably have to refactor?
-	#ifdef ARDUINO
+    // TODO how to replace things like analogRead in a good way for testing?
+    // would kind of like to replace it w/ boundary cases + expected cases
+    // but I'd probably have to refactor?
+    #ifdef ARDUINO
             measurement = analogRead(current_signal);
         #else
-	    //  10 bits: 0011 1111 1111
-	    // hex (Ox):    3    F    F
-	    // (decimal 1023 = 2^10-1)
-	    measurement = 0x3FF;
-	#endif
+        //  10 bits: 0011 1111 1111
+        // hex (Ox):    3    F    F
+        // (decimal 1023 = 2^10-1)
+        measurement = 0x3FF;
+    #endif
         return measurement;
     }
 
@@ -557,8 +560,6 @@ namespace msk {
      * measured. Returns 0 (which evaluates false), otherwise.
      */
     uint8_t will_be_measured(channel_t channel) {
-        // TODO unit test
-        // TODO maybe get rid of these ugly premature optimizations
         channel_t c;
         // could maybe get smaller overall code by making another function
         // that returns index, and then wrapping it here, just returning if 
@@ -590,6 +591,7 @@ namespace msk {
         // TODO unit test
         // TODO maybe change flag to FORCE_/ALWAYS_...?
         #ifdef CHECK_Q_DUPLICATES
+        // TODO also check valid channel numbers with this / other flags?
             if (will_be_measured(channel)) {
                 return;
             }
@@ -597,6 +599,8 @@ namespace msk {
             // num_channels?
         #endif
         to_measure[next_free_index] = channel;
+    // TODO way to inspect this internal state (but only in the context
+    // of unit testing, otherwise disallow)?
         next_free_index++;
     }
 
@@ -649,42 +653,66 @@ namespace msk {
      * See "channel_bits" and "measurement_bits" in "multishock.hpp".
      */
     channel_measurement_t measure() {
-        // TODO need to explicitly zero this first?
+        // TODO TODO i think i should implement some error value (for channel at
+        // least?) if there are no channels registered when this is called
+        // TODO + unit test
         channel_measurement_t channel_measurement;
         measurement_t measurement;
-	// I would have thought it was zero-initialized by default, but the
-	// compiler was complaining as if it wasn't.
-	channel_measurement = 0;
+        // I would have thought it was zero-initialized by default, but the
+        // compiler was complaining as if it wasn't.
+        channel_measurement = 0;
         channel_t channel = to_measure[curr_channel_index];
+        // TODO TODO if no measurement is queued, need to return here w/o
+        // selecting channel or reporting measurement
 
-	// TODO maybe break out these two lines w/ preprocessor so this 
-	// function can be unit tested w/ a few different values of the 
-	// measurement?
-	
+        /*
+        // TODO delete me
+        #ifdef UNIT_TESTING
+            std::cout << "channel index: " << \
+                std::to_string(curr_channel_index) << std::endl;
+            std::cout << "channel: " << std::to_string(channel) << std::endl;
+        #endif
+        */
+
+        // TODO maybe break out these two lines w/ preprocessor so this 
+        // function can be unit tested w/ a few different values of the 
+        // measurement?
+    
         // switch the analog demultiplexers to the channel
         // TODO and enable them? do i ever want to disable them?
         select_input_channel(channel);
 
         // TODO directly call AVR functions?
-	#ifdef ARDUINO
+        #ifdef ARDUINO
             measurement = analogRead(current_signal);
         #else
-	    // 1023 (max of 10 bit range)
-	    measurement = 0x3FF;
+            // 1023 (max of 10 bit range)
+            measurement = 0x3FF;
         #endif
 
         // shift channel up to it's position in the bits of the number
         // to be returned, and OR it in
-	// TODO fix Werror=conversion error
-	// conversion to ‘msk::channel_measurement_t {aka short unsigned int}’ 
-	// from ‘int’
-	// types:
-	// channel_measurement - channel_measurement_t (uint16_t)
-	// channel - channel_t (uint8_t)
-	// measurement_bits - uint8_t
-        //channel_measurement |= ((channel_measurement_t) channel) << measurement_bits;
+        // TODO fix Werror=conversion error
+        // conversion to ‘msk::channel_measurement_t {aka short unsigned int}’ 
+        // from ‘int’
+        // types:
+        // channel_measurement - channel_measurement_t (uint16_t)
+        // channel - channel_t (uint8_t)
+        // measurement_bits - uint8_t
+        //channel_measurement |= ((channel_measurement_t) channel) << 
+        //measurement_bits;
         channel_measurement = (channel_measurement_t) (channel_measurement | \
-	    ((channel_measurement_t) channel) << measurement_bits);
+            ((channel_measurement_t) channel) << measurement_bits);
+        /*
+        // TODO delete me
+        #ifdef UNIT_TESTING
+            std::cout << "measurement_bits: " << \
+                std::to_string(measurement_bits) << std::endl;
+            std::cout << "channel, measurement bitmask: " << \
+                std::bitset<sizeof(channel_measurement)*8>(channel_measurement)\
+                << std::endl;
+        #endif
+        */
 
         // If >10 bits, and you had not made other modifications to accomodate
         // that, you could shift measurement right two bits to get 10 most
@@ -699,15 +727,32 @@ namespace msk {
         // next call to this function
         // TODO maybe replace curr_channel_index w/ channel_index?
         curr_channel_index++;
-        // TODO unit test
+
+        /*
+        #ifdef UNIT_TESTING
+            std::cout << "(to_measure[curr_channel_index] == no_channel): " << \
+                (to_measure[curr_channel_index] == no_channel) << std::endl;
+        #endif
+        */
+
+        // TODO unit test. maybe implement some way to check curr_channel_index
+        // in unit tests, and then test curr_channel_index >= num_channels
+        // case
         if (curr_channel_index >= num_channels || \
             to_measure[curr_channel_index] == no_channel) {
 
             curr_channel_index = 0;
         }
+
+        /*
+        #ifdef UNIT_TESTING
+            std::cout << "curr_channel_index (at end of measure()): " << \
+                std::to_string(curr_channel_index) << std::endl;
+        #endif
+        */
         return channel_measurement;
     }
 
     // TODO is it worth a "measure_all" function?
-    // return type might be more complicated...
+    // return type would be more complicated...
 }

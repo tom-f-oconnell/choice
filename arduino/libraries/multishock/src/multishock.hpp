@@ -102,6 +102,8 @@ namespace msk {
     typedef uint16_t measurement_t;
     typedef uint16_t channel_measurement_t;
 
+    const uint8_t num_channels = 16;
+
     // Since I think wanting more than 2^4 channels (on one Arduino) is more 
     // likely than wanting better than 10 bits of resolution on the current 
     // through each channel, I'm allotting 6 bits (64 total channels -> 
