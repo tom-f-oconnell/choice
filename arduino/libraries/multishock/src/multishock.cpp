@@ -10,7 +10,8 @@
  *  isolated power supply
  *
  * Circuit features:
- * -galvanically isolated (assuming high voltage power supply is itself isolated)
+ * -galvanically isolated (assuming high voltage power supply is itself
+ *  isolated)
  *
  * Created January 2018
  * Author: Tom O'Connell
@@ -24,7 +25,8 @@
 // maybe don't check if ARDUINO is defined, for compilation outside IDE?
 // (default to one of the headers?)
 #if defined(ARDUINO)
-// maybe get rid of this, if it interferes w/ compilation outside of Arduino IDE?
+// maybe get rid of this, if it interferes w/ compilation outside of Arduino
+// IDE?
 // maybe just check that alternate flags are NOT set?
 #ifndef ARDUINO_ARCH_AVR
   # error "This library only currently supports boards with an AVR processor."
@@ -124,13 +126,15 @@ namespace msk {
     // all functions that depend on Arduino libraries (which I generally would
     // not want to unit test anyway) grouped for exclusion from unit test
     // compilation. to compile unit tests without having arduino libraries.
-    #if defined(ARDUINO)
+    #ifdef ARDUINO
         // TODO TODO TODO make sure "disabling" the shift registers (which
         // should put the pins in a HIGH IMPEDANCE state) works to keep all FETs
         // off, and the demultiplexers in the most harmless or lowest power
         // consumption state possible
         // TODO if it does not in one case (especially FET), can not just toggle
         // enable to get faster switching. will need to rethink
+        
+        // TODO inline all of these pin setting functions as well?
 
         /* Enables output of the two shock control shift registers, using their
          * OE (output enable) pins, which are tied together on the PCB.
@@ -201,7 +205,6 @@ namespace msk {
             #ifndef SR_NODELAY
                 delay(shiftreg_period_ms);
             #endif
-          }
         }
 
         static inline void update_output() {
@@ -274,7 +277,7 @@ namespace msk {
             }
 
             // TODO TODO > 0 or >= 0? test!!
-            for (uint8_t i = (fet_bits - 1); i >= 0; fet_bits; i--) {
+            for (uint8_t i = (fet_bits - 1); i >= 0; i--) {
                 // TODO i assume using more space (8 bit type per channel)
                 // would make this part faster? at expense of maybe setting bits
                 // in local variable slower? (even out?)

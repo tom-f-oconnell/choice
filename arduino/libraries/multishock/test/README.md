@@ -8,8 +8,8 @@ to populate it:
 ```
 cd <from within top-level `choice` directory>
 ```
-...or, if you already have have the `choice` ROS package installed from source, you
-could just:
+...or, if you already have have the `choice` ROS package installed from source,
+you could just:
 
 ```
 roscd choice
@@ -21,6 +21,9 @@ git submodule update --init --recursive
 ```
 This will download the `gtest` source code, which I use for the library unit
 tests.
+
+TODO latest? how to get it to just download the same version I'm using? is that
+actually what's happening?
 
 #### Running the tests
 

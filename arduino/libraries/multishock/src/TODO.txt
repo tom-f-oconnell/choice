@@ -1,3 +1,7 @@
 how to unit test (on host), but w/ exact same things like compiler settings
 and maybe also hardware specifics?
+
 -want to make sure that things like 0b(int) literals are interpreted correctly
+
+-would Arduino / library manager really not mind a "tests" directory in the
+ project root?

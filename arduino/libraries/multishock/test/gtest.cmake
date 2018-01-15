@@ -1,5 +1,4 @@
 
-
 set(GOOGLETEST_ROOT gtest/googletest CACHE STRING "Google Test source root")
 
 # SYSTEM keyword is to suppress some build warnings, to not get too many 

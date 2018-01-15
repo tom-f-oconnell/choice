@@ -5,13 +5,43 @@
 #######################################
 # Datatypes (KEYWORD1)
 #######################################
-Servo	KEYWORD1
+channel_t	KEYWORD1
+measurement_t	KEYWORD1
+channel_measurement_t	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
-ms_init KEYWORD2
+init	KEYWORD2
+start_shock	KEYWORD2
+stop_shock	KEYWORD2
+start_shock_left	KEYWORD2
+stop_shock_left	KEYWORD2
+start_shock_right	KEYWORD2
+stop_shock_right	KEYWORD2
+
+measure	KEYWORD2
+will_be_measured	KEYWORD2
+start_measurement	KEYWORD2
+stop_measurement	KEYWORD2
+
+# how to deal with namespace? separate
+# keyword?
 
 #######################################
 # Constants (LITERAL1)
 #######################################
+ser	LITERAL1
+srclk	LITERAL1
+srclr	LITERAL1
+rclk	LITERAL1
+fet_enbl	LITERAL1	
+demux_enbl	LITERAL1
+current_signal	LITERAL1
+shiftreg_period_ms	LITERAL1
+period_per_channel_ms	LITERAL1
+num_channels	LITERAL1
+no_channel	LITERAL1
+measurement_bits	LITERAL1
+channel_bits	LITERAL1
+
