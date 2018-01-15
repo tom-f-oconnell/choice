@@ -11,7 +11,8 @@
  *
  * TODO maybe move this section to a pcb design readme or something?
  * Circuit features:
- * -galvanically isolated (assuming high voltage power supply is itself isolated)
+ * -galvanically isolated (assuming high voltage power supply is itself
+ *  isolated)
  *
  * Created January 2018
  * Author: Tom O'Connell
@@ -57,8 +58,8 @@ namespace msk {
     * demultiplexers), and the E(nable) pin on the 4556.
     *
     * These first two inputs define which CD4052B is active, the 4052 shared 
-    * inputs select which channel of the active 4052 is used, and the final enable
-    * pin can be used to disable all of the 4052s.
+    * inputs select which channel of the active 4052 is used, and the final
+    * enable pin can be used to disable all of the 4052s.
     *
     * The remaining 3 pins on the third shift register are not used.
     *
@@ -80,8 +81,9 @@ namespace msk {
     // not compiled w/o ARDUINO, because otherwise A0 is not defined
     #ifdef ARDUINO
         // the input from the isolation amplifier
-        // should be proportional to the current the fly received (on whichever 
-        // demultiplexer channels is currently selected), within the working range
+        // should be proportional to the current the fly received (on whichever
+        // demultiplexer channels is currently selected), within the working
+        // range
         const uint8_t current_signal = A0;
     #endif
 
@@ -114,8 +116,8 @@ namespace msk {
     // through each channel, I'm allotting 6 bits (64 total channels -> 
     // 32 chambers with left and right) to channel ID.
 
-    // If you require more than 10 bits of resolution on the current, the integer
-    // type will (and / or the masks) will need to change.
+    // If you require more than 10 bits of resolution on the current, the
+    // integer type will (and / or the masks) will need to change.
 
     // Though there are the Due, Zero, and MKR, with built in 12 bit ADCs...
 
@@ -163,8 +165,8 @@ namespace msk {
 
     // TODO maybe even in this case it'd be preferable to return 
     // channel_measurement_t? won't i essentially have to pack it that way for
-    // transport to the computer anyway? (i suppose if everything is transactional,
-    // maybe not...)
+    // transport to the computer anyway? (i suppose if everything is
+    // transactional, maybe not...)
     measurement_t measure(channel_t channel);
 
     // TODO below / above / both? both, but prohibit mixing somehow?

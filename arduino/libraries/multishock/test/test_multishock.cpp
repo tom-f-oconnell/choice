@@ -1,5 +1,8 @@
 
-// TODO which order should this import go in again? matters, right?
+// TODO TODO it looks like some people are keen on importing the c/cpp file,
+// so as to get access to static variables. maybe consider, but see
+// alternatives. refactoring might be better anyway, but it might come at a cost
+// of some overhead, that i've been trying to minimize
 #include "../src/multishock.hpp"
 
 // TODO why does
@@ -16,6 +19,10 @@
 
 using namespace msk;
 
+// measurements are set to this constant for unit testing purposes
+// because we don't have hardware with which to read analog values
+static unsigned int unsigned_ten_bit_max = 0x3FF;
+
 // TODO what are the two preceding colons?
 class MSKTest : public ::testing::Test {
     protected:
@@ -24,12 +31,44 @@ class MSKTest : public ::testing::Test {
         }
 
     // TODO are there variables that i want to use?
-    // TODO should i be wrapping all the state in msk in a class?
+    // TODO should i be wrapping all the state in msk in a class? might make
+    // testing easier? but maybe only if still breaking encapsulation in a way
+    // that is undesirable.
 };
 
 TEST_F(MSKTest,  NothingMeasuredInitially) {
     for (int i=0; i<num_channels; i++) {
         ASSERT_FALSE(will_be_measured((channel_t) i));
+    }
+
+    // check the special number indicating end of list of measured channels
+    // also yields a false here
+    ASSERT_FALSE(will_be_measured(no_channel));
+}
+
+/* check the returned channels by measure() are no_channel
+ * which indicates a measurement was requested when no channels
+ * were queued
+ */
+TEST_F(MSKTest,  NoChannelWhenNothingQueued) {
+    channel_measurement_t cm; // uint16_t
+    channel_t c;              // uint8_t
+    measurement_t m;          // uint16_t (measurement_bits == 10)
+
+    channel_measurement_t m_mask;
+    // TODO define in common place
+    m_mask = 0;
+    for (int i=0; i<measurement_bits; i++) {
+        m_mask = (channel_measurement_t) (m_mask |
+            ((channel_measurement_t) 1) << i);
+    }
+
+    for (int i=0; i<num_channels; i++) {
+        cm = measure();
+        m = (measurement_t) (cm & m_mask);
+        ASSERT_EQ(m, unsigned_ten_bit_max);
+        c = (channel_t) (cm >> measurement_bits);
+        ASSERT_EQ(c, i);
     }
 }
 
@@ -131,12 +170,10 @@ TEST_F(MSKTest, MeasureWithQueue) {
             std::bitset<sizeof(cm)*8>(cm) << std::endl;
         */
 
-        // for now, the 0x3FF (1023) is a constant for each measurement
-        // called within a unit test
         // TODO provide a mechanism to set this to arbitrary values within
         // the tested functions, mocking analogRead
         m = (measurement_t) (cm & m_mask);
-        ASSERT_EQ(m, 0x3FF);
+        ASSERT_EQ(m, unsigned_ten_bit_max);
 
         // TODO maybe take note here and don't try to mask channel explicitly?
         ASSERT_EQ((cm & c_mask) >> measurement_bits, cm >>
@@ -147,8 +184,6 @@ TEST_F(MSKTest, MeasureWithQueue) {
         ASSERT_EQ(c, (channel_t) (i - 1));
     }
 }
-
-// TODO use a variable for all of these 0x3FF measurement placeholders
 
 TEST_F(MSKTest, StartStopMeasureLast) {
     channel_measurement_t cm; // uint16_t
@@ -169,7 +204,7 @@ TEST_F(MSKTest, StartStopMeasureLast) {
     for (int i=0; i<(num_channels-1); i++) {
         cm = measure();
         m = (measurement_t) (cm & m_mask);
-        ASSERT_EQ(m, 0x3FF);
+        ASSERT_EQ(m, unsigned_ten_bit_max);
         c = (channel_t) (cm >> measurement_bits);
         ASSERT_EQ(c, i);
     }
@@ -179,7 +214,7 @@ TEST_F(MSKTest, StartStopMeasureLast) {
     stop_measurement(num_channels - 1);
     cm = measure();
     m = (measurement_t) (cm & m_mask);
-    ASSERT_EQ(m, 0x3FF);
+    ASSERT_EQ(m, unsigned_ten_bit_max);
     c = (channel_t) (cm >> measurement_bits);
     ASSERT_EQ(c, 0);
 
@@ -191,13 +226,13 @@ TEST_F(MSKTest, StartStopMeasureLast) {
     for (int i=1; i<num_channels; i++) {
         cm = measure();
         m = (measurement_t) (cm & m_mask);
-        ASSERT_EQ(m, 0x3FF);
+        ASSERT_EQ(m, unsigned_ten_bit_max);
         c = (channel_t) (cm >> measurement_bits);
         ASSERT_EQ(c, i);
     }
     cm = measure();
     m = (measurement_t) (cm & m_mask);
-    ASSERT_EQ(m, 0x3FF);
+    ASSERT_EQ(m, unsigned_ten_bit_max);
     c = (channel_t) (cm >> measurement_bits);
     ASSERT_EQ(c, 0);
 }
