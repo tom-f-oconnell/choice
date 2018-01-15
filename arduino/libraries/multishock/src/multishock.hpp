@@ -28,6 +28,18 @@
 #ifndef SHOCK_HPP
 #define SHOCK_HPP
 
+// this whole if statement just gets fixed bit-length type definitions
+#if defined(ARDUINO)
+#if ARDUINO >= 100
+    #include <Arduino.h>  // Arduino 1.0
+#else
+    #include <WProgram.h> // Arduino 0022
+#endif
+
+#elif defined(UNIT_TESTING)
+#include <stdint.h>
+#endif
+
 // TODO no Arduino issues using .hpp are there?
 // I want to because using namespace in here
 
@@ -65,10 +77,14 @@ namespace msk {
     const uint8_t fet_enbl   = 8;
     const uint8_t demux_enbl = 9;
 
-    // the input from the isolation amplifier
-    // should be proportional to the current the fly received (on whichever 
-    // demultiplexer channels is currently selected), within the working range
-    const uint8_t current_signal = A0;
+    // TODO better way?
+    // not compiled w/o ARDUINO, because otherwise A0 is not defined
+    #ifdef ARDUINO
+        // the input from the isolation amplifier
+        // should be proportional to the current the fly received (on whichever 
+        // demultiplexer channels is currently selected), within the working range
+        const uint8_t current_signal = A0;
+    #endif
 
     //const uint8_t shift_register_bits = 21;
     const uint16_t shiftreg_period_ms = 50;

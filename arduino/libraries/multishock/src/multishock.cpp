@@ -21,26 +21,39 @@
  * design/pcb/shield_pcb), and supporting files
  */
 
-// TODO unit tests, off any microcontroller
-
+// maybe don't check if ARDUINO is defined, for compilation outside IDE?
+// (default to one of the headers?)
+#if defined(ARDUINO)
 // maybe get rid of this, if it interferes w/ compilation outside of Arduino IDE?
 // maybe just check that alternate flags are NOT set?
 #ifndef ARDUINO_ARCH_AVR
   # error "This library only currently supports boards with an AVR processor."
 #endif
 
-// maybe don't check if ARDUINO is defined, for compilation outside IDE?
-// (default to one of the headers?)
-#if defined(ARDUINO)
 #if ARDUINO >= 100
     #include <Arduino.h>  // Arduino 1.0
 #else
     #include <WProgram.h> // Arduino 0022
 #endif
 
+// TODO I think I want to include GNU stdint.h if just want those types for
+// unit tests, since I'm not testing the stuff involving Arduino hardware calls
+// but, I am not sure how to break up the code, s.t. hardware stuff is separate
+// (to avoid compilation problems compiling w/o Arduino functions)
+#elif defined(UNIT_TESTING)
+// TODO how to find / get this in a portable way?
+// want this for the fixed bit-length types
+#include <stdint.h>
+/*
+#include <limits.h>
+#define str_helper(x) #x
+#define str(x) str_helper(x)
+#pragma message str(UINT_MAX)
+#pragma message str(INT_MAX)
+*/
+
 #else
-    #error "Using Arduino functions but "\
-    "not compiling in an Arduino environment."
+    #error "Using Arduino functions but not compiling in Arduino environment."
 #endif
 
 #include "multishock.hpp"
@@ -63,16 +76,11 @@ namespace msk {
     #endif
     */
 
-    // from arduino.cc:
-    // ints are 16 bits on ATmega based boards, but 32 on Due / SAMD / maybe others
-    // TODO maybe handle differently? not sure what would stop someone from compiling
-    // on Due for now, if still AVR? **explicitly use 16bit type?**
-    // maybe just make one macro to repeat 8 times? (n times seems harder / 
-    // impossible? w/o boost preprocessor lib?)
-    // TODO maybe use uintN_t just to be clear on sizes (that is what is important)
-    // TODO maybe don't rely on 
-    // TODO maybe define in init, checking odd?
+    // TODO maybe change types to "fastest?" / related?
     typedef uint16_t fet_mask_t;
+    // TODO maybe define in init, checking odd?
+    // TODO maybe switch to 0x notation (C standard?) as 0b is only definitely
+    // supported in GCC
     static const fet_mask_t all_fets  = 0b1111111111111111;
     static const fet_mask_t no_fets   = 0;
     static const fet_mask_t all_left  = 0b0101010101010101;
@@ -91,8 +99,8 @@ namespace msk {
     static const uint8_t lowest_demux_state_bit = 1;
     static const uint8_t demux_enable_bit = 0;
 
-    // TODO compile time assert that measurement_bits + channel_bits is less than
-    // sizeof(channel_measurement_t) * 8?
+    // TODO compile time assert that measurement_bits + channel_bits is less 
+    // than sizeof(channel_measurement_t) * 8? (not sure how to implement)
 
     // 16 bits
     static fet_mask_t fet_states;
@@ -101,7 +109,7 @@ namespace msk {
 
     // wanted to also use this to defined sizes of masks, 
     // but it proved difficult
-    static uint8_t num_channels = 16;
+    static const uint8_t num_channels = 16;
     // TODO could do as a mask? (same size as fet_mask_t)
     // to facilitate cycling between channels for measurement. better way?
     static channel_t to_measure[num_channels];
@@ -118,109 +126,169 @@ namespace msk {
     // at once? see Ben Krasnow's "ping-pong" buffer code?
     // or maybe lesser # of bits for faster acquisition, and then it might make more sense?
 
-    // TODO  is there some way libraries allow compile time configuration?
-    static inline void clear_reg() {
-        // TODO consistent indentation. guidelines on in-function preprocessor 
-        // conditionals like these (re: formatting)?
-        digitalWrite(srclr, HIGH);
-        digitalWrite(rclk, HIGH);
+    // all functions that depend on Arduino libraries (which I generally would
+    // not want to unit test anyway) grouped for exclusion from unit test
+    // compilation. to compile unit tests without having arduino libraries.
+    #if defined(ARDUINO)
+        // TODO TODO TODO make sure "disabling" the shift registers (which should
+        // put the pins in a HIGH IMPEDANCE state) works to keep all FETs off, and
+        // the demultiplexers in the most harmless or lowest power consumption 
+        // state possible
+        // TODO if it does not in one case (especially FET), can not just toggle
+        // enable to get faster switching. will need to rethink
 
-        // TODO replace SR_NODELAY stuff w/ something like macro condensing both 
-        // calls?
-        #ifndef SR_NODELAY
-            delay(shiftreg_period_ms);
-        #endif
-        digitalWrite(rclk, LOW);
-        #ifndef SR_NODELAY
-            delay(shiftreg_period_ms);
-        #endif
-        digitalWrite(rclk, HIGH);
-        digitalWrite(srclr, LOW);
-        #ifndef SR_NODELAY
-            delay(shiftreg_period_ms);
-        #endif
-      }
-    }
+        /* Enables output of the two shock control shift registers, using their
+         * OE (output enable) pins, which are tied together on the PCB.
+         *
+         * Faster than the start_shock* functions.
+         *
+         * Does not change contents of registers.
+         */
+        void enable_shock() {
+            // on 74HC595, OE=LOW -> output enabled, OE=HIGH -> output disabled
+            // and optoisolators invert the logic
+            digitalWrite(fet_enbl, HIGH);
+        }
 
-    static inline void update_output() {
-        digitalWrite(rclk, HIGH);
-        #ifndef SR_NODELAY
-            delay(shiftreg_period_ms);
-        #endif
-        digitalWrite(rclk, LOW);
-        #ifndef SR_NODELAY
-            delay(shiftreg_period_ms);
-        #endif
-    }
+        /* Brings output of the two shock control shift registers LOW, using their
+         * OE (output enable) pins, which are tied together on the PCB.
+         *
+         * Faster than the stop_shock* functions.
+         *
+         * Does not change contents of registers.
+         */
+        void disable_shock() {
+            digitalWrite(fet_enbl, LOW);
+        }
 
-    // TODO if only really supporting a few AVR boards anyway, maybe just
-    // look up the relevant port manipulations to get rid of digitalWrites
+        // TODO auto-enable if measuring at all / disable if not? or do it each 
+        // measurement? check 4052 datasheet for time / other penalties involved 
+        // or for reasons to disable at all...
+        
+        /* TODO
+         */
+        void enable_inputs() {
+            // TODO check demuxes are actually disabled when that sr is 
+            // set this way
+            digitalWrite(demux_enbl, HIGH);
+        }
 
-    // TODO TODO consider grouping pins on shield st port manipulations can switch
-    // pins that generally / always change state together at the same time
+        /* TODO
+         */
+        void disable_inputs() {
+            digitalWrite(demux_enbl, LOW);
+        }
 
-    // takes HIGH (1) or LOW (0) as input (w/ way i had started implementing 
-    // BYPASS_ISOLATION, this would not necessarily be the case)
-    static inline void shift(uint8_t bit) {
-        // logic should be inverted IF USING optoisolator
-        digitalWrite(srclk, HIGH);
-        #ifndef SR_NODELAY
-            delay(shiftreg_period_ms);
-        #endif
-      
-        // TODO TODO currently handling of bypass_isolation breaks here. fix.
-        // TODO might prefer to treat in a way where the default execution
-        // does not require the negation (using inverting optoisolators). how?
-        digitalWrite(ser, !bit);
-        #ifndef SR_NODELAY
-            delay(shiftreg_period_ms);
-        #endif
-      
-        digitalWrite(srclk, LOW);
-        #ifndef SR_NODELAY
-            delay(shiftreg_period_ms);
-        #endif
-    }
+        // TODO  is there some way libraries allow compile time configuration?
+        static inline void clear_reg() {
+            // TODO consistent indentation. guidelines on in-function preprocessor 
+            // conditionals like these (re: formatting)?
+            digitalWrite(srclr, HIGH);
+            digitalWrite(rclk, HIGH);
 
-    // TODO way to warn if something can not be inlined?
-    // (so i could switch to macros, etc)
+            // TODO replace SR_NODELAY stuff w/ something like macro condensing both 
+            // calls?
+            #ifndef SR_NODELAY
+                delay(shiftreg_period_ms);
+            #endif
+            digitalWrite(rclk, LOW);
+            #ifndef SR_NODELAY
+                delay(shiftreg_period_ms);
+            #endif
+            digitalWrite(rclk, HIGH);
+            digitalWrite(srclr, LOW);
+            #ifndef SR_NODELAY
+                delay(shiftreg_period_ms);
+            #endif
+          }
+        }
 
-    // TODO i might like to have a shift_out(mask, n_bits), but seems it 
-    // would be hard for a compiler to inline? maybe not? (const n_bits)
-    // TODO some other style that would not require hidden state?
-    // (explicitly passing masks)
-    // TODO TODO gcc loop unrolling directive / test it
-    // https://stackoverflow.com/questions/4071690/\
-    // tell-gcc-to-specifically-unroll-a-loop
+        static inline void update_output() {
+            digitalWrite(rclk, HIGH);
+            #ifndef SR_NODELAY
+                delay(shiftreg_period_ms);
+            #endif
+            digitalWrite(rclk, LOW);
+            #ifndef SR_NODELAY
+                delay(shiftreg_period_ms);
+            #endif
+        }
 
-    /* Update shift register bits to match [fet/demux]_states and make the
-     * register outputs reflect the inputs they just received.
-     *
-     * Should (replace with "Does" after checking) not enable or disable output.
+        // TODO if only really supporting a few AVR boards anyway, maybe just
+        // look up the relevant port manipulations to get rid of digitalWrites
+
+        // TODO TODO consider grouping pins on shield st port manipulations can switch
+        // pins that generally / always change state together at the same time
+
+        // takes HIGH (1) or LOW (0) as input (w/ way i had started implementing 
+        // BYPASS_ISOLATION, this would not necessarily be the case)
+        static inline void shift(uint8_t bit) {
+            // logic should be inverted IF USING optoisolator
+            digitalWrite(srclk, HIGH);
+            #ifndef SR_NODELAY
+                delay(shiftreg_period_ms);
+            #endif
+          
+            // TODO TODO currently handling of bypass_isolation breaks here. fix.
+            // TODO might prefer to treat in a way where the default execution
+            // does not require the negation (using inverting optoisolators). how?
+            digitalWrite(ser, !bit);
+            #ifndef SR_NODELAY
+                delay(shiftreg_period_ms);
+            #endif
+          
+            digitalWrite(srclk, LOW);
+            #ifndef SR_NODELAY
+                delay(shiftreg_period_ms);
+            #endif
+        }
+
+        // TODO way to warn if something can not be inlined?
+        // (so i could switch to macros, etc)
+
+        // TODO i might like to have a shift_out(mask, n_bits), but seems it 
+        // would be hard for a compiler to inline? maybe not? (const n_bits)
+        // TODO some other style that would not require hidden state?
+        // (explicitly passing masks)
+        // TODO TODO gcc loop unrolling directive / test it
+        // https://stackoverflow.com/questions/4071690/
+        // tell-gcc-to-specifically-unroll-a-loop
+
+        /* Update shift register bits to match [fet/demux]_states and make the
+         * register outputs reflect the inputs they just received.
+         *
+         * Should (replace with "Does" after checking) not enable or disable output.
+         */
+        static inline void update_registers() {
+            // shift all bits to registers ***in reverse order*** (well... demux...)
+            // TODO actually... check this order is correct. especially for demux flags.
+            // if forward order is more readily unrolled, store state in reverse?
+            for (uint8_t i=0; i<demux_bits; i++) {
+                shift((demux_states >> i) & 1);
+            }
+
+            // TODO TODO > 0 or >= 0? test!!
+            for (uint8_t i = (fet_bits - 1); i >= 0; fet_bits; i--) {
+                // TODO i assume using more space (8 bit type per channel)
+                // would make this part faster? at expense of maybe setting bits in
+                // local variable slower? (even out?)
+                // TODO 1 is uchar?
+                shift((fet_states >> i) & 1);
+            }
+
+            // assuming, for now, that there are no cases where I'd shift in new
+            // bits, without immediately wanting to update the output
+            // (enable controlled separately (right?))
+            update_output();
+        }
+    #endif
+
+    /* Takes a 4-bit channel number (in an 8-bit type, at least on 8-bit AVRs),
+     * sets the variable demux_states appropriately, and then shifts this
+     * variable and the fet_states back to the registers to put all of the
+     * demux select lines in the correct states to select the desired input 
+     * channel.
      */
-    static inline void update_registers() {
-        // shift all bits to registers ***in reverse order*** (well... demux...)
-        // TODO actually... check this order is correct. especially for demux flags.
-        // if forward order is more readily unrolled, store state in reverse?
-        for (uint8_t i=0; i<demux_bits; i++) {
-            shift((demux_states >> i) & 1);
-        }
-
-        // TODO TODO > 0 or >= 0? test!!
-        for (uint8_t i = (fet_bits - 1); i >= 0; fet_bits; i--) {
-            // TODO i assume using more space (8 bit type per channel)
-            // would make this part faster? at expense of maybe setting bits in
-            // local variable slower? (even out?)
-            // TODO 1 is uchar?
-            shift((fet_states >> i) & 1);
-        }
-
-        // assuming, for now, that there are no cases where I'd shift in new
-        // bits, without immediately wanting to update the output
-        // (enable controlled separately (right?))
-        update_output();
-    }
-
     static inline void select_input_channel(channel_t channel) {
         // need to shift in starting with last value (QD; optional_demux_enable)
         // optional_demux_enable -> chan_select_B -> chan_select_A ->
@@ -237,7 +305,14 @@ namespace msk {
         // and numbering, as long as demux_enable goes in right place?
         // TODO if i want to change back to forward order, demux_enable 
         // should be 0, i think
-        demux_states |= 1 << demux_enable_bit;
+	
+	// TODO TODO TODO why is this not causing a Werror conversion err?
+	// types:
+	// demux_states - uint8_t
+	// 1 - int?
+	// demux_enable_bit - (static const) uint8_t
+        demux_states |= ((uint8_t) 1) << demux_enable_bit;
+	//demux_states
       
         // TODO update note on numbering
         // "channels" are numbered from 1 to 8, so odd numbers come first
@@ -248,45 +323,58 @@ namespace msk {
         //shift(1 - c % 2);
 
         // TODO TODO maybe redo numbering s.t. requires minimal bitwise operations
-        // to set demux_states
+        // to set demux_states (keep in mind FET and demux numbering needs to match.
+	// maybe matching is would be the most important constraint?)
         // TODO i suppose if all 4(-6) bit channel numbers are valid, i could just
         // directly translate those to demux_states, and see what that numbering is?
 
-        demux_states |= channel << lowest_demux_state_bit;
+	// types:
+	// demux_states - uint8_t
+	// channel - channel_t (uint8_t)
+	// lowest_demux_state_bit - (static const) uint8_t
+	// TODO so why is any part of this operation 'int'?
+	// error: conversion to ‘uint8_t {aka unsigned char}’ from ‘int’ may 
+	// alter its value [-Werror=conversion]
+        //demux_states |= channel << lowest_demux_state_bit;
+        demux_states = (uint8_t) (demux_states | channel << lowest_demux_state_bit);
 
         // update values in shift registers
         // we only changed bits on last one, but they are all daisy chained.
-        update_registers();
+	#if defined(ARDUINO)
+            update_registers();
+	#endif
     }
 
     // TODO might want to move this to the top if i don't end up needing other functions
     // only declared in here
     void init() {
-        // TODO maybe check if we are using certain boardtypes w/ Arduino
-        // defines to use port manipulation optimizations?
-        pinMode(ser, OUTPUT);
-        pinMode(srclk, OUTPUT);
-        pinMode(srclr, OUTPUT);
-        pinMode(rclk, OUTPUT);
-        pinMode(fet_enbl, OUTPUT);
-        pinMode(demux_enbl, OUTPUT);
+	#if defined(ARDUINO)
+            // TODO maybe check if we are using certain boardtypes w/ Arduino
+            // defines to use port manipulation optimizations?
+            pinMode(ser, OUTPUT);
+            pinMode(srclk, OUTPUT);
+            pinMode(srclr, OUTPUT);
+            pinMode(rclk, OUTPUT);
+            pinMode(fet_enbl, OUTPUT);
+            pinMode(demux_enbl, OUTPUT);
 
-        // TODO make a wrapper function that sets a pin to output and sets initial 
-        // state? maybe a macro? (would make sure all initial states are software
-        // defined)
+            // TODO make a wrapper function that sets a pin to output and sets initial 
+            // state? maybe a macro? (would make sure all initial states are software
+            // defined)
 
-        // TODO TODO should the circuit be designed such that all inputs low is a valid 
-        // initial state? (probably w/ inverters and such)
-        digitalWrite(ser, HIGH);
-        digitalWrite(srclk, HIGH);
-        // sending this s.r. pin LOW clears the bits
-        digitalWrite(srclr, LOW);
-        digitalWrite(rclk, HIGH);
+            // TODO TODO should the circuit be designed such that all inputs low is a valid 
+            // initial state? (probably w/ inverters and such)
+            digitalWrite(ser, HIGH);
+            digitalWrite(srclk, HIGH);
+            // sending this s.r. pin LOW clears the bits
+            digitalWrite(srclr, LOW);
+            digitalWrite(rclk, HIGH);
 
-        // LOW on output enable enables the shift register
-        // and the isolation inverts the logic
-        digitalWrite(fet_enbl, HIGH);
-        digitalWrite(demux_enbl, HIGH);
+            // LOW on output enable enables the shift register
+            // and the isolation inverts the logic
+            digitalWrite(fet_enbl, HIGH);
+            digitalWrite(demux_enbl, HIGH);
+	#endif
 
         // TODO TODO do SRs lose state upon reboot (for sure)? explicitly clear?
         fet_states = 0;
@@ -312,7 +400,26 @@ namespace msk {
         // get the bit that corresponds to this channel number
         // and OR in the bit for this channel number (make it a 1 if it wasn't)
         // to the bit-vector holding state of the two stimulus shift registers
-        fet_states |= 1 << channel;
+	// TODO fix Werror conversion error / warning
+	// "to ‘msk::fet_mask_t {aka short unsigned int}’ from ‘int’"
+	// types:
+	// fet_states - fet_mask_t (uint16_t)
+	// 1 - (int? what is 0x1? way to get a char literal?)
+	// channel - channel_t (uint8_t)
+        //fet_states |= (uint16_t) (((uint16_t) 1) << ((uint16_t) channel));
+	//
+	// TODO no errors here, so does that mean that (uint16_t | uint16_t) 
+	// is not uint16_t?
+	// TODO TODO the question now is just whether the error *was* actually 
+	// something to worry about, and this is just masking it.
+	// is there a chance of this not being what I'd expect?
+        fet_states = (uint16_t) (fet_states | (((uint16_t) 1) << channel));
+	//
+	// neither of these lines cause a Werror conversion err:
+	// fet_states = (uint16_t) fet_states;
+	// fet_states = (uint16_t) (((uint16_t) 1) << channel);
+        //fet_states = (uint16_t) fet_states | (uint16_t) (((uint16_t) 1) << channel);
+	// TODO so this is because | operands are promoted to "int"? 
         
         // TODO does actually passing the parameter make things more 
         // complicated to optimize? (to shift_out) might save on code size
@@ -320,7 +427,9 @@ namespace msk {
         
         // shift all the bits out (from fet_states to registers) again
         // including (and starting with) the 5 measurement-related bits
-        update_registers();
+	#if defined(ARDUINO)
+            update_registers();
+	#endif
     }
 
     /* TODO 
@@ -328,7 +437,9 @@ namespace msk {
      */
     void stop_shock(channel_t channel) {
         fet_states &= 0 << channel;
-        update_registers();
+	#if defined(ARDUINO)
+            update_registers();
+	#endif
     }
 
     // just assuming for now there may be cases where someone wants to actually
@@ -341,7 +452,9 @@ namespace msk {
      */
     void start_all_shock() {
         fet_states = all_fets;
-        update_registers();
+	#if defined(ARDUINO)
+            update_registers();
+	#endif
     }
 
     /* Sets bits such that (even) when the FET shift registers are enabled, NO
@@ -349,7 +462,9 @@ namespace msk {
      */
     void stop_all_shock() {
         fet_states = no_fets;
-        update_registers();
+	#if defined(ARDUINO)
+            update_registers();
+	#endif
     }
 
     /* Sets bits such that (only) when the FET shift registers are enabled, 
@@ -358,8 +473,10 @@ namespace msk {
      * Does not change voltage at any of the right channels.
      */
     void start_shock_left() {
-        fet_states |= left_fets;
-        update_registers();
+        fet_states |= all_left;
+	#if defined(ARDUINO)
+            update_registers();
+	#endif
     }
 
     /* Sets bits such that (even) when the FET shift registers are enabled, the 
@@ -368,8 +485,10 @@ namespace msk {
      * Does not change voltage at any of the right channels.
      */
     void stop_shock_left() {
-        fet_states &= right_fets;
-        update_registers();
+        fet_states &= all_right;
+	#if defined(ARDUINO)
+            update_registers();
+	#endif
     }
 
     /* Sets bits such that (only) when the FET shift registers are enabled, 
@@ -378,8 +497,10 @@ namespace msk {
      * Does not change voltage at any of the left channels.
      */
     void start_shock_right() {
-        fet_states |= right_fets;
-        update_registers();
+        fet_states |= all_right;
+	#if defined(ARDUINO)
+            update_registers();
+	#endif
     }
 
     /* Sets bits such that (even) when the FET shift registers are enabled, the 
@@ -388,57 +509,10 @@ namespace msk {
      * Does not change voltage at any of the left channels.
      */
     void stop_shock_right() {
-        fet_states &= left_fets;
-        update_registers();
-    }
-
-    // TODO TODO TODO make sure "disabling" the shift registers (which should
-    // put the pins in a HIGH IMPEDANCE state) works to keep all FETs off, and
-    // the demultiplexers in the most harmless or lowest power consumption 
-    // state possible
-    // TODO if it does not in one case (especially FET), can not just toggle
-    // enable to get faster switching. will need to rethink
-
-    /* Enables output of the two shock control shift registers, using their
-     * OE (output enable) pins, which are tied together on the PCB.
-     *
-     * Faster than the start_shock* functions.
-     *
-     * Does not change contents of registers.
-     */
-    void enable_shock() {
-        // on 74HC595, OE=LOW -> output enabled, OE=HIGH -> output disabled
-        // and optoisolators invert the logic
-        digitalWrite(fet_enbl, HIGH);
-    }
-
-    /* Brings output of the two shock control shift registers LOW, using their
-     * OE (output enable) pins, which are tied together on the PCB.
-     *
-     * Faster than the stop_shock* functions.
-     *
-     * Does not change contents of registers.
-     */
-    void disable_shock() {
-        digitalWrite(fet_enbl, LOW);
-    }
-
-    // TODO auto-enable if measuring at all / disable if not? or do it each 
-    // measurement? check 4052 datasheet for time / other penalties involved 
-    // or for reasons to disable at all...
-    
-    /* TODO
-     */
-    void enable_inputs() {
-        // TODO check demuxes are actually disabled when that sr is 
-        // set this way
-        digitalWrite(demux_enbl, HIGH);
-    }
-
-    /* TODO
-     */
-    void disable_inputs() {
-        digitalWrite(demux_enbl, LOW);
+        fet_states &= all_left;
+	#if defined(ARDUINO)
+            update_registers();
+	#endif
     }
 
     /* Returns a measurement_t (>= measurement_bits bits in type) read
@@ -448,7 +522,18 @@ namespace msk {
      */
     measurement_t measure(channel_t channel) {
         measurement_t measurement;
-        measurement = analogRead(current_signal);
+        select_input_channel(channel);
+	// TODO how to replace things like analogRead in a good way for testing?
+	// would kind of like to replace it w/ boundary cases + expected cases
+	// but I'd probably have to refactor?
+	#ifdef ARDUINO
+            measurement = analogRead(current_signal);
+        #else
+	    //  10 bits: 0011 1111 1111
+	    // hex (Ox):    3    F    F
+	    // (decimal 1023 = 2^10-1)
+	    measurement = 0x3FF;
+	#endif
         return measurement;
     }
 
@@ -458,6 +543,7 @@ namespace msk {
     /* (like this)
     channel_measurement_t measure(channel_t channel) {
         channel_measurement_t ret;
+        select_input_channel(channel);
         // TODO need to set to zero? just a waste of a cycle?
         ret |= channel << 
 
@@ -566,18 +652,39 @@ namespace msk {
         // TODO need to explicitly zero this first?
         channel_measurement_t channel_measurement;
         measurement_t measurement;
+	// I would have thought it was zero-initialized by default, but the
+	// compiler was complaining as if it wasn't.
+	channel_measurement = 0;
         channel_t channel = to_measure[curr_channel_index];
 
+	// TODO maybe break out these two lines w/ preprocessor so this 
+	// function can be unit tested w/ a few different values of the 
+	// measurement?
+	
         // switch the analog demultiplexers to the channel
         // TODO and enable them? do i ever want to disable them?
         select_input_channel(channel);
 
         // TODO directly call AVR functions?
-        measurement = analogRead(current_signal);
+	#ifdef ARDUINO
+            measurement = analogRead(current_signal);
+        #else
+	    // 1023 (max of 10 bit range)
+	    measurement = 0x3FF;
+        #endif
 
         // shift channel up to it's position in the bits of the number
         // to be returned, and OR it in
-        channel_measurement |= channel << measurement_bits;
+	// TODO fix Werror=conversion error
+	// conversion to ‘msk::channel_measurement_t {aka short unsigned int}’ 
+	// from ‘int’
+	// types:
+	// channel_measurement - channel_measurement_t (uint16_t)
+	// channel - channel_t (uint8_t)
+	// measurement_bits - uint8_t
+        //channel_measurement |= ((channel_measurement_t) channel) << measurement_bits;
+        channel_measurement = (channel_measurement_t) (channel_measurement | \
+	    ((channel_measurement_t) channel) << measurement_bits);
 
         // If >10 bits, and you had not made other modifications to accomodate
         // that, you could shift measurement right two bits to get 10 most
@@ -604,4 +711,3 @@ namespace msk {
     // TODO is it worth a "measure_all" function?
     // return type might be more complicated...
 }
-#endif

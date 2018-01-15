@@ -1,0 +1,2 @@
+
+automation to checkout submodule as necessary
