@@ -25,12 +25,11 @@ will_be_measured	KEYWORD2
 start_measurement	KEYWORD2
 stop_measurement	KEYWORD2
 
-# how to deal with namespace? separate
-# keyword?
-
 #######################################
 # Constants (LITERAL1)
 #######################################
+msk	KEYWORD2
+
 ser	LITERAL1
 srclk	LITERAL1
 srclr	LITERAL1

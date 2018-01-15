@@ -351,6 +351,9 @@ namespace msk {
         demux_states = (uint8_t) (demux_states | \
             channel << lowest_demux_state_bit);
 
+        // TODO test these states are set correctly (at least that
+        // demux_enable_bit doesn't clobber any of the other bits)
+
         // update values in shift registers
         // we only changed bits on last one, but they are all daisy chained.
         #if defined(ARDUINO)
