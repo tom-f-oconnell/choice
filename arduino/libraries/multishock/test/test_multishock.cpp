@@ -62,6 +62,9 @@ TEST_F(MSKTest,  NoChannelWhenNothingQueued) {
         m_mask = (channel_measurement_t) (m_mask |
             ((channel_measurement_t) 1) << i);
     }
+    // TODO replace other references to m_mask with measurement_mask if this
+    // works
+    ASSERT_EQ(m_mask, measurement_mask);
 
     for (int i=0; i<num_channels; i++) {
         cm = measure();
@@ -137,8 +140,8 @@ TEST_F(MSKTest, MeasureWithQueue) {
     ASSERT_EQ(c_mask & m_mask, 0) << \
         "Channel and measurement masks overlapped.\n";
 
-    // TODO make convenience functions for recovering channel and measurement,
-    // and test those (though I might just pass to python.)
+    // TODO TODO make convenience functions for recovering channel and
+    // measurement, and test those (though I might just pass to python.)
     // TODO anyway to do mixed python and cpp unit tests?
    
     // bitsets are formatted below with this assumption

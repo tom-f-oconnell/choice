@@ -29,6 +29,13 @@
 #ifndef SHOCK_HPP
 #define SHOCK_HPP
 
+// Because this seemed both defined and undefined in Arduino build process
+// Not sure how I could be double including with the gaurd...
+#ifndef EXPOSE_TESTING_FUNCS
+// 0=false, 1=true
+#define EXPOSE_TESTING_FUNCS 0
+#endif
+
 // this whole if statement just gets fixed bit-length type definitions
 #if defined(ARDUINO)
 #if ARDUINO >= 100
@@ -68,7 +75,7 @@ namespace msk {
     *
     */
     // TODO does the user of the library actually need / want these?
-    // maybe move to .c?
+    // maybe move to .cpp?
     // TODO more clear to suffix w/ "pin"?
     const uint8_t ser        = 4;
     const uint8_t srclk      = 5;
@@ -131,6 +138,7 @@ namespace msk {
     // allow re-defining somehow?
     const uint8_t measurement_bits = 10;
     const uint8_t channel_bits = 6;
+    const channel_measurement_t measurement_mask = 0x3FF;
 
     void init();
 
@@ -167,6 +175,8 @@ namespace msk {
     // channel_measurement_t? won't i essentially have to pack it that way for
     // transport to the computer anyway? (i suppose if everything is
     // transactional, maybe not...)
+    // If I want this library to work in pure C contexts, I will change this
+    // name to measure_now (but we are using namespaces, etc, now anyway).
     measurement_t measure(channel_t channel);
 
     // TODO below / above / both? both, but prohibit mixing somehow?
@@ -178,13 +188,47 @@ namespace msk {
     // measure_next?
     channel_measurement_t measure();
 
-    // TODO worth packing together 10 bit analogRead return and only sending 
-    // multiple 
-    // at once? see Ben Krasnow "ping-pong" buffer code? (*host* word length?)
-    // or maybe lesser # of bits for faster acquisition, and then it might 
-    // make more sense?
+    channel_t extract_channel(channel_measurement_t cm);
+    measurement_t extract_measurement(channel_measurement_t cm);
+
+    // TODO worth packing together 10 bit analogRead return and only sending
+    // multiple at once? see Ben Krasnow "ping-pong" buffer code? (*host* word
+    // length?)
+    // or maybe configure ADC for reading lesser # of bits for faster
+    // acquisition, and then it might make more sense?
     // (I think I'll leave sending data to the computer to the user?)
     // TODO maybe make a utility function to pack into another type, for more
     // efficient transport? + put in an example, include example Python code
+  
+
+    // TODO the face that both of these preprocessor branches were run seems
+    // to suggest that Arduino is doing something weird, or I'm accidentally
+    // somehow double including...
+
+    // there might be a better way to do this. this define is intended to be set
+    // just before #including this header file such that some select static
+    // functions can be made non-static, for testing.
+    #if defined(EXPOSE_TESTING_FUNCS) and EXPOSE_TESTING_FUNCS == 1
+        // TODO get rid of any I don't need
+        void clear_reg();
+        void update_output();
+        void shift(uint8_t bit);
+        // probably don't need
+        // shifts out internal states, then calls update_output
+        //void update_registers();
+        void select_input_channel(channel_t channel);
+        #warning "defined 1"
+        //#error "Testing funcs exposed"
+    #endif
+    #if defined(EXPOSE_TESTING_FUNCS) and EXPOSE_TESTING_FUNCS == 0
+        // TODO how the hell were both the ifdef and else conditions happening?
+        // EXPOSE_TESTING_FUNCS must be defined one this this is included and
+        // not defined another... but the gaurds? how is this processed twice?
+        #warning "defined 0"
+        #error "Testing funcs not exposed"
+    #endif
+    #ifndef EXPOSE_TESTING_FUNCS
+        #warning "not defined"
+    #endif
 }
 #endif

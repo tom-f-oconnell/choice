@@ -185,7 +185,13 @@ namespace msk {
         // TODO or try out ArduinoUnit or something like that + test rig maybe
         // on a permanent hardware test unit
 
-        static inline void clear_reg() {
+        // TODO maybe at least put this in a macro if I am not going to find a
+        // better solution
+        #ifdef EXPOSE_TESTING_FUNCS
+            inline void clear_reg() {
+        #else
+            static inline void clear_reg() {
+        #endif
             // TODO consistent indentation. guidelines on in-function
             // preprocessor conditionals like these (re: formatting)?
             digitalWrite(srclr, HIGH);
@@ -207,7 +213,11 @@ namespace msk {
             #endif
         }
 
-        static inline void update_output() {
+        #ifdef EXPOSE_TESTING_FUNCS
+            inline void update_output() {
+        #else
+            static inline void update_output() {
+        #endif
             digitalWrite(rclk, HIGH);
             #ifndef SR_NODELAY
                 delay(shiftreg_period_ms);
@@ -227,7 +237,11 @@ namespace msk {
 
         // takes HIGH (1) or LOW (0) as input (w/ way i had started implementing
         // BYPASS_ISOLATION, this would not necessarily be the case)
-        static inline void shift(uint8_t bit) {
+        #ifdef EXPOSE_TESTING_FUNCS
+            inline void shift(uint8_t bit) {
+        #else
+            static inline void shift(uint8_t bit) {
+        #endif
             // logic should be inverted IF USING optoisolator
             digitalWrite(srclk, HIGH);
             #ifndef SR_NODELAY
@@ -266,7 +280,11 @@ namespace msk {
          * Should (replace with "Does" after checking) not enable or disable
          * output.
          */
-        static inline void update_registers() {
+        #ifdef EXPOSE_TESTING_FUNCS
+            inline void update_registers() {
+        #else
+            static inline void update_registers() {
+        #endif
             // shift all bits to registers ***in reverse order*** (well...
             // demux...)
             // TODO actually... check this order is correct. especially for
@@ -299,7 +317,11 @@ namespace msk {
      * demux select lines in the correct states to select the desired input 
      * channel.
      */
-    static inline void select_input_channel(channel_t channel) {
+    #ifdef EXPOSE_TESTING_FUNCS
+        inline void select_input_channel(channel_t channel) {
+    #else
+        static inline void select_input_channel(channel_t channel) {
+    #endif
         // need to shift in starting with last value (QD; optional_demux_enable)
         // optional_demux_enable -> chan_select_B -> chan_select_A ->
         // demux_select_B -> demux_select_A
@@ -799,4 +821,24 @@ namespace msk {
 
     // TODO is it worth a "measure_all" function?
     // return type would be more complicated...
+  
+    // TODO implications of inline w/o static?
+    // TODO unit test
+    /* Given an integer type with the channel_bits most significant bits
+     * holding the channel, and the measurement_bits least significant bits
+     * holding an ADC reading (or a placeholder of 0x3FF), returns the channel.
+     */
+    inline channel_t extract_channel(channel_measurement_t cm) {
+        return (channel_t) (cm >> measurement_bits);
+    }
+
+    // TODO unit test
+    /* Given an integer type with the channel_bits most significant bits
+     * holding the channel, and the measurement_bits least significant bits
+     * holding an ADC reading (or a placeholder of 0x3FF), returns the
+     * measurement.
+     */
+    inline measurement_t extract_measurement(channel_measurement_t cm) {
+        return (measurement_t) (cm & measurement_mask);
+    }
 }
