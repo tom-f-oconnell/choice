@@ -7,7 +7,6 @@
 
 // this define should reconfigure the library to allow calling some extra
 // functions, including select_input_channel
-#define EXPOSE_TESTING_FUNCS 1
 #include <multishock.hpp>
 
 // hacky, to get methods that otherwise we would not have access to, for testing
@@ -28,35 +27,53 @@ void setup() {
   // TODO need to throw away any analogReads?
 }
 
+// TODO TODO TODO before adding the start / shock code, why was one fet (16)
+// generally always on?
+
 void loop() {
   const unsigned int per_channel_ms = 5000;
-  // play around with?
+  // test other values
   const unsigned int per_fet_ms = 150;
-  unsigned int measurement;
-
-  // TODO sequentially try measureing all channels, toggling all channels
-  // and then toggling only the particular channel, or maybe all?
-
-  // TODO maybe try toggling all, as that code may be harder to screw up
-  // than bit shifting for individual channels
+  unsigned int measurement_sum = 0;
+  unsigned int reading_count = 0;
+  unsigned long until;
 
   for (unsigned char c_measure=0; c_measure<msk::num_channels; c_measure++) {
     Serial.print("selecting channel ");
     Serial.print(c_measure);
     Serial.println(" to measure");
-    msk::select_input_channel((msk::channel_t) c_measure);
+    msk::_select_input_channel((msk::channel_t) c_measure);
 
     // try switching each shock delivery MOSFET, one at a time
     // and measure the output of the multiplexers
     for (unsigned char c_fet=0; c_fet<msk::num_channels; c_fet++) {
-      // TODO average the values during this period?
-      // might be easier to take a fixed number of measurements, in that case
-      measurement = analogRead(msk::current_signal);
-      Serial.println(measurement);
-      // TODO or just loop, taking measurements until per_fet_ms has elapsed?
-      delay(per_fet_ms);
+      // turn on the fet with the current index (as-if to shock that channel)
+      msk::start_shock(c_fet);
+      // why does the whole exchange take so long? is it really taking a few
+      // seconds to print stuff? other calls?
+      // TODO if it is averaging ~1353 readings in per_fet_ms
+      // why does the whole exchange take so long? is it really taking a few
+      // seconds to print stuff? other calls?
+
+      reading_count = 0;
+      until = millis() + per_fet_ms;
+      while (millis() <= until) {
+        measurement_sum += analogRead(msk::current_signal);
+        reading_count++;
+      }
+      Serial.print("fet ");
+      Serial.print(c_fet);
+      Serial.print(": average of ");
+      Serial.print(reading_count);
+      Serial.print(" readings: ");
+      Serial.println(((double) measurement_sum) / reading_count);
+
+      // TODO it looks like there might be channel specific offset?
+      // zero this in software setup in advance?
+
+      // turn it back off
+      msk::stop_shock(c_fet);
     }
     delay(per_channel_ms);
   }
-
 }

@@ -29,13 +29,6 @@
 #ifndef SHOCK_HPP
 #define SHOCK_HPP
 
-// Because this seemed both defined and undefined in Arduino build process
-// Not sure how I could be double including with the gaurd...
-#ifndef EXPOSE_TESTING_FUNCS
-// 0=false, 1=true
-#define EXPOSE_TESTING_FUNCS 0
-#endif
-
 // this whole if statement just gets fixed bit-length type definitions
 #if defined(ARDUINO)
 #if ARDUINO >= 100
@@ -208,27 +201,19 @@ namespace msk {
     // there might be a better way to do this. this define is intended to be set
     // just before #including this header file such that some select static
     // functions can be made non-static, for testing.
-    #if defined(EXPOSE_TESTING_FUNCS) and EXPOSE_TESTING_FUNCS == 1
-        // TODO get rid of any I don't need
-        void clear_reg();
-        void update_output();
-        void shift(uint8_t bit);
-        // probably don't need
-        // shifts out internal states, then calls update_output
-        //void update_registers();
-        void select_input_channel(channel_t channel);
-        #warning "defined 1"
-        //#error "Testing funcs exposed"
-    #endif
-    #if defined(EXPOSE_TESTING_FUNCS) and EXPOSE_TESTING_FUNCS == 0
-        // TODO how the hell were both the ifdef and else conditions happening?
-        // EXPOSE_TESTING_FUNCS must be defined one this this is included and
-        // not defined another... but the gaurds? how is this processed twice?
-        #warning "defined 0"
-        #error "Testing funcs not exposed"
-    #endif
-    #ifndef EXPOSE_TESTING_FUNCS
-        #warning "not defined"
-    #endif
+
+    // ONLY TO BE USED FOR TESTING PURPOSES.
+    // DO NOT CALL IN EXPERIMENT / ACQUISITION CODE!!
+    // TODO wrap the tests that use these in things compiled within the library?
+    // and then just expose the full tests? alternative? (want Arduino to
+    // compile library with different options..., but seems I can't do this
+    // through IDE)
+    void _clear_reg();
+    void _update_output();
+    void _shift(uint8_t bit);
+    void _select_input_channel(channel_t channel);
+
+    uint16_t _get_fet_states();
+    uint8_t _get_demux_states();
 }
 #endif

@@ -20,6 +20,8 @@ measure voltage -> test / determine switch state <-> fet bit mapping)
 -might want to move enable bit to end of s.r., or 7th bit, to allow for same
  firmware for boards with 6 bits of channels (would make converting to
  demux_states (as-is, 5 bits) more tricky though...)
+
+-bring reset button up on to shield (optional population)
 ******
 
 decide whether to keep shield sch / footprint lib above, and then make sure

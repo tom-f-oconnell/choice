@@ -66,6 +66,8 @@
 
 #include "multishock.hpp"
 
+#define SR_NODELAY
+
 namespace msk {
     // TODO is there some way to indicate which compile time #define flags are
     // available without commenting them out like this?
@@ -104,6 +106,8 @@ namespace msk {
     static const uint8_t lowest_demux_state_bit = 1;
     static const uint8_t demux_enable_bit = 0;
 
+    // TODO maybe get rid of? maybe hoist to header if i can't get rid of need
+    // for _get_<states> calls?
     // 16 bits
     static fet_mask_t fet_states;
     // 8 bits, the rightmost (? TODO) 5 of which are used
@@ -185,13 +189,7 @@ namespace msk {
         // TODO or try out ArduinoUnit or something like that + test rig maybe
         // on a permanent hardware test unit
 
-        // TODO maybe at least put this in a macro if I am not going to find a
-        // better solution
-        #ifdef EXPOSE_TESTING_FUNCS
-            inline void clear_reg() {
-        #else
-            static inline void clear_reg() {
-        #endif
+        inline void _clear_reg() {
             // TODO consistent indentation. guidelines on in-function
             // preprocessor conditionals like these (re: formatting)?
             digitalWrite(srclr, HIGH);
@@ -213,11 +211,7 @@ namespace msk {
             #endif
         }
 
-        #ifdef EXPOSE_TESTING_FUNCS
-            inline void update_output() {
-        #else
-            static inline void update_output() {
-        #endif
+        inline void _update_output() {
             digitalWrite(rclk, HIGH);
             #ifndef SR_NODELAY
                 delay(shiftreg_period_ms);
@@ -237,11 +231,7 @@ namespace msk {
 
         // takes HIGH (1) or LOW (0) as input (w/ way i had started implementing
         // BYPASS_ISOLATION, this would not necessarily be the case)
-        #ifdef EXPOSE_TESTING_FUNCS
-            inline void shift(uint8_t bit) {
-        #else
-            static inline void shift(uint8_t bit) {
-        #endif
+        inline void _shift(uint8_t bit) {
             // logic should be inverted IF USING optoisolator
             digitalWrite(srclk, HIGH);
             #ifndef SR_NODELAY
@@ -280,34 +270,29 @@ namespace msk {
          * Should (replace with "Does" after checking) not enable or disable
          * output.
          */
-        #ifdef EXPOSE_TESTING_FUNCS
-            inline void update_registers() {
-        #else
-            static inline void update_registers() {
-        #endif
+        static inline void update_registers() {
             // shift all bits to registers ***in reverse order*** (well...
             // demux...)
             // TODO actually... check this order is correct. especially for
             // demux flags.  if forward order is more readily unrolled, store
             // state in reverse?
             for (uint8_t i=0; i<demux_bits; i++) {
-                shift((demux_states >> i) & 1);
+                _shift((demux_states >> i) & 1);
             }
 
-            // TODO TODO > 0 or >= 0? test!!
-            for (uint8_t i = (fet_bits - 1); i >= 0; i--) {
+            for (int8_t i = (fet_bits - 1); i >= 0; i--) {
                 // TODO i assume using more space (8 bit type per channel)
                 // would make this part faster? at expense of maybe setting bits
                 // in local variable slower? (even out?)
                 // TODO 1 is uchar? what about when compiled w/ avr-gcc w/ 8-bit
                 // target?
-                shift((fet_states >> i) & 1);
+                _shift((fet_states >> i) & 1);
             }
 
             // assuming, for now, that there are no cases where I'd shift in new
             // bits, without immediately wanting to update the output
             // (enable controlled separately (right?))
-            update_output();
+            _update_output();
         }
     #endif
 
@@ -317,11 +302,7 @@ namespace msk {
      * demux select lines in the correct states to select the desired input 
      * channel.
      */
-    #ifdef EXPOSE_TESTING_FUNCS
-        inline void select_input_channel(channel_t channel) {
-    #else
-        static inline void select_input_channel(channel_t channel) {
-    #endif
+    inline void _select_input_channel(channel_t channel) {
         // need to shift in starting with last value (QD; optional_demux_enable)
         // optional_demux_enable -> chan_select_B -> chan_select_A ->
         // demux_select_B -> demux_select_A
@@ -352,7 +333,7 @@ namespace msk {
         // TODO check this
         // TODO TODO is this trying to deal with the negation twice?
         // what was purpose of 1 - here?
-        //shift(1 - c % 2);
+        //_shift(1 - c % 2);
 
         // TODO TODO maybe redo numbering st requires minimal bitwise operations
         // to set demux_states (keep in mind FET and demux numbering needs to
@@ -451,7 +432,7 @@ namespace msk {
         // TODO TODO the question now is just whether the error *was* actually 
         // something to worry about, and this is just masking it.
         // is there a chance of this not being what I'd expect?
-        fet_states = (uint16_t) (fet_states | (((uint16_t) 1) << channel));
+        fet_states = (fet_mask_t) (fet_states | (((fet_mask_t) 1) << channel));
         //
         // neither of these lines cause a Werror conversion err:
         // fet_states = (uint16_t) fet_states;
@@ -562,7 +543,7 @@ namespace msk {
     measurement_t measure(channel_t channel) {
         // TODO maybe test if i get some hardware / simulator test setup going
         measurement_t measurement;
-        select_input_channel(channel);
+        _select_input_channel(channel);
         // TODO how to replace things like analogRead in a good way for testing?
         // would kind of like to replace it w/ boundary cases + expected cases
         // but I'd probably have to refactor?
@@ -583,7 +564,7 @@ namespace msk {
     /* (like this)
     channel_measurement_t measure(channel_t channel) {
         channel_measurement_t ret;
-        select_input_channel(channel);
+        _select_input_channel(channel);
         // TODO need to set to zero? just a waste of a cycle?
         ret |= channel << 
 
@@ -693,8 +674,6 @@ namespace msk {
      * See "channel_bits" and "measurement_bits" in "multishock.hpp".
      */
     channel_measurement_t measure() {
-        // TODO TODO i think i should implement some error value (for channel at
-        // least?) if there are no channels registered when this is called
         // TODO + unit test
         channel_measurement_t channel_measurement;
         measurement_t measurement;
@@ -746,7 +725,7 @@ namespace msk {
     
         // switch the analog demultiplexers to the channel
         // TODO and enable them? do i ever want to disable them?
-        select_input_channel(channel);
+        _select_input_channel(channel);
 
         // TODO directly call AVR functions?
         #ifdef ARDUINO
@@ -840,5 +819,13 @@ namespace msk {
      */
     inline measurement_t extract_measurement(channel_measurement_t cm) {
         return (measurement_t) (cm & measurement_mask);
+    }
+
+    uint16_t _get_fet_states() {
+        return fet_states;
+    }
+
+    uint8_t _get_demux_states() {
+        return demux_states;
     }
 }
