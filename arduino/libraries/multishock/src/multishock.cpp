@@ -103,8 +103,8 @@ namespace msk {
     static const uint8_t fet_bits = 16;
     static const uint8_t demux_bits = 5;
     // TODO include constants to help understanding purpose of each demux_bit
-    static const uint8_t lowest_demux_state_bit = 1;
-    static const uint8_t demux_enable_bit = 0;
+    static const uint8_t lowest_demux_state_bit = 0;
+    static const uint8_t demux_enable_bit = 4;
 
     // TODO maybe get rid of? maybe hoist to header if i can't get rid of need
     // for _get_<states> calls?
@@ -264,6 +264,8 @@ namespace msk {
         // https://stackoverflow.com/questions/4071690/
         // tell-gcc-to-specifically-unroll-a-loop
 
+        // TODO i feel like maybe I could have tested this if I had some way to
+        // mock shift?
         /* Update shift register bits to match [fet/demux]_states and make the
          * register outputs reflect the inputs they just received.
          *
@@ -271,12 +273,11 @@ namespace msk {
          * output.
          */
         static inline void update_registers() {
-            // shift all bits to registers ***in reverse order*** (well...
-            // demux...)
-            // TODO actually... check this order is correct. especially for
-            // demux flags.  if forward order is more readily unrolled, store
-            // state in reverse?
-            for (uint8_t i=0; i<demux_bits; i++) {
+            // TODO after other considerations, try to get it so they are
+            // shifted out in same order, for easier understanding of the states
+            // during debugging (if just printing w/ same function)
+
+            for (int8_t i = (demux_bits - 1); i >= 0; i--) {
                 _shift((demux_states >> i) & 1);
             }
 
@@ -303,12 +304,13 @@ namespace msk {
      * channel.
      */
     inline void _select_input_channel(channel_t channel) {
+        // TODO this note still accurate? might be better placed in
+        // update_registers, even if so
         // need to shift in starting with last value (QD; optional_demux_enable)
         // optional_demux_enable -> chan_select_B -> chan_select_A ->
         // demux_select_B -> demux_select_A
 
-        // TODO make sure order in here is correct...
-        // related to other note, maybe pick order that allows forward shifting
+        // TODO maybe pick order that allows forward shifting
         
         // will always want to enable analog switch output
         // TODO true? compile options for this / enable each time / enable when
@@ -316,24 +318,13 @@ namespace msk {
         // TODO if demux enable if is MSB (and all 5 bits are LS of this byte)
         // is that order consistent w/ fet_states? maybe just redefine those,
         // and numbering, as long as demux_enable goes in right place?
-        // TODO if i want to change back to forward order, demux_enable 
-        // should be 0, i think
     
-        // TODO TODO TODO why is this not causing a Werror conversion err?
-        // types:
-        // demux_states - uint8_t
-        // 1 - int?
-        // demux_enable_bit - (static const) uint8_t
-        demux_states |= ((uint8_t) 1) << demux_enable_bit;
-        //demux_states
+        // 0 because CD4556 is enabled when this pin is low
+        demux_states = ((uint8_t) 0) << demux_enable_bit;
       
         // TODO update note on numbering
         // "channels" are numbered from 1 to 8, so odd numbers come first
         // B (on CD4052B): 0 -> 0/1 (odd channels), 1 -> 2/3 (even channels)
-        // TODO check this
-        // TODO TODO is this trying to deal with the negation twice?
-        // what was purpose of 1 - here?
-        //_shift(1 - c % 2);
 
         // TODO TODO maybe redo numbering st requires minimal bitwise operations
         // to set demux_states (keep in mind FET and demux numbering needs to
@@ -342,17 +333,31 @@ namespace msk {
         // TODO i suppose if all 4(-6) bit channel numbers are valid, i could
         // just directly translate those to demux_states, and see what that
         // numbering is?
+        
+        // TODO TODO in future boards, wire select pins such that I can use the
+        // intuitive FET numbering and pass channel bits in directly without
+        // altering
 
-        // types:
-        // demux_states - uint8_t
-        // channel - channel_t (uint8_t)
-        // lowest_demux_state_bit - (static const) uint8_t
-        // TODO so why is any part of this operation 'int'?
-        // error: conversion to ‘uint8_t {aka unsigned char}’ from ‘int’ may 
-        // alter its value [-Werror=conversion]
-        //demux_states |= channel << lowest_demux_state_bit;
+        // first just take 2 MSB of channel and sent to 2 LSB of register
+        // to be consistent w/ significance <-> 595 pin number correspondence
+        // in FET registers (2 MSB = and with 0b1100.)
+        // checked w/ v0.1 board. does not need swapping.
+        demux_states = (uint8_t) (demux_states | (channel & 0xC) >> 2);
+       
+        // 2 LSB -> 2 MSB
+        // TODO see if needs swapped
+        demux_states = (uint8_t) (demux_states | (channel & 0x3) << 2);
+
+        // now need to mask those two bits (with 0b0011 = 3), 
+        // TODO determine whether we also need to switch 4052 bits
+        /*
         demux_states = (uint8_t) (demux_states | \
+            (channel & 0x8) << lowest_demux_state_bit);
+        */
+        // TODO 0b1100=12=0xC if reversed
+        /*demux_states = (uint8_t) (demux_states | \
             channel << lowest_demux_state_bit);
+        */
 
         // TODO test these states are set correctly (at least that
         // demux_enable_bit doesn't clobber any of the other bits)
@@ -674,20 +679,18 @@ namespace msk {
      * See "channel_bits" and "measurement_bits" in "multishock.hpp".
      */
     channel_measurement_t measure() {
-        // TODO + unit test
         channel_measurement_t channel_measurement;
         measurement_t measurement;
-        channel_measurement = 0;
 
         // we don't have any channels in the to_measure queue
         // return no_channel error code, w/ zero measurement
+        // TODO include in docs that measurement will be zero in this case
         if (next_free_index == 0) {
-            // TODO include unit / integration tests that detect this error
-            // status
-            channel_measurement = (channel_measurement_t) (channel_measurement \
-                | ((channel_measurement_t) no_channel) << measurement_bits);
+            channel_measurement = ((channel_measurement_t) no_channel) \
+                << measurement_bits;
             return channel_measurement;
         }
+        channel_measurement = 0;
 
         // I would have thought it was zero-initialized by default, but the
         // compiler was complaining as if it wasn't.

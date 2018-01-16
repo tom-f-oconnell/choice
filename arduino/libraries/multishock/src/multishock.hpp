@@ -105,11 +105,12 @@ namespace msk {
 
     const uint8_t num_channels = 16;
 
-    // this line requires channel_t to be at least 8 bits (more if signed)
-    // TODO -1 work without this limitation?
+    // TODO -1 work?
     // is using -1 to get the max value of an unsigned field portable? other?
     // (w/o include, ideally)
-    const channel_t no_channel = 255;
+    // 63 is the highest unsigned value storable in 6 bits
+    // (10 measurement bits => 6 left for channel)
+    const channel_t no_channel = 63;
 
     // Since I think wanting more than 2^4 channels (on one Arduino) is more 
     // likely than wanting better than 10 bits of resolution on the current 

@@ -21,11 +21,8 @@
  *
  */
 
-// TODO fet 0 seemed to not do anything, and fet 1 seemed to be fet 0
-// TODO when fet 1 switched off it turned on one of the demux bits!! fix!
-// fet 0 too it seems
-// I also so both that LED and one of FETs on (after fixing one possible
-// indexing error, increasing start of fet shift loop by 1) maybe before too?
+// TODO try to figure out what is causing some of the bits (maybe just demux?)
+// to go high (during init? reset?)
 
 // this define should reconfigure the library to allow calling some extra
 // functions, including select_input_channel

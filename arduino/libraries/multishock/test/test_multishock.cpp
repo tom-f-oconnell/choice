@@ -69,11 +69,14 @@ TEST_F(MSKTest,  NoChannelWhenNothingQueued) {
     for (int i=0; i<num_channels; i++) {
         cm = measure();
         m = (measurement_t) (cm & m_mask);
-        ASSERT_EQ(m, unsigned_ten_bit_max);
+        ASSERT_EQ(m, 0);
         c = (channel_t) (cm >> measurement_bits);
-        ASSERT_EQ(c, i);
+        ASSERT_EQ(c, no_channel);
     }
 }
+
+// TODO assert no_channel can fit in channel_bits
+// and measurement_mask in measurement_bits
 
 TEST_F(MSKTest, StartStopMeasurements) {
     for (int i=0; i<num_channels; i++) {
