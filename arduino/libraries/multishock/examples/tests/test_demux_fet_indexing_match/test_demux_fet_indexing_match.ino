@@ -5,8 +5,6 @@
 
 // TODO instructions for bypassing instr/iso amps for test purposes
 
-// this define should reconfigure the library to allow calling some extra
-// functions, including select_input_channel
 #include <multishock.hpp>
 
 // hacky, to get methods that otherwise we would not have access to, for testing
@@ -19,6 +17,8 @@
 // moving files to some temporary directory, and not moving the .cpp file?
 // maybe alternatives.
 
+#define ONLY_FIRST_AND_LAST
+
 void setup() {
   Serial.begin(9600);
   msk::init();
@@ -27,16 +27,16 @@ void setup() {
   // TODO need to throw away any analogReads?
 }
 
-// TODO TODO TODO before adding the start / shock code, why was one fet (16)
-// generally always on?
-
 void loop() {
-  const unsigned int per_channel_ms = 5000;
-  // test other values
-  const unsigned int per_fet_ms = 150;
+  const unsigned int per_fet_ms = 2000;
   unsigned int measurement_sum = 0;
   unsigned int reading_count = 0;
   unsigned long until;
+
+  // TODO why is 15 apparently working, but not 0? fet / measurement?
+
+  // things seem to get more noisy on 0? (w/ at least one of two fets selected?)
+  // noise could have just been something intermittent though
 
   for (unsigned char c_measure=0; c_measure<msk::num_channels; c_measure++) {
     Serial.print("selecting channel ");
@@ -47,6 +47,14 @@ void loop() {
     // try switching each shock delivery MOSFET, one at a time
     // and measure the output of the multiplexers
     for (unsigned char c_fet=0; c_fet<msk::num_channels; c_fet++) {
+      // I only constructed two channels at the start,
+      // and first I just wanted to test they were working
+      #ifdef ONLY_FIRST_AND_LAST
+        if (!(c_fet == 0 || c_fet == 15)) {
+          continue;
+        }
+      #endif
+
       // turn on the fet with the current index (as-if to shock that channel)
       msk::start_shock(c_fet);
       // why does the whole exchange take so long? is it really taking a few
@@ -74,6 +82,6 @@ void loop() {
       // turn it back off
       msk::stop_shock(c_fet);
     }
-    delay(per_channel_ms);
+    Serial.println("");
   }
 }
