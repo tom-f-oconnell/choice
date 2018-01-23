@@ -3,9 +3,6 @@
  * and also for each demux, to test 4556
  */
 
-// TODO does this file really add anything on top of indexing matchup sketch?
-// maybe simplicity alone is enough of a virtue
-
 #include <multishock.hpp>
 
 void setup() {
@@ -40,7 +37,7 @@ void print_bits(uint8_t bitvector) {
 }
 
 void loop() {
-  const unsigned int per_channel_ms = 2000;
+  const unsigned int per_channel_ms = 10000;
   unsigned char chip;
   unsigned char last_chip = -1;
 
@@ -72,9 +69,6 @@ void loop() {
     Serial.print("demux channel ");
     Serial.print(c_measure);
     Serial.print(" ");
-
-    // TODO maybe only print each on first applicable?
-    // conditional compile this part? other test file? just leave?
 
     msk::_select_input_channel(c_measure);
 

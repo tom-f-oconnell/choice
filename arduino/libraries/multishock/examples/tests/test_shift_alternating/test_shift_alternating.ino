@@ -10,22 +10,19 @@ const unsigned int interdigit_shift_period_ms = 500;
 void setup() {
   Serial.begin(9600);
   msk::init();
-  pinMode(LED_BUITLIN, OUTPUT);
+  pinMode(LED_BUILTIN, OUTPUT);
 }
 
 void loop() {
   Serial.println("shifting in a 1");
   digitalWrite(LED_BUILTIN, HIGH);
-  // TODO update to actually use library calls
-  // maybe use function names for these to hint they are internals and should
-  // not be used?
-  shift_in(1);
-  update_output();
+  msk::_shift(1);
+  msk::_update_output();
   delay(interdigit_shift_period_ms);
 
   Serial.println("shifting in a 0");
   digitalWrite(LED_BUILTIN, LOW);
-  shift_in(0);
-  update_output();
+  msk::_shift(0);
+  msk::_update_output();
   delay(interdigit_shift_period_ms);
 }

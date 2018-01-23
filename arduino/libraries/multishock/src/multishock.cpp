@@ -1,5 +1,5 @@
 /*
- * multishock.cpp - Wiring/Arduino library to control shock delivery and 
+ * multishock.cpp - C++/Arduino library to control shock delivery and 
  * measurement board. Can deliver up to 150v to 16 channels, and measure 
  * current through each of them.
  *
@@ -104,7 +104,18 @@ namespace msk {
     static const uint8_t demux_bits = 5;
     // TODO include constants to help understanding purpose of each demux_bit
     static const uint8_t lowest_demux_state_bit = 0;
+    // TODO define demux_enabled to 0? (want it so output of _get_demux_enable()
+    // is testable against the (potentially redefinable) constant, but also
+    // don't know if i want to expose the constant in the header...
+    // TODO test in separate set of tests w/ access to static variables?
+    // TODO way to couple EDA schematic and driver more tightly? like
+    // autogenerate bits for certain labels of same name?
+    static const uint8_t demux_select_A_bit = 0;
+    static const uint8_t demux_select_B_bit = 1;
+    static const uint8_t chan_select_A_bit = 2;
+    static const uint8_t chan_select_B_bit = 3;
     static const uint8_t demux_enable_bit = 4;
+    static const uint8_t demux_enabled = 0;
 
     // TODO maybe get rid of? maybe hoist to header if i can't get rid of need
     // for _get_<states> calls?
@@ -318,9 +329,10 @@ namespace msk {
         // TODO if demux enable if is MSB (and all 5 bits are LS of this byte)
         // is that order consistent w/ fet_states? maybe just redefine those,
         // and numbering, as long as demux_enable goes in right place?
-    
-        // 0 because CD4556 is enabled when this pin is low
-        demux_states = ((uint8_t) 0) << demux_enable_bit;
+   
+        // TODO maybe move this note up top or delete
+        // demux_enabled 0 because CD4556 is enabled when this pin is low
+        demux_states = ((uint8_t) demux_enabled) << demux_enable_bit;
       
         // TODO update note on numbering
         // "channels" are numbered from 1 to 8, so odd numbers come first
@@ -830,5 +842,26 @@ namespace msk {
 
     uint8_t _get_demux_states() {
         return demux_states;
+    }
+
+    // remove all but enable getters?
+    uint8_t _get_demux_select_A() {
+        return (demux_states >> demux_select_A_bit) & 1;
+    }
+
+    uint8_t _get_demux_select_B() {
+        return (demux_states >> demux_select_B_bit) & 1;
+    }
+
+    uint8_t _get_chan_select_A() {
+        return (demux_states >> chan_select_A_bit) & 1;
+    }
+
+    uint8_t _get_chan_select_B() {
+        return (demux_states >> chan_select_B_bit) & 1;
+    }
+
+    uint8_t _get_demux_enable() {
+        return (demux_states >> demux_enable_bit) & 1;
     }
 }

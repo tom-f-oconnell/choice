@@ -17,7 +17,7 @@
 // moving files to some temporary directory, and not moving the .cpp file?
 // maybe alternatives.
 
-#define ONLY_FIRST_AND_LAST
+//#define ONLY_FIRST_AND_LAST
 
 void setup() {
   Serial.begin(9600);
@@ -56,6 +56,8 @@ void loop() {
       #endif
 
       // turn on the fet with the current index (as-if to shock that channel)
+      Serial.print("fet ");
+      Serial.print(c_fet);
       msk::start_shock(c_fet);
       // why does the whole exchange take so long? is it really taking a few
       // seconds to print stuff? other calls?
@@ -69,18 +71,16 @@ void loop() {
         measurement_sum += analogRead(msk::current_signal);
         reading_count++;
       }
-      Serial.print("fet ");
-      Serial.print(c_fet);
-      Serial.print(": average of ");
-      Serial.print(reading_count);
-      Serial.print(" readings: ");
-      Serial.println(((double) measurement_sum) / reading_count);
-
       // TODO it looks like there might be channel specific offset?
       // zero this in software setup in advance?
 
       // turn it back off
       msk::stop_shock(c_fet);
+
+      Serial.print(": average of ");
+      Serial.print(reading_count);
+      Serial.print(" readings: ");
+      Serial.println(((double) measurement_sum) / reading_count);
     }
     Serial.println("");
   }

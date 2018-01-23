@@ -243,6 +243,143 @@ TEST_F(MSKTest, StartStopMeasureLast) {
     ASSERT_EQ(c, 0);
 }
 
+
+const uint8_t invalid_bit = 2;
+const uint8_t want_a = 0;
+const uint8_t want_b = 1;
+
+uint8_t channel_to_demux_select(channel_t channel, uint8_t a_or_b) {
+    uint8_t q;
+    // ranges taken from schematic (though schematic numbers channels from 1)
+    if (channel <= 3) {
+        // 4052 U3: 4556 Q0 LOW
+        q = 0;
+    } else if (channel >= 4 && channel <= 7) {
+        // 4052 U4: 4556 Q1 LOW
+        q = 1;
+    } else if (channel >= 8 && channel <= 11) {
+        // 4052 U5: 4556 Q2 LOW
+        q = 2;
+    } else if (channel >= 12 && channel <= 15) {
+        // 4052 U6: 4556 Q3 LOW
+        q = 3;
+    } else {
+        return invalid_bit;
+    }
+
+    uint8_t a, b;
+    // from 4556 truth table
+    if (q == 0) {
+        a = 0;
+        b = 0;
+    } else if (q == 1) {
+        a = 1;
+        b = 0;
+    } else if (q == 2) {
+        a = 0;
+        b = 1;
+    } else if (q == 3) {
+        a = 1;
+        b = 1;
+    } else {
+        return invalid_bit;
+    }
+
+    if (a_or_b == want_a) {
+        return a;
+    } else if (a_or_b == want_b) {
+        return b;
+    } else {
+        return invalid_bit;
+    }
+}
+
+uint8_t channel_to_chan_select(channel_t channel, uint8_t a_or_b) {
+    const uint8_t channels_per_chip = 4;
+
+    // should model the connectivity in the schematic
+    uint8_t output_channel = channel % channels_per_chip;
+
+    uint8_t a, b;
+    // from 4052 truth table
+    if (output_channel == 0) {
+        a = 0;
+        b = 0;
+    } else if (output_channel == 1) {
+        a = 1;
+        b = 0;
+    } else if (output_channel == 2) {
+        a = 0;
+        b = 1;
+    } else if (output_channel == 3) {
+        a = 1;
+        b = 1;
+    } else {
+        return invalid_bit;
+    }
+
+    if (a_or_b == want_a) {
+        return a;
+    } else if (a_or_b == want_b) {
+        return b;
+    } else {
+        return invalid_bit;
+    }
+}
+
+/* Test that defined demux chip / channel / enable bits (which are used in less
+ * optimized debugging gets) agree with bits set groupwise in
+ * _select_input_channel.
+ */
+// TODO also do hardware integration test, or test of shifting out somehow
+// because in order for the whole thing to work. the internal state needs to be
+// correct, as well as the shift order, s.t. the order on the hardware matches
+// the internal order.
+TEST_F(MSKTest, SelectInputChannelBits) {
+    channel_t c;
+    uint8_t actual_bit, ideal_bit;
+
+    for (c=0; c<num_channels; c++) {
+        // changes bits in demux_states (can not update_registers() w/o
+        // hardware)
+        _select_input_channel(c);
+
+        actual_bit = _get_demux_select_A();
+        ideal_bit = channel_to_demux_select(c, want_a);
+        // TODO can i put this kind of assert in a non-test, especially if
+        // the non-test function is only called from tests?
+        ASSERT_NE(ideal_bit, invalid_bit) << "channel decoding functions " \
+            << "in test suite failed\n";
+        ASSERT_EQ(actual_bit, ideal_bit) << "unexpected demux_select_A bit";
+
+        actual_bit = _get_demux_select_B();
+        ideal_bit = channel_to_demux_select(c, want_b);
+        ASSERT_NE(ideal_bit, invalid_bit) << "channel decoding functions " \
+            << "in test suite failed\n";
+        ASSERT_EQ(actual_bit, ideal_bit) << "unexpected demux_select_B bit";
+
+        actual_bit = _get_chan_select_A();
+        ideal_bit = channel_to_chan_select(c, want_a);
+        ASSERT_NE(ideal_bit, invalid_bit) << "channel decoding functions " \
+            << "in test suite failed\n";
+        ASSERT_EQ(actual_bit, ideal_bit) << "unexpected chan_select_A bit";
+
+        actual_bit = _get_chan_select_B();
+        ideal_bit = channel_to_chan_select(c, want_b);
+        ASSERT_NE(ideal_bit, invalid_bit) << "channel decoding functions " \
+            << "in test suite failed\n";
+        ASSERT_EQ(actual_bit, ideal_bit) << "unexpected chan_select_B bit";
+
+        // no matter the channel, the enable bit should not change
+        actual_bit = _get_demux_enable();
+        // see notes in multishock.cpp about demux_enabled
+        ASSERT_EQ(actual_bit, 0);
+
+        //std::cout << "checking channel: " << std::to_string(c) << std::endl;
+        //std::cout << std::bitset<8>(_get_demux_states()) << std::endl;
+    }
+}
+
 /*
 TEST_F(MSKTest, MeasureIndexPastRange) {
     // TODO what happens if stuff is removed st measures index no longer points

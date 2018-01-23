@@ -211,10 +211,21 @@ namespace msk {
     // through IDE)
     void _clear_reg();
     void _update_output();
+    // TODO replace w/ shift_in to be somewhat consistent w/ Arduino builtins
     void _shift(uint8_t bit);
     void _select_input_channel(channel_t channel);
 
     uint16_t _get_fet_states();
     uint8_t _get_demux_states();
+
+    // return the bits (0 or 1) corresponding to these labels in the top-level
+    // shield_pcb Kicad schematic. maps to 5 outputs from the shift register
+    // above the Arduino, and to 3 inputs on the 4556 and 2 inputs shared by all
+    // of the 4052s.
+    uint8_t _get_demux_select_A();
+    uint8_t _get_demux_select_B();
+    uint8_t _get_chan_select_A();
+    uint8_t _get_chan_select_B();
+    uint8_t _get_demux_enable();
 }
 #endif
