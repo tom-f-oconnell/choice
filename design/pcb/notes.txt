@@ -6,8 +6,7 @@ power usage (measured):
 -2 channels worth of FET / measurement resistors + diodes fully attached
 -150R gate resistor on all other channels
 -LEDs + 100R with + side on gate and - side on S, in each mosfet socket
--Uno 5V -> 10A fused connection on radioshack true rms meter, negative meter -> shield 5v
- Uno gnd <-> shield gnd
+-Uno 5V -> 10A fused connection on radioshack true rms meter, negative meter -> shield 5v Uno gnd <-> shield gnd
 -Uno powered with 12v, 1A wall-wart. no USB cable connected.
 -optoisolator inputs floating
 
@@ -47,5 +46,30 @@ optoisolator test (on PCB):
 voltage on output pins of isolators (~0.23, 5) (low, high)
 only arduino regulator seems to be getting hot, but not as much as it has
 (felt through Arduino PCB)
+
+
+(limited) test of overvoltage protection
+-testing one channel on one of the v0.1 pcbs.
+-one channel D->S shunted, no MOSFETs in
+-two channels on this PCB fully constructed (diodes, etc) (0 and 15)
+    -only these two channels had D,S swap fixed
+-other channels just have gate resistor
+-all other circuitry assembled (two amplifiers not in sockets though)
+
+3mA @ 120v. for some reason, zener on this channel never seemed to exceed ~2.2V
+(test w/ isolated 39K resistor in series w/ same zener produced either 0.8V one
+way, or expected 4.8-5.1V the other way)
+
+-using sper scientific 800005 w/ what seems like a K type probe
+    -only really able to get a small fraction of the probe's surface on the
+     tested part, rest is just exposed to air
+    -after ~1-3min @ 120v (was probably still ~3.1mA whole time)
+     39K 1W resistor: ~46C (might have seen 48C once)
+     zener diode (maybe larger b/c proximity to 39K?: 36(-38?)C
+     measurement resistor also in low to mid 30s (presumably entirely b/c
+     proximity to 39K)
+
+    -probe is at least also reading ~24.3 @ RT (not sure about calibration
+     though). no real reason to think it is off, but haven't tested.
 
 
