@@ -36,13 +36,17 @@ void print_bits(uint8_t bitvector) {
   Serial.println("");
 }
 
+// TODO provide option to toggle each bit on cue from serial, for testing at
+// your own pace
+
 void loop() {
-  const unsigned int per_channel_ms = 10000;
+  const unsigned int per_channel_ms = 1000;
   unsigned char chip;
   unsigned char last_chip = -1;
 
   for (unsigned char c_measure=0; c_measure<msk::num_channels; c_measure++) {
-
+    // TODO maybe share this determination w/ library tests (somewhat duplicated
+    // there)
     if (c_measure <= 3) {
       // 1+/- through 4+/- (channels in schematic numbered from 1, here from 0)
       chip = 3;
@@ -60,7 +64,14 @@ void loop() {
       // should be unreachable. maybe print a warning.
     }
 
+    msk::_select_input_channel(c_measure);
+
     if (chip != last_chip) {
+      Serial.print("demux A=U11 Qa (pin 15)=U2 A (pin 2): ");
+      Serial.println(msk::_get_demux_select_A());
+      Serial.print("demux B=U11 Qb (pin 1)=U2 B (pin 3): ");
+      Serial.println(msk::_get_demux_select_B());
+
       Serial.print("INH should only be LOW on CD4052 U");
       Serial.println(chip);
       last_chip = chip;
@@ -69,8 +80,6 @@ void loop() {
     Serial.print("demux channel ");
     Serial.print(c_measure);
     Serial.print(" ");
-
-    msk::_select_input_channel(c_measure);
 
     // want the state after selecting the channel
     // the above function edits these bits

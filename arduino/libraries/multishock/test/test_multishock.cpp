@@ -375,6 +375,9 @@ TEST_F(MSKTest, SelectInputChannelBits) {
         // see notes in multishock.cpp about demux_enabled
         ASSERT_EQ(actual_bit, 0);
 
+        // TODO maybe also check both commands don't always return the same
+        // answer or something? / that 16 different patterns are returned?
+
         //std::cout << "checking channel: " << std::to_string(c) << std::endl;
         //std::cout << std::bitset<8>(_get_demux_states()) << std::endl;
     }

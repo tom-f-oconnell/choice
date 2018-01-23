@@ -182,14 +182,14 @@ namespace msk {
         /* TODO
          */
         void enable_inputs() {
-            // TODO check demuxes are actually disabled when that sr is 
-            // set this way
             digitalWrite(demux_enbl, HIGH);
         }
 
         /* TODO
          */
         void disable_inputs() {
+            // TODO check demuxes are actually disabled when that sr is 
+            // set this way
             digitalWrite(demux_enbl, LOW);
         }
 
@@ -277,6 +277,7 @@ namespace msk {
 
         // TODO i feel like maybe I could have tested this if I had some way to
         // mock shift?
+        // TODO integration test
         /* Update shift register bits to match [fet/demux]_states and make the
          * register outputs reflect the inputs they just received.
          *

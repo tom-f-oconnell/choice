@@ -24,16 +24,18 @@ void setup() {
   msk::init();
   pinMode(LED_BUILTIN, OUTPUT);
 
+  Serial.print("msk::current_signal: ");
+  Serial.println(msk::current_signal);
+  Serial.print("A0: ");
+  Serial.println(A0);
   // TODO need to throw away any analogReads?
 }
 
 void loop() {
-  const unsigned int per_fet_ms = 2000;
-  unsigned int measurement_sum = 0;
-  unsigned int reading_count = 0;
+  const unsigned int per_fet_ms = 400;
+  unsigned long measurement_sum;
+  unsigned int reading_count;
   unsigned long until;
-
-  // TODO why is 15 apparently working, but not 0? fet / measurement?
 
   // things seem to get more noisy on 0? (w/ at least one of two fets selected?)
   // noise could have just been something intermittent though
@@ -55,33 +57,36 @@ void loop() {
         }
       #endif
 
-      // turn on the fet with the current index (as-if to shock that channel)
+      if (c_fet == c_measure) {
+        Serial.print("*");
+      }
       Serial.print("fet ");
       Serial.print(c_fet);
+
+      // turn on the fet with the current index (as-if to shock that channel)
       msk::start_shock(c_fet);
-      // why does the whole exchange take so long? is it really taking a few
-      // seconds to print stuff? other calls?
-      // TODO if it is averaging ~1353 readings in per_fet_ms
-      // why does the whole exchange take so long? is it really taking a few
-      // seconds to print stuff? other calls?
 
       reading_count = 0;
+      measurement_sum = 0;
       until = millis() + per_fet_ms;
       while (millis() <= until) {
         measurement_sum += analogRead(msk::current_signal);
         reading_count++;
       }
-      // TODO it looks like there might be channel specific offset?
-      // zero this in software setup in advance?
-
       // turn it back off
       msk::stop_shock(c_fet);
-
       Serial.print(": average of ");
       Serial.print(reading_count);
       Serial.print(" readings: ");
-      Serial.println(((double) measurement_sum) / reading_count);
+      Serial.print(((double) measurement_sum) / reading_count);
+      if (c_fet == c_measure) {
+        Serial.print("*");
+      }
+      Serial.println("");
     }
     Serial.println("");
   }
+  // so channel 15 from one iteration and 0 from the next don't blend together 
+  // if just watching on a scope
+  delay(1000);
 }

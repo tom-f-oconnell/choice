@@ -5,3 +5,6 @@ and maybe also hardware specifics?
 
 -would Arduino / library manager really not mind a "tests" directory in the
  project root?
+
+-facilities for detecting power loss (power supply IC loose in socket, for
+ instance)
