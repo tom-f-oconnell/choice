@@ -110,3 +110,5 @@ overheat?
 
 -TODO label which isolators control what, label s.r.s the same
 and say which # chambers s.r.s control / which other pins, and label those too
+
+-male(?) pins to isognd/5v for easier testing of subcircuits on a breadboard

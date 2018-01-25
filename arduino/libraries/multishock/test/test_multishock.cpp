@@ -383,17 +383,8 @@ TEST_F(MSKTest, SelectInputChannelBits) {
     }
 }
 
-/*
-TEST_F(MSKTest, MeasureIndexPastRange) {
-    // TODO what happens if stuff is removed st measures index no longer points
-    // to a channel number?
-}
+// TODO MeasureIndexPastRange
+// TODO what happens if stuff is removed st measures index no longer points
+// to a channel number?
 
 // TODO error code if try to measure with nothing
-
-*/
-
-/*
-TEST_F(MSKTest,) {
-}
-*/

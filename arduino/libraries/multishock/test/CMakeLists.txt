@@ -1,11 +1,17 @@
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.3)
 
 # TODO version #?
 project(multishock_tests)
 
 # TODO why no prefix required here?
 include(gtest.cmake)
+
+# GoogleTest seems to only be available starting in cmake 3.9
+# so I'm just going to distribute the relevant .cmake files
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}")
+include(GoogleTest)
+include(CTest)
 
 # TODO so disabled by default?
 SET(COVERAGE OFF CACHE BOOL "Coverage")
@@ -58,3 +64,11 @@ else()
         target_link_libraries(${PROJECT_NAME} PRIVATE --coverage)
     endif()
 endif()
+
+enable_testing()
+
+# In cmake >= 3.10, there is a slightly improved gtest_discover_tests
+# but this version isn't (as) easily installable in Ubuntu 16.04
+# TODO running ./test -> "No tests were found!!!" how to debug?
+#gtest_discover_tests(${PROJECT_NAME})
+gtest_add_tests(${PROJECT_NAME} "" AUTO)
