@@ -11,6 +11,12 @@ your current Arduino installation. This may be `~/Documents/Arduino/libraries/`,
 but search online for other situations. This is generally how Arduino 
 libraries are installed.
 
+To keep the code update to date more easily, you may want to make a symbolic
+link to this directory, rather than copying it. To do this:
+```
+ln -s /full/path/to/libraries/multishock/ /path/to/arduino/libraries/
+```
+
 ### Usage
 
 See example sketches. After installing, open / re-open your IDE, and open one 

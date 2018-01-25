@@ -9,3 +9,4 @@ evernote_PRIVATE_DEV_TOKEN
 *.bak
 *-bak
 *.bck
+_autosave*
