@@ -421,7 +421,7 @@ namespace msk {
 
             // LOW on output enable enables the shift register
             // and the isolation inverts the logic
-            digitalWrite(fet_enbl, HIGH);
+            digitalWrite(fet_enbl, LOW);
             digitalWrite(demux_enbl, HIGH);
         #endif
     }
@@ -488,7 +488,7 @@ namespace msk {
     /* Sets bits such that (only) when the FET shift registers are enabled, ALL
      * channels will receive voltage.
      */
-    void start_all_shock() {
+    void start_shock_all() {
         fet_states = all_fets;
         #if defined(ARDUINO)
             update_registers();
@@ -498,7 +498,7 @@ namespace msk {
     /* Sets bits such that (even) when the FET shift registers are enabled, NO
      * channels will receive voltage.
      */
-    void stop_all_shock() {
+    void stop_shock_all() {
         fet_states = no_fets;
         #if defined(ARDUINO)
             update_registers();
@@ -623,6 +623,7 @@ namespace msk {
      * If compiled without forcing the check, you can manually check
      * will_be_measured(channel) first, and then decide to queue.
      */
+    // TODO check we dont start more measurements than we have channels ailable?
     void start_measurement(channel_t channel) {
         // TODO unit test
         // TODO maybe change flag to FORCE_/ALWAYS_...?
@@ -679,6 +680,24 @@ namespace msk {
             to_measure[i] = no_channel;
         }
         next_free_index--;
+    }
+
+    /* Adds all channels to queue of those to be measured. */
+    void start_measuring_all() {
+        curr_channel_index = 0;
+        next_free_index = num_channels;
+        for (uint8_t i=0;i<num_channels;i++) {
+            to_measure[i] = i;
+        }
+    }
+
+    /* Clear queue of channels to be measured. */
+    void stop_measuring_all() {
+        curr_channel_index = 0;
+        next_free_index = 0;
+        for (uint8_t i=0;i<num_channels;i++) {
+            to_measure[i] = no_channel;
+        }
     }
 
     /* Measures current correlate on next channel.

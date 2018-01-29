@@ -110,6 +110,7 @@ namespace msk {
     // (w/o include, ideally)
     // 63 is the highest unsigned value storable in 6 bits
     // (10 measurement bits => 6 left for channel)
+    // TODO reason this is not static?
     const channel_t no_channel = 63;
 
     // Since I think wanting more than 2^4 channels (on one Arduino) is more 
@@ -153,17 +154,18 @@ namespace msk {
     void start_shock(channel_t channel);
     void stop_shock(channel_t channel);
 
-    // TODO maybe make left/right special channel nums and pass those into 
-    // start/stop_shock? could use (otherwise unused) high 2 bits
-    
     // TODO i'm really conflicted about whether to support stopping groups
     // of pins... resolve.
+    // TODO should i default to just measuring all channels i'm shocking?
 
     void start_shock_left();
     void stop_shock_left();
 
     void start_shock_right();
     void stop_shock_right();
+
+    void start_shock_all();
+    void stop_shock_all();
 
     // TODO maybe even in this case it'd be preferable to return 
     // channel_measurement_t? won't i essentially have to pack it that way for
@@ -176,12 +178,16 @@ namespace msk {
     // TODO below / above / both? both, but prohibit mixing somehow?
 
     uint8_t will_be_measured(channel_t channel);
+
     void start_measurement(channel_t channel);
     void stop_measurement(channel_t channel);
+    void start_measuring_all();
+    void stop_measuring_all();
 
     // measure_next?
     channel_measurement_t measure();
 
+    // TODO rename? underscore in front?
     channel_t extract_channel(channel_measurement_t cm);
     measurement_t extract_measurement(channel_measurement_t cm);
 
