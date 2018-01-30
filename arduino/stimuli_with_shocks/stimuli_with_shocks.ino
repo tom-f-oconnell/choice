@@ -38,10 +38,10 @@ void setup() {
   msk::init();
   // TODO provide function to publish / get nodehandle if necessary
   // maybe get rid of ROS import?
+  // TODO need two init functions? is nodehandle existant at this point?
+  stim::get_nodehandle()->advertise(measurement_pub);
   stim::init();
 
-  // TODO get nh from stim?
-  stim::get_nodehandle->advertise(measurement_pub);
   stim::while_idle(send_measurement);
 
   msk::start_measuring_all();

@@ -1,25 +1,35 @@
 <launch>
-  <!-- can be used to PID with the same parameter file as your main experiment -->
+  <!-- can be used to PID with the same parameter file as your experiment -->
   <arg name="stimuli_only" default="False" />
   <arg name="port" default="/dev/ttyACM0" />
   <arg name="video_only" default="False" />
+  <!-- the Arduino library controlling the shift-register based shock shield.
+       should be false if using digital pins to directly control shock. -->
+  <!-- TODO implement / test -->
+  <arg name="using_multishock" default="True" />
   
   <!-- TODO put snapshot_params node in this package, add another node tag -->
-  <node name="versionpub" pkg="metatools" type="versionpub.py" unless="$(arg stimuli_only)">
+  <node name="versionpub" pkg="metatools" type="versionpub.py" 
+    unless="$(arg stimuli_only)">
     <rosparam>
       package_names: ['metatools', 'stimuli', 'choice', 'multi_tracker', 'rosserial_arduino', 'usb_cam']
     </rosparam>
   </node>
 
   <!-- TODO deal with camera parameters / calibration -->
-  <include file="$(find multi_tracker)/launch/rectified_usb_cam.launch" unless="$(arg stimuli_only)"/>
+  <include file="$(find multi_tracker)/launch/rectified_usb_cam.launch" 
+    unless="$(arg stimuli_only)"/>
 
-  <!-- TODO reasonable to set these all as default in package directories and only set non defaults
-       locally?
-  -->
-  <!-- TODO test these are loaded from directory roslaunch is invoked in. setup default handling -->
-  <include file="$(find multi_tracker)/launch/load_tracking_parameter_yamls.launch" unless="$(arg stimuli_only)"/>
-  <include file="$(find multi_tracker)/launch/detect_roi_tracking.launch" unless="$(arg stimuli_only)">
+  <!-- TODO reasonable to set these all as default in package directories and
+       only set non defaults locally? -->
+  <!-- TODO test these are loaded from directory roslaunch is invoked in. setup
+       default handling -->
+  <include 
+    file="$(find multi_tracker)/launch/load_tracking_parameter_yamls.launch" 
+    unless="$(arg stimuli_only)"/>
+
+  <include file="$(find multi_tracker)/launch/detect_roi_tracking.launch"
+    unless="$(arg stimuli_only)">
     <arg name="video_only" value="$(arg video_only)" />
     <!-- TODO how best to treat this when retracking?
          should i aim for a package wide policy of remapping cameras 
@@ -29,14 +39,29 @@
     <arg name="camera" value="usb_cam/image_rect" />
   </include>
 
-  <!-- TODO make default to load config from cwd? (no reason to do this indep of ROS_HOME though, right? -->
+  <!-- TODO make default to load config from cwd? (no reason to do this indep of
+       ROS_HOME though, right? -->
   <rosparam command="load" file="stimulus_parameters.yaml" />
 
   <!-- TODO move this into stimulis_arduino launch (and rename)? -->
-  <node name="stimulus_loader" pkg="stimuli" type="odor_randomizer.py" output="screen" required="true" />
+  <node name="stimulus_loader" pkg="stimuli" type="odor_randomizer.py"
+    output="screen" required="true" />
  
-  <!-- TODO is this explicit find syntax idiomatic or is there a simpler way to find .launch files? -->
+  <!-- TODO is this explicit find syntax idiomatic or is there a simpler way to
+       find .launch files? -->
   <include file="$(find stimuli)/launch/stimulus_arduino.launch">
     <arg name="port" value="$(arg port)" />
   </include>
+
+  <group if="$(arg using_multishock)">
+    <node name="channel_measurement_splitter" pkg="choice"
+      type="channel_measurement_splitter.py" />
+
+    <!-- unless="$(arg stimuli_only)"> -->
+    <node name="shock_currents_save_bag" pkg="choice" type="save_bag.py">
+        <rosparam param="topics">
+            - channel_measurements_stamped
+        </rosparam>
+    </node>
+  </group>
 </launch>

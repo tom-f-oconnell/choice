@@ -60,14 +60,14 @@ olf/beyond_posttest_s: 0
 # Arduino Mega integer pin #s for analog inputs
 # [A0=54, A15=69]
 olf/max_num_pins: 8
-olf/left_pins: [56, 57, 59]
-olf/right_pins: [54, 55, 61]
+olf/left_pins: [40, 42, 44]
+olf/right_pins: [48, 50, 52]
 
 olf/separate_balances: True
 # 
-olf/left_balance: 58
+olf/left_balance: 38
 # 60 = 
-olf/right_balance: 60
+olf/right_balance: 46
 
 # (when the pin controlling this valve is OFF)
 olf/balance_normally_flowing: True

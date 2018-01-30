@@ -31,14 +31,13 @@
 
 // this whole if statement just gets fixed bit-length type definitions
 #if defined(ARDUINO)
-#if ARDUINO >= 100
-    #include <Arduino.h>  // Arduino 1.0
-#else
-    #include <WProgram.h> // Arduino 0022
-#endif
-
+    #if ARDUINO >= 100
+        #include <Arduino.h>  // Arduino 1.0
+    #else
+        #include <WProgram.h> // Arduino 0022
+    #endif
 #elif defined(UNIT_TESTING)
-#include <stdint.h>
+    #include <stdint.h>
 #endif
 
 // TODO no Arduino issues using .hpp are there?
