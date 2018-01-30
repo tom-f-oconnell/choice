@@ -1,9 +1,0 @@
-<package>
-  <description brief="TODO">
-		TODO
-  </description>
-  <author>Tom O'Connell/toconnel@caltech.edu</author>
-  <license></license>
-  <url>TODO</url>
-  <depend package="rospy rosserial_python rosserial_client rosserial_arduino multi_tracker stimuli"/>
-</package>

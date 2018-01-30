@@ -10,12 +10,13 @@ project(choice)
 find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
-  stimuli
 
   # TODO group 3 below and don't require if not using multishock board
   message_generation
   rosserial_arduino
   rosserial_client
+
+  stimuli
 )
 
 ## System dependencies are found with CMake's conventions
@@ -73,7 +74,6 @@ add_message_files(
 # TODO include stimuli too?
 generate_messages(
   DEPENDENCIES
-  std_msgs
   choice
 )
 
