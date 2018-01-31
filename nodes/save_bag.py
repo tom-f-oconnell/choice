@@ -49,7 +49,7 @@ class SaveBag:
                 time.localtime())
             generated_basename = True
 
-        filename = self.experiment_basename + '_delta_video.bag'
+        filename = self.experiment_basename + '_shock_currents.bag'
         if rospy.get_param('multi_tracker/explicit_directories', False):
             directory = os.path.expanduser(\
                 rospy.get_param('multi_tracker/data_directory'))
