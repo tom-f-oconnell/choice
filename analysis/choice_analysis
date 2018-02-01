@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-from __future__ import division
+# TODO
+from __future__ import print_function
+
 import numpy as np
 import pandas as pd
 # TODO figure out what the hold up is on importing this, with the prints
 import multi_tracker_analysis as mta
-# TODO delete me
-print 'mta=', mta.__file__
 import glob
 from os.path import join, split
 import os
@@ -37,7 +37,10 @@ import argparse
 # https://stackoverflow.com/questions/21872366/plural-string-formatting
 class PluralFormatter(string.Formatter):
     def get_value(self, key, args, kwargs):
-        if isinstance(key, int) or isinstance(key, long):
+        # TODO. + doc for class?
+        """
+        """
+        if isinstance(key, int) or isinstance(key, int):
             return args[key]
 
         if key in kwargs:
@@ -99,6 +102,9 @@ if make_plots:
 all_shock = 8
 
 def load_metadata(d):
+    """
+    TODO
+    """
     files = glob.glob(join(d, '*_stimuli.p'))
     if len(files) > 1:
         raise IOError('too many stimulus files in ' + d)
@@ -111,7 +117,7 @@ def load_metadata(d):
     times = dict()
     times['start'] = trial_structure[0].to_sec()
     times['end'] = trial_structure[-1].to_sec()
-    stimuli = filter(lambda x: type(x) is LoadSequenceRequest, trial_structure)
+    stimuli = [x for x in trial_structure if type(x) is LoadSequenceRequest]
     times['pretest_start'] = stimuli[0].seq.start.to_sec()
     times['posttest_start'] = stimuli[-1].seq.start.to_sec()
     times['test_duration'] = \
@@ -128,11 +134,17 @@ def load_metadata(d):
         return pins[0]
 
     def odor_for_pin(odors2pins, pin):
-        odors = [o for o, p in odors2pins.items() if p == pin]
+        # TODO
+        """
+        """
+        odors = [o for o, p in list(odors2pins.items()) if p == pin]
         assert len(odors) == 1
         return odors[0]
 
     def prepost_odors(odors2pins, pin_group, stimuli):
+        # TODO
+        """
+        """
         prepins = stimuli[0].seq.pins
         postpins = stimuli[-1].seq.pins
         prepin = pin_from(prepins, pin_group)
@@ -162,7 +174,7 @@ def load_metadata(d):
         '''
         if all_shock in block.seq.pins:
             odors += \
-                [o for o, p in odors2right_pins.items() if p in block.seq.pins]
+                [o for o, p in list(odors2right_pins.items()) if p in block.seq.pins]
         # TODO check
         odors = set(odors)
         if len(odors) > 0:
@@ -180,8 +192,8 @@ def load_metadata(d):
     metadata['stimuli'] = list(stimuli)
 
     # TODO switch to new style
-    left_pins2odors = dict((v, k) for k, v in odors2left_pins.items())
-    right_pins2odors = dict((v, k) for k, v in odors2right_pins.items())
+    left_pins2odors = dict((v, k) for k, v in list(odors2left_pins.items()))
+    right_pins2odors = dict((v, k) for k, v in list(odors2right_pins.items()))
 
     assert len(left_pins2odors) == len(odors2left_pins), \
         'some odors map to multiple left pins'
@@ -189,11 +201,11 @@ def load_metadata(d):
         'some odors map to multiple right pins'
 
     # TODO check
-    for p in left_pins2odors.keys():
-        assert not p in right_pins2odors.keys(), 'pin ' + str(p) + \
+    for p in list(left_pins2odors.keys()):
+        assert not p in list(right_pins2odors.keys()), 'pin ' + str(p) + \
             ' was listed as both left and right'
-    for p in right_pins2odors.keys():
-        assert not p in left_pins2odors.keys(), 'pin ' + str(p) + \
+    for p in list(right_pins2odors.keys()):
+        assert not p in list(left_pins2odors.keys()), 'pin ' + str(p) + \
             ' was listed as both left and right'
 
     metadata['left_pins2odors'] = left_pins2odors
@@ -234,7 +246,7 @@ experiment2label = dict()
 curr_char = ord('A')
 
 # TODO do most processing while loading, to not need as much memory?
-for d in map(lambda x: join(path, x), dirs):
+for d in [join(path, x) for x in dirs]:
     if not os.path.isdir(d):
         continue
 
@@ -304,6 +316,9 @@ crop_to_seconds = 1300
 
 def plot_trace(cropped_rel_times, position_y, meta, metrics=None, \
     y_max_min=None, ax=None):
+    # TODO
+    """
+    """
 
     label_set = set()
     labels = []
@@ -314,7 +329,7 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, \
     # calculate percent time in each odor region
     # TODO make one variable at top which controls which dimension to use as
     # long axis and have this (and elsewhere) depend on that
-    y_vals = map(lambda p: p[1], meta['roi_points'])
+    y_vals = [p[1] for p in meta['roi_points']]
     y_mid = np.mean(y_vals)
 
     if ax is None:
@@ -326,16 +341,16 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, \
 
     plt.xlabel('Seconds')
 
-    y_max = max(map(lambda x: x[1], meta['roi_points']))
-    y_min = min(map(lambda x: x[1], meta['roi_points']))
+    y_max = max([x[1] for x in meta['roi_points']])
+    y_min = min([x[1] for x in meta['roi_points']])
     if verbose:
-        print 'y_max', y_max, 'y_min', y_min, 'using y midline', y_mid
+        print('y_max', y_max, 'y_min', y_min, 'using y midline', y_mid)
 
     # TODO TODO filter out trajectories that don't move much. 
     # just use floris' config file thing?
 
     if y_max_min is None:
-        centered_y_vals = map(lambda y: y - y_mid, y_vals)
+        centered_y_vals = [y - y_mid for y in y_vals]
         y_max_above_mid = max(centered_y_vals)
         y_min_below_mid = min(centered_y_vals)
 
@@ -370,14 +385,12 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, \
                     (y_shock_to_odor + small_height)
                 alpha = shock_patch_alpha
 
-            '''
-            elif p is right_shock:
-                label = 'shock'
-                color = shock_color
-                height = small_height
-                y0 = y_max_above_mid + y_beyond_arena + y_shock_to_odor
-                alpha = shock_patch_alpha
-            '''
+            # elif p is right_shock:
+            #     label = 'shock'
+            #     color = shock_color
+            #     height = small_height
+            #     y0 = y_max_above_mid + y_beyond_arena + y_shock_to_odor
+            #     alpha = shock_patch_alpha
 
             # TODO i think the reason these have been displaying correctly is
             # that y_min_below_mid ~= y_max_above_mid, though those are probably
@@ -418,9 +431,9 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, \
                 # define acceptable mismatch here?
                 if x0 <= 0.0:
                     if verbose:
-                        print 'WARNING! seems no video was recorded for ' + \
+                        print('WARNING! seems no video was recorded for ' + \
                             'first ' + str(-x0) + ' seconds of first block ' + \
-                            '(pre-training test)'
+                            '(pre-training test)')
 
             else:
                 assert x0 > 0, 'times we want to disply should not be ' + \
@@ -515,12 +528,15 @@ key2group = {'1': 'good',
              '8': 'suspicious'}
 
 def press(event):
+    # TODO
+    """
+    """
     # TODO rank these according to how common they are?
     if event.key in key2group:
         group = key2group[event.key]
 
         # TODO fix this printing. not displaying.
-        print group, '            \r',
+        print(group, '            \r', end=' ')
         press.group = group
         press.fig.canvas.mpl_disconnect(press.cid)
         #print 'closing fig'
@@ -529,7 +545,7 @@ def press(event):
 new_keys = False
 # open yaml for writing
 # TODO fix patching / plot ranges
-for fly, data in fly2data.items():
+for fly, data in list(fly2data.items()):
     meta = fly2meta[fly]
     stamp = split(meta['dir'])[-1]
 
@@ -537,14 +553,14 @@ for fly, data in fly2data.items():
     # try to find the current fly in one of the dictionaries for any group in
     # the analysis_rejects.yaml file. if it is in one, no need to get a label
     # for it here.
-    for reason, reject_dict in rejects.items():
+    for reason, reject_dict in list(rejects.items()):
         if (not reject_dict is None) and stamp in reject_dict \
             and meta['n'] in reject_dict[stamp]:
 
             # TODO use actual yaml filename?
             if verbose:
-                print stamp, meta['n'], \
-                    'was already labeled in analysis_rejects.yaml'
+                print(stamp, meta['n'], \
+                    'was already labeled in analysis_rejects.yaml')
 
             already_labelled = True
             break
@@ -552,12 +568,12 @@ for fly, data in fly2data.items():
     if already_labelled:
         continue
     elif verbose:
-        print stamp, meta['n'], 'was NOT in yaml'
+        print(stamp, meta['n'], 'was NOT in yaml')
 
     if not new_keys:
-        print 'Keys to label traces:'
+        print('Keys to label traces:')
         for k in sorted(key2group.keys()):
-            print k, '-', key2group[k]
+            print(k, '-', key2group[k])
         
     new_keys = True
     curr_times = (data['time_epoch_secs'] + data['time_epoch_nsecs'] / \
@@ -609,7 +625,7 @@ for fly, data in fly2data.items():
             break
         except AttributeError:
             # TODO what to do? need to fail?
-            print 'caught attribute error'
+            print('caught attribute error')
             pass
 
     if not hasattr(press, 'group'):
@@ -624,7 +640,7 @@ for fly, data in fly2data.items():
     rejects[press.group][stamp].append(meta['n'])
 
 if new_keys:
-    print ''
+    print('')
 
 if new_keys:
     for reason in rejects:
@@ -635,22 +651,22 @@ if new_keys:
             # TODO current api? still necessary?
             rejects[reason][stamp].fa.set_flow_style()
 
-    print 'saving to', yaml_filename
+    print('saving to', yaml_filename)
     with open(yaml_filename, 'w') as f:
         yaml.dump(rejects, f, Dumper=yaml.RoundTripDumper)
 
 bad = dict()
-for reason, reject_dict in rejects.items():
+for reason, reject_dict in list(rejects.items()):
     if reason == 'good' or reject_dict is None:
         continue
 
     if reason == 'suspicious' and (not reject_dict is None):
         # TODO print which
-        print 'WARNING: using some trajectories marked as ' + \
-            'suspicious for analysis.'
+        print('WARNING: using some trajectories marked as ' + \
+            'suspicious for analysis.')
         continue
 
-    for exp_id, rois in reject_dict.items():
+    for exp_id, rois in list(reject_dict.items()):
         if exp_id in bad:
             bad[exp_id] = bad[exp_id] | set(rois)
         else:
@@ -658,6 +674,7 @@ for reason, reject_dict in rejects.items():
 
 
 def fraction_time(cropped_times, y_positions, meta, prefix, odor_of_interest):
+    # TODO
     """
     """
     assert prefix == 'pre' or prefix == 'post'
@@ -674,7 +691,7 @@ def fraction_time(cropped_times, y_positions, meta, prefix, odor_of_interest):
         'later operations assume indices represented as boolean mask'
 
     # TODO try not to recalculate?
-    y_vals = map(lambda p: p[1], meta['roi_points'])
+    y_vals = [p[1] for p in meta['roi_points']]
     y_mid = np.mean(y_vals)
     left = y_positions > y_mid
 
@@ -690,8 +707,8 @@ def fraction_time(cropped_times, y_positions, meta, prefix, odor_of_interest):
     if odor_of_interest == meta[prefix + 'test_left_odor']:
         fraction = fraction_left
         if verbose:
-            print(prefix + 'test_left_odor was the odor of interest ' + \
-                '(was reinforced if there was conditioning)')
+            print((prefix + 'test_left_odor was the odor of interest ' + \
+                '(was reinforced if there was conditioning)'))
 
         if 'reinforced_odor' in meta:
             nonshocked_odor = meta[prefix + 'test_right_odor']
@@ -699,8 +716,8 @@ def fraction_time(cropped_times, y_positions, meta, prefix, odor_of_interest):
     elif odor_of_interest == meta[prefix + 'test_right_odor']:
         fraction = 1 - fraction_left
         if verbose:
-            print(prefix + 'test_left_odor was NOT the odor of interest ' + \
-                '(not reinforced if there was conditioning)')
+            print((prefix + 'test_left_odor was NOT the odor of interest ' + \
+                '(not reinforced if there was conditioning)'))
 
         if 'reinforced_odor' in meta:
             nonshocked_odor = meta[prefix + 'test_left_odor']
@@ -716,6 +733,7 @@ def fraction_time(cropped_times, y_positions, meta, prefix, odor_of_interest):
 
 
 def decision_bias(cropped_times, y_positions, meta, prefix, \
+    # TODO 
     mean_y_pixels, odor_of_interest, choice_zone_width_mm=5):
     """
     should be signed, unlike that in Parnas, with positive indicating a bias
@@ -729,7 +747,7 @@ def decision_bias(cropped_times, y_positions, meta, prefix, \
     assert test_indices.dtype == np.bool, \
         'later operations assume indices represented as boolean mask'
 
-    y_vals = map(lambda p: p[1], meta['roi_points'])
+    y_vals = [p[1] for p in meta['roi_points']]
     y_mid = np.mean(y_vals)
 
     # TODO use ratio of this height in pixels to mean height in pixels to
@@ -765,8 +783,8 @@ def decision_bias(cropped_times, y_positions, meta, prefix, \
     total_decisions = towards_left + towards_right
     # TODO put behind verbose flag after done debugging
     if verbose:
-        print 'decisions toward left', towards_left
-        print 'decisions toward right', towards_right
+        print('decisions toward left', towards_left)
+        print('decisions toward right', towards_right)
 
     if total_decisions == 0:
         # TODO does this propagate appropriately
@@ -785,8 +803,8 @@ def decision_bias(cropped_times, y_positions, meta, prefix, \
     if odor_of_interest == meta[prefix + 'test_left_odor']:
         bias_against = (-1) * bias_against_left
         if verbose:
-            print(prefix + 'test_left_odor was the odor of interest ' + \
-                '(was reinforced if there was conditioning)')
+            print((prefix + 'test_left_odor was the odor of interest ' + \
+                '(was reinforced if there was conditioning)'))
 
         # TODO maybe calculate this elsewhere? (so as not to repeat in this and
         # time_spent...)
@@ -796,8 +814,8 @@ def decision_bias(cropped_times, y_positions, meta, prefix, \
     elif odor_of_interest == meta[prefix + 'test_right_odor']:
         bias_against = bias_against_left
         if verbose:
-            print(prefix + 'test_left_odor was NOT the odor of interest ' + \
-                '(not reinforced if there was conditioning)')
+            print((prefix + 'test_left_odor was NOT the odor of interest ' + \
+                '(not reinforced if there was conditioning)'))
 
         if 'reinforced_odor' in meta:
             nonshocked_odor = meta[prefix + 'test_left_odor']
@@ -815,13 +833,17 @@ def decision_bias(cropped_times, y_positions, meta, prefix, \
 def plot_metric_change(metric_pre, metric_post, title='', ylabel='', \
     fly2meta=None, fly_nums_in_order=None, exps=None, rois=None, \
     filename=None, allow_negative=False):
+    # TODO
     """
     """
     group1 = [fly2meta, fly_nums_in_order]
     group2 = [exps, rois]
     is_none = lambda x: x is None
     def check_all_or_none(group):
-        elements_none = map(is_none, group)
+        # TODO 
+        """
+        """
+        elements_none = list(map(is_none, group))
         if any(elements_none):
             assert all(elements_none), 'either all parameters within group' + \
                 ' must be set, or none should be'
@@ -866,6 +888,9 @@ def plot_metric_change(metric_pre, metric_post, title='', ylabel='', \
 
     if show_plots:
         def on_plot_hover(ax, event):
+            # TODO 
+            """
+            """
             on_any_curve = False
             for curve in ax.get_lines():
                 if curve.contains(event)[0]:
@@ -896,6 +921,7 @@ def plot_metric_change(metric_pre, metric_post, title='', ylabel='', \
 
 
 def analyze_group(fly2data, title=''):
+    # TODO
     """
     """
     y_maxes_above_mid = []
@@ -905,10 +931,10 @@ def analyze_group(fly2data, title=''):
     # TODO assert that we are analyzing with dimension that corresponds to long
     # axis of roi
 
-    for m in fly2meta.values():
-        y_vals = map(lambda p: p[1], m['roi_points'])
+    for m in list(fly2meta.values()):
+        y_vals = [p[1] for p in m['roi_points']]
         curr_mid = np.mean(y_vals)
-        centered_y_vals = map(lambda y: y - curr_mid, y_vals)
+        centered_y_vals = [y - curr_mid for y in y_vals]
         y_maxes_above_mid.append(max(centered_y_vals))
         y_mins_below_mid.append(min(centered_y_vals))
         y_ranges.append(max(y_vals) - min(y_vals))
@@ -919,9 +945,9 @@ def analyze_group(fly2data, title=''):
     mean_y_pixels = np.mean(y_ranges)
     
     if verbose:
-        print 'mean y pixels:', mean_y_pixels
-        print 'y_min_below_mid', y_min_below_mid, 'y_max_above_mid', \
-            y_max_above_mid
+        print('mean y pixels:', mean_y_pixels)
+        print('y_min_below_mid', y_min_below_mid, 'y_max_above_mid', \
+            y_max_above_mid)
 
     time_fractions_pre = []
     time_fractions_post = []
@@ -954,7 +980,7 @@ def analyze_group(fly2data, title=''):
     had_some_innate = False
     odor_A = None
 
-    for fly, data in fly2data.items():
+    for fly, data in list(fly2data.items()):
         meta = fly2meta[fly]
         # TODO what happens to missing data?
         # plotted as zero? not plotted?
@@ -969,12 +995,12 @@ def analyze_group(fly2data, title=''):
             # TODO automatically add these to yaml? recommend?
             # count earlier to get the right # of subplots?
             if verbose:
-                print 'SKIPPING FLY', meta['n'], 'FROM', meta['dir']
+                print('SKIPPING FLY', meta['n'], 'FROM', meta['dir'])
             continue
 
         if verbose:
-            print 'experiment', split(meta['dir'])[-1], \
-                '({})'.format(experiment2label[meta['dir']]), 'fly', meta['n']
+            print('experiment', split(meta['dir'])[-1], \
+                '({})'.format(experiment2label[meta['dir']]), 'fly', meta['n'])
 
         start = meta['times']['pretest_start'] - zero_before_test_by
 
@@ -1016,12 +1042,12 @@ def analyze_group(fly2data, title=''):
                 meta, 'post', odor_of_interest)
 
             if verbose:
-                print 'fraction time spent in {} pre: {}'.format( \
+                print('fraction time spent in {} pre: {}'.format( \
                     'reinforced' if 'reinforced_odor' in meta else 'odor A', \
-                    time_fraction_pre)
-                print 'fraction time spent in {} post: {}'.format( \
+                    time_fraction_pre))
+                print('fraction time spent in {} post: {}'.format( \
                     'reinforced' if 'reinforced_odor' in meta else 'odor A', \
-                    time_fraction_post)
+                    time_fraction_post))
 
         if want_decision_bias:
             decision_bias_pre, _, _ = decision_bias(cropped_times, \
@@ -1033,9 +1059,9 @@ def analyze_group(fly2data, title=''):
                 mean_y_pixels, odor_of_interest)
 
             if verbose:
-                print 'decision bias pre:', decision_bias_pre
-                print 'decision bias post:', decision_bias_post
-                print ''
+                print('decision bias pre:', decision_bias_pre)
+                print('decision bias post:', decision_bias_post)
+                print('')
  
         assert not np.any(np.logical_and(pretest_indices, posttest_indices)), \
             'pre and post test indices overlapped'
@@ -1052,8 +1078,8 @@ def analyze_group(fly2data, title=''):
         '''
         if curr_rel_err != 0:
             if verbose:
-                print 'WARNING! relative difference in timepoints in ' + \
-                    'pre and post test = ' + str(curr_rel_err)
+                print('WARNING! relative difference in timepoints in ' + \
+                    'pre and post test = ' + str(curr_rel_err))
 
         time_fractions_pre.append(time_fraction_pre)
         time_fractions_post.append(time_fraction_post)
@@ -1191,8 +1217,8 @@ def analyze_group(fly2data, title=''):
         fig.legend(handles=handles, labels=labels, loc='lower left', fontsize=9)
 
     if verbose:
-        print 'plotting ranges: x', (plotting_x_min, plotting_x_max), 'y', \
-            (plotting_y_min, plotting_y_max)
+        print('plotting ranges: x', (plotting_x_min, plotting_x_max), 'y', \
+            (plotting_y_min, plotting_y_max))
 
     # TODO do this for single plots within plot_trace?
     # relative
@@ -1279,7 +1305,7 @@ def analyze_group(fly2data, title=''):
 # plots are gone but first 1 (2?) times have some empty plots (should be no_fly)
 # why?
 good_fly2data = dict()
-for k, v in fly2data.items():
+for k, v in list(fly2data.items()):
     stamp = split(fly2meta[k]['dir'])[-1]
 
     if not stamp in bad:
@@ -1288,12 +1314,12 @@ for k, v in fly2data.items():
         good_fly2data[k] = v
 
 if verbose:
-    print '\nthe good flies:'
+    print('\nthe good flies:')
     for f in good_fly2data:
         m = fly2meta[f]
-        print '{} {} {} {}'.format(experiment2label[m['dir']], \
-            split(m['dir'])[-1], m['n'], f)
-    print ''
+        print('{} {} {} {}'.format(experiment2label[m['dir']], \
+            split(m['dir'])[-1], m['n'], f))
+    print('')
 
 df = analyze_group(good_fly2data)
 
@@ -1342,7 +1368,7 @@ for o in all_odors:
             '_decision_bias.' + plot_format, allow_negative=True)
 
 reason2formatstr = {'never_active': '{0} fl{0(y,ies)} were never active',
-                    'inactive_after_shock': '{0} fl{0(y,ies)} became ' + \ 
+                    'inactive_after_shock': '{0} fl{0(y,ies)} became ' + \
                     'inactive after a shock',
                     'no_sample_either_test': '{0} fl{0(y,ies)} did not ' + \
                         'come close enough to sampling one odor during a test',
@@ -1353,18 +1379,18 @@ reason2formatstr = {'never_active': '{0} fl{0(y,ies)} were never active',
 
 lines = []
 rois_without_flies = 0
-for reason, reject_dict in rejects.items():
+for reason, reject_dict in list(rejects.items()):
     if reason == 'good' or reason == 'suspicious' or reject_dict is None:
         continue
 
-    bad_fly2data = {k: v for k, v in fly2data.items() \
+    bad_fly2data = {k: v for k, v in list(fly2data.items()) \
         if split(fly2meta[k]['dir'])[-1] in reject_dict and \
         fly2meta[k]['n'] in reject_dict[split(fly2meta[k]['dir'])[-1]]}
 
     if reason == 'no_fly':
         if verbose:
-            print len(bad_fly2data), \
-                'rois marked as not having a fly in them. not analyzing them.'
+            print(len(bad_fly2data), \
+                'rois marked as not having a fly in them. not analyzing them.')
         rois_without_flies = len(bad_fly2data)
         continue
 
@@ -1376,23 +1402,23 @@ for reason, reject_dict in rejects.items():
 
 # TODO format this for evernote & upload
 total_flies = len(fly2data) - rois_without_flies
-print 'Good flies:', str(len(good_fly2data)) + '/' + str(total_flies)
-print ''
+print('Good flies:', str(len(good_fly2data)) + '/' + str(total_flies))
+print('')
 for line in odor_lines:
-    print line
-print ''
+    print(line)
+print('')
 for line in lines:
-    print line
-print ''
+    print(line)
+print('')
 
 if want_time_spent:
     change = df['time_fraction_pre'] - df['time_fraction_post']
-    print 'Mean difference in time spent in shocked odor: {{:.{}f}}'\
+    print('Mean difference in time spent in shocked odor: {{:.{}f}}'\
         .format(digits_after_zero).format(round(change.mean(), \
-        digits_after_zero))
-    print 'Median difference in time spent in shocked odor: {{:.{}f}}\n'\
+        digits_after_zero)))
+    print('Median difference in time spent in shocked odor: {{:.{}f}}\n'\
         .format(digits_after_zero).format(round(change.median(), \
-        digits_after_zero))
+        digits_after_zero)))
 
     fig = plt.figure()
     plt.hist(change[np.logical_not(np.isnan(change))], color='black', bins=30)
@@ -1402,13 +1428,13 @@ if want_time_spent:
 
 if want_decision_bias:
     change = df['decision_bias_pre'] - df['decision_bias_post']
-    print 'Mean decision bias difference: {{:.{}f}}'.format(digits_after_zero)\
-        .format(round(change.mean(), digits_after_zero))
-    print 'Median decision bias difference: {{:.{}f}}'.format(\
-        digits_after_zero).format(round(change.median(), digits_after_zero))
-    print 'Mean |decision bias| post: {{:.{}f}}\n'.format(digits_after_zero)\
+    print('Mean decision bias difference: {{:.{}f}}'.format(digits_after_zero)\
+        .format(round(change.mean(), digits_after_zero)))
+    print('Median decision bias difference: {{:.{}f}}'.format(\
+        digits_after_zero).format(round(change.median(), digits_after_zero)))
+    print('Mean |decision bias| post: {{:.{}f}}\n'.format(digits_after_zero)\
         .format(round(np.nanmean(np.abs(df['decision_bias_post'])), \
-        digits_after_zero))
+        digits_after_zero)))
 
     fig = plt.figure()
     plt.hist(change[np.logical_not(np.isnan(change))], color='black', bins=30)
@@ -1416,12 +1442,12 @@ if want_decision_bias:
     fig.savefig(join(path, 'bias_change_histogram.' + plot_format), \
         bbox_inches='tight')
 
-print 'Experiments represented by each label:'
-label2experiment = {v: k for k, v in experiment2label.items()}
+print('Experiments represented by each label:')
+label2experiment = {v: k for k, v in list(experiment2label.items())}
 assert len(label2experiment) == len(experiment2label)
 sorted_labels = sorted(label2experiment.keys())
 for k in sorted_labels:
-    print k, '-', label2experiment[k]
+    print(k, '-', label2experiment[k])
 
 if print_version:
     # TODO dont fail if git can't be found, just warn
@@ -1432,14 +1458,14 @@ if print_version:
     diff = repo.index.diff(None, create_patch=True)
     exactly = 'exactly ' if len(diff) == 0 else ''
     github_url = 'https://github.com/tom-f-oconnell/choice'
-    print '\nGenerated with {} @ {}{}'.format(github_url, exactly, current_hash)
+    print('\nGenerated with {} @ {}{}'.format(github_url, exactly, current_hash))
 
 # TODO also include human readable labels for experiments? as config file in
 # each dir?
 
-print ''
-dirs_and_dts = map(lambda x: (x, dt.datetime.strptime(split(x)[-1], \
-    '%Y%m%d_%H%M%S')), experiment2label.keys())
+print('')
+dirs_and_dts = [(x, dt.datetime.strptime(split(x)[-1], \
+    '%Y%m%d_%H%M%S')) for x in list(experiment2label.keys())]
 
 key_fn = lambda x: x[1].strftime('%W')
 for key, group in groupby(sorted(dirs_and_dts, key=key_fn), key_fn):
@@ -1455,7 +1481,7 @@ for key, group in groupby(sorted(dirs_and_dts, key=key_fn), key_fn):
             if fly2meta[f]['dir'] == d:
                 usable_flies += 1
 
-        for reason, reject_dict in rejects.items():
+        for reason, reject_dict in list(rejects.items()):
             if reason == 'good' or reason == 'suspicious' or reason == 'no_fly'\
                 or reject_dict is None:
                 continue
@@ -1466,7 +1492,8 @@ for key, group in groupby(sorted(dirs_and_dts, key=key_fn), key_fn):
             unusable_flies += len(bad_flies)
     flies_this_week = unusable_flies + usable_flies
 
-    print '{}-{}: {} experiments, {} flies, {} good'.format(\
+    print('{}-{}: {} experiments, {} flies, {} good'.format(\
         week_start.strftime('%m/%d'), week_end.strftime('%m/%d/%Y'), \
-        len(dirs_and_exp_dates), flies_this_week, usable_flies)
+        len(dirs_and_exp_dates), flies_this_week, usable_flies))
 
+# TODO usage. maybe if __name__ == '__main__'
