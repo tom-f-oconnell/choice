@@ -1,0 +1,43 @@
+.TITLE checking assumptions of AD623 in-amp properties
+
+* gives us a SUBCKT called AD623, with nodes:
+* IN+, IN-, Rg+, Rg-, 99 (positive supply), 50 (negative supply), OUT, REF
+.include lib/ad623.cir
+
+Vcc 1 0 DC 5V
+
+* test signal
+* supposedly the Vcm for which there is maximal output voltage, w/ +Vs=5V,
+* -Vs=0V, G=1, Rl=100K
+*Vcm 3 0 DC 1.5V
+* TODO i guess they don't say which Vdiff causes max output voltage @ Vcm=1.5,
+* but since G=1, I thought the max input would be +Vs - Vcm = 3.5V. why does
+* 2.5V seem to be producing the maximum, and 3.5V some erroneous 9v (over
+* supply...)?
+Vdiff 2 3 DC 2.5V
+
+Xad623 2 3 4 5 1 0 6 7 AD623
+* TODO do with voltage divider
+Vref 7 0 DC 1.5V
+*Rg 4 5 10M
+* does this matter, for DC characteristics?
+
+* TODO what is load resistance of isoamp? just 10R?
+
+* Arduino ADC
+*Rl 6 0 10K
+
+* the load they use for most of their tests in the datasheet
+Rl 6 0 100K
+
+* calculate DC voltages at all nodes, fills op v(n) vector
+.op
+
+* differential and common mode
+.print op v(2,3) v(3)
+* reference voltage
+.print op v(7)
+* output
+.print op v(6)
+
+.end

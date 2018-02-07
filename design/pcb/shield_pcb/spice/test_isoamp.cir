@@ -1,0 +1,40 @@
+.TITLE checking assumptions of ACPLC790B iso-amp properties
+
+* gives us a SUBCKT called ACPLC79B, with nodes:
+* vdd1, vin+, vin-, gnd1, gnd2, vout-, vout+, vdd2
+* which should have the same internals as the ACPLC790B, but in a different
+* package
+.include lib/ACPLC79B.cir
+
+* TODO define as a subckt w/ input powers, and filtered outputs presented
+
+* 1=isolated ground
+Vdd_in 3 1 DC 5V
+Vdd_out 2 0 DC 5V
+* TODO any way I can do simulation w/o connecting (supposedly isolated) grounds
+* with some high resistance
+Riso 1 0 1T
+Cdecouple_in 3 1 0.1u
+Cdecouple_out 2 0 0.1u
+
+* peripherals in my circuit
+Rin 6 5 10
+Cinput_filter 5 1 22n
+
+X790b 3 5 1 1 0 0 4 2 ACPLC79B
+
+* Arduino ADC
+Rl 4 0 10K
+
+* test signal
+Vcm_in 7 1 DC 1.5V
+Vdiff_in 6 7 DC 2.5V
+
+* calculate DC voltages at all nodes, fills op v vector
+.op
+
+* overall: input=6, output=4
+.print op v(6)
+.print op v(4)
+
+.end

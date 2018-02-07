@@ -1,16 +1,18 @@
-*** Basic test of overvoltage protection scheme ***
+.TITLE shield_pcb overvoltage protection DC analysis
 
 * gives us a SUBCKT called DI_MMSZ5231B
 * (1=A(node?) 2=K(athode?))
-.include spice_lib/MMSZ5231B.lib
+.include lib/MMSZ5231B.cir
 
 * there does not seem be be a spice model available for the exact FETs I'm using
 * and this was the closest I could find
 * they are also not easily derived from the datasheets...
 * provides irl530n w/ node order: D G S
 * TODO check datasheet to see in which ways this differs from IRL620 / SiHL620
-.include spice_lib/sihl530.lib
+.include lib/sihl530.cir
 
+* TODO use 120V at least... invoke this from python and use max_safe_voltage or
+* whatever?
 Vs 1 0 DC 100V
 
 *******************************************************************************
@@ -29,16 +31,18 @@ Rlim 2 3 39K
 * does the zener completely defeat the point of having a switch?
 * (i.e. if the switch is off, is the fly still getting shocked?)
 * i think the answer is no, if the fly resistance is not way lower than expected
-* because it would take <<39KR upstream of Rlim to have Xzener turn on (get to >4.8V)
+* because it would take <<39KR upstream of Rlim to have Xzener turn on (get to
+* >4.8V)
 
 * i'm getting less sure... might be the below though?
 *******************************************************************************
 
 *******************************************************************************
 * TODO TODO another big question:
-* even without the Zener, does it matter if the FET is off if the flies resistance
-* is so high? (if ""R""fet_off >> R_fly, then voltage across fly is small, 
-* but if R_fly ~> ""R""fet_off, then voltage across fly can be large even if off)
+* even without the Zener, does it matter if the FET is off if the flies
+* resistance is so high? (if ""R""fet_off >> R_fly, then voltage across fly is
+* small, but if R_fly ~> ""R""fet_off, then voltage across fly can be large even
+* if off)
 
 * is this somewhere where the model for this fet and irl620 diverge?
 * or maybe the spice models don't work well in general?
@@ -66,10 +70,10 @@ Xfet 4 6 0 irl530n
 Rgate 5 6 150
 Rpulldown 6 0 100K
 
+* calculate DC voltages at all nodes, fills v(n) vector?
+.op
+
 *TODO why are these not executed when loading circuit?
-*.print v(1)
-*.print v(2)
-*.print v(2)
-*.print v(3)
+.print op v(1) v(2) v(3) v(5)
 
 .end
