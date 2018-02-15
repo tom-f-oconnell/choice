@@ -23,17 +23,17 @@ $INSBASE
   9
 $EXTMIN
  10
-97
+19.99999999999986
  20
--2.2726
+-6.2726
  30
 0
   9
 $EXTMAX
  10
-153
+392.7500077143099
  20
-192.262
+240
  30
 0
   9
@@ -91,7 +91,7 @@ STANDARD
   9
 $CLAYER
   8
-0
+02aa2_acrylic_ceiling
   9
 $CELTYPE
   6
@@ -775,9 +775,9 @@ $MAXACTVP
   9
 $PINSBASE
  10
-0
+-2.094231756983323
  20
-0
+19.7232039110708
  30
 0
   9
@@ -907,7 +907,7 @@ $EXTNAMES
   9
 $PSVPSCALE
  40
-1
+0.7297139521307647
   9
 $OLESTARTUP
 290
@@ -1115,9 +1115,9 @@ AcDbViewportTableRecord
  21
 1
  12
-134.5517076608298
+221.1717600905635
  22
-68.26125248838368
+169.0527350541165
  13
 0
  23
@@ -1143,9 +1143,9 @@ AcDbViewportTableRecord
  37
 0
  40
-154.9763343896375
+385.3244158677491
  41
-1.715606936416185
+1.551445086705202
  42
 50
  43
@@ -2246,10 +2246,6 @@ CONTINUOUS
     0
 390
 F
-1001
-LibreCad
-1070
-    1
   0
 LAYER
   5
@@ -2261,11 +2257,11 @@ AcDbSymbolTableRecord
 100
 AcDbLayerTableRecord
   2
-1.2a_ceiling_pcb_noegress
+02aa2_acrylic_ceiling
  70
     0
  62
-    7
+    1
   6
 CONTINUOUS
 370
@@ -2683,7 +2679,7 @@ LWPOLYLINE
 100
 AcDbEntity
   8
-0
+02aa2_acrylic_ceiling
   6
 ByLayer
  62
@@ -2693,57 +2689,155 @@ ByLayer
 100
 AcDbPolyline
  90
-    4
+   13
  70
-    1
+    0
  43
 0
  10
-97
+96
  20
--2.2726
+183.262
  10
-153
+96
  20
--2.2726
+6.7274
  10
-153
+111
  20
-192.262
+6.7274
  10
-97
+111
  20
-192.262
+-6.2726
+ 10
+139
+ 20
+-6.2726
+ 10
+139
+ 20
+6.7274
+ 10
+154
+ 20
+6.7274
+ 10
+154
+ 20
+183.262
+ 10
+139
+ 20
+183.262
+ 10
+139
+ 20
+196.262
+ 10
+111
+ 20
+196.262
+ 10
+111
+ 20
+183.262
+ 10
+96
+ 20
+183.262
   0
-CIRCLE
+LWPOLYLINE
   5
 4F
 100
 AcDbEntity
   8
-1.2a_ceiling_pcb_noegress
+02aa2_acrylic_ceiling
   6
 ByLayer
  62
-  256
+    5
 370
    -1
 100
-AcDbCircle
+AcDbPolyline
+ 90
+    5
+ 70
+    1
+ 43
+0
  10
-125.001
+111
  20
-180.262
- 40
-1.5
+6.7274
+ 10
+139
+ 20
+6.7274
+ 10
+139
+ 20
+-6.2726
+ 10
+111
+ 20
+-6.2726
+ 10
+111
+ 20
+-6.2726
   0
-CIRCLE
+LWPOLYLINE
   5
 50
 100
 AcDbEntity
   8
-1.2a_ceiling_pcb_noegress
+02aa2_acrylic_ceiling
+  6
+ByLayer
+ 62
+    5
+370
+   -1
+100
+AcDbPolyline
+ 90
+    5
+ 70
+    1
+ 43
+0
+ 10
+111
+ 20
+196.262
+ 10
+139
+ 20
+196.262
+ 10
+139
+ 20
+183.262
+ 10
+111
+ 20
+183.262
+ 10
+111
+ 20
+183.262
+  0
+CIRCLE
+  5
+51
+100
+AcDbEntity
+  8
+02aa2_acrylic_ceiling
   6
 ByLayer
  62
@@ -2761,33 +2855,11 @@ AcDbCircle
   0
 CIRCLE
   5
-51
-100
-AcDbEntity
-  8
-1.2a_ceiling_pcb_noegress
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-124.995
- 20
-157.762
- 40
-1.5
-  0
-CIRCLE
-  5
 52
 100
 AcDbEntity
   8
-1.2a_ceiling_pcb_noegress
+02aa2_acrylic_ceiling
   6
 ByLayer
  62
@@ -2797,9 +2869,9 @@ ByLayer
 100
 AcDbCircle
  10
-124.995
+125.0010000856844
  20
-144.728
+180.262
  40
 1.5
   0
@@ -2809,7 +2881,7 @@ CIRCLE
 100
 AcDbEntity
   8
-1.2a_ceiling_pcb_noegress
+02aa2_acrylic_ceiling
   6
 ByLayer
  62
@@ -2819,9 +2891,9 @@ ByLayer
 100
 AcDbCircle
  10
-124.989
+124.9950122731971
  20
-122.228
+144.727912321634
  40
 1.5
   0
@@ -2831,7 +2903,7 @@ CIRCLE
 100
 AcDbEntity
   8
-1.2a_ceiling_pcb_noegress
+02aa2_acrylic_ceiling
   6
 ByLayer
  62
@@ -2841,9 +2913,9 @@ ByLayer
 100
 AcDbCircle
  10
-124.989
+124.9950123588815
  20
-135.262
+157.761912321634
  40
 1.5
   0
@@ -2853,7 +2925,7 @@ CIRCLE
 100
 AcDbEntity
   8
-1.2a_ceiling_pcb_noegress
+02aa2_acrylic_ceiling
   6
 ByLayer
  62
@@ -2863,9 +2935,9 @@ ByLayer
 100
 AcDbCircle
  10
-124.983
+124.9890245463942
  20
-112.762
+122.227824643268
  40
 1.5
   0
@@ -2875,7 +2947,7 @@ CIRCLE
 100
 AcDbEntity
   8
-1.2a_ceiling_pcb_noegress
+02aa2_acrylic_ceiling
   6
 ByLayer
  62
@@ -2885,9 +2957,9 @@ ByLayer
 100
 AcDbCircle
  10
-124.983
+124.9890246320786
  20
-99.7277
+135.261824643268
  40
 1.5
   0
@@ -2897,7 +2969,7 @@ CIRCLE
 100
 AcDbEntity
   8
-1.2a_ceiling_pcb_noegress
+02aa2_acrylic_ceiling
   6
 ByLayer
  62
@@ -2907,9 +2979,9 @@ ByLayer
 100
 AcDbCircle
  10
-124.977
+124.9830368195913
  20
-90.2617
+99.72773696490196
  40
 1.5
   0
@@ -2919,7 +2991,7 @@ CIRCLE
 100
 AcDbEntity
   8
-1.2a_ceiling_pcb_noegress
+02aa2_acrylic_ceiling
   6
 ByLayer
  62
@@ -2929,9 +3001,9 @@ ByLayer
 100
 AcDbCircle
  10
-124.977
+124.9830369052757
  20
-77.2276
+112.761736964902
  40
 1.5
   0
@@ -2941,7 +3013,7 @@ CIRCLE
 100
 AcDbEntity
   8
-1.2a_ceiling_pcb_noegress
+02aa2_acrylic_ceiling
   6
 ByLayer
  62
@@ -2951,9 +3023,9 @@ ByLayer
 100
 AcDbCircle
  10
-124.971
+124.9770490927885
  20
-67.7616
+77.22764928653595
  40
 1.5
   0
@@ -2963,7 +3035,7 @@ CIRCLE
 100
 AcDbEntity
   8
-1.2a_ceiling_pcb_noegress
+02aa2_acrylic_ceiling
   6
 ByLayer
  62
@@ -2973,9 +3045,9 @@ ByLayer
 100
 AcDbCircle
  10
-124.971
+124.9770491784729
  20
-54.7276
+90.26164928653596
  40
 1.5
   0
@@ -2985,7 +3057,7 @@ CIRCLE
 100
 AcDbEntity
   8
-1.2a_ceiling_pcb_noegress
+02aa2_acrylic_ceiling
   6
 ByLayer
  62
@@ -2995,9 +3067,9 @@ ByLayer
 100
 AcDbCircle
  10
-124.965
+124.9710613659856
  20
-45.2615
+54.72756160816994
  40
 1.5
   0
@@ -3007,7 +3079,7 @@ CIRCLE
 100
 AcDbEntity
   8
-1.2a_ceiling_pcb_noegress
+02aa2_acrylic_ceiling
   6
 ByLayer
  62
@@ -3017,9 +3089,9 @@ ByLayer
 100
 AcDbCircle
  10
-124.965
+124.97106145167
  20
-32.2275
+67.76156160816994
  40
 1.5
   0
@@ -3029,7 +3101,7 @@ CIRCLE
 100
 AcDbEntity
   8
-1.2a_ceiling_pcb_noegress
+02aa2_acrylic_ceiling
   6
 ByLayer
  62
@@ -3039,9 +3111,9 @@ ByLayer
 100
 AcDbCircle
  10
-124.959
+124.9650736391827
  20
-22.7614
+32.22747392980392
  40
 1.5
   0
@@ -3051,7 +3123,7 @@ CIRCLE
 100
 AcDbEntity
   8
-1.2a_ceiling_pcb_noegress
+02aa2_acrylic_ceiling
   6
 ByLayer
  62
@@ -3061,9 +3133,53 @@ ByLayer
 100
 AcDbCircle
  10
-124.959
+124.9650737248671
  20
-9.72739
+45.26147392980392
+ 40
+1.5
+  0
+CIRCLE
+  5
+5F
+100
+AcDbEntity
+  8
+02aa2_acrylic_ceiling
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+124.9590859123798
+ 20
+9.727386251437906
+ 40
+1.5
+  0
+CIRCLE
+  5
+60
+100
+AcDbEntity
+  8
+02aa2_acrylic_ceiling
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+124.9590859980642
+ 20
+22.76138625143791
  40
 1.5
   0
