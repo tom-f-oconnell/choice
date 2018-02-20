@@ -1,4 +1,8 @@
 
+routing to L/R electrodes in custom footprint may be difficult b/c the origin of
+that pad (might?) overlap w/ the clearence of the center electrode
+-fix and check
+
 ******
 either w/ jumper or power switch of some kind, allow for connection between
 at least iso_5v and HV (to allow for switching mosfets to produce current ->

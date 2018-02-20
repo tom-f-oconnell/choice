@@ -1,0 +1,4 @@
+(sym_lib_table
+  (lib (name ceiling_pcb)(type Legacy)(uri ${KIPRJMOD}/ceiling_pcb.lib)(options "")(descr ""))
+  (lib (name shock_electrodes)(type Legacy)(uri ${KIPRJMOD}/../schematic_lib/shock_grid.lib)(options "")(descr ""))
+)

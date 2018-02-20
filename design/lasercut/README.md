@@ -45,6 +45,30 @@ generated from the `.dxf` of the same name. These are for laser cutting, or use
 in other programs. They were generated in Librecad, the same program used to 
 draw the master DXFs. These intermediates should load OK in at least Coreldraw.
 
+To get a DXF suitable for import into KiCAD, for use as the outline of the
+board:
+- Make a copy of the DXF with the edges you want
+- In the copy (at least relevant to LibreCAD):
+  - delete all layers / features other than the edges
+  - select any blocks in your design and `Tools->Modify->Explode` them
+  - delete all blocks
+- (temporarily) change page settings in KiCAD PCB Layout Editor view of either
+  the ceiling or the floor board, whichever you want to import new edges to.
+  - `File->Page Settings->Orientation->Landscape`
+- `File->Import->DXF`
+- Change page settings back to portrait, so boards fit on page for printing.
+
+TODO put this in a README in PCB directories somewhere
+To generate negative of copper layer for etchant mask:
+- (in KiCAD) `File->Plot`
+- Select `SVG` from dropdown
+- Check `Mirrored plot` and `Negative plot`
+- Change any other settings you want, including perhaps what to do with edges.
+- Plot
+- Print the SVG output in some program that maintains scale (Inkscape works)
+
+The existing negative is in `design/pcb/gerber/ceiling/<...>.svg`.
+
 #### TODO
 - maybe delete all of either the SVGs or the EPS
 - maybe generate all of one or both for all files
