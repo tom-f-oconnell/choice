@@ -23,17 +23,17 @@ $INSBASE
   9
 $EXTMIN
  10
--130
+19.99999999999986
  20
--0.2499999999999991
+-6.2726
  30
 0
   9
 $EXTMAX
  10
-264.7
+154
  20
-225
+240
  30
 0
   9
@@ -91,7 +91,7 @@ STANDARD
   9
 $CLAYER
   8
-06_support_acrylic
+02aa2_acrylic_ceiling
   9
 $CELTYPE
   6
@@ -1115,9 +1115,9 @@ AcDbViewportTableRecord
  21
 1
  12
-170.8545669564726
+81.27180024467955
  22
-111.6818464192855
+10.40190704218589
  13
 0
  23
@@ -1143,9 +1143,9 @@ AcDbViewportTableRecord
  37
 0
  40
-230.5603750660667
+38.20658000633033
  41
-1.551445086705202
+1.715606936416185
  42
 50
  43
@@ -2369,7 +2369,7 @@ AcDbLayerTableRecord
   2
 02aa2_acrylic_ceiling
  70
-    1
+    0
  62
     1
   6
@@ -2611,7 +2611,7 @@ AcDbLayerTableRecord
   2
 06_support_acrylic
  70
-    0
+    1
  62
     1
   6
@@ -35864,6 +35864,102 @@ AcDbArc
 301.3301983317145
  51
 598.6698016681917
+  0
+LINE
+  5
+3EB
+100
+AcDbEntity
+  8
+02aa2_acrylic_ceiling
+  6
+ByLayer
+ 62
+    3
+370
+   -1
+100
+AcDbLine
+ 10
+123.7
+ 20
+196.262
+ 11
+123.7
+ 21
+183.262
+  0
+LINE
+  5
+3EC
+100
+AcDbEntity
+  8
+02aa2_acrylic_ceiling
+  6
+ByLayer
+ 62
+    3
+370
+   -1
+100
+AcDbLine
+ 10
+126.3
+ 20
+196.262
+ 11
+126.3
+ 21
+183.262
+  0
+LINE
+  5
+3ED
+100
+AcDbEntity
+  8
+02aa2_acrylic_ceiling
+  6
+ByLayer
+ 62
+    3
+370
+   -1
+100
+AcDbLine
+ 10
+123.7
+ 20
+6.7274
+ 11
+123.7
+ 21
+-6.2726
+  0
+LINE
+  5
+3EE
+100
+AcDbEntity
+  8
+02aa2_acrylic_ceiling
+  6
+ByLayer
+ 62
+    3
+370
+   -1
+100
+AcDbLine
+ 10
+126.3
+ 20
+6.7274
+ 11
+126.3
+ 21
+-6.2726
   0
 ENDSEC
   0
