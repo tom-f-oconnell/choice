@@ -420,8 +420,15 @@ namespace msk {
             digitalWrite(rclk, HIGH);
 
             // LOW on output enable enables the shift register
-            // and the isolation inverts the logic
+            // and the isolation inverts the logic (disabled = high impedance on
+            // outputs)
+            // disable the FET shift register, and thus the FETs, because
+            // they have pull-downs
             digitalWrite(fet_enbl, LOW);
+            // enable the demux control shift register, so all outputs should
+            // default to LOW, which only overrides the optional_demux_enable
+            // pull-up resistor, enabling the CD4556. with all other demux
+            // configuration bits LOW, this should select the first channel (0).
             digitalWrite(demux_enbl, HIGH);
         #endif
     }
