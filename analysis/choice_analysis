@@ -66,7 +66,7 @@ class PluralFormatter(string.Formatter):
 
 # TODO use config file for these flags / command line args
 
-verbose = False
+verbose = True
 
 only_show_interactive = False
 show_plots = False
@@ -92,27 +92,23 @@ if make_plots:
     import matplotlib.pyplot as plt
     import matplotlib.patches as patches
     import seaborn as sns
+    # TODO what was this for?
     #from matplotlib import rcParams
     #rcParams.update({'figure.autolayout': True})
     # was it set_style?
     sns.set_style('white')
 
-# TODO load
-#left_shock = 6
-#right_shock = 5
-all_shock = 8
-
 def load_metadata(d):
     """
     TODO
     """
-    files = glob.glob(join(d, '*_stimuli.p'))
-    if len(files) > 1:
+    pickles = glob.glob(join(d, '*_stimuli.p'))
+    if len(pickles) > 1:
         raise IOError('too many stimulus files in ' + d)
-    elif len(files) < 1:
+    elif len(pickles) < 1:
         raise IOError('found no stimulus files in ' + d)
-    filename = files[0]
-    with open(filename, 'rb') as f:
+    stimuli_pickle = pickles[0]
+    with open(stimuli_pickle, 'rb') as f:
         # TODO it seems like pins2odors would really be more useful?
         odors2left_pins, odors2right_pins, _, trial_structure = pickle.load(f)
     times = dict()
@@ -124,9 +120,49 @@ def load_metadata(d):
     times['test_duration'] = \
         stimuli[0].seq.end.to_sec() - stimuli[0].seq.start.to_sec()
 
-    # TODO load
-    left_pins = [42, 44, 48]
-    right_pins = [38, 50, 52]
+    metadata = dict()
+
+    # ros parameter with earliest timestamp should hold the stimulus
+    # configuration (among other configuration)
+    # checking all because enough data has had the timestamps screwed up
+    # while retracking, and that configuration could cause the same problem for
+    # other people in the future
+    rosparam_yamls = sorted(glob.glob(join(d, '*_parameters.yaml')))
+    yaml_loader = yaml.YAML()
+    found_olf_params = False
+    # TODO option to use other settings from within group of experiments, as
+    # long as those with settings are consistent? (that's closer to behavior i
+    # had before. now, it's failing on 20170913_105853
+    for rosparam_yaml in rosparam_yamls:
+        with open(rosparam_yaml, 'r') as f:
+            # TODO why did this not err when it was loading a string? is it
+            # overloaded?
+            stimulus_rosparams = yaml_loader.load(f)
+            if 'olf' in stimulus_rosparams:
+                left_pins = stimulus_rosparams['olf']['left_pins']
+                right_pins = stimulus_rosparams['olf']['right_pins']
+
+                shock_params = stimulus_rosparams['zap']
+                if 'all_pin' in shock_params:
+                    metadata['all_shock'] = shock_params['all_pin']
+
+                elif 'left' in shock_params and \
+                    'right' in shock_params:
+                    metadata['left_shock'] = shock_params['left']
+                    metadata['right_shock'] = shock_params['right']
+
+                else:
+                    raise ValueError("either zap/all_shock or both " + \
+                        "zap/{left/right} expected to be in the " + \
+                        "*_parameters.yaml file with 'olf'")
+
+                found_olf_params = True
+                break
+
+    if not found_olf_params:
+        raise ValueError("no *_parameters.yaml files had 'olf/*' parameters")
+
+    del yaml_loader
 
     # TODO check
     def pin_from(check, group):
@@ -158,8 +194,6 @@ def load_metadata(d):
     pretest_right_odor, posttest_right_odor = \
         prepost_odors(odors2right_pins, right_pins, stimuli)
 
-    metadata = dict()
-
     # TODO check that all blocks would yield the same answer
     for block in stimuli[1:-1]:
         odors = []
@@ -173,9 +207,19 @@ def load_metadata(d):
             odors += \
                 [o for o, p in odors2right_pins.items() if p in block.seq.pins]
         '''
-        if all_shock in block.seq.pins:
-            odors += \
-                [o for o, p in list(odors2right_pins.items()) if p in block.seq.pins]
+        for sp_name in ('left_shock', 'right_shock', 'all_shock'):
+            if not sp_name in metadata:
+                continue
+
+            sp = metadata[sp_name]
+            if sp in block.seq.pins:
+                # assumes same odors on left and right. 
+                # TODO maybe take union of same result w/ both l & r
+                odors += \
+                    [o for o, p in list(odors2right_pins.items()) \
+                        if p in block.seq.pins]
+                break
+
         # TODO check
         odors = set(odors)
         if len(odors) > 0:
@@ -284,6 +328,7 @@ for d in [join(path, x) for x in dirs]:
 
         # TODO also load from compressor_rois_..., if this is missing
         # or just figure out why it was missing?
+        # TODO why [0][0]?
         roi_points = rosparam.load_file(join(d, 'roi_N' + str(metadata['n']) + \
             '.yaml'))[0][0]['roi_points']
         metadata['roi_points'] = roi_points
@@ -377,7 +422,11 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, \
         for p in s.seq.pins:
             color = 'b'
             label = None
-            if p is all_shock:
+            # TODO do write to work w/ old data where left/right_shock are
+            # specififed separately
+            # TODO handle all_shock differently then, to display full range (?)
+            if ('all_shock' in meta and p == meta['all_shock']) or \
+                ('left_shock' in meta and p == meta['left_shock']):
                 label = 'shock'
                 color = shock_color
                 height = small_height
@@ -386,12 +435,12 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, \
                     (y_shock_to_odor + small_height)
                 alpha = shock_patch_alpha
 
-            # elif p is right_shock:
-            #     label = 'shock'
-            #     color = shock_color
-            #     height = small_height
-            #     y0 = y_max_above_mid + y_beyond_arena + y_shock_to_odor
-            #     alpha = shock_patch_alpha
+            elif 'right_shock' in meta and p == meta['right_shock']:
+                label = 'shock'
+                color = shock_color
+                height = small_height
+                y0 = y_max_above_mid + y_beyond_arena + y_shock_to_odor
+                alpha = shock_patch_alpha
 
             # TODO i think the reason these have been displaying correctly is
             # that y_min_below_mid ~= y_max_above_mid, though those are probably
@@ -700,8 +749,14 @@ def fraction_time(cropped_times, y_positions, meta, prefix, odor_of_interest):
     # to make this more robust to misspecifying the middle of the arena?
     # TODO check uniform sampling rate? otherwise it is fraction of indices...
     fraction_left = np.sum(left[test_indices]) / np.sum(test_indices)
-    #print 'sum ' + prefix + 'test indices on left', np.sum(left[test_indices])
-    #print 'sum ' + prefix + 'test_indices', np.sum(test_indices)
+    # TODO delete me
+    print('roi_points:', meta['roi_points'])
+    print('y_mid:', y_mid)
+    print(y_positions.shape)
+    print(y_positions)
+    print(y_positions.min(), y_positions.max())
+    print('sum ' + prefix + 'test indices on left', np.sum(left[test_indices]))
+    print('sum ' + prefix + 'test_indices', np.sum(test_indices))
 
     nonshocked_odor = None
 
@@ -726,6 +781,11 @@ def fraction_time(cropped_times, y_positions, meta, prefix, odor_of_interest):
     else:
         assert False, 'neither of ' + prefix + \
             'test_<left/right>_odor(s) were equal to odor of interest'
+
+    if verbose:
+        print('fraction time spent in {} {}: {}'.format( \
+            'reinforced' if 'reinforced_odor' in meta else 'odor A', prefix, \
+            fraction))
 
     if 'reinforced_odor' in meta:
         assert meta['reinforced_odor'] != nonshocked_odor
@@ -824,6 +884,9 @@ def decision_bias(cropped_times, y_positions, meta, prefix, \
     else:
         assert False, 'neither of ' + prefix + \
             'test_<left/right>_odor(s) were equal to odor of interest'
+
+    if verbose:
+        print('decision bias {}:'.format(prefix), bias_against)
 
     if 'reinforced_odor' in meta:
         assert meta['reinforced_odor'] != nonshocked_odor
@@ -1042,14 +1105,6 @@ def analyze_group(fly2data, title=''):
                 data['position_y'][cropped_indices], \
                 meta, 'post', odor_of_interest)
 
-            if verbose:
-                print('fraction time spent in {} pre: {}'.format( \
-                    'reinforced' if 'reinforced_odor' in meta else 'odor A', \
-                    time_fraction_pre))
-                print('fraction time spent in {} post: {}'.format( \
-                    'reinforced' if 'reinforced_odor' in meta else 'odor A', \
-                    time_fraction_post))
-
         if want_decision_bias:
             decision_bias_pre, _, _ = decision_bias(cropped_times, \
                 data['position_y'][cropped_indices].as_matrix(), meta, 'pre', \
@@ -1060,8 +1115,6 @@ def analyze_group(fly2data, title=''):
                 mean_y_pixels, odor_of_interest)
 
             if verbose:
-                print('decision bias pre:', decision_bias_pre)
-                print('decision bias post:', decision_bias_post)
                 print('')
  
         assert not np.any(np.logical_and(pretest_indices, posttest_indices)), \
