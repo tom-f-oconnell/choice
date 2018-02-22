@@ -296,7 +296,12 @@ for d in [join(path, x) for x in dirs]:
         continue
 
     # TODO check trial structure times against those in log
-    common_metadata = load_metadata(d)
+    try:
+        common_metadata = load_metadata(d)
+    except ValueError as e:
+        print(e)
+        print('SKIPPING:', d)
+
     for o in common_metadata['odors']:
         all_odors.add(o)
 
