@@ -33,6 +33,32 @@ import random
 
 import argparse
 
+# TODO use config file for these flags / command line args
+verbose = True
+
+# TODO option to get individual plots in nice aspect ratio / format for examples
+# in publications, etc
+
+only_show_interactive = False
+show_plots = False
+save_plots = True
+plot_format = 'svg'
+make_plots = show_plots or save_plots
+sort_traces_by = 'decision_bias'
+
+# TODO it seems these were originally for displaying?
+# separate flags for whether the text should be added to traces plot?
+want_time_spent = True
+want_decision_bias = True
+# TODO turn off interactive plots if this is false? rename interactive flag?
+display_metrics = want_time_spent or want_decision_bias 
+
+# TODO also include option to color lines in metric change plots by same labels?
+show_experiment_labels = True
+
+print_version = True
+digits_after_zero = 3
+
 # see falsetru's answer at
 # https://stackoverflow.com/questions/21872366/plural-string-formatting
 class PluralFormatter(string.Formatter):
@@ -63,30 +89,6 @@ class PluralFormatter(string.Formatter):
             return suffix[0] if value <= 1 else suffix[1]
         else:
             raise KeyError(key)
-
-# TODO use config file for these flags / command line args
-
-verbose = True
-
-only_show_interactive = False
-show_plots = False
-save_plots = True
-plot_format = 'svg'
-make_plots = show_plots or save_plots
-sort_traces_by = 'decision_bias'
-
-# TODO it seems these were originally for displaying?
-# separate flags for whether the text should be added to traces plot?
-want_time_spent = True
-want_decision_bias = True
-# TODO turn off interactive plots if this is false? rename interactive flag?
-display_metrics = want_time_spent or want_decision_bias 
-
-# TODO also include option to color lines in metric change plots by same labels?
-show_experiment_labels = True
-
-print_version = True
-digits_after_zero = 3
 
 if make_plots:
     import matplotlib.pyplot as plt
