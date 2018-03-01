@@ -535,16 +535,15 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, \
                 plotting_x_min = curr_x_min
 
     if display_metrics and not metrics is None:
-        # TODO other metrics?
         y_pos = 0.77
         x_0 = 0.99
-        dx = 0.08
+        dx = 0.17
         fontsize = 7
         valign = 'top'
-        # TODO crop a little tighter and move x_pos to the left?
         if want_time_spent:
             text = ''
             # TODO make robust to fly #0 getting skipped
+            # TODO TODO also label which col is time spent / decision bias, etc
             if fly == 0:
                 text += 'pre: %.3f in reinforced\npost: %.3f in reinforced' % \
                     (metrics['time_fraction_pre'],metrics['time_fraction_post'])
@@ -552,7 +551,7 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, \
                 text += 'pre: %.3f\npost: %.3f' % \
                     (metrics['time_fraction_pre'],metrics['time_fraction_post'])
 
-            # TODO scale fontsize w/ # of traces?
+            # TODO scale fontsize w/ # of traces? / figsize?
             ax.text(x_0, y_pos, text, transform=ax.transAxes, \
                 fontsize=fontsize, verticalalignment=valign)
 
@@ -1035,8 +1034,8 @@ def analyze_group(fly2data, title=''):
         # if you're getting "X Error of failed request: BadAlloc (insufficient
         # resources for operation)...", one thing you can try is decreasing this
         # scale
-        scale = 4
-        aspect_ratio = 1
+        scale = 1
+        aspect_ratio = 5
         fig, axes = plt.subplots(nrows=len(fly2data), sharex=True, sharey=True,\
             squeeze=True, figsize=(scale * aspect_ratio, scale * len(fly2data)))
         if not type(axes) is np.ndarray:
@@ -1310,6 +1309,11 @@ def analyze_group(fly2data, title=''):
                 #ax.tick_params(axis='x', direction='out')
 
     if save_plots:
+        # TODO why did this change height of plots? only if >=2?
+        fig.tight_layout(pad=2, h_pad=0)
+        # default is 0.9. we want to move right edge of actual plots in, 
+        # so that there is extra space on the right for the text
+        fig.subplots_adjust(right=0.8)
         # TODO flag to output all figs in current dir? (as well?) symlink?
         if title == '':
             # TODO why are there traces in there that were marked as rejects?
