@@ -2,6 +2,7 @@
 
 # TODO
 from __future__ import print_function
+from __future__ import division
 
 import numpy as np
 import pandas as pd
@@ -759,14 +760,6 @@ def fraction_time(cropped_times, y_positions, meta, prefix, odor_of_interest):
     # to make this more robust to misspecifying the middle of the arena?
     # TODO check uniform sampling rate? otherwise it is fraction of indices...
     fraction_left = np.sum(left[test_indices]) / np.sum(test_indices)
-    # TODO delete me
-    print('roi_points:', meta['roi_points'])
-    print('y_mid:', y_mid)
-    print(y_positions.shape)
-    print(y_positions)
-    print(y_positions.min(), y_positions.max())
-    print('sum ' + prefix + 'test indices on left', np.sum(left[test_indices]))
-    print('sum ' + prefix + 'test_indices', np.sum(test_indices))
 
     nonshocked_odor = None
 
