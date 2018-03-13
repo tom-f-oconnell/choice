@@ -4,6 +4,9 @@ that pad (might?) overlap w/ the clearence of the center electrode
 -fix and check
 
 ******
+test jig to measure + verify gate voltages are being set correctly
+(to check for both hw and sw issues) or all embedded?
+
 either w/ jumper or power switch of some kind, allow for connection between
 at least iso_5v and HV (to allow for switching mosfets to produce current ->
 measure voltage -> test / determine switch state <-> fet bit mapping)
