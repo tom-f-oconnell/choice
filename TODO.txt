@@ -1,27 +1,33 @@
-add facilities for testing valves before trials.
-	-service?
+- add facilities for testing valves before trials.
+	 - service?
 
-pause until user signals they have connected everything before
-starting acquisition? just run trial structure generator in 
-advance as before?
+- pause until user signals they have connected everything before starting
+  acquisition? just run trial structure generator in advance as before?
 
-FIX STIMULUS PARAMETER SAVING (FROM TRACKER, OR REPEAT IN THIS LAUNCH) WHEN TRACKING CONCURRENTLY
+- FIX STIMULUS PARAMETER SAVING (FROM TRACKER, OR REPEAT IN THIS LAUNCH) WHEN
+  TRACKING CONCURRENTLY
 
-copy stimulus parameters to retracked directory (maybe any pickle files?)
+- copy stimulus parameters to retracked directory (maybe any pickle files?)
 
-only start shock after the fly has experienced the odor
+- only start shock after the fly has experienced the odor
 
-include scripts to help automate setup of key pair for secure rsync
-and include optional path in probably save_data_to_hdf5, maybe 
-another data saving node, to copy data via rsync in shutdown
-hook
--should i start retracking locally under any circumstances? (leaning towards no, if aiming for max experiment uptime)
+- include scripts to help automate setup of key pair for secure rsync and
+  include optional path in probably save_data_to_hdf5, maybe another data saving
+  node, to copy data via rsync in shutdown hook
+- should i start retracking locally under any circumstances? (leaning towards
+  no, if aiming for max experiment uptime)
 
-why were some experiments mising roi_NX.yaml files, but not others?
+- why were some experiments missing roi_NX.yaml files, but not others?
 
--install script (rosinstall?) for tracking and everything
- (w/ verified versions of dependencies!)
- -zip up all code and host / backup?
--maybe make a subset of the code installable for analysis w/o ROS
- -at least another install script, maybe pip?
+- install script (rosinstall?) for tracking and everything
+  (w/ verified versions of dependencies!)
+  - zip up all code and host / backup?
+- maybe make a subset of the code installable for analysis w/o ROS
+  - at least another install script, maybe pip?
 
+-add configuration to run a trial, but w/ no odors, or change the odor
+ configuration s.t. it's easier to have the software realize nothing you don't
+ want to connect anything (for troubleshooting experiments)
+
+- some kind of central (maybe Github repo based) collection of various
+  parameters

@@ -1308,8 +1308,16 @@ def analyze_group(fly2data, title=''):
                 #ax.tick_params(axis='x', direction='out')
 
     if save_plots:
-        # TODO why did this change height of plots? only if >=2?
-        fig.tight_layout(pad=2, h_pad=0)
+        try:
+            # TODO why did this change height of plots? only if >=2?
+            fig.tight_layout(pad=2, h_pad=0)
+        except ValueError as e:
+            # still unclear what is the cause of the error in my case
+            # see: https://github.com/matplotlib/matplotlib/issues/5456
+            print(e)
+            print('Warning: could not use tight_layout on figure')
+            pass
+
         # default is 0.9. we want to move right edge of actual plots in, 
         # so that there is extra space on the right for the text
         fig.subplots_adjust(right=0.8)
