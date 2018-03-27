@@ -5,4 +5,9 @@ store notes on age, density (?), time of day, time of starvation
 (and generate information re: which odor was trained) to plot
 metric changes for each of these as well, for debugging
 
+instead of saying "nan" if metric cannot be computed, say "n/a"? (in notes
+embedded in plots)
+
+also group traces by experiment, to more easily view problems specific to
+experiments
 

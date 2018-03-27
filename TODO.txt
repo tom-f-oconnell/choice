@@ -31,3 +31,9 @@
 
 - some kind of central (maybe Github repo based) collection of various
   parameters
+
+- orient plots s.t. the starting odor is always on the same side?
+  - one reason to not do this, is it would make it harder to see spatial
+    bias by eye
+  - could also just group them by orientation, then which odor was shocked,
+    and then whether the shocked odor came first? or something like that?

@@ -17,6 +17,7 @@ from itertools import groupby
 import datetime as dt
 import random
 import string
+import warnings
 
 import numpy as np
 import pandas as pd
@@ -42,8 +43,9 @@ verbose = True
 only_show_interactive = False
 show_plots = False
 save_plots = True
-plot_format = 'svg'
+plot_format = 'png'
 make_plots = show_plots or save_plots
+# TODO describe alternatives. None valid?
 sort_traces_by = 'decision_bias'
 
 # TODO it seems these were originally for displaying?
@@ -59,6 +61,13 @@ show_experiment_labels = True
 print_version = True
 digits_after_zero = 3
 
+# TODO would probably want to test case where some experiments in a group don't
+# contain this file, while others do. in that case, there should still be an
+# error.
+# maybe delete this option, depending on what i decide to do with the above...
+require_stimuli = False
+
+
 if make_plots:
     import matplotlib
     matplotlib.use('Agg')
@@ -72,6 +81,7 @@ if make_plots:
     # was it set_style?
     sns.set_style('white')
 
+# TODO fix 0 case. should use plural again.
 # see falsetru's answer at
 # https://stackoverflow.com/questions/21872366/plural-string-formatting
 class PluralFormatter(string.Formatter):
@@ -105,25 +115,9 @@ class PluralFormatter(string.Formatter):
 
 def load_metadata(d):
     """
-    TODO
+    If the `*_stimuli.p` file is not found, the function will not fail if the
+    `require_stimuli` option is False.
     """
-    pickles = glob.glob(join(d, '*_stimuli.p'))
-    if len(pickles) > 1:
-        raise IOError('too many stimulus files in ' + d)
-    elif len(pickles) < 1:
-        raise IOError('found no stimulus files in ' + d)
-    stimuli_pickle = pickles[0]
-    with open(stimuli_pickle, 'rb') as f:
-        # TODO it seems like pins2odors would really be more useful?
-        odors2left_pins, odors2right_pins, _, trial_structure = pickle.load(f)
-    times = dict()
-    times['start'] = trial_structure[0].to_sec()
-    times['end'] = trial_structure[-1].to_sec()
-    stimuli = [x for x in trial_structure if type(x) is LoadSequenceRequest]
-    times['pretest_start'] = stimuli[0].seq.start.to_sec()
-    times['posttest_start'] = stimuli[-1].seq.start.to_sec()
-    times['test_duration'] = \
-        stimuli[0].seq.end.to_sec() - stimuli[0].seq.start.to_sec()
 
     metadata = dict()
 
@@ -163,11 +157,11 @@ def load_metadata(d):
 
                 found_olf_params = True
                 break
+    del yaml_loader
 
     if not found_olf_params:
         raise ValueError("no *_parameters.yaml files had 'olf/*' parameters")
 
-    del yaml_loader
 
     # TODO check
     def pin_from(check, group):
@@ -193,6 +187,26 @@ def load_metadata(d):
         postpin = pin_from(postpins, pin_group)
         return odor_for_pin(odors2pins, prepin), \
             odor_for_pin(odors2pins, postpin)
+
+    pickles = glob.glob(join(d, '*_stimuli.p'))
+    if len(pickles) > 1:
+        raise IOError('too many stimulus files in {}.'.format(d))
+    elif len(pickles) < 1:
+        msg = 'found no stimulus files in {}.'.format(d)
+
+        if require_stimuli:
+            raise IOError(msg)
+        # only warn first time per run?
+        else:
+            warnings.warn(msg)
+            return metadata
+
+    stimuli_pickle = pickles[0]
+    with open(stimuli_pickle, 'rb') as f:
+        # TODO it seems like pins2odors would really be more useful?
+        odors2left_pins, odors2right_pins, _, trial_structure = pickle.load(f)
+
+    stimuli = [x for x in trial_structure if type(x) is LoadSequenceRequest]
 
     pretest_left_odor, posttest_left_odor = \
         prepost_odors(odors2left_pins, left_pins, stimuli)
@@ -233,6 +247,14 @@ def load_metadata(d):
             # TODO check
             metadata['reinforced_odor'] = reinforced_odor
             break
+
+    times = dict()
+    times['start'] = trial_structure[0].to_sec()
+    times['end'] = trial_structure[-1].to_sec()
+    times['pretest_start'] = stimuli[0].seq.start.to_sec()
+    times['posttest_start'] = stimuli[-1].seq.start.to_sec()
+    times['test_duration'] = \
+        stimuli[0].seq.end.to_sec() - stimuli[0].seq.start.to_sec()
 
     metadata['times'] = times
     metadata['pretest_left_odor'] = pretest_left_odor
@@ -302,15 +324,22 @@ for d in [join(path, x) for x in dirs]:
 
     # TODO check trial structure times against those in log
     try:
+        # metadata common to all flies in one experiment
+        # (i.e. stored directly in the directory grouping timestamped output
+        #  directories)
         common_metadata = load_metadata(d)
     except ValueError as e:
+        # TODO use warnings
         print(e)
         print('SKIPPING:', d)
 
-    for o in common_metadata['odors']:
-        all_odors.add(o)
+    try:
+        for o in common_metadata['odors']:
+            all_odors.add(o)
+    except KeyError as e:
+        if require_stimuli:
+            raise
 
-    # TODO can join take a variable # of args?
     for f in glob.glob(join(d, '*.hdf5')):
         metadata = dict(common_metadata)
         # TODO make it so this generates the (optional) config? notify if doing
@@ -365,9 +394,10 @@ if os.path.exists(yaml_filename):
 else:
     rejects = OrderedDict()
 
-# organize better?
-zero_before_test_by = 60
-# TODO why did 1100 not work? isn't sequence 1000 long?
+# Defines the 0 on the horizontal (time) axis of all plots, to be this many
+# seconds before the start of the first test period.
+plot_t0_to_test0_start_s = 60
+# TODO why did 1100 not work? isn't sequence 1000 long? (for which test case?)
 crop_to_seconds = 1300
 
 def plot_trace(cropped_rel_times, position_y, meta, metrics=None, \
@@ -376,18 +406,14 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, \
     """
     """
 
-    label_set = set()
-    labels = []
-    handles = []
-
-    start = meta['times']['pretest_start'] - zero_before_test_by
-
     # calculate percent time in each odor region
     # TODO make one variable at top which controls which dimension to use as
     # long axis and have this (and elsewhere) depend on that
     y_vals = [p[1] for p in meta['roi_points']]
     y_mid = np.mean(y_vals)
 
+    # TODO how similar was this to the style the matplotlib maintainer
+    # recommended on stackexchange?
     if ax is None:
         plt.plot(cropped_rel_times , (-1) * (position_y - y_mid), \
             c='black', linewidth=1.3)
@@ -396,6 +422,27 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, \
             c='black', linewidth=1.3)
 
     plt.xlabel('Seconds')
+
+    labels = []
+    handles = []
+    plotting_y_max = None
+    plotting_y_min = None
+    plotting_x_max = None
+    plotting_x_min = None
+
+    if not 'times' in meta:
+        # TODO do i atually want to do something with this values?
+        return plotting_x_min, plotting_x_max, plotting_y_min, plotting_y_max, \
+            labels, handles
+
+    # "pre"-test here just means the test before training, rather than
+    # the start of some period that comes before a test.
+    # TODO rename to plot_t0
+    plot_t0 = meta['times']['pretest_start'] - plot_t0_to_test0_start_s
+    # TODO I don't really think it's worth factoring the above line out, but
+    # it's probably worth reorganizing the code to not have to recompute it.
+
+    label_set = set()
 
     y_max = max([x[1] for x in meta['roi_points']])
     y_min = min([x[1] for x in meta['roi_points']])
@@ -422,11 +469,6 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, \
 
     large_height = (y_max_above_mid - y_min_below_mid) / 2 + y_beyond_arena
 
-    plotting_y_max = None
-    plotting_y_min = None
-    plotting_x_max = None
-    plotting_x_min = None
-    
     for i, s in enumerate(meta['stimuli']):
         width = (s.seq.end - s.seq.start).to_sec()
         for p in s.seq.pins:
@@ -484,7 +526,7 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, \
 
             # TODO maybe subdivide for shocks? (to reflect actual pulse cycle
             # ~2.5s on/off)
-            x0 = s.seq.start.to_sec() - start
+            x0 = s.seq.start.to_sec() - plot_t0
             #print 'seq.start.to_sec()', s.seq.start.to_sec(), 'x0', x0, \
             #'width', width
             if i == 0:
@@ -568,6 +610,9 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, \
         # no sure i want a box?
         # TODO what does verticalalignment do?
 
+    # TODO move this above code that plots stimuli (so it can also be used for
+    # experiments with no stimuli with no extra code), and make sure it still
+    # works as expected
     # different name for this flag?
     if show_experiment_labels:
         ax.text(-.04, 0.6, experiment2label[meta['dir']], \
@@ -613,12 +658,12 @@ for fly, data in list(fly2data.items()):
     # the analysis_rejects.yaml file. if it is in one, no need to get a label
     # for it here.
     for reason, reject_dict in list(rejects.items()):
-        if (not reject_dict is None) and stamp in reject_dict \
-            and meta['n'] in reject_dict[stamp]:
+        if ((not reject_dict is None) and stamp in reject_dict
+            and meta['n'] in reject_dict[stamp]):
 
             # TODO use actual yaml filename?
             if verbose:
-                print(stamp, meta['n'], \
+                print(stamp, meta['n'],
                     'was already labeled in analysis_rejects.yaml')
 
             already_labelled = True
@@ -635,7 +680,7 @@ for fly, data in list(fly2data.items()):
             print(k, '-', key2group[k])
         
     new_keys = True
-    curr_times = (data['time_epoch_secs'] + data['time_epoch_nsecs'] / \
+    curr_times = (data['time_epoch_secs'] + data['time_epoch_nsecs'] /
         1e9).as_matrix()
     nonzero_times = curr_times.nonzero()[0]
 
@@ -662,29 +707,45 @@ for fly, data in list(fly2data.items()):
     fig = plt.figure()
     cid = fig.canvas.mpl_connect('key_press_event', press)
 
-    # TODO factor out? (repeated below)
-    start = meta['times']['pretest_start'] - zero_before_test_by
-    cropped_indices = (curr_times - start) <= crop_to_seconds
-    cropped_times = curr_times[cropped_indices]
-    # relative to start of experiment
-    cropped_rel_times = cropped_times - start
+    # TODO TODO the behavior should be, if 'times' isn't in meta, the data
+    # should not be cropped (circumstances in which it could still be / would
+    # need to be aligned?) maybe with some option to fail if this key isn't
+    # there
 
-    #plot_trace(curr_times, data['position_y'], meta, ax=ax)
-    # TODO why did this seem to be on a log x scale once?
-    plot_trace(cropped_rel_times, data['position_y'][cropped_indices], meta)
+    if 'times' in meta:
+        plot_t0 = meta['times']['pretest_start'] - plot_t0_to_test0_start_s
+
+        # TODO So are times before the 0 still included? option to crop those as
+        # well? I feel like they might not have been displaying correctly, but I
+        # want to see that information without going through extra hurdles.
+        cropped_indices = (curr_times - start) <= crop_to_seconds
+        cropped_times = curr_times[cropped_indices]
+        # relative to time origin defined earlier
+        cropped_rel_times = cropped_times - plot_t0
+
+        #plot_trace(curr_times, data['position_y'], meta, ax=ax)
+        # TODO why did this seem to be on a log x scale once?
+        plot_trace(cropped_rel_times, data['position_y'][cropped_indices], meta)
+
+    else:
+        # or maybe take nonzero_times and restrict positions to same indices?
+        plot_trace(curr_times, data['position_y'], meta)
+
     plt.title('{}, ROI {}'.format(stamp, meta['n']))
 
     press.fig = fig
     press.cid = cid
 
     while True:
+        # TODO What was causing this again? I think at least pressing keys too
+        # fast when labelling flies?
         try:
             # TODO maybe just delay before / after?
             plt.show()
             break
-        except AttributeError:
+        except AttributeError as e:
             # TODO what to do? need to fail?
-            print('caught attribute error')
+            print(e)
             pass
 
     if not hasattr(press, 'group'):
@@ -794,6 +855,8 @@ def fraction_time(cropped_times, y_positions, meta, prefix, odor_of_interest):
     return fraction, test_indices, nonshocked_odor
 
 
+# TODO rename input from cropped_times? why would we both to crop for this
+# function, if the crop is a display thing?
 def decision_bias(cropped_times, y_positions, meta, prefix, \
     # TODO 
     mean_y_pixels, odor_of_interest, choice_zone_width_mm=5):
@@ -1070,103 +1133,123 @@ def analyze_group(fly2data, title=''):
             print('experiment', split(meta['dir'])[-1], \
                 '({})'.format(experiment2label[meta['dir']]), 'fly', meta['n'])
 
-        start = meta['times']['pretest_start'] - zero_before_test_by
-
-        # TODO print how much this fly has walked (in each test period?)
-
-        #print 'START TIME =', start
-        #print '# of zero entries', curr_times.size - nonzero_times.size
-
-        # because for some of these, the tracking ran much longer than the
-        # stimulus presentation
-        cropped_indices = (curr_times - start) <= crop_to_seconds
-        cropped_times = curr_times[cropped_indices]
-
-        if 'reinforced_odor' in meta:
-            had_some_reinforced = True
-            odor_of_interest = meta['reinforced_odor']
+        # TODO do this differently, so that group analysis will fail if mix of
+        # some with and without stimuli
+        if not 'times' in meta:
+            want_time_spent = False
+            want_decision_bias = False
+            sort_traces_by = None
+            # maybe use nonzero times / intersection of times and tracking being
+            # nonzero / nan?
+            times_for_plot = curr_times
+            y_for_plot = data['position_y']
 
         else:
-            # TODO this (and probably other logic w/ reinforced) seem to expect
-            # only two odors?  per experiment? or across?
-            if odor_A is None:
-                odor_A = random.sample(meta['odors'], 1)[0]
-            had_some_innate = True
-            odor_of_interest = odor_A
+            plot_t0 = meta['times']['pretest_start'] - plot_t0_to_test0_start_s
 
-        if had_some_reinforced and had_some_innate:
-            raise \
-                ValueError('mix of innate tests and conditioning in this group')
+            #print 'START TIME =', plot_t0
+            #print '# of zero entries', curr_times.size - nonzero_times.size
 
-        if want_time_spent:
-            time_fraction_pre, pretest_indices, nonshocked_odor = \
-                fraction_time(cropped_times, \
-                data['position_y'][cropped_indices], meta, 'pre', \
-                odor_of_interest)
+            # because for some of these, the tracking ran much longer than the
+            # stimulus presentation
+            cropped_indices = (curr_times - plot_t0) <= crop_to_seconds
+            cropped_times = curr_times[cropped_indices]
 
-            time_fraction_post, posttest_indices, _ = \
-                fraction_time(cropped_times, \
-                data['position_y'][cropped_indices], \
-                meta, 'post', odor_of_interest)
+            # TODO print how much this fly has walked (in each test period?)
 
-        if want_decision_bias:
-            decision_bias_pre, _, _ = decision_bias(cropped_times, \
-                data['position_y'][cropped_indices].as_matrix(), meta, 'pre', \
-                mean_y_pixels, odor_of_interest)
+            if 'reinforced_odor' in meta:
+                had_some_reinforced = True
+                odor_of_interest = meta['reinforced_odor']
 
-            decision_bias_post, _, _ = decision_bias(cropped_times, \
-                data['position_y'][cropped_indices].as_matrix(), meta, 'post', \
-                mean_y_pixels, odor_of_interest)
+            else:
+                # TODO this (and probably other logic w/ reinforced) seem to
+                # expect only two odors?  per experiment? or across?
+                if odor_A is None:
+                    odor_A = random.sample(meta['odors'], 1)[0]
+                had_some_innate = True
+                odor_of_interest = odor_A
 
-            if verbose:
-                print('')
- 
-        assert not np.any(np.logical_and(pretest_indices, posttest_indices)), \
-            'pre and post test indices overlapped'
+            if had_some_reinforced and had_some_innate:
+                raise ValueError(
+                    'mix of innate tests and conditioning in this group')
 
-        n_pretest_indices = np.sum(pretest_indices)
-        n_posttest_indices = np.sum(posttest_indices)
-        curr_rel_err = abs(n_pretest_indices - n_posttest_indices) / \
-            n_posttest_indices
-        '''
-        rel_indices_tol = 0.35
-        assert curr_rel_err <= rel_indices_tol, '# pretest_indices=' + \
-            str(n_pretest_indices) + ', # posttest_indices=' + \
-            str(n_posttest_indices) + \ ', relative error=' + str(curr_rel_err)
-        '''
-        if curr_rel_err != 0:
-            if verbose:
-                print('WARNING! relative difference in timepoints in ' + \
-                    'pre and post test = ' + str(curr_rel_err))
+            if want_time_spent:
+                time_fraction_pre, pretest_indices, nonshocked_odor = \
+                    fraction_time(cropped_times, \
+                    data['position_y'][cropped_indices], meta, 'pre', \
+                    odor_of_interest)
 
-        time_fractions_pre.append(time_fraction_pre)
-        time_fractions_post.append(time_fraction_post)
-        decision_biases_pre.append(decision_bias_pre)
-        decision_biases_post.append(decision_bias_post)
+                time_fraction_post, posttest_indices, _ = \
+                    fraction_time(cropped_times, \
+                    data['position_y'][cropped_indices], \
+                    meta, 'post', odor_of_interest)
 
-        # TODO convert odor + conc to good string representation
-        if 'reinforced_odor' in meta:
-            curr_df = pd.DataFrame({'experiment': meta['dir'], \
-                          'roi': meta['n'], \
-                          'shocked_odor': meta['reinforced_odor'][0], \
-                          'nonshocked_odor': nonshocked_odor[0], \
-                          'decision_bias_pre': decision_bias_pre, \
-                          'decision_bias_post': decision_bias_post, \
-                          'time_fraction_pre': time_fraction_pre, \
-                          'time_fraction_post': time_fraction_post}, \
-                          index=[curr_idx])
+            if want_decision_bias:
+                decision_bias_pre, _, _ = decision_bias(cropped_times,
+                    data['position_y'][cropped_indices].as_matrix(), meta,
+                    'pre', mean_y_pixels, odor_of_interest)
 
-        else:
-            curr_df = pd.DataFrame({'experiment': meta['dir'], \
-                          'roi': meta['n'], \
-                          'odor_A': odor_of_interest[0], \
-                          'decision_bias_pre': decision_bias_pre, \
-                          'decision_bias_post': decision_bias_post, \
-                          'time_fraction_pre': time_fraction_pre, \
-                          'time_fraction_post': time_fraction_post}, \
-                          index=[curr_idx])
+                decision_bias_post, _, _ = decision_bias(cropped_times,
+                    data['position_y'][cropped_indices].as_matrix(), meta, 
+                    'post', mean_y_pixels, odor_of_interest)
 
-        dfs.append(curr_df)
+                if verbose:
+                    print('')
+     
+            assert not np.any(np.logical_and(pretest_indices, 
+                posttest_indices)), 'pre and post test indices overlapped'
+
+            n_pretest_indices = np.sum(pretest_indices)
+            n_posttest_indices = np.sum(posttest_indices)
+            curr_rel_err = abs(n_pretest_indices - n_posttest_indices) / \
+                n_posttest_indices
+            '''
+            rel_indices_tol = 0.35
+            assert curr_rel_err <= rel_indices_tol, '# pretest_indices=' + \
+                str(n_pretest_indices) + ', # posttest_indices=' + \
+                str(n_posttest_indices) + \ ', relative error=' + \
+                str(curr_rel_err)
+            '''
+            if curr_rel_err != 0:
+                if verbose:
+                    print('WARNING! relative difference in timepoints in ' + \
+                        'pre and post test = ' + str(curr_rel_err))
+
+            time_fractions_pre.append(time_fraction_pre)
+            time_fractions_post.append(time_fraction_post)
+            decision_biases_pre.append(decision_bias_pre)
+            decision_biases_post.append(decision_bias_post)
+
+            # TODO convert odor + conc to good string representation
+            if 'reinforced_odor' in meta:
+                curr_df = pd.DataFrame({'experiment': meta['dir'], \
+                              'roi': meta['n'], \
+                              'shocked_odor': meta['reinforced_odor'][0], \
+                              'nonshocked_odor': nonshocked_odor[0], \
+                              'decision_bias_pre': decision_bias_pre, \
+                              'decision_bias_post': decision_bias_post, \
+                              'time_fraction_pre': time_fraction_pre, \
+                              'time_fraction_post': time_fraction_post}, \
+                              index=[curr_idx])
+
+            else:
+                curr_df = pd.DataFrame({'experiment': meta['dir'], \
+                              'roi': meta['n'], \
+                              'odor_A': odor_of_interest[0], \
+                              'decision_bias_pre': decision_bias_pre, \
+                              'decision_bias_post': decision_bias_post, \
+                              'time_fraction_pre': time_fraction_pre, \
+                              'time_fraction_post': time_fraction_post}, \
+                              index=[curr_idx])
+
+            dfs.append(curr_df)
+
+            # relative to start of experiment
+            cropped_rel_times = cropped_times - plot_t0
+            times_for_plot = cropped_rel_times
+            y_for_plot = data['position_y'][cropped_indices]
+
+        # end if statement checking for 'times' in meta
 
         # TODO only print metrics if not make_plots and display_metrics? just
         # latter?
@@ -1188,14 +1271,12 @@ def analyze_group(fly2data, title=''):
                 metrics['decision_bias_pre'] = decision_bias_pre
                 metrics['decision_bias_post'] = decision_bias_post
 
-            # relative to start of experiment
-            cropped_rel_times = cropped_times - start
             handles = None
             labels = None
             if sort_traces_by is None:
                 curr_x_min, curr_x_max, curr_y_min, curr_y_max, labels, \
-                    handles = plot_trace(cropped_rel_times, \
-                    data['position_y'][cropped_indices], meta, metrics=metrics,\
+                    handles = plot_trace(times_for_plot, 
+                    y_for_plot, meta, metrics=metrics,
                     y_max_min=(y_max_above_mid, y_min_below_mid), ax=ax)
 
                 if plotting_y_max is None or plotting_y_max < curr_y_max:
@@ -1214,21 +1295,24 @@ def analyze_group(fly2data, title=''):
 
             else:
                 # TODO factor stuff around to avoid this mess?
-                args_to_plot = (cropped_rel_times, \
-                    data['position_y'][cropped_indices], meta)
+                args_to_plot = (times_for_plot, y_for_plot, meta)
                 # will need to fill in the ax later. this is to change order of
                 # subplots.
-                kwargs_to_plot = {'metrics': metrics, 'y_max_min': \
+                kwargs_to_plot = {'metrics': metrics, 'y_max_min':
                     (y_max_above_mid, y_min_below_mid)}
                 # TODO will redefining these variables change the values already
                 # in the list?  probably not?
                 for_plotting.append((args_to_plot, kwargs_to_plot))
+
             fly_nums_in_order.append(fly)
         # TODO just use enumerate instead?
         curr_idx += 1
 
-    # TODO ignore_index?
-    df = pd.concat(dfs)
+    if len(dfs) > 0:
+        # TODO ignore_index?
+        df = pd.concat(dfs)
+    else:
+        df = None
 
     # sort by change in metric and plot subplots in that order
     if sort_traces_by == 'decision_bias':
@@ -1275,26 +1359,43 @@ def analyze_group(fly2data, title=''):
         fig.legend(handles=handles, labels=labels, loc='lower left', fontsize=9)
 
     if verbose:
-        print('plotting ranges: x', (plotting_x_min, plotting_x_max), 'y', \
+        print('plotting ranges: x', (plotting_x_min, plotting_x_max), 'y',
             (plotting_y_min, plotting_y_max))
 
     # TODO do this for single plots within plot_trace?
     # relative
     y_bord = 0.025
     x_bord = 0.025
-    x_range = plotting_x_max - plotting_y_min
-    y_range = plotting_y_max - plotting_y_min
-    plotting_x_min = plotting_x_min - x_range * x_bord
-    plotting_x_max = plotting_x_max + x_range * x_bord
-    plotting_y_min = plotting_y_min - y_range * y_bord
-    plotting_y_max = plotting_y_max + y_range * y_bord
+
+    if not (plotting_x_min is None or plotting_x_max is None):
+        x_range = plotting_x_max - plotting_x_min
+    if not (plotting_y_min is None or plotting_y_max is None):
+        y_range = plotting_y_max - plotting_y_min
+
+    # TODO handle better. probably move setting of these values earlier, or set
+    # in a similar way in case where plots will not be sorted by a metric
+    if not plotting_x_min is None:
+        plotting_x_min = plotting_x_min - x_range * x_bord
+
+    if not plotting_x_max is None:
+        plotting_x_max = plotting_x_max + x_range * x_bord
+
+    if not plotting_y_min is None:
+        plotting_y_min = plotting_y_min - y_range * y_bord
+
+    if not plotting_y_max is None:
+        plotting_y_max = plotting_y_max + y_range * y_bord
 
     if make_plots:
         for i, (fly, ax) in \
             enumerate(zip(fly_nums_in_order, axes_to_set_limits)):
 
-            ax.set_xlim([plotting_x_min, plotting_x_max])
-            ax.set_ylim([plotting_y_min, plotting_y_max])
+            if not (plotting_x_min is None or plotting_x_max is None):
+                ax.set_xlim([plotting_x_min, plotting_x_max])
+
+            if not (plotting_y_min is None or plotting_y_max is None):
+                ax.set_ylim([plotting_y_min, plotting_y_max])
+
             if i != len(fly_nums_in_order) - 1:
                 ax.axis('off')
             else:
@@ -1314,6 +1415,7 @@ def analyze_group(fly2data, title=''):
         except ValueError as e:
             # still unclear what is the cause of the error in my case
             # see: https://github.com/matplotlib/matplotlib/issues/5456
+            # TODO use warnings or fix cause
             print(e)
             print('Warning: could not use tight_layout on figure')
             pass
@@ -1347,10 +1449,10 @@ def analyze_group(fly2data, title=''):
                 filename = title.replace(' ', '_') + '_time_spent.' \
                     + plot_format
 
-            plot_metric_change(time_fractions_pre, time_fractions_post, \
-                title='Conditioned change in time spent', \
-                ylabel='Proportion of test ' + 'spent in shocked odor', \
-                fly2meta=fly2meta, fly_nums_in_order=fly_nums_in_order, \
+            plot_metric_change(time_fractions_pre, time_fractions_post,
+                title='Conditioned change in time spent',
+                ylabel='Proportion of test ' + 'spent in shocked odor',
+                fly2meta=fly2meta, fly_nums_in_order=fly_nums_in_order,
                 filename=filename)
 
         if want_decision_bias:
@@ -1388,7 +1490,7 @@ if verbose:
     print('\nthe good flies:')
     for f in good_fly2data:
         m = fly2meta[f]
-        print('{} {} {} {}'.format(experiment2label[m['dir']], \
+        print('{} {} {} {}'.format(experiment2label[m['dir']],
             split(m['dir'])[-1], m['n'], f))
     print('')
 
@@ -1482,6 +1584,10 @@ for line in lines:
     print(line)
 print('')
 
+if df is None:
+    want_time_spent = False
+    want_decision_bias = False
+
 if want_time_spent:
     change = df['time_fraction_pre'] - df['time_fraction_post']
     print('Mean difference in time spent in shocked odor: {{:.{}f}}'\
@@ -1529,19 +1635,19 @@ if print_version:
         diff = repo.index.diff(None, create_patch=True)
         exactly = 'exactly ' if len(diff) == 0 else ''
         github_url = 'https://github.com/tom-f-oconnell/choice'
-        print('\nGenerated with {} @ {}{}'.format(github_url, \
+        print('\nGenerated with {} @ {}{}'.format(github_url,
             exactly, current_hash))
 
     except ImportError:
-        print('\nRequested print_version, but gitpython not installed. ' + \
-            'Try pip install -r optional_requirements.txt, from the choice ' + \
+        print('\nRequested print_version, but gitpython not installed. ' +
+            'Try pip install -r optional_requirements.txt, from the choice ' +
             'repo root.')
 
 # TODO also include human readable labels for experiments? as config file in
 # each dir?
 
 print('')
-dirs_and_dts = [(x, dt.datetime.strptime(split(x)[-1], \
+dirs_and_dts = [(x, dt.datetime.strptime(split(x)[-1],
     '%Y%m%d_%H%M%S')) for x in list(experiment2label.keys())]
 
 key_fn = lambda x: x[1].strftime('%W')
@@ -1559,18 +1665,18 @@ for key, group in groupby(sorted(dirs_and_dts, key=key_fn), key_fn):
                 usable_flies += 1
 
         for reason, reject_dict in list(rejects.items()):
-            if reason == 'good' or reason == 'suspicious' or reason == 'no_fly'\
-                or reject_dict is None:
+            if (reason == 'good' or reason == 'suspicious' or reason == 'no_fly'
+                or reject_dict is None):
                 continue
 
-            bad_flies = [k for k in fly2data if fly2meta[k]['dir'] == d and \
-                split(fly2meta[k]['dir'])[-1] in reject_dict and \
+            bad_flies = [k for k in fly2data if fly2meta[k]['dir'] == d and
+                split(fly2meta[k]['dir'])[-1] in reject_dict and
                 fly2meta[k]['n'] in reject_dict[split(fly2meta[k]['dir'])[-1]]]
             unusable_flies += len(bad_flies)
     flies_this_week = unusable_flies + usable_flies
 
-    print('{}-{}: {} experiments, {} flies, {} good'.format(\
-        week_start.strftime('%m/%d'), week_end.strftime('%m/%d/%Y'), \
+    print('{}-{}: {} experiments, {} flies, {} good'.format(
+        week_start.strftime('%m/%d'), week_end.strftime('%m/%d/%Y'),
         len(dirs_and_exp_dates), flies_this_week, usable_flies))
 
 # TODO usage. maybe if __name__ == '__main__'
