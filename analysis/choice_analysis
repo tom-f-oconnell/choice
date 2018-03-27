@@ -1052,6 +1052,10 @@ def analyze_group(fly2data, title=''):
     # TODO
     """
     """
+    global want_time_spent
+    global want_decision_bias
+    global sort_traces_by
+
     y_maxes_above_mid = []
     y_mins_below_mid = []
     y_ranges = []

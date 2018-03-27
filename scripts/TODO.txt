@@ -1,0 +1,5 @@
+- script to check all experiments to make sure data isn't copied (should be
+  symlinked to the extent that it IS intentionally included in two analysis
+  directories), and to warn if it does seem to be
+  - maybe with an option to just warn in all cases, for people who don't want to
+    symlink
