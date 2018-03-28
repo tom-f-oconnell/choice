@@ -646,6 +646,10 @@ def press(event):
         #print 'closing fig'
         plt.close(press.fig)
 
+# Plots the traces from each uncategorized fly, allowing the user to label them
+# by pressing one of the appropriate numbers. Flies are analyzed within each
+# category, and the distribution across the categories is useful for
+# troubleshooting.
 new_keys = False
 # open yaml for writing
 # TODO fix patching / plot ranges
@@ -718,13 +722,17 @@ for fly, data in list(fly2data.items()):
         # TODO So are times before the 0 still included? option to crop those as
         # well? I feel like they might not have been displaying correctly, but I
         # want to see that information without going through extra hurdles.
-        cropped_indices = (curr_times - start) <= crop_to_seconds
+        cropped_indices = (curr_times - plot_t0) <= crop_to_seconds
         cropped_times = curr_times[cropped_indices]
         # relative to time origin defined earlier
         cropped_rel_times = cropped_times - plot_t0
 
         #plot_trace(curr_times, data['position_y'], meta, ax=ax)
         # TODO why did this seem to be on a log x scale once?
+        # TODO use a consistent range for all of these...
+        # TODO why does this seem to frequently not show stimulus in the
+        # background (even when I assume that information is available?)
+        # inconsistent?
         plot_trace(cropped_rel_times, data['position_y'][cropped_indices], meta)
 
     else:
