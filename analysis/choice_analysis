@@ -60,6 +60,7 @@ show_experiment_labels = True
 
 print_version = True
 digits_after_zero = 3
+trace_linewidth = 1.0
 
 # TODO would probably want to test case where some experiments in a group don't
 # contain this file, while others do. in that case, there should still be an
@@ -118,7 +119,6 @@ def load_metadata(d):
     If the `*_stimuli.p` file is not found, the function will not fail if the
     `require_stimuli` option is False.
     """
-
     metadata = dict()
 
     # ros parameter with earliest timestamp should hold the stimulus
@@ -318,6 +318,8 @@ experiment2label = dict()
 curr_char = ord('A')
 
 # TODO do most processing while loading, to not need as much memory?
+# TODO group by experiment for plotting by default? and chronologically across
+# groups? (just sort here?)
 for d in [join(path, x) for x in dirs]:
     if not os.path.isdir(d):
         continue
@@ -344,7 +346,7 @@ for d in [join(path, x) for x in dirs]:
         metadata = dict(common_metadata)
         # TODO make it so this generates the (optional) config? notify if doing
         # so
-        # TODO TODO exclude trajectories that don't cover enough ground
+        # TODO exclude trajectories that don't cover enough ground
         data, _ = mta.read_hdf5_file_to_pandas.load_and_preprocess_data(f)
         '''
         print 'position_x range', data['position_x'].min(), \
@@ -396,11 +398,13 @@ else:
 
 # Defines the 0 on the horizontal (time) axis of all plots, to be this many
 # seconds before the start of the first test period.
-plot_t0_to_test0_start_s = 60
-# TODO why did 1100 not work? isn't sequence 1000 long? (for which test case?)
-crop_to_seconds = 1300
+plot_t0_to_test0_start_s = 0 # 60
+# TODO TODO why does sign of (the effect of) plot_t0_to_test0_start_s seem to
+# change depending on the value of this flag?
+show_all_tracking = False
 
-def plot_trace(cropped_rel_times, position_y, meta, metrics=None, \
+
+def plot_trace(rel_times, position_y, meta, metrics=None, \
     y_max_min=None, ax=None):
     # TODO
     """
@@ -412,23 +416,34 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, \
     y_vals = [p[1] for p in meta['roi_points']]
     y_mid = np.mean(y_vals)
 
+    y_data = (-1) * (position_y - y_mid)
     # TODO how similar was this to the style the matplotlib maintainer
     # recommended on stackexchange?
     if ax is None:
-        plt.plot(cropped_rel_times , (-1) * (position_y - y_mid), \
-            c='black', linewidth=1.3)
+        plt.plot(rel_times, y_data, c='black',
+            linewidth=trace_linewidth)
     else:
-        ax.plot(cropped_rel_times , (-1) * (position_y - y_mid), \
-            c='black', linewidth=1.3)
+        ax.plot(rel_times, y_data, c='black',
+            linewidth=trace_linewidth)
 
     plt.xlabel('Seconds')
 
     labels = []
     handles = []
-    plotting_y_max = None
-    plotting_y_min = None
-    plotting_x_max = None
-    plotting_x_min = None
+
+    if show_all_tracking:
+        plotting_y_max = np.max(y_data)
+        plotting_y_min = np.min(y_data)
+        plotting_x_max = np.max(rel_times)
+        plotting_x_min = np.min(rel_times)
+
+    # TODO define options for fixed widths before first and after last tests
+    # in this case
+    else:
+        plotting_y_max = None
+        plotting_y_min = None
+        plotting_x_max = None
+        plotting_x_min = None
 
     if not 'times' in meta:
         # TODO do i atually want to do something with this values?
@@ -437,7 +452,6 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, \
 
     # "pre"-test here just means the test before training, rather than
     # the start of some period that comes before a test.
-    # TODO rename to plot_t0
     plot_t0 = meta['times']['pretest_start'] - plot_t0_to_test0_start_s
     # TODO I don't really think it's worth factoring the above line out, but
     # it's probably worth reorganizing the code to not have to recompute it.
@@ -449,7 +463,7 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, \
     if verbose:
         print('y_max', y_max, 'y_min', y_min, 'using y midline', y_mid)
 
-    # TODO TODO filter out trajectories that don't move much. 
+    # TODO filter out trajectories that don't move much. 
     # just use floris' config file thing?
 
     if y_max_min is None:
@@ -527,23 +541,29 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, \
             # TODO maybe subdivide for shocks? (to reflect actual pulse cycle
             # ~2.5s on/off)
             x0 = s.seq.start.to_sec() - plot_t0
-            #print 'seq.start.to_sec()', s.seq.start.to_sec(), 'x0', x0, \
-            #'width', width
+            print('seq.start.to_sec()', s.seq.start.to_sec(), 'x0', x0,
+                'width', width)
             if i == 0:
                 # define acceptable mismatch here?
                 if x0 <= 0.0:
                     if verbose:
-                        print('WARNING! seems no video was recorded for ' + \
-                            'first ' + str(-x0) + ' seconds of first block ' + \
-                            '(pre-training test)')
+                        warnings.warn('WARNING! seems no video was recorded ' + 
+                            'for first ' + str(-x0) + ' seconds of first ' + 
+                            'block (pre-training test)')
 
             else:
                 assert x0 > 0, 'times we want to disply should not be ' + \
                     'negative. was ' + str(x0)
 
-            assert x0 + width < crop_to_seconds, 'last time index of patched '+\
-                'region should fall within limits of cropped experiment. was '+\
-                str(x0 + width) + ' end=' + str(crop_to_seconds)
+            # TODO TODO replace this with a test that all patched regions fall
+            # within ultimate xlims (may likely need to place later)
+            '''
+            assert x0 + width <= crop_to_seconds, 'last time index of ' + \
+                'patched region should fall within limits of cropped ' + \
+                'experiment. was ' + str(x0 + width) + ' end=' + \
+                str(crop_to_seconds)
+            '''
+
             #print 'patching pin', p, 'from', (x0, y0), 'with w=', width, \
             #   'and h=', height
 
@@ -577,8 +597,12 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, \
 
     if display_metrics and not metrics is None:
         y_pos = 0.77
-        x_0 = 0.99
+        x_0 = 1.02
         dx = 0.17
+        # TODO make more of a margin between the right text and the edge somehow
+        # TODO any way to just say "don't cut things off" and / or "don't have
+        # things overlap" now?
+        # TODO TODO bbox_inches="tight", or equivalent, should do above
         fontsize = 7
         valign = 'top'
         if want_time_spent:
@@ -586,6 +610,7 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, \
             # TODO make robust to fly #0 getting skipped
             # TODO TODO also label which col is time spent / decision bias, etc
             if fly == 0:
+                # TODO why is this never really happening now?
                 text += 'pre: %.3f in reinforced\npost: %.3f in reinforced' % \
                     (metrics['time_fraction_pre'],metrics['time_fraction_post'])
             else:
@@ -605,17 +630,12 @@ def plot_trace(cropped_rel_times, position_y, meta, metrics=None, \
             ax.text(x_pos, y_pos, text, transform=ax.transAxes, \
                 fontsize=fontsize, verticalalignment=valign)
 
-        # TODO was preference / performance (?) index distinct from the above?
-
         # no sure i want a box?
         # TODO what does verticalalignment do?
 
-    # TODO move this above code that plots stimuli (so it can also be used for
-    # experiments with no stimuli with no extra code), and make sure it still
-    # works as expected
     # different name for this flag?
     if show_experiment_labels:
-        ax.text(-.04, 0.6, experiment2label[meta['dir']], \
+        ax.text(-.05, 0.6, experiment2label[meta['dir']], \
             transform=ax.transAxes, fontsize=12, verticalalignment='top')
 
     return plotting_x_min, plotting_x_max, plotting_y_min, plotting_y_max, \
@@ -632,9 +652,7 @@ key2group = {'1': 'good',
              '8': 'suspicious'}
 
 def press(event):
-    # TODO
-    """
-    """
+    """Sets a category accessible to plotting+sorting code on number keypress"""
     # TODO rank these according to how common they are?
     if event.key in key2group:
         group = key2group[event.key]
@@ -692,17 +710,7 @@ for fly, data in list(fly2data.items()):
         if not 'no_fly' in rejects:
             rejects['no_fly'] = OrderedDict()
 
-        #print stamp
-        # TODO why are they loading as a commentedseq of ordereddicts...
-        # can't easily test whether keys are in there.
         if not stamp in rejects['no_fly']:
-            '''
-            print type(rejects)
-            print type(rejects['no_fly'])
-            print rejects['no_fly']
-            print dir(rejects['no_fly'])
-            print type(rejects['no_fly'][stamp])
-            '''
             rejects['no_fly'][stamp] = []
 
         rejects['no_fly'][stamp].append(meta['n'])
@@ -711,21 +719,12 @@ for fly, data in list(fly2data.items()):
     fig = plt.figure()
     cid = fig.canvas.mpl_connect('key_press_event', press)
 
-    # TODO TODO the behavior should be, if 'times' isn't in meta, the data
-    # should not be cropped (circumstances in which it could still be / would
-    # need to be aligned?) maybe with some option to fail if this key isn't
-    # there
-
     if 'times' in meta:
         plot_t0 = meta['times']['pretest_start'] - plot_t0_to_test0_start_s
-
-        # TODO So are times before the 0 still included? option to crop those as
-        # well? I feel like they might not have been displaying correctly, but I
-        # want to see that information without going through extra hurdles.
-        cropped_indices = (curr_times - plot_t0) <= crop_to_seconds
-        cropped_times = curr_times[cropped_indices]
+        # TODO TODO move this stuff inside plot_trace? was there some reason I
+        # couldn't easily do that?
         # relative to time origin defined earlier
-        cropped_rel_times = cropped_times - plot_t0
+        rel_times = curr_times - plot_t0
 
         #plot_trace(curr_times, data['position_y'], meta, ax=ax)
         # TODO why did this seem to be on a log x scale once?
@@ -733,7 +732,7 @@ for fly, data in list(fly2data.items()):
         # TODO why does this seem to frequently not show stimulus in the
         # background (even when I assume that information is available?)
         # inconsistent?
-        plot_trace(cropped_rel_times, data['position_y'][cropped_indices], meta)
+        plot_trace(rel_times, data['position_y'], meta)
 
     else:
         # or maybe take nonzero_times and restrict positions to same indices?
@@ -790,7 +789,7 @@ for reason, reject_dict in list(rejects.items()):
 
     if reason == 'suspicious' and (not reject_dict is None):
         # TODO print which
-        print('WARNING: using some trajectories marked as ' + \
+        warnings.warn('WARNING: using some trajectories marked as ' +
             'suspicious for analysis.')
         continue
 
@@ -801,7 +800,11 @@ for reason, reject_dict in list(rejects.items()):
             bad[exp_id] = set(rois)
 
 
-def fraction_time(cropped_times, y_positions, meta, prefix, odor_of_interest):
+# TODO TODO also plot ranges these functions use, for sanity checking (that it
+# is getting the data from the right part of the experiment)
+# TODO TODO related: could I please make this not depend on cropped / shifted
+# times but just absolute times and absolute boundaries of test regions?
+def fraction_time(times, y_positions, meta, prefix, odor_of_interest):
     # TODO
     """
     """
@@ -811,8 +814,8 @@ def fraction_time(cropped_times, y_positions, meta, prefix, odor_of_interest):
     # times and y_positions to all metric functions?
 
     # TODO maybe use times from log, rather than these?
-    test_indices = np.logical_and(cropped_times > meta['times'][prefix + \
-        'test_start'], cropped_times < (meta['times'][prefix + 'test_start'] + \
+    test_indices = np.logical_and(times > meta['times'][prefix + \
+        'test_start'], times < (meta['times'][prefix + 'test_start'] + \
         meta['times']['test_duration']))
 
     assert test_indices.dtype == np.bool, \
@@ -863,9 +866,7 @@ def fraction_time(cropped_times, y_positions, meta, prefix, odor_of_interest):
     return fraction, test_indices, nonshocked_odor
 
 
-# TODO rename input from cropped_times? why would we both to crop for this
-# function, if the crop is a display thing?
-def decision_bias(cropped_times, y_positions, meta, prefix, \
+def decision_bias(times, y_positions, meta, prefix, \
     # TODO 
     mean_y_pixels, odor_of_interest, choice_zone_width_mm=5):
     """
@@ -874,8 +875,8 @@ def decision_bias(cropped_times, y_positions, meta, prefix, \
     """
     assert prefix == 'pre' or prefix == 'post'
 
-    test_indices = np.logical_and(cropped_times > meta['times'][prefix + \
-        'test_start'], cropped_times < (meta['times'][prefix + 'test_start'] + \
+    test_indices = np.logical_and(times > meta['times'][prefix + \
+        'test_start'], times < (meta['times'][prefix + 'test_start'] + \
         meta['times']['test_duration']))
     assert test_indices.dtype == np.bool, \
         'later operations assume indices represented as boolean mask'
@@ -925,6 +926,7 @@ def decision_bias(cropped_times, y_positions, meta, prefix, \
 
     else:
         # TODO TODO is this right?
+        # TODO TODO test
         bias_against_left = (towards_left - towards_right) / total_decisions
 
     # TODO handle appropriately downstream
@@ -1138,7 +1140,8 @@ def analyze_group(fly2data, title=''):
             # TODO automatically add these to yaml? recommend?
             # count earlier to get the right # of subplots?
             if verbose:
-                print('SKIPPING FLY', meta['n'], 'FROM', meta['dir'])
+                warnings.warn('SKIPPING FLY {} FROM {}'.format(meta['n'], 
+                    meta['dir']))
             continue
 
         if verbose:
@@ -1162,11 +1165,6 @@ def analyze_group(fly2data, title=''):
             #print 'START TIME =', plot_t0
             #print '# of zero entries', curr_times.size - nonzero_times.size
 
-            # because for some of these, the tracking ran much longer than the
-            # stimulus presentation
-            cropped_indices = (curr_times - plot_t0) <= crop_to_seconds
-            cropped_times = curr_times[cropped_indices]
-
             # TODO print how much this fly has walked (in each test period?)
 
             if 'reinforced_odor' in meta:
@@ -1185,25 +1183,28 @@ def analyze_group(fly2data, title=''):
                 raise ValueError(
                     'mix of innate tests and conditioning in this group')
 
+            # TODO TODO check shouldn't be using rel_times here
+            # and better yet, just convert metric functions to only deal with
+            # absolute times
             if want_time_spent:
                 time_fraction_pre, pretest_indices, nonshocked_odor = \
-                    fraction_time(cropped_times, \
-                    data['position_y'][cropped_indices], meta, 'pre', \
-                    odor_of_interest)
+                    fraction_time(curr_times, data['position_y'], meta, 'pre',
+                                  odor_of_interest)
 
                 time_fraction_post, posttest_indices, _ = \
-                    fraction_time(cropped_times, \
-                    data['position_y'][cropped_indices], \
-                    meta, 'post', odor_of_interest)
+                    fraction_time(curr_times, data['position_y'], meta, 'post', 
+                                  odor_of_interest)
 
             if want_decision_bias:
-                decision_bias_pre, _, _ = decision_bias(cropped_times,
-                    data['position_y'][cropped_indices].as_matrix(), meta,
-                    'pre', mean_y_pixels, odor_of_interest)
+                # TODO is the .as_matrix() necessary? just normalize within the
+                # function if so? (or otherwise document need for the call)
+                decision_bias_pre, _, _ = decision_bias(curr_times, 
+                    data['position_y'].as_matrix(), meta, 'pre', mean_y_pixels,
+                    odor_of_interest)
 
-                decision_bias_post, _, _ = decision_bias(cropped_times,
-                    data['position_y'][cropped_indices].as_matrix(), meta, 
-                    'post', mean_y_pixels, odor_of_interest)
+                decision_bias_post, _, _ = decision_bias(curr_times,
+                    data['position_y'].as_matrix(), meta, 'post', mean_y_pixels,
+                    odor_of_interest)
 
                 if verbose:
                     print('')
@@ -1224,8 +1225,9 @@ def analyze_group(fly2data, title=''):
             '''
             if curr_rel_err != 0:
                 if verbose:
-                    print('WARNING! relative difference in timepoints in ' + \
-                        'pre and post test = ' + str(curr_rel_err))
+                    warnings.warn('WARNING! relative difference in ' + 
+                        'timepoints in pre and post test = {}'.format(
+                        curr_rel_err))
 
             time_fractions_pre.append(time_fraction_pre)
             time_fractions_post.append(time_fraction_post)
@@ -1257,19 +1259,15 @@ def analyze_group(fly2data, title=''):
             dfs.append(curr_df)
 
             # relative to start of experiment
-            cropped_rel_times = cropped_times - plot_t0
-            times_for_plot = cropped_rel_times
-            y_for_plot = data['position_y'][cropped_indices]
+            rel_times = curr_times - plot_t0
+            times_for_plot = rel_times
+            y_for_plot = data['position_y']
 
         # end if statement checking for 'times' in meta
 
         # TODO only print metrics if not make_plots and display_metrics? just
         # latter?
         if make_plots:
-            # TODO TODO filter very high frequency noise out before plotting
-            # multiplied by negative one so it is displayed in same orientation
-            # as video and also by patches (rectangles) indicating which side
-            # each odor is on
             # TODO maybe try antialiased=True/False? default?
             # rasterized default?
             ax = axes[curr_idx]
@@ -1368,35 +1366,39 @@ def analyze_group(fly2data, title=''):
 
     if make_plots and (not handles is None) and (not labels is None):
         # TODO take union of labels & handles returned above?
-        fig.legend(handles=handles, labels=labels, loc='lower left', fontsize=9)
+        # TODO way to have the colored parts of the legend on the right, with
+        # the text on the left. (might look better if i want to keep this in the
+        # bottom right corner)
+        fig.legend(handles=handles, labels=labels, #loc='lower right',
+                   fontsize=9, bbox_transform=fig.transFigure, 
+                   bbox_to_anchor=(1.0, 0.1))
 
-    if verbose:
-        print('plotting ranges: x', (plotting_x_min, plotting_x_max), 'y',
-            (plotting_y_min, plotting_y_max))
+        # was trying to follow:
+        # https://stackoverflow.com/questions/43272206/python-legend-overlaps-with-the-pie-chart/43281595
+        # but this didn't seem to make any more space for the legend. different
+        # parameters?
+        #fig.subplots_adjust(left=0.1, bottom=0.1, right=0.75)
 
     # TODO do this for single plots within plot_trace?
     # relative
     y_bord = 0.025
-    x_bord = 0.025
-
-    if not (plotting_x_min is None or plotting_x_max is None):
-        x_range = plotting_x_max - plotting_x_min
-    if not (plotting_y_min is None or plotting_y_max is None):
-        y_range = plotting_y_max - plotting_y_min
+    x_bord = 0
 
     # TODO handle better. probably move setting of these values earlier, or set
     # in a similar way in case where plots will not be sorted by a metric
-    if not plotting_x_min is None:
+    if not (plotting_x_min is None or plotting_x_max is None):
+        x_range = plotting_x_max - plotting_x_min
         plotting_x_min = plotting_x_min - x_range * x_bord
-
-    if not plotting_x_max is None:
         plotting_x_max = plotting_x_max + x_range * x_bord
 
-    if not plotting_y_min is None:
+    if not (plotting_y_min is None or plotting_y_max is None):
+        y_range = plotting_y_max - plotting_y_min
         plotting_y_min = plotting_y_min - y_range * y_bord
-
-    if not plotting_y_max is None:
         plotting_y_max = plotting_y_max + y_range * y_bord
+
+    if verbose:
+        print('plotting ranges: x', (plotting_x_min, plotting_x_max), 'y',
+            (plotting_y_min, plotting_y_max))
 
     if make_plots:
         for i, (fly, ax) in \
@@ -1425,11 +1427,11 @@ def analyze_group(fly2data, title=''):
             # TODO why did this change height of plots? only if >=2?
             fig.tight_layout(pad=2, h_pad=0)
         except ValueError as e:
+            # TODO fix cause
             # still unclear what is the cause of the error in my case
             # see: https://github.com/matplotlib/matplotlib/issues/5456
-            # TODO use warnings or fix cause
-            print(e)
-            print('Warning: could not use tight_layout on figure')
+            warnings.warn(str(e))
+            warnings.warn('Warning: could not use tight_layout on figure')
             pass
 
         # default is 0.9. we want to move right edge of actual plots in, 
@@ -1506,6 +1508,7 @@ if verbose:
             split(m['dir'])[-1], m['n'], f))
     print('')
 
+# TODO order traces consistently across runs (by roi #).
 df = analyze_group(good_fly2data)
 
 formatter = PluralFormatter()

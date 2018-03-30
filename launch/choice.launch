@@ -4,7 +4,8 @@
   <arg name="port" default="/dev/ttyACM0" />
   <arg name="video_only" default="False" />
   <!-- the Arduino library controlling the shift-register based shock shield.
-       should be false if using digital pins to directly control shock. -->
+       should be false if not using the multishock control hardware (shield_pcb)
+  -->
   <!-- TODO implement / test -->
   <arg name="using_multishock" default="True" />
   
