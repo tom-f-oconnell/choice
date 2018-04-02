@@ -46,6 +46,7 @@ save_plots = True
 plot_format = 'png'
 make_plots = show_plots or save_plots
 # TODO describe alternatives. None valid?
+# TODO 'chronological' / 'time' option?
 sort_traces_by = 'decision_bias'
 
 # TODO it seems these were originally for displaying?
@@ -142,13 +143,24 @@ def load_metadata(d):
                 right_pins = stimulus_rosparams['olf']['right_pins']
 
                 shock_params = stimulus_rosparams['zap']
+                # the old convention for shock pin specification
                 if 'all_pin' in shock_params:
                     metadata['all_shock'] = shock_params['all_pin']
 
-                elif 'left' in shock_params and \
-                    'right' in shock_params:
+                elif 'left' in shock_params and 'right' in shock_params:
                     metadata['left_shock'] = shock_params['left']
                     metadata['right_shock'] = shock_params['right']
+
+                # TODO update to new convention in remainder of analysis code
+                # the new convention for shock pin specification
+                elif 'control_pin' in shock_params:
+                    metadata['all_shock'] = shock_params['control_pin']
+
+                elif 'left_control_pin' in shock_params and \
+                    'right_control_pin' in shock_params:
+
+                    metadata['left_shock'] = shock_params['left_control_pin']
+                    metadata['right_shock'] = shock_params['right_control_pin']
 
                 else:
                     raise ValueError("either zap/all_shock or both " + \
@@ -161,7 +173,6 @@ def load_metadata(d):
 
     if not found_olf_params:
         raise ValueError("no *_parameters.yaml files had 'olf/*' parameters")
-
 
     # TODO check
     def pin_from(check, group):
@@ -233,7 +244,7 @@ def load_metadata(d):
             sp = metadata[sp_name]
             if sp in block.seq.pins:
                 # assumes same odors on left and right. 
-                # TODO maybe take union of same result w/ both l & r
+                # TODO TODO maybe take union of same result w/ both l & r
                 odors += \
                     [o for o, p in list(odors2right_pins.items()) \
                         if p in block.seq.pins]
@@ -398,6 +409,7 @@ else:
 
 # Defines the 0 on the horizontal (time) axis of all plots, to be this many
 # seconds before the start of the first test period.
+# TODO TODO also test that making this nonzero doesn't change metrics
 plot_t0_to_test0_start_s = 0 # 60
 # TODO TODO why does sign of (the effect of) plot_t0_to_test0_start_s seem to
 # change depending on the value of this flag?
