@@ -413,7 +413,7 @@ else:
 plot_t0_to_test0_start_s = 0 # 60
 # TODO TODO why does sign of (the effect of) plot_t0_to_test0_start_s seem to
 # change depending on the value of this flag?
-show_all_tracking = False
+show_all_tracking = True
 
 
 def plot_trace(rel_times, position_y, meta, metrics=None, \

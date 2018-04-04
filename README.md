@@ -19,11 +19,12 @@
    Then this should install all the packages you need:
    ```
    cd <your_catkin_workspace>/src
-   git clone git://github.com/tom-f-oconnell/multi_tracker.git
-   git clone git://github.com/tom-f-oconnell/rosserial.git
-   git clone git://github.com/tom-f-oconnell/metatools.git
-   git clone git://github.com/tom-f-oconnell/stimuli.git
-   git clone git://github.com/tom-f-oconnell/choice.git
+   git clone https://github.com/tom-f-oconnell/multi_tracker.git
+   git clone https://github.com/tom-f-oconnell/usb_cam.git
+   git clone https://github.com/tom-f-oconnell/rosserial.git
+   git clone https://github.com/tom-f-oconnell/metatools.git
+   git clone https://github.com/tom-f-oconnell/stimuli.git
+   git clone https://github.com/tom-f-oconnell/choice.git
    cd <your_catkin_workspace>
    catkin_make
    . ~/.bashrc
