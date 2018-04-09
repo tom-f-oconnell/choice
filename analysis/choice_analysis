@@ -312,12 +312,14 @@ if len(sys.argv) >= 2:
     experiment_subdir = sys.argv[1]
     path = join(path, experiment_subdir)
 
+else:
+    raise NotImplementedError('you must pass a subdirectory of ' + 
+        '$DATA_DIR/retracked as the sole positional argument to ' +
+        'choice_analysis')
+
 # TODO allow script to be run in directory w/ data
 path = os.path.expanduser(path)
 # TODO just walk from path in future?
-
-dirs = [join(path, d) for d in os.listdir(path) 
-    if re.match(r'([0-9]){8}_([0-9]){6}', d) and os.path.isdir(join(path, d))]
 
 # TODO maybe have a flag to save figures for rejects?
 curr_fly = 0
@@ -328,10 +330,21 @@ all_odors = set()
 experiment2label = dict()
 curr_char = ord('A')
 
+# TODO TODO allow organizational directories (with their own
+# analysis_rejects.yaml), symlinked under another organizational directory,
+# to be merged together for analysis as one group
+# should involve three things:
+# 1) identify no dirs matching regex in current level -> search deeper
+# 2) add all matching subdirs to dirs list below (or fail if none)
+# 3) merge all analysis_rejects.yaml (or either fail if any missing or create)
+
+dirs = [join(path, d) for d in os.listdir(path) 
+    if re.match(r'([0-9]){8}_([0-9]){6}', d) and os.path.isdir(join(path, d))]
+
 # TODO do most processing while loading, to not need as much memory?
 # TODO group by experiment for plotting by default? and chronologically across
 # groups? (just sort here?)
-for d in [join(path, x) for x in dirs]:
+for d in dirs:
     if not os.path.isdir(d):
         continue
 
@@ -1602,14 +1615,16 @@ for reason, reject_dict in list(rejects.items()):
 
 # TODO format this for evernote & upload
 total_flies = len(fly2data) - rois_without_flies
-print('Good flies:', str(len(good_fly2data)) + '/' + str(total_flies))
-print('')
+
+report = ''
+report += ('Good flies: ' + str(len(good_fly2data)) + '/' + str(total_flies))
+report += '\n'
 for line in odor_lines:
-    print(line)
-print('')
+    report += line + '\n'
+report += '\n'
 for line in lines:
-    print(line)
-print('')
+    report += line + '\n'
+report += '\n'
 
 if df is None:
     want_time_spent = False
@@ -1617,12 +1632,12 @@ if df is None:
 
 if want_time_spent:
     change = df['time_fraction_pre'] - df['time_fraction_post']
-    print('Mean difference in time spent in shocked odor: {{:.{}f}}'\
+    report += 'Mean difference in time spent in shocked odor: {{:.{}f}}\n'\
         .format(digits_after_zero).format(round(change.mean(), \
-        digits_after_zero)))
-    print('Median difference in time spent in shocked odor: {{:.{}f}}\n'\
+        digits_after_zero))
+    report += 'Median difference in time spent in shocked odor: {{:.{}f}}\n\n'\
         .format(digits_after_zero).format(round(change.median(), \
-        digits_after_zero)))
+        digits_after_zero))
 
     fig = plt.figure()
     plt.hist(change[np.logical_not(np.isnan(change))], color='black', bins=30)
@@ -1632,13 +1647,15 @@ if want_time_spent:
 
 if want_decision_bias:
     change = df['decision_bias_pre'] - df['decision_bias_post']
-    print('Mean decision bias difference: {{:.{}f}}'.format(digits_after_zero)\
-        .format(round(change.mean(), digits_after_zero)))
-    print('Median decision bias difference: {{:.{}f}}'.format(\
-        digits_after_zero).format(round(change.median(), digits_after_zero)))
-    print('Mean |decision bias| post: {{:.{}f}}\n'.format(digits_after_zero)\
-        .format(round(np.nanmean(np.abs(df['decision_bias_post'])), \
-        digits_after_zero)))
+    report += 'Mean decision bias difference: {{:.{}f}}\n'.format(
+        digits_after_zero).format(round(change.mean(), digits_after_zero))
+
+    report += 'Median decision bias difference: {{:.{}f}}\n'.format(\
+        digits_after_zero).format(round(change.median(), digits_after_zero))
+
+    report += 'Mean |decision bias| post: {{:.{}f}}\n\n'.format(
+        digits_after_zero).format(round(np.nanmean(np.abs(
+        df['decision_bias_post'])), digits_after_zero))
 
     fig = plt.figure()
     plt.hist(change[np.logical_not(np.isnan(change))], color='black', bins=30)
@@ -1646,12 +1663,12 @@ if want_decision_bias:
     fig.savefig(join(path, 'bias_change_histogram.' + plot_format), \
         bbox_inches='tight')
 
-print('Experiments represented by each label:')
+report += 'Experiments represented by each label:\n'
 label2experiment = {v: k for k, v in list(experiment2label.items())}
 assert len(label2experiment) == len(experiment2label)
 sorted_labels = sorted(label2experiment.keys())
 for k in sorted_labels:
-    print(k, '-', label2experiment[k])
+    report += '{} - {}\n'.format(k, label2experiment[k])
 
 if print_version:
     try:
@@ -1662,10 +1679,12 @@ if print_version:
         diff = repo.index.diff(None, create_patch=True)
         exactly = 'exactly ' if len(diff) == 0 else ''
         github_url = 'https://github.com/tom-f-oconnell/choice'
-        print('\nGenerated with {} @ {}{}'.format(github_url,
-            exactly, current_hash))
+        report += '\nGenerated with {} @ {}{}\n'.format(github_url,
+            exactly, current_hash)
 
     except ImportError:
+        # TODO do i want a warning or an error here? either way, may not be
+        # appropriate to print error output to stdout
         print('\nRequested print_version, but gitpython not installed. ' +
             'Try pip install -r optional_requirements.txt, from the choice ' +
             'repo root.')
@@ -1673,7 +1692,7 @@ if print_version:
 # TODO also include human readable labels for experiments? as config file in
 # each dir?
 
-print('')
+report += '\n'
 dirs_and_dts = [(x, dt.datetime.strptime(split(x)[-1],
     '%Y%m%d_%H%M%S')) for x in list(experiment2label.keys())]
 
@@ -1702,8 +1721,18 @@ for key, group in groupby(sorted(dirs_and_dts, key=key_fn), key_fn):
             unusable_flies += len(bad_flies)
     flies_this_week = unusable_flies + usable_flies
 
-    print('{}-{}: {} experiments, {} flies, {} good'.format(
+    report += '{}-{}: {} experiments, {} flies, {} good\n'.format(
         week_start.strftime('%m/%d'), week_end.strftime('%m/%d/%Y'),
-        len(dirs_and_exp_dates), flies_this_week, usable_flies))
+        len(dirs_and_exp_dates), flies_this_week, usable_flies)
+
+print(report)
+
+# TODO print only to the second
+report += '\nAnalysis finished at {}, local time.'.format(dt.datetime.now())
+report_textfile_name = 'report_{}.txt'.format(os.path.normpath(
+    experiment_subdir))
+with open(join(path, report_textfile_name), 'w+') as f:
+    print(report, file=f)
 
 # TODO usage. maybe if __name__ == '__main__'
+

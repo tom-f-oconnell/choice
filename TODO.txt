@@ -1,3 +1,8 @@
+- ***immediately restrict image to tight bounding box of all ROIs***
+  - to save computational work
+
+- undo/redo when labelling for analysis_rejects.yaml
+
 - add facilities for testing valves before trials.
 	 - service?
 
