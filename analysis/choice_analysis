@@ -6,6 +6,7 @@ from __future__ import division
 import sys
 import os
 from os.path import join, split
+import socket
 import re
 import pickle
 import glob
@@ -82,6 +83,10 @@ if make_plots:
     #rcParams.update({'figure.autolayout': True})
     # was it set_style?
     sns.set_style('white')
+
+# TODO maybe break out into a personal util library of mine? what are other
+# developers practices re: utilities across projects? (essentially, is it worth
+# the extra dependency, or is there some way to kind of avoid that issue?)
 
 # TODO fix 0 case. should use plural again.
 # see falsetru's answer at
@@ -310,6 +315,8 @@ path = join(os.environ['DATA_DIR'], 'retracked')
 
 if len(sys.argv) >= 2:
     experiment_subdir = sys.argv[1]
+    # TODO maybe rename. not sure i'm being consistent with my use of
+    # "experiment"
     path = join(path, experiment_subdir)
 
 else:
@@ -338,8 +345,25 @@ curr_char = ord('A')
 # 2) add all matching subdirs to dirs list below (or fail if none)
 # 3) merge all analysis_rejects.yaml (or either fail if any missing or create)
 
+# TODO break regex bit out into function to checking if a dir is a valid
+# experiment directory? do i already have a function like that somewhere?
+# might be easier to break this into a function if the regex is matched against
+# a full path, or if paths are only expanded later? (necessary to expand to
+# check existance? probably?)
 dirs = [join(path, d) for d in os.listdir(path) 
     if re.match(r'([0-9]){8}_([0-9]){6}', d) and os.path.isdir(join(path, d))]
+
+if len(dirs) == 0:
+    # Then we will check to see if any subdirectories (including symlinks)
+    # meet the 
+
+    # TODO warning if some subdirs are NOT experiment directories?
+
+    raise IOError('no experiment directories found. see documentation for ' +
+        'definition of a valid experiment directory.')
+# TODO TODO how to handle walking over subdirectories for the purposes of
+# building up + (creating or failing) reject reason dict from child
+# analysis_rejects?
 
 # TODO do most processing while loading, to not need as much memory?
 # TODO group by experiment for plotting by default? and chronologically across
@@ -1727,12 +1751,26 @@ for key, group in groupby(sorted(dirs_and_dts, key=key_fn), key_fn):
 
 print(report)
 
-# TODO print only to the second
-report += '\nAnalysis finished at {}, local time.'.format(dt.datetime.now())
-report_textfile_name = 'report_{}.txt'.format(os.path.normpath(
+report += '\nAnalysis run on {}:{}'.format(socket.gethostname(), path)
+report += '\nFinished at {} (local time)'.format(dt.datetime.now().strftime(
+    '%Y-%m-%d %H:%M:%S'))
+
+report_textfile_name = 'report.txt'.format(os.path.normpath(
     experiment_subdir))
 with open(join(path, report_textfile_name), 'w+') as f:
     print(report, file=f)
 
-# TODO usage. maybe if __name__ == '__main__'
+# TODO usage
+if __name__ == '__main__':
+    # TODO how to handle the options that are currently global?
+    # and what about the conditional imports for make_plots. would those work
+    # down here?
+
+    # if i was going to do it this way, how to handle analysis rejects in case
+    # of two levels of organization dirs?
+    #dirs = get_experiment_directories(...
+
+    
+    pass
+
 
