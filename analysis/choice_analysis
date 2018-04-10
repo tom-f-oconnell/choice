@@ -37,6 +37,7 @@ from stimuli.srv import LoadSequenceRequest
 
 # TODO use config file for these flags / command line args
 verbose = False
+debug = False
 
 # TODO option to get individual plots in nice aspect ratio / format for examples
 # in publications, etc
@@ -980,7 +981,6 @@ def decision_bias(times, y_positions, meta, prefix, \
             towards_right += 1
 
     total_decisions = towards_left + towards_right
-    # TODO put behind verbose flag after done debugging
     if verbose:
         print('decisions toward left', towards_left)
         print('decisions toward right', towards_right)
@@ -1566,11 +1566,8 @@ def analyze_group(fly2data, title=''):
     return df
 
 
-# TODO deal w/ nested groups case. that will require multiple calls to this, and
-# then merging dicts
 if children_experiment_groups is None:
     rejects = load_or_generate_reject_reasons(path)
-    #print(rejects)
 else:
     rejects = None
     for d in children_experiment_groups:
@@ -1582,12 +1579,16 @@ else:
 
         for reason in curr_rejects:
             if reason in rejects:
-                rejects[reason].update(curr_rejects)
+                rejects[reason].update(curr_rejects[reason])
             else:
                 rejects[reason] = dict()
 
-    #print('children_experiment_groups was NOT None')
-    #print(rejects)
+    if debug:
+        yaml_filename = join(path, 'merged_analysis_rejects.yaml')
+        print('saving to', yaml_filename)
+        with open(yaml_filename, 'w') as f:
+            yaml.dump(rejects, f, Dumper=yaml.RoundTripDumper)
+
 
 bad = dict()
 for reason, reject_dict in list(rejects.items()):
@@ -1848,5 +1849,3 @@ if __name__ == '__main__':
 
     
     pass
-
-
