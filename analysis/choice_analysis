@@ -36,7 +36,7 @@ from stimuli.srv import LoadSequenceRequest
 
 
 # TODO use config file for these flags / command line args
-verbose = True
+verbose = False
 
 # TODO option to get individual plots in nice aspect ratio / format for examples
 # in publications, etc
@@ -303,8 +303,6 @@ def load_metadata(d):
 
     return metadata
 
-# TODO refactor so nothing is called on import?
-
 # TODO check current dir -> check for env var -> check that dir
 # what all indications of having data from this kind of experiment?
 # not sure i want to make config file mandatory
@@ -313,22 +311,25 @@ def load_metadata(d):
 #path = '~/data/retracked'
 path = join(os.environ['DATA_DIR'], 'retracked')
 
-if len(sys.argv) >= 2:
+arg_err = ('you must pass a subdirectory of $DATA_DIR/retracked as the sole ' + 
+    'positional argument to choice_analysis')
+if len(sys.argv) == 2:
     experiment_subdir = sys.argv[1]
     # TODO maybe rename. not sure i'm being consistent with my use of
     # "experiment"
     path = join(path, experiment_subdir)
 
+elif len(sys.argv) > 2:
+    raise ValueError('too many arguments to choice_analysis. ' + arg_err)
+
 else:
-    raise NotImplementedError('you must pass a subdirectory of ' + 
-        '$DATA_DIR/retracked as the sole positional argument to ' +
-        'choice_analysis')
+    # TODO also allow script to be run in directory w/ data
+    raise NotImplementedError('not enough arguments. ' + arg_err)
 
-# TODO allow script to be run in directory w/ data
-path = os.path.expanduser(path)
-# TODO just walk from path in future?
+path = os.path.normpath(os.path.expanduser(path))
 
-# TODO maybe have a flag to save figures for rejects?
+# TODO maybe have a flag to save figures for rejects? save them separately?
+# rename so the modifier is second, for sorting?
 curr_fly = 0
 fly2data = dict()
 fly2meta = dict()
@@ -350,17 +351,34 @@ curr_char = ord('A')
 # might be easier to break this into a function if the regex is matched against
 # a full path, or if paths are only expanded later? (necessary to expand to
 # check existance? probably?)
-dirs = [join(path, d) for d in os.listdir(path) 
-    if re.match(r'([0-9]){8}_([0-9]){6}', d) and os.path.isdir(join(path, d))]
+
+def is_experiment_dir(d):
+    '''
+    print(d)
+    print(not (re.match(r'(.*/)?([0-9]){8}_([0-9]){6}', d) is None))
+    print(os.path.isdir(d))
+    '''
+    # TODO test this still only works on dirs w/ valid names
+    return re.match(r'(.*/)?([0-9]){8}_([0-9]){6}', d) and os.path.isdir(d)
+
+dirs = [os.path.normpath(d) for d in glob.glob('{}/*/'.format(path))
+        if is_experiment_dir(d)]
+children_experiment_groups = None
 
 if len(dirs) == 0:
     # Then we will check to see if any subdirectories (including symlinks)
     # meet the 
+    dirs = [os.path.normpath(d) for d in glob.glob('{}/*/*/'.format(path))
+            if is_experiment_dir(d)]
+    children_experiment_groups = {os.path.dirname(d) for d in dirs}
 
-    # TODO warning if some subdirs are NOT experiment directories?
+    # TODO warning if some subdirs are NOT experiment directories? (currently, i
+    # would just not detect them)
+    if len(dirs) == 0:
+        raise IOError('no experiment directories found. see documentation for' +
+            ' definition of a valid experiment directory.')
 
-    raise IOError('no experiment directories found. see documentation for ' +
-        'definition of a valid experiment directory.')
+
 # TODO TODO how to handle walking over subdirectories for the purposes of
 # building up + (creating or failing) reject reason dict from child
 # analysis_rejects?
@@ -412,6 +430,8 @@ for d in dirs:
         metadata['dir'] = d
 
         if d not in experiment2label:
+            # TODO TODO after Z, start doing AA, AB, etc? or just start w/ AA if
+            # we have more experiments than 26?
             experiment2label[d] = chr(curr_char)
             curr_char += 1
 
@@ -430,19 +450,6 @@ if make_plots:
     odor2color = dict()
     for o, c in zip(all_odors, cmap):
         odor2color[o] = c
-
-yaml_filename = join(path, 'analysis_rejects.yaml')
-yaml_loader = yaml.YAML()
-
-if os.path.exists(yaml_filename):
-    with open(yaml_filename, 'r') as f:
-        yaml_loader.allow_duplicate_keys = False
-        rejects = yaml_loader.load(f)
-        if rejects is None:
-            rejects = OrderedDict()
-
-else:
-    rejects = OrderedDict()
 
 # Defines the 0 on the horizontal (time) axis of all plots, to be this many
 # seconds before the start of the first test period.
@@ -590,8 +597,8 @@ def plot_trace(rel_times, position_y, meta, metrics=None, \
             # TODO maybe subdivide for shocks? (to reflect actual pulse cycle
             # ~2.5s on/off)
             x0 = s.seq.start.to_sec() - plot_t0
-            print('seq.start.to_sec()', s.seq.start.to_sec(), 'x0', x0,
-                'width', width)
+            #print('seq.start.to_sec()', s.seq.start.to_sec(), 'x0', x0,
+            #    'width', width)
             if i == 0:
                 # define acceptable mismatch here?
                 if x0 <= 0.0:
@@ -656,22 +663,15 @@ def plot_trace(rel_times, position_y, meta, metrics=None, \
         valign = 'top'
         if want_time_spent:
             text = ''
-            # TODO make robust to fly #0 getting skipped
             # TODO TODO also label which col is time spent / decision bias, etc
-            if fly == 0:
-                # TODO why is this never really happening now?
-                text += 'pre: %.3f in reinforced\npost: %.3f in reinforced' % \
-                    (metrics['time_fraction_pre'],metrics['time_fraction_post'])
-            else:
-                text += 'pre: %.3f\npost: %.3f' % \
-                    (metrics['time_fraction_pre'],metrics['time_fraction_post'])
+            text += 'pre: %.3f\npost: %.3f' % \
+                (metrics['time_fraction_pre'],metrics['time_fraction_post'])
 
             # TODO scale fontsize w/ # of traces? / figsize?
             ax.text(x_0, y_pos, text, transform=ax.transAxes, \
                 fontsize=fontsize, verticalalignment=valign)
 
         if want_decision_bias:
-            #if fly == 0:
             text = '%.3f\n%.3f' % \
                 (metrics['decision_bias_pre'], metrics['decision_bias_post'])
 
@@ -691,162 +691,178 @@ def plot_trace(rel_times, position_y, meta, metrics=None, \
         labels, handles
 
 
-key2group = {'1': 'good',
-             '2': 'never_active',
-             '3': 'inactive_after_shock',
-             '4': 'no_sample_either_test',
-             '5': 'no_receive_shock',
-             '6': 'no_fly',
-             '7': 'tracker_artifacts',
-             '8': 'suspicious'}
+def load_or_generate_reject_reasons(experiment_group_dir):
+    """
+    Args:
+        experiment_group_dir (str): full path to a directory containing
+            experiment directories to be annotated
 
-def press(event):
-    """Sets a category accessible to plotting+sorting code on number keypress"""
-    # TODO rank these according to how common they are?
-    if event.key in key2group:
-        group = key2group[event.key]
+    Returns a dict of dicts, where the top level keys are labels for individual
+    fly traces (either 'good' or one of a few strings describing why it is a bad
+    trace). The keys of the nested dicts are str experiment directory names, and
+    the values are a list of positive integers indicating which ROI number the
+    trace being labelled came from.
+    """
+    key2group = {'1': 'good',
+                 '2': 'never_active',
+                 '3': 'inactive_after_shock',
+                 '4': 'no_sample_either_test',
+                 '5': 'no_receive_shock',
+                 '6': 'no_fly',
+                 '7': 'tracker_artifacts',
+                 '8': 'suspicious'}
 
-        # TODO fix this printing. not displaying.
-        print(group, '            \r', end=' ')
-        press.group = group
-        press.fig.canvas.mpl_disconnect(press.cid)
-        #print 'closing fig'
-        plt.close(press.fig)
+    def press(event):
+        """Sets a category accessible to sorting code on number keypress"""
+        # TODO rank these according to how common they are?
+        if event.key in key2group:
+            group = key2group[event.key]
 
-# Plots the traces from each uncategorized fly, allowing the user to label them
-# by pressing one of the appropriate numbers. Flies are analyzed within each
-# category, and the distribution across the categories is useful for
-# troubleshooting.
-new_keys = False
-# open yaml for writing
-# TODO fix patching / plot ranges
-for fly, data in list(fly2data.items()):
-    meta = fly2meta[fly]
-    stamp = split(meta['dir'])[-1]
+            # TODO fix this printing. not displaying.
+            print(group, '            \r', end=' ')
+            press.group = group
+            press.fig.canvas.mpl_disconnect(press.cid)
+            plt.close(press.fig)
 
-    already_labelled = False
-    # try to find the current fly in one of the dictionaries for any group in
-    # the analysis_rejects.yaml file. if it is in one, no need to get a label
-    # for it here.
-    for reason, reject_dict in list(rejects.items()):
-        if ((not reject_dict is None) and stamp in reject_dict
-            and meta['n'] in reject_dict[stamp]):
+    experiment_group_dir = os.path.normpath(experiment_group_dir)
+    yaml_filename = join(experiment_group_dir, 'analysis_rejects.yaml')
+    yaml_loader = yaml.YAML()
 
-            # TODO use actual yaml filename?
-            if verbose:
-                print(stamp, meta['n'],
-                    'was already labeled in analysis_rejects.yaml')
-
-            already_labelled = True
-            break
-
-    if already_labelled:
-        continue
-    elif verbose:
-        print(stamp, meta['n'], 'was NOT in yaml')
-
-    if not new_keys:
-        print('Keys to label traces:')
-        for k in sorted(key2group.keys()):
-            print(k, '-', key2group[k])
-        
-    new_keys = True
-    curr_times = (data['time_epoch_secs'] + data['time_epoch_nsecs'] /
-        1e9).as_matrix()
-    nonzero_times = curr_times.nonzero()[0]
-
-    if nonzero_times.size == 0:
-        if not 'no_fly' in rejects:
-            rejects['no_fly'] = OrderedDict()
-
-        if not stamp in rejects['no_fly']:
-            rejects['no_fly'][stamp] = []
-
-        rejects['no_fly'][stamp].append(meta['n'])
-        continue
-
-    fig = plt.figure()
-    cid = fig.canvas.mpl_connect('key_press_event', press)
-
-    if 'times' in meta:
-        plot_t0 = meta['times']['pretest_start'] - plot_t0_to_test0_start_s
-        # TODO TODO move this stuff inside plot_trace? was there some reason I
-        # couldn't easily do that?
-        # relative to time origin defined earlier
-        rel_times = curr_times - plot_t0
-
-        #plot_trace(curr_times, data['position_y'], meta, ax=ax)
-        # TODO why did this seem to be on a log x scale once?
-        # TODO use a consistent range for all of these...
-        # TODO why does this seem to frequently not show stimulus in the
-        # background (even when I assume that information is available?)
-        # inconsistent?
-        plot_trace(rel_times, data['position_y'], meta)
+    if os.path.exists(yaml_filename):
+        with open(yaml_filename, 'r') as f:
+            yaml_loader.allow_duplicate_keys = False
+            rejects = yaml_loader.load(f)
+            if rejects is None:
+                rejects = OrderedDict()
 
     else:
-        # or maybe take nonzero_times and restrict positions to same indices?
-        plot_trace(curr_times, data['position_y'], meta)
+        rejects = OrderedDict()
 
-    plt.title('{}, ROI {}'.format(stamp, meta['n']))
+    # Plots the traces from each uncategorized fly, allowing the user to label
+    # them by pressing one of the appropriate numbers. Flies are analyzed within
+    # each category, and the distribution across the categories is useful for
+    # troubleshooting.
+    new_keys = False
+    # open yaml for writing
+    # TODO fix patching / plot ranges
+    for fly, data in list(fly2data.items()):
+        meta = fly2meta[fly]
+        d = os.path.normpath(meta['dir'])
+        # TODO test
+        if os.path.dirname(d) != experiment_group_dir:
+            continue
 
-    press.fig = fig
-    press.cid = cid
+        stamp = os.path.basename(d)
 
-    while True:
-        # TODO What was causing this again? I think at least pressing keys too
-        # fast when labelling flies?
-        try:
-            # TODO maybe just delay before / after?
-            plt.show()
-            break
-        except AttributeError as e:
-            # TODO what to do? need to fail?
-            print(e)
-            pass
+        already_labelled = False
+        # try to find the current fly in one of the dictionaries for any group
+        # in the analysis_rejects.yaml file. if it is in one, no need to get a
+        # label for it here.
+        for reason, reject_dict in list(rejects.items()):
+            if ((not reject_dict is None) and stamp in reject_dict
+                and meta['n'] in reject_dict[stamp]):
 
-    if not hasattr(press, 'group'):
-        sys.exit()
+                # TODO use actual yaml filename?
+                if verbose:
+                    print(stamp, meta['n'],
+                        'was already labeled in analysis_rejects.yaml')
 
-    if not press.group in rejects:
-        rejects[press.group] = OrderedDict()
+                already_labelled = True
+                break
 
-    if not stamp in rejects[press.group]:
-        rejects[press.group][stamp] = []
+        if already_labelled:
+            continue
+        elif verbose:
+            print(stamp, meta['n'], 'was NOT in yaml')
 
-    rejects[press.group][stamp].append(meta['n'])
+        if not new_keys:
+            print('Keys to label traces:')
+            for k in sorted(key2group.keys()):
+                print(k, '-', key2group[k])
+            
+        new_keys = True
+        curr_times = (data['time_epoch_secs'] + data['time_epoch_nsecs'] /
+            1e9).as_matrix()
+        nonzero_times = curr_times.nonzero()[0]
 
-if new_keys:
-    print('')
+        if nonzero_times.size == 0:
+            if not 'no_fly' in rejects:
+                rejects['no_fly'] = OrderedDict()
 
-if new_keys:
-    for reason in rejects:
-        for stamp in rejects[reason]:
-            # TODO problems roundtripping this?
-            rejects[reason][stamp] = \
-                CommentedSeq(sorted(list(rejects[reason][stamp])))
-            # TODO current api? still necessary?
-            rejects[reason][stamp].fa.set_flow_style()
+            if not stamp in rejects['no_fly']:
+                rejects['no_fly'][stamp] = []
 
-    print('saving to', yaml_filename)
-    with open(yaml_filename, 'w') as f:
-        yaml.dump(rejects, f, Dumper=yaml.RoundTripDumper)
+            rejects['no_fly'][stamp].append(meta['n'])
+            continue
 
-bad = dict()
-for reason, reject_dict in list(rejects.items()):
-    if reason == 'good' or reject_dict is None:
-        continue
+        fig = plt.figure()
+        cid = fig.canvas.mpl_connect('key_press_event', press)
 
-    if reason == 'suspicious' and (not reject_dict is None):
-        # TODO print which
-        warnings.warn('WARNING: using some trajectories marked as ' +
-            'suspicious for analysis.')
-        continue
+        if 'times' in meta:
+            plot_t0 = meta['times']['pretest_start'] - plot_t0_to_test0_start_s
+            # TODO TODO move this stuff inside plot_trace? was there some reason
+            # I couldn't easily do that?
+            # relative to time origin defined earlier
+            rel_times = curr_times - plot_t0
 
-    for exp_id, rois in list(reject_dict.items()):
-        if exp_id in bad:
-            bad[exp_id] = bad[exp_id] | set(rois)
+            #plot_trace(curr_times, data['position_y'], meta, ax=ax)
+            # TODO why did this seem to be on a log x scale once?
+            # TODO use a consistent range for all of these...
+            # TODO why does this seem to frequently not show stimulus in the
+            # background (even when I assume that information is available?)
+            # inconsistent?
+            plot_trace(rel_times, data['position_y'], meta)
+
         else:
-            bad[exp_id] = set(rois)
+            # or maybe take nonzero_times and restrict positions to same
+            # indices?
+            plot_trace(curr_times, data['position_y'], meta)
+
+        plt.title('{}, ROI {}'.format(stamp, meta['n']))
+
+        press.fig = fig
+        press.cid = cid
+
+        while True:
+            # TODO What was causing this again? I think at least pressing keys
+            # too fast when labelling flies?
+            try:
+                # TODO maybe just delay before / after?
+                plt.show()
+                break
+            except AttributeError as e:
+                # TODO what to do? need to fail?
+                print(e)
+                pass
+
+        if not hasattr(press, 'group'):
+            sys.exit()
+
+        if not press.group in rejects:
+            rejects[press.group] = OrderedDict()
+
+        if not stamp in rejects[press.group]:
+            rejects[press.group][stamp] = []
+
+        rejects[press.group][stamp].append(meta['n'])
+
+    if new_keys:
+        print('')
+
+    if new_keys:
+        for reason in rejects:
+            for stamp in rejects[reason]:
+                # TODO problems roundtripping this?
+                rejects[reason][stamp] = \
+                    CommentedSeq(sorted(list(rejects[reason][stamp])))
+                # TODO current api? still necessary?
+                rejects[reason][stamp].fa.set_flow_style()
+
+        print('saving to', yaml_filename)
+        with open(yaml_filename, 'w') as f:
+            yaml.dump(rejects, f, Dumper=yaml.RoundTripDumper)
+
+    return rejects
 
 
 # TODO TODO also plot ranges these functions use, for sanity checking (that it
@@ -1115,6 +1131,9 @@ def analyze_group(fly2data, title=''):
     global want_decision_bias
     global sort_traces_by
 
+    if len(fly2data) == 0:
+        raise ValueError('empty group')
+
     y_maxes_above_mid = []
     y_mins_below_mid = []
     y_ranges = []
@@ -1332,6 +1351,15 @@ def analyze_group(fly2data, title=''):
 
             handles = None
             labels = None
+
+            # TODO TODO make something like this happen for the first fly?
+            # or maybe better yet, (just?) make column labels describing each
+            # metric (for the first fly?)
+            #    text += 'pre: %.3f in reinforced\npost: %.3f in reinforced' % \
+            #       (metrics['time_fraction_pre'],metrics['time_fraction_post'])
+
+            # TODO default should be chronological order, kept grouped w/in
+            # experiments
             if sort_traces_by is None:
                 curr_x_min, curr_x_max, curr_y_min, curr_y_max, labels, \
                     handles = plot_trace(times_for_plot, 
@@ -1537,6 +1565,47 @@ def analyze_group(fly2data, title=''):
         # print?
     return df
 
+
+# TODO deal w/ nested groups case. that will require multiple calls to this, and
+# then merging dicts
+if children_experiment_groups is None:
+    rejects = load_or_generate_reject_reasons(path)
+    #print(rejects)
+else:
+    rejects = None
+    for d in children_experiment_groups:
+        curr_rejects = load_or_generate_reject_reasons(d)
+        if rejects is None:
+            rejects = curr_rejects
+
+        # TODO TODO check for duplicates? (should probably be an error)
+
+        for reason in curr_rejects:
+            if reason in rejects:
+                rejects[reason].update(curr_rejects)
+            else:
+                rejects[reason] = dict()
+
+    #print('children_experiment_groups was NOT None')
+    #print(rejects)
+
+bad = dict()
+for reason, reject_dict in list(rejects.items()):
+    if reason == 'good' or reject_dict is None:
+        continue
+
+    if reason == 'suspicious' and (not reject_dict is None):
+        # TODO print which
+        warnings.warn('WARNING: using some trajectories marked as ' +
+            'suspicious for analysis.')
+        continue
+
+    for exp_id, rois in list(reject_dict.items()):
+        if exp_id in bad:
+            bad[exp_id] = bad[exp_id] | set(rois)
+        else:
+            bad[exp_id] = set(rois)
+
 # TODO it seems that running analysis 1 (2?) times after initial scoring, empty
 # plots are gone but first 1 (2?) times have some empty plots (should be no_fly)
 # why?
@@ -1558,61 +1627,64 @@ if verbose:
     print('')
 
 # TODO order traces consistently across runs (by roi #).
-df = analyze_group(good_fly2data)
+if len(good_fly2data) > 0:
+    df = analyze_group(good_fly2data)
 
-formatter = PluralFormatter()
+    formatter = PluralFormatter()
 
-odor_lines = []
-for o in all_odors:
-    # for analyzing experiments with aversive conditioning
-    if 'shocked_odor' in df.columns:
-        curr_df = df[df['shocked_odor'] == o[0]]
-        # TODO how to not need to input positions / kwarg names w/ custom
-        # formatter?
-        odor_lines.append(formatter.format('{0} good trace{0(s)} with {1} ' + \
-            'as the reinforced odor.', len(curr_df), o[0]))
-        label_insert = 'shocked odor'
+    odor_lines = []
+    for o in all_odors:
+        # for analyzing experiments with aversive conditioning
+        if 'shocked_odor' in df.columns:
+            curr_df = df[df['shocked_odor'] == o[0]]
+            # TODO how to not need to input positions / kwarg names w/ custom
+            # formatter?
+            odor_lines.append(formatter.format('{0} good trace{0(s)} with {1}' +
+                ' as the reinforced odor.', len(curr_df), o[0]))
+            label_insert = 'shocked odor'
 
-    # for assessing innate preference
-    elif 'odor_A' in df.columns:
-        curr_df = df[df['odor_A'] == o[0]]
-        odor_lines.append(formatter.format('{0} good trace{0(s)} with {1} ' + \
-            'as odor A', len(curr_df), o[0]))
-        label_insert = 'odor A'
+        # for assessing innate preference
+        elif 'odor_A' in df.columns:
+            curr_df = df[df['odor_A'] == o[0]]
+            odor_lines.append(formatter.format('{0} good trace{0(s)} with {1}' +
+                ' as odor A', len(curr_df), o[0]))
+            label_insert = 'odor A'
 
-    else:
-        raise ValueError('neither odor_A (if innate preference experiment) ' + \
-            'nor shocked_odor (if experiment with conditioning) in df')
+        else:
+            raise ValueError('neither odor_A (if innate preference experiment' +
+                ') nor shocked_odor (if experiment with conditioning) in df')
 
-    # TODO handle odor better in filename
+        # TODO handle odor better in filename
 
-    if want_time_spent:
-        plot_metric_change(curr_df['time_fraction_pre'], \
-            curr_df['time_fraction_post'], \
-            title='Conditioned change in time spent, ' + o[0] + \
-            ' {}'.format(label_insert), \
-            ylabel='Proportion of test spent in {}'.format(label_insert), \
-            exps=curr_df['experiment'], \
-            rois=curr_df['roi'], filename=o[0] + '_time_spent.' + plot_format)
+        if want_time_spent:
+            plot_metric_change(curr_df['time_fraction_pre'],
+                curr_df['time_fraction_post'],
+                title='Conditioned change in time spent, ' + o[0] +
+                ' {}'.format(label_insert),
+                ylabel='Proportion of test spent in {}'.format(label_insert),
+                exps=curr_df['experiment'], \
+                rois=curr_df['roi'], filename=o[0] + '_time_spent.' + 
+                plot_format)
 
-    if want_decision_bias:
-        # TODO use format for all
-        plot_metric_change(curr_df['decision_bias_pre'], \
-            curr_df['decision_bias_post'], \
-            title='Conditioned change in decision bias, ' + o[0] + \
-            ' {}'.format(label_insert), ylabel='Decision bias', \
-            exps=curr_df['experiment'], rois=curr_df['roi'], filename=o[0] + \
-            '_decision_bias.' + plot_format, allow_negative=True)
+        if want_decision_bias:
+            # TODO use format for all
+            plot_metric_change(curr_df['decision_bias_pre'],
+                curr_df['decision_bias_post'],
+                title='Conditioned change in decision bias, ' + o[0] +
+                ' {}'.format(label_insert), ylabel='Decision bias',
+                exps=curr_df['experiment'], rois=curr_df['roi'], filename=o[0] +
+                '_decision_bias.' + plot_format, allow_negative=True)
 
-reason2formatstr = {'never_active': '{0} fl{0(y,ies)} were never active',
-                    'inactive_after_shock': '{0} fl{0(y,ies)} became ' + \
-                    'inactive after a shock',
-                    'no_sample_either_test': '{0} fl{0(y,ies)} did not ' + \
-                        'come close enough to sampling one odor during a test',
-                    'no_receive_shock': '{0} fl{0(y,ies)} did not appear ' + \
-                        'to receive a shock',
-                    'tracker_artifacts': '{0} trajector{0(y,ies)} appeared ' + \
-                        'to have tracking artifacts'}
+    reason2formatstr = {'never_active': '{0} fl{0(y,ies)} were never active',
+                        'inactive_after_shock': '{0} fl{0(y,ies)} became ' +
+                        'inactive after a shock',
+                        'no_sample_either_test': '{0} fl{0(y,ies)} did not ' +
+                            'come close enough to sampling one odor during a ' +
+                            'test',
+                        'no_receive_shock': '{0} fl{0(y,ies)} did not appear ' +
+                            'to receive a shock',
+                        'tracker_artifacts': '{0} trajector{0(y,ies)} ' +
+                            'appeared to have tracking artifacts'}
 
 lines = []
 rois_without_flies = 0
@@ -1635,7 +1707,10 @@ for reason, reject_dict in list(rejects.items()):
         lines.append(formatter.format(reason2formatstr[reason], \
             len(bad_fly2data)))
 
-    analyze_group(bad_fly2data, title=reason.replace('_', ' '))
+    # maybe i should just move this check inside analyze_group... with a
+    # warning maybe?
+    if len(bad_fly2data) > 0:
+        analyze_group(bad_fly2data, title=reason.replace('_', ' '))
 
 # TODO format this for evernote & upload
 total_flies = len(fly2data) - rois_without_flies
@@ -1717,6 +1792,7 @@ if print_version:
 # each dir?
 
 report += '\n'
+print(experiment2label.keys())
 dirs_and_dts = [(x, dt.datetime.strptime(split(x)[-1],
     '%Y%m%d_%H%M%S')) for x in list(experiment2label.keys())]
 
