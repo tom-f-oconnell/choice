@@ -45,14 +45,27 @@
    2. `cd ~/arduino-1.8.3/libraries` (or wherever your Arduino is installed)
    3. `rm -rf ros_lib` (in case some libraries have already been generated)
    4. `rosrun rosserial_arduino make_libraries.py .`
-   5. If you Arduino IDE was open, close and re-open it.
+   5. Symlink to `stimuli` and `multishock` libraries. You only need
+      `multishock` if uploading code that relies on the shift-register based
+      shock control hardware.
+
+      (still from `~/arduino-1.8.3/libraries`)
+      ```
+      ln -s ~/catkin/src/stimuli/arduino/libraries/stimuli
+      ln -s ~/catkin/src/choice/arduino/libraries/multishock
+      ```
+
+   6. If you Arduino IDE was open, close and re-open it.
       - *Make sure that you are opening the same version of Arduino you installed the libraries for.* It is easier to only have one version of Arduino installed at any given time to avoid these conflicts.
-   6. Add your user to the `dialout` group (if on Ubuntu), to be able to upload code.
+
+   7. Add your user to the `dialout` group (if on Ubuntu), to be able to upload code.
       - `sudo adduser <username> dialout`
       - Log out and back in for the change to take effect
-   7. Connect your Arduino MEGA to the computer.
+
+   8. Connect your Arduino MEGA to the computer.
       - Arduino's with less memory will currently **NOT** work, as there is considerable overhead in the generated ROS libraries.
-   8. Upload code
+
+   9. Upload code
       In the Arduino IDE, under the `Tools` menu:
       - Select appropriate port
          - Usually `/dev/ttyUSBX`, where `X` could vary. `/dev/ttyACMX` may also work. It is never the one like `/dev/ttyS0`.
@@ -107,7 +120,8 @@ rosrun choice copy_configs.py
 ##### To set the length of the experiment
 In the `stimulus_parameters.yaml` file, set the parameters starting at `olf/training_blocks` and ending at `olf/beyond_posttest_s` to appropriate values.
 
-For now, also make sure that `multi_tracker/record_length_hours`, in `tracker_parameters.yaml`, is at least as large as the total length of your stimulus presentation.
+In `tracker_parameters.yaml`, set `multi_tracker/record_length_hours` to -1, so
+that the length of the recording is determined by the stimulus presentation.
 
 #### To run a full experiment with real-time tracking on the same computer.
 Requires a computer with adequate memory and processor.
@@ -127,6 +141,24 @@ Contact Tom with any questions.
 Less hardware demands.
 ```
 roslaunch choice choice.launch video_only:=True
+```
+
+##### Possible problems
+
+If you run `rosparam list` before starting an experiment, you should see
+`ERROR: Unable to communicate with master!`, otherwise, the existing parameters
+can misconfigure any experiments you try to run.
+
+First, check it isn't a valid experiment being run on another account, if you're
+sharing the computer. If not, you should be able to stop the existing `roscore`
+process with:
+```
+sudo pkill rosmaster
+```
+
+After this command, you anothter `rosparam list` should give you
+```
+ERROR: Unable to communicate with master!
 ```
 
 ### Stimulus Validation
