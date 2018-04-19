@@ -156,7 +156,7 @@ process with:
 sudo pkill rosmaster
 ```
 
-After this command, you anothter `rosparam list` should give you
+After this command, you another `rosparam list` should give you
 ```
 ERROR: Unable to communicate with master!
 ```
