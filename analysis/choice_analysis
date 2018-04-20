@@ -11,8 +11,6 @@ import re
 import pickle
 import glob
 import argparse
-# TODO will this work w/ python2?
-# seems to, but may be unnecessary
 from collections import OrderedDict
 from itertools import groupby
 import datetime as dt
@@ -22,12 +20,12 @@ import warnings
 
 import numpy as np
 import pandas as pd
-# TODO maybe remove this dependency if it means it cant be run easily on
-# windows?
 # TODO replace rosparam usage w/ this?
 # using this rather than pyyaml, because this supports rejecting duplicate keys
 from ruamel import yaml
 from ruamel.yaml.comments import CommentedSeq
+# TODO maybe remove this dependency if it means it cant be run easily on
+# windows?
 import rosparam
 # TODO figure out what the hold up is on importing this, with the prints
 import multi_tracker_analysis as mta
@@ -47,9 +45,12 @@ show_plots = False
 save_plots = True
 plot_format = 'png'
 make_plots = show_plots or save_plots
-# TODO describe alternatives. None valid?
-# TODO 'chronological' / 'time' option?
-sort_traces_by = 'decision_bias'
+# TODO describe alternatives. None=chronological (offer reverse?) translate
+# chronological to None or just interpret chronological terminally?
+# TODO rename to '*_change', for metric based sorts?
+#sort_traces_by = 'decision_bias'
+# TODO allow sorting by multiple (suffix name or something?)
+sort_traces_by = None
 
 # TODO it seems these were originally for displaying?
 # separate flags for whether the text should be added to traces plot?
@@ -60,6 +61,7 @@ display_metrics = want_time_spent or want_decision_bias
 
 # TODO also include option to color lines in metric change plots by same labels?
 show_experiment_labels = True
+show_roi_numbers = True
 
 print_version = True
 digits_after_zero = 3
@@ -70,7 +72,6 @@ trace_linewidth = 1.0
 # error.
 # maybe delete this option, depending on what i decide to do with the above...
 require_stimuli = False
-
 
 if make_plots:
     import matplotlib
@@ -120,6 +121,13 @@ class PluralFormatter(string.Formatter):
             return suffix[0] if value <= 1 else suffix[1]
         else:
             raise KeyError(key)
+
+
+if show_roi_numbers and not show_experiment_labels:
+    warnings.warn('show_roi_number=True with show_experiment_labels=False is ' +
+        'an invalid configuration. setting show_experiment_labels=True.')
+    show_experiment_labels = True
+
 
 def load_metadata(d):
     """
@@ -331,34 +339,8 @@ path = os.path.normpath(os.path.expanduser(path))
 
 # TODO maybe have a flag to save figures for rejects? save them separately?
 # rename so the modifier is second, for sorting?
-curr_fly = 0
-fly2data = dict()
-fly2meta = dict()
-all_odors = set()
-
-experiment2label = dict()
-curr_char = ord('A')
-
-# TODO TODO allow organizational directories (with their own
-# analysis_rejects.yaml), symlinked under another organizational directory,
-# to be merged together for analysis as one group
-# should involve three things:
-# 1) identify no dirs matching regex in current level -> search deeper
-# 2) add all matching subdirs to dirs list below (or fail if none)
-# 3) merge all analysis_rejects.yaml (or either fail if any missing or create)
-
-# TODO break regex bit out into function to checking if a dir is a valid
-# experiment directory? do i already have a function like that somewhere?
-# might be easier to break this into a function if the regex is matched against
-# a full path, or if paths are only expanded later? (necessary to expand to
-# check existance? probably?)
 
 def is_experiment_dir(d):
-    '''
-    print(d)
-    print(not (re.match(r'(.*/)?([0-9]){8}_([0-9]){6}', d) is None))
-    print(os.path.isdir(d))
-    '''
     # TODO test this still only works on dirs w/ valid names
     return re.match(r'(.*/)?([0-9]){8}_([0-9]){6}', d) and os.path.isdir(d)
 
@@ -379,15 +361,26 @@ if len(dirs) == 0:
         raise IOError('no experiment directories found. see documentation for' +
             ' definition of a valid experiment directory.')
 
+curr_fly = 0
+fly2data = dict()
+fly2meta = dict()
+all_odors = set()
+
+experiment2label = dict()
+curr_char = ord('A')
 
 # TODO TODO how to handle walking over subdirectories for the purposes of
 # building up + (creating or failing) reject reason dict from child
 # analysis_rejects?
 
+# so that we only sort chronologically, and not also based on preceding parts of
+# the paths that might differ (if using nested organizational directories)
+sorted_dirs = sorted(dirs, key=lambda x: os.path.basename(x))
+
 # TODO do most processing while loading, to not need as much memory?
 # TODO group by experiment for plotting by default? and chronologically across
 # groups? (just sort here?)
-for d in dirs:
+for d in sorted_dirs:
     if not os.path.isdir(d):
         continue
 
@@ -398,9 +391,8 @@ for d in dirs:
         #  directories)
         common_metadata = load_metadata(d)
     except ValueError as e:
-        # TODO use warnings
-        print(e)
-        print('SKIPPING:', d)
+        print(e, file=sys.stderr)
+        warnings.warn('SKIPPING: {}'.format(d))
 
     try:
         for o in common_metadata['odors']:
@@ -415,6 +407,9 @@ for d in dirs:
         # so
         # TODO exclude trajectories that don't cover enough ground
         data, _ = mta.read_hdf5_file_to_pandas.load_and_preprocess_data(f)
+
+        # TODO TODO assert that one range is larger than other? do i not already
+        # do that?
         '''
         print 'position_x range', data['position_x'].min(), \
             data['position_x'].max()
@@ -458,7 +453,7 @@ if make_plots:
 plot_t0_to_test0_start_s = 0 # 60
 # TODO TODO why does sign of (the effect of) plot_t0_to_test0_start_s seem to
 # change depending on the value of this flag?
-show_all_tracking = True
+show_all_tracking = False
 
 
 def plot_trace(rel_times, position_y, meta, metrics=None, \
@@ -604,7 +599,7 @@ def plot_trace(rel_times, position_y, meta, metrics=None, \
                 # define acceptable mismatch here?
                 if x0 <= 0.0:
                     if verbose:
-                        warnings.warn('WARNING! seems no video was recorded ' + 
+                        warnings.warn('seems no video was recorded ' + 
                             'for first ' + str(-x0) + ' seconds of first ' + 
                             'block (pre-training test)')
 
@@ -685,8 +680,15 @@ def plot_trace(rel_times, position_y, meta, metrics=None, \
 
     # different name for this flag?
     if show_experiment_labels:
-        ax.text(-.05, 0.6, experiment2label[meta['dir']], \
-            transform=ax.transAxes, fontsize=12, verticalalignment='top')
+        text_x = -0.05
+        single_trace_label = experiment2label[meta['dir']]
+
+        if show_roi_numbers:
+            single_trace_label += str(meta['n'])
+            text_x -= 0.02
+
+        ax.text(text_x, 0.6, single_trace_label, transform=ax.transAxes,
+                fontsize=12, verticalalignment='top')
 
     return plotting_x_min, plotting_x_max, plotting_y_min, plotting_y_max, \
         labels, handles
@@ -1203,6 +1205,8 @@ def analyze_group(fly2data, title=''):
         # TODO so does floris initialize something to 5000? blocks written in
         # that size?
         #print(curr_times.shape)
+        # TODO TODO what is source of zeros? fix (is this also an issue in K's
+        # tracking output?)
         nonzero_times = curr_times.nonzero()[0]
         if nonzero_times.size == 0:
             # TODO automatically add these to yaml? recommend?
@@ -1293,7 +1297,7 @@ def analyze_group(fly2data, title=''):
             '''
             if curr_rel_err != 0:
                 if verbose:
-                    warnings.warn('WARNING! relative difference in ' + 
+                    warnings.warn('relative difference in ' + 
                         'timepoints in pre and post test = {}'.format(
                         curr_rel_err))
 
@@ -1596,8 +1600,8 @@ for reason, reject_dict in list(rejects.items()):
         continue
 
     if reason == 'suspicious' and (not reject_dict is None):
-        # TODO print which
-        warnings.warn('WARNING: using some trajectories marked as ' +
+        # TODO print which (+ maybe instructions on how to rectify)
+        warnings.warn('using some trajectories marked as ' +
             'suspicious for analysis.')
         continue
 
@@ -1714,6 +1718,7 @@ for reason, reject_dict in list(rejects.items()):
         analyze_group(bad_fly2data, title=reason.replace('_', ' '))
 
 # TODO format this for evernote & upload
+# TODO or format for a website, as Kristen Branson's Janelia data
 total_flies = len(fly2data) - rois_without_flies
 
 report = ''
@@ -1793,7 +1798,6 @@ if print_version:
 # each dir?
 
 report += '\n'
-print(experiment2label.keys())
 dirs_and_dts = [(x, dt.datetime.strptime(split(x)[-1],
     '%Y%m%d_%H%M%S')) for x in list(experiment2label.keys())]
 
@@ -1826,11 +1830,11 @@ for key, group in groupby(sorted(dirs_and_dts, key=key_fn), key_fn):
         week_start.strftime('%m/%d'), week_end.strftime('%m/%d/%Y'),
         len(dirs_and_exp_dates), flies_this_week, usable_flies)
 
-print(report)
-
 report += '\nAnalysis run on {}:{}'.format(socket.gethostname(), path)
 report += '\nFinished at {} (local time)'.format(dt.datetime.now().strftime(
     '%Y-%m-%d %H:%M:%S'))
+
+print(report)
 
 report_textfile_name = 'report.txt'.format(os.path.normpath(
     experiment_subdir))

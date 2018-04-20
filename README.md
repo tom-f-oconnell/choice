@@ -65,7 +65,10 @@
    8. Connect your Arduino MEGA to the computer.
       - Arduino's with less memory will currently **NOT** work, as there is considerable overhead in the generated ROS libraries.
 
-   9. Upload code
+   9. Upload code 
+       
+      For the basic stimulus delivery, open `File->Examples->stimuli->stimuli` 
+       
       In the Arduino IDE, under the `Tools` menu:
       - Select appropriate port
          - Usually `/dev/ttyUSBX`, where `X` could vary. `/dev/ttyACMX` may also work. It is never the one like `/dev/ttyS0`.
