@@ -68,7 +68,6 @@
    9. Upload code 
        
       For the basic stimulus delivery, open `File->Examples->stimuli->stimuli` 
-       
       In the Arduino IDE, under the `Tools` menu:
       - Select appropriate port
          - Usually `/dev/ttyUSBX`, where `X` could vary. `/dev/ttyACMX` may also work. It is never the one like `/dev/ttyS0`.
