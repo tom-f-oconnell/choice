@@ -7,7 +7,7 @@
        should be false if not using the multishock control hardware (shield_pcb)
   -->
   <!-- TODO implement / test -->
-  <arg name="using_multishock" default="True" />
+  <arg name="using_multishock" default="False" />
   
   <!-- TODO put snapshot_params node in this package, add another node tag -->
   <node name="versionpub" pkg="metatools" type="versionpub.py" 
