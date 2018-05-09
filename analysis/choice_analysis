@@ -156,30 +156,35 @@ def load_metadata(d):
                 left_pins = stimulus_rosparams['olf']['left_pins']
                 right_pins = stimulus_rosparams['olf']['right_pins']
 
-                shock_params = stimulus_rosparams['zap']
-                # the old convention for shock pin specification
-                if 'all_pin' in shock_params:
-                    metadata['all_shock'] = shock_params['all_pin']
+                # Using this as a test for whether there was shock reinforcement
+                # in this experiment.
+                if 'zap' in stimulus_rosparams:
+                    shock_params = stimulus_rosparams['zap']
+                    # the old convention for shock pin specification
+                    if 'all_pin' in shock_params:
+                        metadata['all_shock'] = shock_params['all_pin']
 
-                elif 'left' in shock_params and 'right' in shock_params:
-                    metadata['left_shock'] = shock_params['left']
-                    metadata['right_shock'] = shock_params['right']
+                    elif 'left' in shock_params and 'right' in shock_params:
+                        metadata['left_shock'] = shock_params['left']
+                        metadata['right_shock'] = shock_params['right']
 
-                # TODO update to new convention in remainder of analysis code
-                # the new convention for shock pin specification
-                elif 'control_pin' in shock_params:
-                    metadata['all_shock'] = shock_params['control_pin']
+                    # TODO update to new convention in remainder of analysis
+                    # code the new convention for shock pin specification
+                    elif 'control_pin' in shock_params:
+                        metadata['all_shock'] = shock_params['control_pin']
 
-                elif 'left_control_pin' in shock_params and \
-                    'right_control_pin' in shock_params:
+                    elif ('left_control_pin' in shock_params and
+                        'right_control_pin' in shock_params):
 
-                    metadata['left_shock'] = shock_params['left_control_pin']
-                    metadata['right_shock'] = shock_params['right_control_pin']
+                        metadata['left_shock'] = \
+                            shock_params['left_control_pin']
+                        metadata['right_shock'] = \
+                            shock_params['right_control_pin']
 
-                else:
-                    raise ValueError("either zap/all_shock or both " + \
-                        "zap/{left/right} expected to be in the " + \
-                        "*_parameters.yaml file with 'olf'")
+                    else:
+                        raise ValueError("either zap/all_shock or both " + \
+                            "zap/{left/right} expected to be in the " + \
+                            "*_parameters.yaml file with 'olf'")
 
                 found_olf_params = True
                 break
@@ -1035,6 +1040,8 @@ def decision_bias(times, y_positions, meta, prefix, \
     return bias_against, test_indices, nonshocked_odor
 
 
+# TODO TODO work with an arbitrary number of blocks
+# (and only label pre/post is there are 2 blocks? require shock in between?)
 def plot_metric_change(metric_pre, metric_post, title='', ylabel='', \
     fly2meta=None, fly_nums_in_order=None, exps=None, rois=None, \
     filename=None, allow_negative=False):
@@ -1258,6 +1265,7 @@ def analyze_group(fly2data, title=''):
             # TODO TODO check shouldn't be using rel_times here
             # and better yet, just convert metric functions to only deal with
             # absolute times
+            # TODO TODO TODO handle arbitrary # of test periods
             if want_time_spent:
                 time_fraction_pre, pretest_indices, nonshocked_odor = \
                     fraction_time(curr_times, data['position_y'], meta, 'pre',
