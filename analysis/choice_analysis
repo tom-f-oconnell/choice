@@ -1578,6 +1578,36 @@ def analyze_group(fly2data, title=''):
     return df
 
 
+def format_stat(stat, ci=None, stderr=None,
+                 digits_after_zero=digits_after_zero):
+    """Returns a str with input statstic and error nicely formatted."""
+
+    assert (ci is None) or (stderr is None), 'Only pass either ci or stderr'
+
+    stat = round(stat, digits_after_zero)
+    one_err_arg = False
+    if not ci is None:
+        # Case where CI is a 2-iterable.
+        try:
+            _ = len(ci)
+            ci = [round(x, digits_after_zero) for x in ci]
+            return '{} +/- [{},{}]'.replace('{}',
+                '{{:.{}f}}'.format(digits_after_zero)).format(stat, *ci)
+
+        except TypeError:
+            one_err_arg = True
+
+    elif not stderr is None:
+        one_err_arg = True
+
+    if one_err_arg:
+        return '{} +/- {}'.replace('{}', '{{:.{}f}}'.format(
+            digits_after_zero)).format(stat, round(stderr if ci is None else
+            ci, digits_after_zero))
+
+    return '{{:.{}f}}'.format(digits_after_zero).format(stat)
+
+
 if children_experiment_groups is None:
     rejects = load_or_generate_reject_reasons(path)
 else:
@@ -1745,35 +1775,39 @@ if df is None:
 
 if want_time_spent:
     change = df['time_fraction_pre'] - df['time_fraction_post']
-    report += 'Mean difference in time spent in shocked odor: {{:.{}f}}\n'\
-        .format(digits_after_zero).format(round(change.mean(), \
-        digits_after_zero))
-    report += 'Median difference in time spent in shocked odor: {{:.{}f}}\n\n'\
-        .format(digits_after_zero).format(round(change.median(), \
-        digits_after_zero))
+
+    report += 'Mean difference in time spent in shocked odor: '
+    report += format_stat(change.mean())
+    report += '\n'
+
+    report += 'Median difference in time spent in shocked odor: '
+    report += format_stat(change.median())
+    report += '\n'
 
     fig = plt.figure()
     plt.hist(change[np.logical_not(np.isnan(change))], color='black', bins=30)
     plt.title('Changes in time spent in CS')
-    fig.savefig(join(path, 'time_spent_change_histogram.' + plot_format), \
+    fig.savefig(join(path, 'time_spent_change_histogram.' + plot_format),
         bbox_inches='tight')
 
 if want_decision_bias:
     change = df['decision_bias_pre'] - df['decision_bias_post']
-    report += 'Mean decision bias difference: {{:.{}f}}\n'.format(
-        digits_after_zero).format(round(change.mean(), digits_after_zero))
+    report += 'Mean difference in decision bias: '
+    report += format_stat(change.mean())
+    report += '\n'
 
-    report += 'Median decision bias difference: {{:.{}f}}\n'.format(\
-        digits_after_zero).format(round(change.median(), digits_after_zero))
+    report += 'Median difference in decision bias: '
+    report += format_stat(change.median())
+    report += '\n'
 
-    report += 'Mean |decision bias| post: {{:.{}f}}\n\n'.format(
-        digits_after_zero).format(round(np.nanmean(np.abs(
-        df['decision_bias_post'])), digits_after_zero))
+    report += 'Mean |decision bias| post: '
+    report += format_stat(np.nanmean(np.abs(df['decision_bias_post'])))
+    report += '\n\n'
 
     fig = plt.figure()
     plt.hist(change[np.logical_not(np.isnan(change))], color='black', bins=30)
     plt.title('Changes in decision bias')
-    fig.savefig(join(path, 'bias_change_histogram.' + plot_format), \
+    fig.savefig(join(path, 'bias_change_histogram.' + plot_format),
         bbox_inches='tight')
 
 report += 'Experiments represented by each label:\n'
