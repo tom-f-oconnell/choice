@@ -1591,7 +1591,7 @@ def format_stat(stat, ci=None, stderr=None,
         try:
             _ = len(ci)
             ci = [round(x, digits_after_zero) for x in ci]
-            return '{} +/- [{},{}]'.replace('{}',
+            return '{}, CI=[{}, {}]'.replace('{}',
                 '{{:.{}f}}'.format(digits_after_zero)).format(stat, *ci)
 
         except TypeError:
@@ -1606,6 +1606,96 @@ def format_stat(stat, ci=None, stderr=None,
             ci, digits_after_zero))
 
     return '{{:.{}f}}'.format(digits_after_zero).format(stat)
+
+
+def confidence_interval(data, fn, n=1000, area=0.95):
+    """
+    """
+    data = np.squeeze(data)
+    assert len(data.shape) == 1, 'expecting one dimensional input'
+    # TODO report how much data is lost in tossing nan? if verbose? flag to err?
+    data = data[~np.isnan(data)]
+
+    resampled = np.random.choice(data, size=(data.shape[0], n), replace=True)
+
+    axis = 0
+    # Comparing to references to (what will probably be) two most common input
+    # functions, to speed things up in those cases.
+    if fn == np.mean:
+        fn_of_resampled = np.mean(resampled, axis=axis)
+
+    elif fn == np.median:
+        fn_of_resampled = np.median(resampled, axis=axis)
+        
+    else:
+        # TODO TODO test consistent w/ above
+        fn_of_resampled = np.apply_along_axis(fn, axis, resampled)
+
+    # TODO delete me
+    assert len(fn_of_resampled) == n
+
+    # Symmetric about median.
+    low_percent = 100 * (1 - area) / 2
+    high_percent = 100 * area + low_percent
+
+    # Could not sort twice, but probably not a huge gain.
+    low = np.percentile(fn_of_resampled, low_percent)
+    high = np.percentile(fn_of_resampled, high_percent)
+
+    # TODO also just return mean here? small savings...
+    return (low, high)
+
+def nansem(data):
+    """Returns SEM, excluding np.nan"""
+    return np.nanstd(data) / np.sqrt(np.sum(~np.isnan(data)))
+
+# maybe redo... fn to just get CIs and stuff?
+def report_metric_change_stats(df, key_prefix, desc=None):
+    """Returns a str with mean and median, with SEM and 95% CI, respectively.
+    
+    Args:
+        df (pandas.DataFrame): has columns <key_prefix>_pre and
+            <key_prefix>_post
+
+        key_prefix (str): str that exists as prefix of _pre and _post in
+            df column labels
+
+        desc (str): (optional) alternative description of input key. Otherwise
+            derived from key_prefix.
+
+    Returns:
+        A formatted string with the mean +/- SEM and median with 95% CI for 
+        the difference in the requested metric (pre minus post).
+    """
+    # scrape / introscope from elsewhere? this function a closure?
+    # plotting fns could maybe use same things?
+    supported_prefixes = {'time_fraction', 'decision_bias'}
+    assert key_prefix in supported_prefixes, 'Unrecognized key_prefix'
+
+    change = df[key_prefix + '_pre'] - df[key_prefix + '_post']
+
+    if desc is None:
+        desc = key_prefix.replace('_', ' ')
+
+    mean = change.mean()
+    mean_ci = confidence_interval(change, np.mean)
+    report = 'Mean difference in {}: '.format(desc)
+    report += format_stat(mean, ci=mean_ci)
+
+    sem_comparison_ci = confidence_interval(change, np.mean, area=0.68)
+    report += '\nSEM={{:.{}f}}'.format(digits_after_zero).format(
+        nansem(change))
+    report += ' ~= {{:.{}f}} from bootstrapped 68% CI on mean'.format(
+        digits_after_zero).format(np.mean(np.abs(sem_comparison_ci - mean)))
+
+    report += '\n'
+
+    report += 'Median difference in : '
+    report += format_stat(change.median(),
+                          ci=confidence_interval(change, np.median))
+    report += '\n\n'
+
+    return report
 
 
 if children_experiment_groups is None:
@@ -1698,7 +1788,8 @@ if len(good_fly2data) > 0:
                 ') nor shocked_odor (if experiment with conditioning) in df')
 
         # TODO handle odor better in filename
-
+        # TODO TODO TODO make these work for a sequence of values, not just 2
+        # sep. args
         if want_time_spent:
             plot_metric_change(curr_df['time_fraction_pre'],
                 curr_df['time_fraction_post'],
@@ -1773,16 +1864,16 @@ if df is None:
     want_time_spent = False
     want_decision_bias = False
 
+
 if want_time_spent:
-    change = df['time_fraction_pre'] - df['time_fraction_post']
+    key_prefix = 'time_fraction'
+    # TODO don't recalculate change? i forgot i needed it for hist when i wrote
+    # report function...
+    change = df[key_prefix + '_pre'] - df[key_prefix + '_post']
 
-    report += 'Mean difference in time spent in shocked odor: '
-    report += format_stat(change.mean())
-    report += '\n'
-
-    report += 'Median difference in time spent in shocked odor: '
-    report += format_stat(change.median())
-    report += '\n'
+    # TODO rename from time_fraction to have a better default desc?
+    report += report_metric_change_stats(df, 'time_fraction',
+                                         desc='time spent in shocked odor')
 
     fig = plt.figure()
     plt.hist(change[np.logical_not(np.isnan(change))], color='black', bins=30)
@@ -1791,14 +1882,9 @@ if want_time_spent:
         bbox_inches='tight')
 
 if want_decision_bias:
-    change = df['decision_bias_pre'] - df['decision_bias_post']
-    report += 'Mean difference in decision bias: '
-    report += format_stat(change.mean())
-    report += '\n'
-
-    report += 'Median difference in decision bias: '
-    report += format_stat(change.median())
-    report += '\n'
+    key_prefix = 'decision_bias'
+    change = df[key_prefix + '_pre'] - df[key_prefix + '_post']
+    report += report_metric_change_stats(df, 'decision_bias')
 
     report += 'Mean |decision bias| post: '
     report += format_stat(np.nanmean(np.abs(df['decision_bias_post'])))
@@ -1893,5 +1979,4 @@ if __name__ == '__main__':
     # of two levels of organization dirs?
     #dirs = get_experiment_directories(...
 
-    
     pass
