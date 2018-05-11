@@ -1578,7 +1578,7 @@ def analyze_group(fly2data, title=''):
     return df
 
 
-def format_stat(stat, ci=None, stderr=None,
+def format_stat(stat, ci=None, ci_level=0.95, stderr=None,
                  digits_after_zero=digits_after_zero):
     """Returns a str with input statstic and error nicely formatted."""
 
@@ -1591,8 +1591,9 @@ def format_stat(stat, ci=None, stderr=None,
         try:
             _ = len(ci)
             ci = [round(x, digits_after_zero) for x in ci]
-            return '{}, CI=[{}, {}]'.replace('{}',
-                '{{:.{}f}}'.format(digits_after_zero)).format(stat, *ci)
+            return '{}, 95% CI=[{}, {}]'.replace('{}',
+                '{{:.{}f}}'.format(digits_after_zero)).format(stat,
+                *ci).replace('95%', '{:.0f}%'.format(ci_level * 100))
 
         except TypeError:
             one_err_arg = True
@@ -1608,7 +1609,7 @@ def format_stat(stat, ci=None, stderr=None,
     return '{{:.{}f}}'.format(digits_after_zero).format(stat)
 
 
-def confidence_interval(data, fn, n=1000, area=0.95):
+def confidence_interval(data, fn, n=1000, level=0.95):
     """
     """
     data = np.squeeze(data)
@@ -1631,12 +1632,12 @@ def confidence_interval(data, fn, n=1000, area=0.95):
         # TODO TODO test consistent w/ above
         fn_of_resampled = np.apply_along_axis(fn, axis, resampled)
 
-    # TODO delete me
+    # TODO behind asserts flag
     assert len(fn_of_resampled) == n
 
     # Symmetric about median.
-    low_percent = 100 * (1 - area) / 2
-    high_percent = 100 * area + low_percent
+    low_percent = 100 * (1 - level) / 2
+    high_percent = 100 * level + low_percent
 
     # Could not sort twice, but probably not a huge gain.
     low = np.percentile(fn_of_resampled, low_percent)
@@ -1645,9 +1646,11 @@ def confidence_interval(data, fn, n=1000, area=0.95):
     # TODO also just return mean here? small savings...
     return (low, high)
 
+
 def nansem(data):
     """Returns SEM, excluding np.nan"""
     return np.nanstd(data) / np.sqrt(np.sum(~np.isnan(data)))
+
 
 # maybe redo... fn to just get CIs and stuff?
 def report_metric_change_stats(df, key_prefix, desc=None):
@@ -1677,12 +1680,14 @@ def report_metric_change_stats(df, key_prefix, desc=None):
     if desc is None:
         desc = key_prefix.replace('_', ' ')
 
+    ci_level = 0.95
     mean = change.mean()
-    mean_ci = confidence_interval(change, np.mean)
+    mean_ci = confidence_interval(change, np.mean, level=ci_level)
     report = 'Mean difference in {}: '.format(desc)
-    report += format_stat(mean, ci=mean_ci)
+    report += format_stat(mean, ci=mean_ci, ci_level=ci_level)
 
-    sem_comparison_ci = confidence_interval(change, np.mean, area=0.68)
+    sem_comparison_ci = confidence_interval(change, np.mean, level=0.68)
+    # behind verbose flag? extra info flag or something?
     report += '\nSEM={{:.{}f}}'.format(digits_after_zero).format(
         nansem(change))
     report += ' ~= {{:.{}f}} from bootstrapped 68% CI on mean'.format(
@@ -1690,9 +1695,10 @@ def report_metric_change_stats(df, key_prefix, desc=None):
 
     report += '\n'
 
-    report += 'Median difference in : '
+    report += 'Median difference in {}: '.format(desc)
     report += format_stat(change.median(),
-                          ci=confidence_interval(change, np.median))
+        ci=confidence_interval(change, np.median, level=ci_level))
+
     report += '\n\n'
 
     return report
