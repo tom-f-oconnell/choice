@@ -73,6 +73,14 @@ trace_linewidth = 1.0
 # maybe delete this option, depending on what i decide to do with the above...
 require_stimuli = False
 
+# Defines the 0 on the horizontal (time) axis of all plots, to be this many
+# seconds before the start of the first test period.
+# TODO TODO also test that making this nonzero doesn't change metrics
+plot_t0_to_test0_start_s = 0 # 60
+# TODO TODO why does sign of (the effect of) plot_t0_to_test0_start_s seem to
+# change depending on the value of this flag?
+show_all_tracking = False
+
 if make_plots:
     import matplotlib
     matplotlib.use('Agg')
@@ -321,12 +329,10 @@ def load_metadata(d):
 # what all indications of having data from this kind of experiment?
 # not sure i want to make config file mandatory
 # but also check argument as full path? give that priority?
+path = join(os.getenv('DATA_DIR', '~/data'), 'retracked')
 
-#path = '~/data/retracked'
-path = join(os.environ['DATA_DIR'], 'retracked')
-
-arg_err = ('you must pass a subdirectory of $DATA_DIR/retracked as the sole ' + 
-    'positional argument to choice_analysis')
+arg_err = ('you must pass a subdirectory of $DATA_DIR/retracked as ' +
+    'the sole positional argument to choice_analysis')
 if len(sys.argv) == 2:
     experiment_subdir = sys.argv[1]
     # TODO maybe rename. not sure i'm being consistent with my use of
@@ -447,41 +453,37 @@ for d in sorted_dirs:
 
 if make_plots:
     # TODO seed or something for better colors w/ # odors=2
+    # TODO TODO change default colors so none is close to red (at least for
+    # n=2?)
     cmap = sns.color_palette('husl', len(all_odors))
     odor2color = dict()
     for o, c in zip(all_odors, cmap):
         odor2color[o] = c
 
-# Defines the 0 on the horizontal (time) axis of all plots, to be this many
-# seconds before the start of the first test period.
-# TODO TODO also test that making this nonzero doesn't change metrics
-plot_t0_to_test0_start_s = 0 # 60
-# TODO TODO why does sign of (the effect of) plot_t0_to_test0_start_s seem to
-# change depending on the value of this flag?
-show_all_tracking = False
 
-
-def plot_trace(rel_times, position_y, meta, metrics=None, \
+# TODO refactor to only take bare minimum beyond times, positions, and ax
+def plot_trace(times, positions, meta, metrics=None, \
     y_max_min=None, ax=None):
-    # TODO
     """
+    Args:
+        times (array-like)
+        positions (array-like)
+        ax (matplotlib.Axes) (optional)
     """
-
-    # calculate percent time in each odor region
     # TODO make one variable at top which controls which dimension to use as
     # long axis and have this (and elsewhere) depend on that
+
+    # TODO TODO do all this stuff outside of plot_trace
     y_vals = [p[1] for p in meta['roi_points']]
     y_mid = np.mean(y_vals)
+    y_data = (-1) * (positions - y_mid)
 
-    y_data = (-1) * (position_y - y_mid)
     # TODO how similar was this to the style the matplotlib maintainer
-    # recommended on stackexchange?
+    # recommended on stackexchange? might otherwise make a new fig first?
     if ax is None:
-        plt.plot(rel_times, y_data, c='black',
-            linewidth=trace_linewidth)
+        plt.plot(times, y_data, c='black', linewidth=trace_linewidth)
     else:
-        ax.plot(rel_times, y_data, c='black',
-            linewidth=trace_linewidth)
+        ax.plot(times, y_data, c='black', linewidth=trace_linewidth)
 
     plt.xlabel('Seconds')
 
@@ -491,8 +493,8 @@ def plot_trace(rel_times, position_y, meta, metrics=None, \
     if show_all_tracking:
         plotting_y_max = np.max(y_data)
         plotting_y_min = np.min(y_data)
-        plotting_x_max = np.max(rel_times)
-        plotting_x_min = np.min(rel_times)
+        plotting_x_max = np.max(times)
+        plotting_x_min = np.min(times)
 
     # TODO define options for fixed widths before first and after last tests
     # in this case
@@ -609,7 +611,7 @@ def plot_trace(rel_times, position_y, meta, metrics=None, \
                             'block (pre-training test)')
 
             else:
-                assert x0 > 0, 'times we want to disply should not be ' + \
+                assert x0 > 0, 'times we want to display should not be ' + \
                     'negative. was ' + str(x0)
 
             # TODO TODO replace this with a test that all patched regions fall
@@ -877,7 +879,7 @@ def load_or_generate_reject_reasons(experiment_group_dir):
 # is getting the data from the right part of the experiment)
 # TODO TODO related: could I please make this not depend on cropped / shifted
 # times but just absolute times and absolute boundaries of test regions?
-def fraction_time(times, y_positions, meta, prefix, odor_of_interest):
+def time_spent(times, y_positions, meta, prefix, odor_of_interest):
     # TODO
     """
     """
@@ -1268,12 +1270,12 @@ def analyze_group(fly2data, title=''):
             # TODO TODO TODO handle arbitrary # of test periods
             if want_time_spent:
                 time_fraction_pre, pretest_indices, nonshocked_odor = \
-                    fraction_time(curr_times, data['position_y'], meta, 'pre',
-                                  odor_of_interest)
+                    time_spent(curr_times, data['position_y'], meta, 'pre',
+                               odor_of_interest)
 
                 time_fraction_post, posttest_indices, _ = \
-                    fraction_time(curr_times, data['position_y'], meta, 'post', 
-                                  odor_of_interest)
+                    time_spent(curr_times, data['position_y'], meta, 'post', 
+                               odor_of_interest)
 
             if want_decision_bias:
                 # TODO is the .as_matrix() necessary? just normalize within the
@@ -1707,9 +1709,14 @@ def report_metric_change_stats(df, key_prefix, desc=None):
 if children_experiment_groups is None:
     rejects = load_or_generate_reject_reasons(path)
 else:
+    # TODO do i want to keep this for grouping at all?
+    # or shift this to making plots across experiment comparisions (e.g. mixture
+    # blending)? in which case, no real need to have central rejects?
+
     rejects = None
     for d in children_experiment_groups:
         curr_rejects = load_or_generate_reject_reasons(d)
+
         if rejects is None:
             rejects = curr_rejects
 
@@ -1733,6 +1740,7 @@ for reason, reject_dict in list(rejects.items()):
     if reason == 'good' or reject_dict is None:
         continue
 
+    # TODO Maybe remove this to ease maintenance? I don't really use it...
     if reason == 'suspicious' and (not reject_dict is None):
         # TODO print which (+ maybe instructions on how to rectify)
         warnings.warn('using some trajectories marked as ' +
@@ -1756,14 +1764,6 @@ for k, v in list(fly2data.items()):
         good_fly2data[k] = v
     elif not fly2meta[k]['n'] in bad[stamp]:
         good_fly2data[k] = v
-
-if verbose:
-    print('\nthe good flies:')
-    for f in good_fly2data:
-        m = fly2meta[f]
-        print('{} {} {} {}'.format(experiment2label[m['dir']],
-            split(m['dir'])[-1], m['n'], f))
-    print('')
 
 # TODO order traces consistently across runs (by roi #).
 if len(good_fly2data) > 0:
@@ -1807,7 +1807,6 @@ if len(good_fly2data) > 0:
                 plot_format)
 
         if want_decision_bias:
-            # TODO use format for all
             plot_metric_change(curr_df['decision_bias_pre'],
                 curr_df['decision_bias_post'],
                 title='Conditioned change in decision bias, ' + o[0] +
@@ -1869,7 +1868,6 @@ report += '\n'
 if df is None:
     want_time_spent = False
     want_decision_bias = False
-
 
 if want_time_spent:
     key_prefix = 'time_fraction'
@@ -1975,6 +1973,37 @@ report_textfile_name = 'report.txt'.format(os.path.normpath(
 with open(join(path, report_textfile_name), 'w+') as f:
     print(report, file=f)
 
+
+def main():
+    """
+    """
+    # TODO check current dir -> check for env var -> check that dir
+    # what all indications of having data from this kind of experiment?
+    # not sure i want to make config file mandatory
+    # but also check argument as full path? give that priority?
+    path = join(os.getenv('DATA_DIR', '~/data'), 'retracked')
+
+    arg_err = ('you must pass a subdirectory of $DATA_DIR/retracked as ' +
+        'the sole positional argument to choice_analysis')
+    if len(sys.argv) == 2:
+        experiment_subdir = sys.argv[1]
+        # TODO maybe rename. not sure i'm being consistent with my use of
+        # "experiment"
+        path = join(path, experiment_subdir)
+
+    elif len(sys.argv) > 2:
+        raise ValueError('too many arguments to choice_analysis. ' + arg_err)
+
+    else:
+        # TODO also allow script to be run in directory w/ data
+        raise NotImplementedError('not enough arguments. ' + arg_err)
+
+    path = os.path.normpath(os.path.expanduser(path))
+
+    # TODO maybe have a flag to save figures for rejects? save them separately?
+    # rename so the modifier is second, for sorting?
+
+    
 # TODO usage
 if __name__ == '__main__':
     # TODO how to handle the options that are currently global?
@@ -1984,5 +2013,6 @@ if __name__ == '__main__':
     # if i was going to do it this way, how to handle analysis rejects in case
     # of two levels of organization dirs?
     #dirs = get_experiment_directories(...
-
+    #main()
     pass
+
