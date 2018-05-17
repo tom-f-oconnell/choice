@@ -37,6 +37,21 @@ from stimuli.srv import LoadSequenceRequest
 verbose = False
 debug = False
 
+################################################################################
+# Rejection criteria
+################################################################################
+use_manual_rejection = True
+
+# either None or a number
+# should be based on either the max or like the 95th+ percentile
+minimum_walking_speed = None
+minimum_choices_per_test = None
+# maybe this was equivalent in DasGupta terms to the above?
+# why did they need 7 zones again?
+minimum_end_to_center_runs = None
+
+################################################################################
+
 # TODO option to get individual plots in nice aspect ratio / format for examples
 # in publications, etc
 
@@ -56,22 +71,24 @@ sort_traces_by = None
 # separate flags for whether the text should be added to traces plot?
 want_time_spent = True
 want_decision_bias = True
-# TODO turn off interactive plots if this is false? rename interactive flag?
-display_metrics = want_time_spent or want_decision_bias 
-
-# TODO also include option to color lines in metric change plots by same labels?
-show_experiment_labels = True
-show_roi_numbers = True
-
-print_version = True
-digits_after_zero = 3
-trace_linewidth = 1.0
+want_accuracy = True
 
 # TODO would probably want to test case where some experiments in a group don't
 # contain this file, while others do. in that case, there should still be an
 # error.
 # maybe delete this option, depending on what i decide to do with the above...
 require_stimuli = False
+
+print_version = True
+digits_after_zero = 3
+
+# TODO turn off interactive plots if this is false? rename interactive flag?
+display_metrics = True
+
+# TODO also include option to color lines in metric change plots by same labels?
+show_experiment_labels = True
+show_roi_numbers = True
+trace_linewidth = 1.0
 
 # Defines the 0 on the horizontal (time) axis of all plots, to be this many
 # seconds before the start of the first test period.
