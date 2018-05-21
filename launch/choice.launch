@@ -8,6 +8,9 @@
   -->
   <!-- TODO implement / test -->
   <arg name="using_multishock" default="True" />
+  <arg name="debug" default="False" />
+  
+  <env if="$(arg debug)" name="ROSCONSOLE_CONFIG_FILE" value="$(find choice)/etc/debug_rosconsole.conf" />
   
   <!-- TODO put snapshot_params node in this package, add another node tag -->
   <node name="versionpub" pkg="metatools" type="versionpub.py" 
