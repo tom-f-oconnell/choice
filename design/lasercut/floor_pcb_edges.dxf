@@ -1115,9 +1115,9 @@ AcDbViewportTableRecord
  21
 1
  12
-248.2073689377695
+120.309046026185
  22
-166.389012443162
+39.8165652324755
  13
 0
  23
@@ -1143,9 +1143,9 @@ AcDbViewportTableRecord
  37
 0
  40
-432.8616413934892
+119.8793708618057
  41
-1.56878612716763
+1.612903225806452
  42
 50
  43
@@ -2847,147 +2847,15 @@ ByLayer
 100
 AcDbCircle
  10
-155.600000663983
- 20
-5.46449982672317
- 40
-1.714499999999999
-  0
-CIRCLE
-  5
-56
-100
-AcDbEntity
-  8
-4.2_pcb_edges_and_routing
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-94.40000000000001
- 20
-184.215
- 40
-1.7145
-  0
-CIRCLE
-  5
-57
-100
-AcDbEntity
-  8
-4.2_pcb_edges_and_routing
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
 94.40000000000001
  20
 139.964
  40
 1.7145
   0
-CIRCLE
-  5
-58
-100
-AcDbEntity
-  8
-4.2_pcb_edges_and_routing
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-105
- 20
-1.4645
- 40
-2
-  0
-CIRCLE
-  5
-59
-100
-AcDbEntity
-  8
-4.2_pcb_edges_and_routing
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-145
- 20
-1.4645
- 40
-2
-  0
-CIRCLE
-  5
-5A
-100
-AcDbEntity
-  8
-4.2_pcb_edges_and_routing
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-105
- 20
-195
- 40
-2
-  0
-CIRCLE
-  5
-5B
-100
-AcDbEntity
-  8
-4.2_pcb_edges_and_routing
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-145
- 20
-195
- 40
-2
-  0
 ARC
   5
-5C
+56
 100
 AcDbEntity
   8
@@ -3015,7 +2883,7 @@ AcDbArc
   0
 ARC
   5
-5D
+57
 100
 AcDbEntity
   8
@@ -3043,7 +2911,7 @@ AcDbArc
   0
 CIRCLE
   5
-5E
+58
 100
 AcDbEntity
   8
@@ -3065,7 +2933,7 @@ AcDbCircle
   0
 CIRCLE
   5
-5F
+59
 100
 AcDbEntity
   8
@@ -3087,7 +2955,7 @@ AcDbCircle
   0
 LINE
   5
-60
+5A
 100
 AcDbEntity
   8
@@ -3111,7 +2979,7 @@ AcDbLine
   0
 LINE
   5
-61
+5B
 100
 AcDbEntity
   8
@@ -3135,7 +3003,7 @@ AcDbLine
   0
 ARC
   5
-62
+5C
 100
 AcDbEntity
   8
@@ -3163,7 +3031,7 @@ AcDbArc
   0
 ARC
   5
-63
+5D
 100
 AcDbEntity
   8
@@ -3191,7 +3059,7 @@ AcDbArc
   0
 CIRCLE
   5
-64
+5E
 100
 AcDbEntity
   8
@@ -3213,7 +3081,7 @@ AcDbCircle
   0
 CIRCLE
   5
-65
+5F
 100
 AcDbEntity
   8
@@ -3235,7 +3103,7 @@ AcDbCircle
   0
 LINE
   5
-66
+60
 100
 AcDbEntity
   8
@@ -3259,7 +3127,7 @@ AcDbLine
   0
 LINE
   5
-67
+61
 100
 AcDbEntity
   8
@@ -3283,7 +3151,7 @@ AcDbLine
   0
 ARC
   5
-68
+62
 100
 AcDbEntity
   8
@@ -3311,7 +3179,7 @@ AcDbArc
   0
 ARC
   5
-69
+63
 100
 AcDbEntity
   8
@@ -3339,7 +3207,7 @@ AcDbArc
   0
 CIRCLE
   5
-6A
+64
 100
 AcDbEntity
   8
@@ -3361,7 +3229,7 @@ AcDbCircle
   0
 CIRCLE
   5
-6B
+65
 100
 AcDbEntity
   8
@@ -3383,7 +3251,7 @@ AcDbCircle
   0
 LINE
   5
-6C
+66
 100
 AcDbEntity
   8
@@ -3407,7 +3275,7 @@ AcDbLine
   0
 LINE
   5
-6D
+67
 100
 AcDbEntity
   8
@@ -3431,7 +3299,7 @@ AcDbLine
   0
 ARC
   5
-6E
+68
 100
 AcDbEntity
   8
@@ -3459,7 +3327,7 @@ AcDbArc
   0
 ARC
   5
-6F
+69
 100
 AcDbEntity
   8
@@ -3487,7 +3355,7 @@ AcDbArc
   0
 CIRCLE
   5
-70
+6A
 100
 AcDbEntity
   8
@@ -3509,7 +3377,7 @@ AcDbCircle
   0
 CIRCLE
   5
-71
+6B
 100
 AcDbEntity
   8
@@ -3531,7 +3399,7 @@ AcDbCircle
   0
 LINE
   5
-72
+6C
 100
 AcDbEntity
   8
@@ -3555,7 +3423,7 @@ AcDbLine
   0
 LINE
   5
-73
+6D
 100
 AcDbEntity
   8
@@ -3579,7 +3447,7 @@ AcDbLine
   0
 ARC
   5
-74
+6E
 100
 AcDbEntity
   8
@@ -3607,7 +3475,7 @@ AcDbArc
   0
 ARC
   5
-75
+6F
 100
 AcDbEntity
   8
@@ -3635,7 +3503,7 @@ AcDbArc
   0
 CIRCLE
   5
-76
+70
 100
 AcDbEntity
   8
@@ -3657,7 +3525,7 @@ AcDbCircle
   0
 CIRCLE
   5
-77
+71
 100
 AcDbEntity
   8
@@ -3679,7 +3547,7 @@ AcDbCircle
   0
 LINE
   5
-78
+72
 100
 AcDbEntity
   8
@@ -3703,7 +3571,7 @@ AcDbLine
   0
 LINE
   5
-79
+73
 100
 AcDbEntity
   8
@@ -3727,7 +3595,7 @@ AcDbLine
   0
 ARC
   5
-7A
+74
 100
 AcDbEntity
   8
@@ -3755,7 +3623,7 @@ AcDbArc
   0
 ARC
   5
-7B
+75
 100
 AcDbEntity
   8
@@ -3783,7 +3651,7 @@ AcDbArc
   0
 CIRCLE
   5
-7C
+76
 100
 AcDbEntity
   8
@@ -3805,7 +3673,7 @@ AcDbCircle
   0
 CIRCLE
   5
-7D
+77
 100
 AcDbEntity
   8
@@ -3827,7 +3695,7 @@ AcDbCircle
   0
 LINE
   5
-7E
+78
 100
 AcDbEntity
   8
@@ -3851,7 +3719,7 @@ AcDbLine
   0
 LINE
   5
-7F
+79
 100
 AcDbEntity
   8
@@ -3875,7 +3743,7 @@ AcDbLine
   0
 ARC
   5
-80
+7A
 100
 AcDbEntity
   8
@@ -3903,7 +3771,7 @@ AcDbArc
   0
 ARC
   5
-81
+7B
 100
 AcDbEntity
   8
@@ -3931,7 +3799,7 @@ AcDbArc
   0
 CIRCLE
   5
-82
+7C
 100
 AcDbEntity
   8
@@ -3953,7 +3821,7 @@ AcDbCircle
   0
 CIRCLE
   5
-83
+7D
 100
 AcDbEntity
   8
@@ -3975,7 +3843,7 @@ AcDbCircle
   0
 LINE
   5
-84
+7E
 100
 AcDbEntity
   8
@@ -3999,7 +3867,7 @@ AcDbLine
   0
 LINE
   5
-85
+7F
 100
 AcDbEntity
   8
@@ -4023,7 +3891,7 @@ AcDbLine
   0
 ARC
   5
-86
+80
 100
 AcDbEntity
   8
@@ -4051,7 +3919,7 @@ AcDbArc
   0
 ARC
   5
-87
+81
 100
 AcDbEntity
   8
@@ -4079,7 +3947,7 @@ AcDbArc
   0
 CIRCLE
   5
-88
+82
 100
 AcDbEntity
   8
@@ -4101,7 +3969,7 @@ AcDbCircle
   0
 CIRCLE
   5
-89
+83
 100
 AcDbEntity
   8
@@ -4123,7 +3991,7 @@ AcDbCircle
   0
 LINE
   5
-8A
+84
 100
 AcDbEntity
   8
@@ -4147,7 +4015,7 @@ AcDbLine
   0
 LINE
   5
-8B
+85
 100
 AcDbEntity
   8
@@ -4171,7 +4039,7 @@ AcDbLine
   0
 LINE
   5
-8C
+86
 100
 AcDbEntity
   8
@@ -4194,6 +4062,144 @@ AcDbLine
 203.5
   0
 LINE
+  5
+87
+100
+AcDbEntity
+  8
+4.2_pcb_edges_and_routing
+  6
+CONTINUOUS
+ 62
+    7
+370
+    0
+100
+AcDbLine
+ 10
+162.5
+ 20
+203.5
+ 11
+162.5
+ 21
+-18.5
+  0
+LINE
+  5
+88
+100
+AcDbEntity
+  8
+4.2_pcb_edges_and_routing
+  6
+CONTINUOUS
+ 62
+    7
+370
+    0
+100
+AcDbLine
+ 10
+162.5
+ 20
+-18.5
+ 11
+87.5
+ 21
+-18.5
+  0
+LINE
+  5
+89
+100
+AcDbEntity
+  8
+4.2_pcb_edges_and_routing
+  6
+CONTINUOUS
+ 62
+    7
+370
+    0
+100
+AcDbLine
+ 10
+87.5
+ 20
+-18.5
+ 11
+87.5
+ 21
+203.5
+  0
+CIRCLE
+  5
+8A
+100
+AcDbEntity
+  8
+4.2_pcb_edges_and_routing
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+94.40000000000001
+ 20
+184.215
+ 40
+1.7145
+  0
+CIRCLE
+  5
+8B
+100
+AcDbEntity
+  8
+4.2_pcb_edges_and_routing
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+155.6
+ 20
+5.4645
+ 40
+1.7145
+  0
+CIRCLE
+  5
+8C
+100
+AcDbEntity
+  8
+4.2_pcb_edges_and_routing
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+145
+ 20
+195
+ 40
+1.7145
+  0
+CIRCLE
   5
 8D
 100
@@ -4201,23 +4207,21 @@ AcDbEntity
   8
 4.2_pcb_edges_and_routing
   6
-CONTINUOUS
+ByLayer
  62
-    7
+  256
 370
-    0
+   -1
 100
-AcDbLine
+AcDbCircle
  10
-162.5
+105
  20
-203.5
- 11
-162.5
- 21
--18.5
+195
+ 40
+1.7145
   0
-LINE
+CIRCLE
   5
 8E
 100
@@ -4225,23 +4229,21 @@ AcDbEntity
   8
 4.2_pcb_edges_and_routing
   6
-CONTINUOUS
+ByLayer
  62
-    7
+  256
 370
-    0
+   -1
 100
-AcDbLine
+AcDbCircle
  10
-162.5
+145
  20
--18.5
- 11
-87.5
- 21
--18.5
+1.4645
+ 40
+1.7145
   0
-LINE
+CIRCLE
   5
 8F
 100
@@ -4249,21 +4251,19 @@ AcDbEntity
   8
 4.2_pcb_edges_and_routing
   6
-CONTINUOUS
+ByLayer
  62
-    7
+  256
 370
-    0
+   -1
 100
-AcDbLine
+AcDbCircle
  10
-87.5
+105
  20
--18.5
- 11
-87.5
- 21
-203.5
+1.4645
+ 40
+1.7145
   0
 ENDSEC
   0
