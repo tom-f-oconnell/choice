@@ -952,9 +952,6 @@ def time_spent(times, y_positions, meta, prefix, odor_of_interest):
             'reinforced' if 'reinforced_odor' in meta else 'odor A', prefix, \
             fraction))
 
-    if 'reinforced_odor' in meta:
-        assert meta['reinforced_odor'] != nonshocked_odor
-
     return fraction, test_indices, nonshocked_odor
 
 
@@ -1052,9 +1049,6 @@ def decision_bias(times, y_positions, meta, prefix, \
 
     if verbose:
         print('decision bias {}:'.format(prefix), bias_against)
-
-    if 'reinforced_odor' in meta:
-        assert meta['reinforced_odor'] != nonshocked_odor
 
     return bias_against, test_indices, nonshocked_odor
 
