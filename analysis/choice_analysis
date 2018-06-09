@@ -22,6 +22,8 @@ import numpy as np
 import pandas as pd
 # TODO replace rosparam usage w/ this?
 # using this rather than pyyaml, because this supports rejecting duplicate keys
+# TODO TODO make this a conditional import on using it
+# (only require if manually annotating traces for rejection?)
 from ruamel import yaml
 from ruamel.yaml.comments import CommentedSeq
 # TODO maybe remove this dependency if it means it cant be run easily on
@@ -57,6 +59,8 @@ arena_length_mm = 51
 minimum_end_to_center_runs = None
 
 ################################################################################
+
+save_report = False
 
 # TODO option to get individual plots in nice aspect ratio / format for examples
 # in publications, etc
@@ -378,7 +382,7 @@ def is_experiment_dir(d):
 
 # TODO refactor to only take bare minimum beyond times, positions, and ax
 def plot_trace(times, positions, meta, metrics=None,
-    y_max_min=None, label=None, odor2color=None, ax=None):
+    label=None, odor2color=None, ax=None):
     # TODO TODO TODO still need to center in some cases? add flag? otherwise,
     # can i remove any args?
     """
@@ -409,54 +413,54 @@ def plot_trace(times, positions, meta, metrics=None,
     legend_entries = []
     handles = []
 
+    # TODO TODO TODO fix
+    '''
+    plotting_y_max = None
+    plotting_y_min = None
+    '''
+
     if show_all_tracking:
-        plotting_y_max = np.max(y_data)
-        plotting_y_min = np.min(y_data)
         plotting_x_max = np.max(times)
         plotting_x_min = np.min(times)
 
     # TODO define options for fixed widths before first and after last tests
     # in this case
     else:
-        plotting_y_max = None
-        plotting_y_min = None
+        # TODO TODO TODO fix
+        '''
         plotting_x_max = None
         plotting_x_min = None
+        '''
 
+    # TODO explain why
     if not 'times' in meta:
-        # TODO do i atually want to do something with this values?
-        return plotting_x_min, plotting_x_max, plotting_y_min, plotting_y_max, \
-            legend_entries, handles
+        return legend_entries, handles
 
     # "pre"-test here just means the test before training, rather than
     # the start of some period that comes before a test.
+    # TODO TODO TODO work in cases where pretest_start is not defined
     plot_t0 = meta['times']['pretest_start'] - plot_t0_to_test0_start_s
     # TODO I don't really think it's worth factoring the above line out, but
     # it's probably worth reorganizing the code to not have to recompute it.
 
     legend_entry_set = set()
 
-    y_max = max([x[1] for x in meta['roi_points']])
-    y_min = min([x[1] for x in meta['roi_points']])
-
     # TODO filter out trajectories that don't move much. 
     # just use floris' config file thing?
 
-    if y_max_min is None:
-        centered_y_vals = [y - y_mid for y in y_vals]
-        y_max_above_mid = max(centered_y_vals)
-        y_min_below_mid = min(centered_y_vals)
-
-    else:
-        y_max_above_mid, y_min_below_mid = y_max_min
-
-    y_shock_to_odor = 2
+    # maybe either convert to fractions of arena length?
+    y_shock_to_odor = 0.5
     y_beyond_arena = 0
+    # maybe remove?
+    y_min_below_mid = -arena_length_mm / 2
+    y_max_above_mid = arena_length_mm / 2
+
     small_height = 4
     odor_patch_alpha = 0.4
     shock_patch_alpha = 0.8
     shock_color = 'red'
 
+    # TODO more descriptive name
     large_height = (y_max_above_mid - y_min_below_mid) / 2 + y_beyond_arena
 
     for i, s in enumerate(meta['stimuli']):
@@ -473,8 +477,8 @@ def plot_trace(times, positions, meta, metrics=None,
                 color = shock_color
                 height = small_height
                 # TODO display on both sides if all
-                y0 = y_min_below_mid - y_beyond_arena - \
-                    (y_shock_to_odor + small_height)
+                y0 = (y_min_below_mid - y_beyond_arena -
+                    (y_shock_to_odor + small_height))
                 alpha = shock_patch_alpha
 
             elif 'right_shock' in meta and p == meta['right_shock']:
@@ -492,7 +496,9 @@ def plot_trace(times, positions, meta, metrics=None,
             # displayed on down side in plot, and down should also be left in
             # the video , with closer arenas further to the right
             elif p in meta['left_pins2odors']:
-                #print 'left odor', meta['left_pins2odors'][p]
+                if verbose:
+                    print('left odor', meta['left_pins2odors'][p])
+
                 legend_entry = meta['left_pins2odors'][p]
                 color = odor2color[legend_entry]
                 y0 = y_min_below_mid - y_beyond_arena
@@ -502,7 +508,9 @@ def plot_trace(times, positions, meta, metrics=None,
             # displayed on top sides of plots, which should also be right in the
             # video
             elif p in meta['right_pins2odors']:
-                #print 'right odor', meta['right_pins2odors'][p]
+                if verbose:
+                    print('right odor', meta['right_pins2odors'][p])
+
                 legend_entry = meta['right_pins2odors'][p]
                 color = odor2color[legend_entry]
                 # because we define the middle as the new origin
@@ -554,22 +562,6 @@ def plot_trace(times, positions, meta, metrics=None,
                 legend_entries.append(legend_entry)
                 handles.append(p)
 
-            curr_y_max = y0 + height
-            if plotting_y_max is None or plotting_y_max < curr_y_max:
-                plotting_y_max = curr_y_max
-
-            curr_y_min = y0
-            if plotting_y_min is None or plotting_y_min > curr_y_min:
-                plotting_y_min = curr_y_min
-
-            curr_x_max = x0 + width
-            if plotting_x_max is None or plotting_x_max < curr_x_max:
-                plotting_x_max = curr_x_max
-
-            curr_x_min = x0
-            if plotting_x_min is None or plotting_x_min > curr_x_min:
-                plotting_x_min = curr_x_min
-
     if display_metrics and not metrics is None:
         y_pos = 0.77
         x_0 = 1.02
@@ -612,8 +604,7 @@ def plot_trace(times, positions, meta, metrics=None,
         ax.text(text_x, 0.6, label, transform=ax.transAxes,
                 fontsize=12, verticalalignment='top')
 
-    return (plotting_x_min, plotting_x_max, plotting_y_min, plotting_y_max,
-        legend_entries, handles)
+    return legend_entries, handles
 
 
 def load_or_generate_reject_reasons(experiment_group_dir, fly2data, fly2meta,
@@ -1005,26 +996,6 @@ def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
     if len(fly2data) == 0:
         raise ValueError('empty group')
 
-    y_maxes_above_mid = []
-    y_mins_below_mid = []
-    y_ranges = []
-
-    for m in list(fly2meta.values()):
-        y_vals = [p[1] for p in m['roi_points']]
-        curr_mid = np.mean(y_vals)
-        centered_y_vals = [y - curr_mid for y in y_vals]
-        y_maxes_above_mid.append(max(centered_y_vals))
-        y_mins_below_mid.append(min(centered_y_vals))
-        # TODO should maybe use dist between average of largest two and smallest
-        # two? what i have now should strictly overestimate that
-
-        ###y_ranges.append(max(y_vals) - min(y_vals))
-
-    # TODO might want to just determine plotting range from these
-    y_max_above_mid = max(y_maxes_above_mid)
-    y_min_below_mid = min(y_mins_below_mid)
-    ###mean_y_extent_pixels = np.mean(y_ranges)
-    
     time_fractions_pre = []
     time_fractions_post = []
     decision_biases_pre = []
@@ -1243,7 +1214,6 @@ def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
             # metric (for the first fly?)
             #    text += 'pre: %.3f in reinforced\npost: %.3f in reinforced' % \
             #       (metrics['time_fraction_pre'],metrics['time_fraction_post'])
-
             
             label = None
             if show_experiment_labels and not (experiment2label is None):
@@ -1252,23 +1222,9 @@ def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
             # TODO default should be chronological order, kept grouped w/in
             # experiments
             if sort_traces_by is None:
-                curr_x_min, curr_x_max, curr_y_min, curr_y_max, \
-                    legend_entries, handles = plot_trace(times_for_plot, 
+                legend_entries, handles = plot_trace(times_for_plot, 
                     y_for_plot, meta, metrics=metrics, label=label,
-                    y_max_min=(y_max_above_mid, y_min_below_mid),
                     odor2color=odor2color, ax=ax)
-
-                if plotting_y_max is None or plotting_y_max < curr_y_max:
-                    plotting_y_max = curr_y_max
-
-                if plotting_y_min is None or plotting_y_min > curr_y_min:
-                    plotting_y_min = curr_y_min
-
-                if plotting_x_max is None or plotting_x_max < curr_x_max:
-                    plotting_x_max = curr_x_max
-
-                if plotting_x_min is None or plotting_x_min > curr_x_min:
-                    plotting_x_min = curr_x_min
 
                 axes_to_set_limits.append(ax)
 
@@ -1277,8 +1233,7 @@ def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
                 args_to_plot = (times_for_plot, y_for_plot, meta)
                 # will need to fill in the ax later. this is to change order of
                 # subplots.
-                kwargs_to_plot = {'metrics': metrics, 'y_max_min':
-                    (y_max_above_mid, y_min_below_mid)}
+                kwargs_to_plot = {'metrics': metrics}
                 # TODO will redefining these variables change the values already
                 # in the list?  probably not?
                 for_plotting.append((args_to_plot, kwargs_to_plot))
@@ -1316,22 +1271,11 @@ def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
         for i, si in enumerate(plotting_order):
             ax = axes[i]
             args_to_plot, kwargs_to_plot = for_plotting[si]
-            curr_x_min, curr_x_max, curr_y_min, curr_y_max, labels, handles = \
-                plot_trace(*args_to_plot, odor2color=odor2color, ax=ax,
-                    **kwargs_to_plot)
+            labels, handles = plot_trace(*args_to_plot, odor2color=odor2color,
+                                         ax=ax, **kwargs_to_plot)
 
-            if plotting_y_max is None or plotting_y_max < curr_y_max:
-                plotting_y_max = curr_y_max
-
-            if plotting_y_min is None or plotting_y_min > curr_y_min:
-                plotting_y_min = curr_y_min
-
-            if plotting_x_max is None or plotting_x_max < curr_x_max:
-                plotting_x_max = curr_x_max
-
-            if plotting_x_min is None or plotting_x_min > curr_x_min:
-                plotting_x_min = curr_x_min
-
+            # TODO TODO TODO is this all they were needed for? if i'm using
+            # constant limits, maybe get rid of this code now?
             axes_to_set_limits.append(ax)
 
     if make_plots and (not handles is None) and (not labels is None):
@@ -1356,19 +1300,16 @@ def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
 
     # TODO handle better. probably move setting of these values earlier, or set
     # in a similar way in case where plots will not be sorted by a metric
-    if not (plotting_x_min is None or plotting_x_max is None):
-        x_range = plotting_x_max - plotting_x_min
-        plotting_x_min = plotting_x_min - x_range * x_bord
-        plotting_x_max = plotting_x_max + x_range * x_bord
+    
+    # TODO TODO TODO fix
+    '''
+    x_range = plotting_x_max - plotting_x_min
+    plotting_x_min = plotting_x_min - x_range * x_bord
+    plotting_x_max = plotting_x_max + x_range * x_bord
 
-    if not (plotting_y_min is None or plotting_y_max is None):
-        y_range = plotting_y_max - plotting_y_min
-        plotting_y_min = plotting_y_min - y_range * y_bord
-        plotting_y_max = plotting_y_max + y_range * y_bord
-
-    if verbose:
-        print('plotting ranges: x', (plotting_x_min, plotting_x_max), 'y',
-            (plotting_y_min, plotting_y_max))
+    y_range = plotting_y_max - plotting_y_min
+    plotting_y_min = plotting_y_min - y_range * y_bord
+    plotting_y_max = plotting_y_max + y_range * y_bord
 
     if make_plots:
         for i, (fly, ax) in \
@@ -1391,6 +1332,7 @@ def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
                 ax.set_yticks([])
                 # TODO why was this not working?
                 #ax.tick_params(axis='x', direction='out')
+    '''
 
     if save_plots:
         try:
@@ -2294,10 +2236,11 @@ def main():
 
     print(report)
 
-    report_textfile_name = 'report.txt'.format(os.path.normpath(
-        experiment_subdir))
-    with open(join(path, report_textfile_name), 'w+') as f:
-        print(report, file=f)
+    if save_report:
+        report_textfile_name = 'report.txt'.format(os.path.normpath(
+            experiment_subdir))
+        with open(join(path, report_textfile_name), 'w+') as f:
+            print(report, file=f)
     
 # TODO usage
 if __name__ == '__main__':
