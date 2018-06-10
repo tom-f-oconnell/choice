@@ -36,7 +36,9 @@ from stimuli.srv import LoadSequenceRequest
 
 
 # TODO use config file for these flags / command line args
-verbose = True
+# TODO allow command line y/n setting of args, w/ y/n to enter into
+# configuration of large groups, like plotting options
+verbose = False
 debug = False
 
 ################################################################################
@@ -59,8 +61,8 @@ arena_length_mm = 51
 minimum_end_to_center_runs = None
 
 ################################################################################
-
-save_report = False
+# Plotting options
+################################################################################
 
 # TODO option to get individual plots in nice aspect ratio / format for examples
 # in publications, etc
@@ -77,11 +79,65 @@ make_plots = show_plots or save_plots
 # TODO allow sorting by multiple (suffix name or something?)
 sort_traces_by = None
 
+# TODO turn off interactive plots if this is false? rename interactive flag?
+display_metrics = True
+
+# TODO also include option to color lines in metric change plots by same labels?
+show_experiment_labels = True
+show_roi_numbers = True
+trace_linewidth = 1.0
+
+# Defines the 0 on the horizontal (time) axis of all plots, to be this many
+# seconds before the start of the first test period.
+# TODO TODO also test that making this nonzero doesn't change metrics
+plot_t0_to_test0_start_s = 0 # 60
+
+# TODO TODO why does sign of (the effect of) plot_t0_to_test0_start_s seem to
+# change depending on the value of this flag?
+plot_all_tracking = False
+# TODO define options for fixed widths before first and after last tests
+plot_to_end_of_test = False
+# can include a period of quiescence after train / test blocks
+plot_to_end_of_trial = True
+
+# Controls look of single traces (trajectory of one fly + rectangles for odor
+# and shock)
+# TODO make defaults of these in plot_trace? w/ kwargs?
+shock_indicator_height = 1
+# maybe either convert to fractions of arena length?
+y_shock_to_odor = 0.5
+y_beyond_arena = 0
+
+
+n_traj_bound_flags = \
+    sum([plot_all_tracking, plot_to_end_of_test, plot_to_end_of_trial])
+
+if n_traj_bound_flags > 1:
+    # TODO check string displays properly
+    raise ValueError('''Only one of plot_all_tracking, plot_to_end_of_test, or 
+        plot_to_nd_of_trial should be True.''')
+
+elif n_traj_bound_flags == 0:
+    raise ValueError('''One of plot_all_tracking, plot_to_end_of_test, or 
+        plot_to_nd_of_trial should be True.''')
+
+
+if show_roi_numbers and not show_experiment_labels:
+    warnings.warn('show_roi_number=True with show_experiment_labels=False is ' +
+        'an invalid configuration. setting show_experiment_labels=True.')
+    show_experiment_labels = True
+
+
+################################################################################
+# Other options
+################################################################################
+save_report = False
+
 # TODO it seems these were originally for displaying?
 # separate flags for whether the text should be added to traces plot?
 want_time_spent = True
 want_decision_bias = True
-want_accuracy = False
+want_accuracy = True
 # preference index == performance index, in past literature?
 # see Aso & Rubin 2016 for one example of how this could be calculated
 want_performance_index = False
@@ -97,26 +153,10 @@ require_stimuli = False
 print_version = True
 digits_after_zero = 3
 
-# TODO turn off interactive plots if this is false? rename interactive flag?
-display_metrics = True
+#if want_accuracy:
+#    raise NotImplementedError
 
-# TODO also include option to color lines in metric change plots by same labels?
-show_experiment_labels = True
-show_roi_numbers = True
-trace_linewidth = 1.0
-
-# Defines the 0 on the horizontal (time) axis of all plots, to be this many
-# seconds before the start of the first test period.
-# TODO TODO also test that making this nonzero doesn't change metrics
-plot_t0_to_test0_start_s = 0 # 60
-# TODO TODO why does sign of (the effect of) plot_t0_to_test0_start_s seem to
-# change depending on the value of this flag?
-show_all_tracking = False
-
-if show_roi_numbers and not show_experiment_labels:
-    warnings.warn('show_roi_number=True with show_experiment_labels=False is ' +
-        'an invalid configuration. setting show_experiment_labels=True.')
-    show_experiment_labels = True
+################################################################################
 
 if make_plots:
     import matplotlib
@@ -248,6 +288,7 @@ def load_metadata(d):
         assert len(odors) == 1
         return odors[0]
 
+    # TODO TODO adapt to working w/ single test / make diff func / inline it
     def prepost_odors(odors2pins, pin_group, stimuli):
         # TODO
         """
@@ -387,13 +428,14 @@ def plot_trace(times, positions, meta, metrics=None,
     # can i remove any args?
     """
     Args:
-        times (array-like)
-        positions (array-like)
-        meta (dict)
-        ax (matplotlib.Axes) (optional)
+        times (array-like):
+        positions (array-like):
+        meta (dict):
+        ax (matplotlib.Axes) (optional):
 
     Returns:
-
+        legend_entries (list): `str` odor representations, in plot legend.
+        handles (list):
     """
     # TODO handle odor2color == None case
 
@@ -413,27 +455,10 @@ def plot_trace(times, positions, meta, metrics=None,
     legend_entries = []
     handles = []
 
-    # TODO TODO TODO fix
-    '''
-    plotting_y_max = None
-    plotting_y_min = None
-    '''
-
-    if show_all_tracking:
-        plotting_x_max = np.max(times)
-        plotting_x_min = np.min(times)
-
-    # TODO define options for fixed widths before first and after last tests
-    # in this case
-    else:
-        # TODO TODO TODO fix
-        '''
-        plotting_x_max = None
-        plotting_x_min = None
-        '''
-
     # TODO explain why
     if not 'times' in meta:
+        # TODO is this the path taken by many during labelling? (when no patches
+        # show up) why?
         return legend_entries, handles
 
     # "pre"-test here just means the test before training, rather than
@@ -448,14 +473,10 @@ def plot_trace(times, positions, meta, metrics=None,
     # TODO filter out trajectories that don't move much. 
     # just use floris' config file thing?
 
-    # maybe either convert to fractions of arena length?
-    y_shock_to_odor = 0.5
-    y_beyond_arena = 0
     # maybe remove?
     y_min_below_mid = -arena_length_mm / 2
     y_max_above_mid = arena_length_mm / 2
 
-    small_height = 4
     odor_patch_alpha = 0.4
     shock_patch_alpha = 0.8
     shock_color = 'red'
@@ -475,16 +496,16 @@ def plot_trace(times, positions, meta, metrics=None,
                 ('left_shock' in meta and p == meta['left_shock']):
                 legend_entry = 'shock'
                 color = shock_color
-                height = small_height
+                height = shock_indicator_height
                 # TODO display on both sides if all
                 y0 = (y_min_below_mid - y_beyond_arena -
-                    (y_shock_to_odor + small_height))
+                    (y_shock_to_odor + shock_indicator_height))
                 alpha = shock_patch_alpha
 
             elif 'right_shock' in meta and p == meta['right_shock']:
                 legend_entry = 'shock'
                 color = shock_color
-                height = small_height
+                height = shock_indicator_height
                 y0 = y_max_above_mid + y_beyond_arena + y_shock_to_odor
                 alpha = shock_patch_alpha
 
@@ -1003,11 +1024,8 @@ def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
 
     # TODO line up images of ROIs, with drawn midline, to check for those errors
 
-    plotting_y_max = None
-    plotting_y_min = None
-    plotting_x_max = None
-    plotting_x_min = None
-
+    # TODO TODO break stuff to make figure w/ array of traces into its own
+    # function
     axes_to_set_limits = []
     fly_nums_in_order = []
 
@@ -1067,6 +1085,8 @@ def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
             # nonzero / nan?
             times_for_plot = epoch_times_s
             y_for_plot = data['position_y']
+            # TODO warn and say why can't get metrics
+            # (if they were True maybe?)
 
         else:
             plot_t0 = meta['times']['pretest_start'] - plot_t0_to_test0_start_s
@@ -1222,7 +1242,7 @@ def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
             # TODO default should be chronological order, kept grouped w/in
             # experiments
             if sort_traces_by is None:
-                legend_entries, handles = plot_trace(times_for_plot, 
+                labels, handles = plot_trace(times_for_plot, 
                     y_for_plot, meta, metrics=metrics, label=label,
                     odor2color=odor2color, ax=ax)
 
@@ -1274,7 +1294,7 @@ def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
             labels, handles = plot_trace(*args_to_plot, odor2color=odor2color,
                                          ax=ax, **kwargs_to_plot)
 
-            # TODO TODO TODO is this all they were needed for? if i'm using
+            # TODO TODO is this all they were needed for? if i'm using
             # constant limits, maybe get rid of this code now?
             axes_to_set_limits.append(ax)
 
@@ -1293,6 +1313,7 @@ def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
         # parameters?
         #fig.subplots_adjust(left=0.1, bottom=0.1, right=0.75)
 
+
     # TODO do this for single plots within plot_trace?
     # relative
     y_bord = 0.025
@@ -1301,13 +1322,41 @@ def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
     # TODO handle better. probably move setting of these values earlier, or set
     # in a similar way in case where plots will not be sorted by a metric
     
-    # TODO TODO TODO fix
-    '''
+    plotting_x_min = 0
+    if plot_all_tracking:
+        # TODO matplotlib function to set all subplot ranges to max range
+        # amongst them?
+        # otherwise loop over ax
+        raise NotImplementedError
+
+    # TODO get from sequence if not loading various times into metadata dict
+    elif plot_to_end_of_trial:
+        # TODO subtract from t0
+        plotting_x_max = meta['times']['end']
+
+    elif plot_to_end_of_test:
+        # TODO subtract from t0
+        plotting_x_max = \
+            meta['times']['pretest_start'] + meta['times']['test_duration']
+
+    plotting_x_max = plotting_x_max - plot_t0
+
     x_range = plotting_x_max - plotting_x_min
     plotting_x_min = plotting_x_min - x_range * x_bord
     plotting_x_max = plotting_x_max + x_range * x_bord
 
-    y_range = plotting_y_max - plotting_y_min
+    # TODO least invasive way to check whether there are any shock patches, to
+    # add that fraction of the y_range in?
+    plotting_y_min = -arena_length_mm / 2
+    plotting_y_max = arena_length_mm / 2
+
+    if had_some_reinforced:
+        extra_y = shock_indicator_height + y_shock_to_odor + y_beyond_arena 
+        plotting_y_min -= extra_y 
+        plotting_y_max += extra_y 
+        del extra_y
+
+    y_range = arena_length_mm
     plotting_y_min = plotting_y_min - y_range * y_bord
     plotting_y_max = plotting_y_max + y_range * y_bord
 
@@ -1315,6 +1364,7 @@ def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
         for i, (fly, ax) in \
             enumerate(zip(fly_nums_in_order, axes_to_set_limits)):
 
+            # TODO so these aren't shared? way to make them shared?
             if not (plotting_x_min is None or plotting_x_max is None):
                 ax.set_xlim([plotting_x_min, plotting_x_max])
 
@@ -1328,11 +1378,10 @@ def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
                 ax.spines['right'].set_visible(False)
                 ax.spines['left'].set_visible(False)
                 # TODO make the bottom frame a little further away
-                #print 'xticks:', ax.get_xticks()
                 ax.set_yticks([])
                 # TODO why was this not working?
                 #ax.tick_params(axis='x', direction='out')
-    '''
+
 
     if save_plots:
         try:
