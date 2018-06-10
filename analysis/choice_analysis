@@ -833,8 +833,8 @@ def time_spent(times, y_positions):
 
 # TODO TODO TODO test this is not being thrown off by any erroneous zero entries
 # that make it through!
-def decision_bias(times, y_positions_mm,
-                  choice_zone_mm=choice_zone_mm):
+def decisions_to_sides(times, y_positions_mm,
+                       choice_zone_mm=choice_zone_mm):
     """
     Args:
         times (array-like): Times that samples in y_positions come from, in
@@ -848,10 +848,10 @@ def decision_bias(times, y_positions_mm,
             chamber midline.
 
     Returns:
-        TODO
-
-        Should be signed, unlike that in Parnas, with positive indicating a bias
-        against shocked odor.
+    # TODO note whether this will always be positive or which variables it may
+    # depend on + note about orienting
+        towards_left (int): # of decisions toward left
+        towards_right (int): # of decisions toward right
     """
     # TODO necessary? moving this in here break some existing cases?
     y_positions_mm = y_positions_mm.as_matrix()
@@ -874,19 +874,52 @@ def decision_bias(times, y_positions_mm,
     towards_left = 0
     towards_right = 0
     for e in exits:
-        if abs(y_positions_mm[e] - left_border) < \
-            abs(y_positions_mm[e] - right_border):
+        if (abs(y_positions_mm[e] - left_border) <
+            abs(y_positions_mm[e] - right_border)):
 
             towards_left += 1
 
         else:
             towards_right += 1
 
-    total_decisions = towards_left + towards_right
-
     if verbose:
         print('decisions toward left', towards_left)
         print('decisions toward right', towards_right)
+
+    return towards_left, towards_right
+
+
+def decision_bias(times, y_positions_mm,
+                  choice_zone_mm=choice_zone_mm):
+    """
+    Args:
+        times (array-like): Times that samples in y_positions come from, in
+            seconds. Should only be used, if at all, for debouncing. Should only
+            include data from one test period of interest.
+
+        y_positions_mm (array-like): Positions along the long axis of arena, in
+            mm. Should only include data from one test period of interest.
+
+        choice_zone_mm (number): Width of choice region, centered on
+            chamber midline.
+
+    Returns:
+        decision_bias (float): on [-1, 1] or np.nan if the fly made no
+            decisions.
+
+        If input positions are oriented so reinforced odor is positive
+        (i.e. chamber midline is zero mm):
+        (decisions to reinforced odor - decisions to nonreinforced odor) / 
+        total decisions
+        (similar to calculation in Parnas et al. 2014)
+
+        In this case, a positive decision bias should indicate a preference
+        against shocked odor.
+    """
+    towards_left, towards_right = \
+        decisions_to_sides(times, y_positions_mm, choice_zone_mm=choice_zone_mm)
+
+    total_decisions = towards_left + towards_right
 
     if total_decisions == 0:
         bias_against_left = np.nan
@@ -895,11 +928,41 @@ def decision_bias(times, y_positions_mm,
         # TODO test
         bias_against_left = (towards_left - towards_right) / total_decisions
 
-    # TODO move this note where appropriate
-    # convention is negative = aversion to shocked odor, positive = attraction
-    # to shocked odor so that changes are in same direction as fraction of time
-    # spent in reinforced
+    # TODO maybe rename _against_positive or something if i'm going to allow
+    # left to be on different sides?
     return bias_against_left
+
+
+def accuracy(times, y_positions_mm,
+             choice_zone_mm=choice_zone_mm):
+    """
+    Args:
+        times (array-like): Times that samples in y_positions come from, in
+            seconds. Should only be used, if at all, for debouncing. Should only
+            include data from one test period of interest.
+
+        y_positions_mm (array-like): Positions along the long axis of arena, in
+            mm. Should only include data from one test period of interest.
+
+        choice_zone_mm (number): Width of choice region, centered on
+            chamber midline.
+
+    Returns:
+        accuracy_toward_left (float): on [0,1] or np.nan if the fly made no
+            decisions.
+    """
+    towards_left, towards_right = \
+        decisions_to_sides(times, y_positions_mm, choice_zone_mm=choice_zone_mm)
+
+    total_decisions = towards_left + towards_right
+
+    if total_decisions == 0:
+        accuracy_toward_left = np.nan
+
+    else:
+        accuracy_toward_left = towards_left / total_decisions
+
+    return accuracy_toward_left
 
 
 # TODO TODO work with an arbitrary number of blocks
