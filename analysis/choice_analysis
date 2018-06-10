@@ -38,7 +38,7 @@ from stimuli.srv import LoadSequenceRequest
 # TODO use config file for these flags / command line args
 # TODO allow command line y/n setting of args, w/ y/n to enter into
 # configuration of large groups, like plotting options
-verbose = False
+verbose = True
 debug = False
 
 ################################################################################
@@ -94,11 +94,11 @@ plot_t0_to_test0_start_s = 0 # 60
 
 # TODO TODO why does sign of (the effect of) plot_t0_to_test0_start_s seem to
 # change depending on the value of this flag?
-plot_all_tracking = False
+plot_all_tracking = True
 # TODO define options for fixed widths before first and after last tests
 plot_to_end_of_test = False
 # can include a period of quiescence after train / test blocks
-plot_to_end_of_trial = True
+plot_to_end_of_trial = False
 
 # Controls look of single traces (trajectory of one fly + rectangles for odor
 # and shock)
@@ -152,9 +152,6 @@ require_stimuli = False
 
 print_version = True
 digits_after_zero = 3
-
-#if want_accuracy:
-#    raise NotImplementedError
 
 ################################################################################
 
@@ -723,6 +720,7 @@ def load_or_generate_reject_reasons(experiment_group_dir, fly2data, fly2meta,
                 print(k, '-', key2group[k])
             
         new_keys = True
+        # TODO TODO move this to fly2data construction?
         epoch_times_s = (data['time_epoch_secs'] + data['time_epoch_nsecs'] /
             1e9).as_matrix()
         nonzero_times = epoch_times_s.nonzero()[0]
@@ -1387,20 +1385,41 @@ def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
     
     plotting_x_min = 0
     if plot_all_tracking:
-        # TODO matplotlib function to set all subplot ranges to max range
-        # amongst them?
-        # otherwise loop over ax
-        raise NotImplementedError
+        plotting_x_min = None
+        plotting_x_max = None
+
+        for data in fly2data.values():
+            # TODO refactor?
+            epoch_times_s = (data['time_epoch_secs'] + 
+                             data['time_epoch_nsecs'] / 1e9).as_matrix()
+            nonzero_epoch_times = epoch_times_s[epoch_times_s.nonzero()[0]]
+
+            curr_t_max = np.max(nonzero_epoch_times)
+            curr_t_min = np.min(nonzero_epoch_times)
+
+            if verbose:
+                print('curr_t_min:', curr_t_min)
+                print('curr_t_max:', curr_t_max)
+
+            if plotting_x_max is None or curr_t_max > plotting_x_max:
+                plotting_x_max = curr_t_max
+
+            if plotting_x_min is None or curr_t_min < plotting_x_min:
+                plotting_x_min = curr_t_min
+
+        plotting_x_min = plotting_x_min - plot_t0
 
     # TODO get from sequence if not loading various times into metadata dict
     elif plot_to_end_of_trial:
-        # TODO subtract from t0
         plotting_x_max = meta['times']['end']
 
     elif plot_to_end_of_test:
-        # TODO subtract from t0
         plotting_x_max = \
             meta['times']['pretest_start'] + meta['times']['test_duration']
+
+    if verbose:
+        print('plotting_x_min:', plotting_x_min)
+        print('plotting_x_max:', plotting_x_max)
 
     plotting_x_max = plotting_x_max - plot_t0
 
