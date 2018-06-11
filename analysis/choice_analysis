@@ -46,6 +46,7 @@ debug = False
 ################################################################################
 use_manual_rejection = True
 
+# TODO make manual rejection mutually exclusive with all others (err if both)
 # either None or a number
 # should be based on either the max or like the 95th+ percentile
 minimum_walking_speed = None
@@ -94,11 +95,18 @@ plot_t0_to_test0_start_s = 0 # 60
 
 # TODO TODO why does sign of (the effect of) plot_t0_to_test0_start_s seem to
 # change depending on the value of this flag?
-plot_all_tracking = True
+plot_all_tracking = False
+# can include a period of quiescence after train / test blocks
+plot_to_end_of_experiment = True
 # TODO define options for fixed widths before first and after last tests
 plot_to_end_of_test = False
-# can include a period of quiescence after train / test blocks
-plot_to_end_of_trial = False
+
+# TODO TODO TODO fix. axes setting currently seems to ignore this.
+plot_from_start_of_experiment = True
+# TODO also make these two mutually exclusive with plot_all_tracking
+plot_from_start_of_test = False
+
+# TODO maybe make an option to plot all tracking on one end or the other?
 
 # Controls look of single traces (trajectory of one fly + rectangles for odor
 # and shock)
@@ -109,17 +117,29 @@ y_shock_to_odor = 0.5
 y_beyond_arena = 0
 
 
+# clean up?
 n_traj_bound_flags = \
-    sum([plot_all_tracking, plot_to_end_of_test, plot_to_end_of_trial])
+    sum([plot_all_tracking, plot_to_end_of_test, plot_to_end_of_experiment])
 
 if n_traj_bound_flags > 1:
     # TODO check string displays properly
     raise ValueError('''Only one of plot_all_tracking, plot_to_end_of_test, or 
-        plot_to_nd_of_trial should be True.''')
+        plot_to_end_of_experiment should be True.''')
 
 elif n_traj_bound_flags == 0:
     raise ValueError('''One of plot_all_tracking, plot_to_end_of_test, or 
-        plot_to_nd_of_trial should be True.''')
+        plot_to_end_of_experiment should be True.''')
+
+n_traj_bound_flags = sum([plot_all_tracking, plot_from_start_of_test,
+                          plot_from_start_of_experiment])
+
+if n_traj_bound_flags > 1:
+    raise ValueError('''Only one of plot_all_tracking, plot_from_start_of_test, 
+        or plot_from_start_of_experiment should be True.''')
+
+elif n_traj_bound_flags == 0:
+    raise ValueError('''One of plot_all_tracking, plot_from_start_of_test, or 
+        plot_from_start_of_experiment should be True.''')
 
 
 if show_roi_numbers and not show_experiment_labels:
@@ -233,6 +253,10 @@ def load_metadata(d):
             if 'olf' in stimulus_rosparams:
                 left_pins = stimulus_rosparams['olf']['left_pins']
                 right_pins = stimulus_rosparams['olf']['right_pins']
+
+                if 'prestimulus_delay_s' in stimulus_rosparams['olf']:
+                    metadata['prestimulus_delay_s'] = \
+                        stimulus_rosparams['olf']['prestimulus_delay_s']
 
                 # Using this as a test for whether there was shock reinforcement
                 # in this experiment.
@@ -368,7 +392,11 @@ def load_metadata(d):
     # TODO TODO also do odor_a / odor_b in here
 
     times = dict()
+    # TODO TODO accomodate trial structures not starting / ending with a time
     times['start'] = trial_structure[0].to_sec()
+    if 'prestimulus_delay_s' in metadata:
+        times['start'] -= metadata['prestimulus_delay_s']
+
     times['end'] = trial_structure[-1].to_sec()
     # TODO make sure these don't screw up how innate bias handles anything
     # (want sequential plots, not just pre and post)
@@ -1411,19 +1439,30 @@ def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
             if plotting_x_min is None or curr_t_min < plotting_x_min:
                 plotting_x_min = curr_t_min
 
-        plotting_x_min = plotting_x_min - plot_t0
+    # TODO TODO is the start not being set to the beginning of the acclimation
+    # period in the stimulus generation code?
+    if plot_from_start_of_experiment:
+        plotting_x_min = meta['times']['start']
+
+    elif plot_from_start_of_test:
+        # TODO TODO adapt to case where first sequence thing isn't a test
+        # maybe rename?
+        plotting_x_min = meta['times']['pretest_start']
 
     # TODO get from sequence if not loading various times into metadata dict
-    elif plot_to_end_of_trial:
+    if plot_to_end_of_experiment:
         plotting_x_max = meta['times']['end']
 
     elif plot_to_end_of_test:
         plotting_x_max = \
             meta['times']['pretest_start'] + meta['times']['test_duration']
 
+    plotting_x_min = plotting_x_min - plot_t0
     plotting_x_max = plotting_x_max - plot_t0
 
     if verbose:
+        # was i printing this somewhere else?
+        print('plot_t0:', plot_t0)
         print('plotting_x_min:', plotting_x_min)
         print('plotting_x_max:', plotting_x_max)
 
