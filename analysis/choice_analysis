@@ -1346,14 +1346,15 @@ def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
         if type(nonnan_order) != np.ndarray:
             nonnan_order = np.array([nonnan_order])
 
-        plotting_order = np.concatenate([nonnan_order, \
+        plotting_order = np.concatenate([nonnan_order,
             np.where(np.isnan(sort_on))[0]])
 
         for i, si in enumerate(plotting_order):
             ax = axes[i]
             args_to_plot, kwargs_to_plot = for_plotting[si]
-            labels, handles = plot_trace(*args_to_plot, odor2color=odor2color,
-                                         ax=ax, **kwargs_to_plot)
+            labels, handles = plot_trace(times_for_plot, y_for_plot, meta,
+                *args_to_plot, metrics=metrics, label=label,
+                odor2color=odor2color, ax=ax, **kwargs_to_plot)
 
             # TODO TODO is this all they were needed for? if i'm using
             # constant limits, maybe get rid of this code now?
@@ -1398,8 +1399,11 @@ def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
             curr_t_min = np.min(nonzero_epoch_times)
 
             if verbose:
-                print('curr_t_min:', curr_t_min)
-                print('curr_t_max:', curr_t_max)
+                print('curr_t_min:', curr_t_min,
+                      '({})'.format(curr_t_min - plot_t0))
+                print('curr_t_max:', curr_t_max,
+                      '({})'.format(curr_t_max - plot_t0))
+                print('nonzero_epoch_times.size:', nonzero_epoch_times.size)
 
             if plotting_x_max is None or curr_t_max > plotting_x_max:
                 plotting_x_max = curr_t_max
@@ -1417,11 +1421,11 @@ def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
         plotting_x_max = \
             meta['times']['pretest_start'] + meta['times']['test_duration']
 
+    plotting_x_max = plotting_x_max - plot_t0
+
     if verbose:
         print('plotting_x_min:', plotting_x_min)
         print('plotting_x_max:', plotting_x_max)
-
-    plotting_x_max = plotting_x_max - plot_t0
 
     x_range = plotting_x_max - plotting_x_min
     plotting_x_min = plotting_x_min - x_range * x_bord
@@ -1464,6 +1468,7 @@ def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
                 # TODO why was this not working?
                 #ax.tick_params(axis='x', direction='out')
 
+                # TODO enable y ticks for last one too?
 
     if save_plots:
         try:
@@ -1822,16 +1827,29 @@ def convert_pixels_to_mm(fly2data, fly2meta, center=True):
 
         if verbose:
             print('fly {}, mm per pixel: {}'.format(fly, mm_per_pixel))
-            print('y position range in mm: {}'.format(
-                data_dict['position_y'].max() - data_dict['position_y'].min()))
+            # TODO only say before/after centering if actually centering
+            print('pixel y max, before centering:',
+                data_dict['position_y'].max())
+            print('pixel y min, before centering:',
+                data_dict['position_y'].min())
+            print('pixel y center:', fly2centers[fly][1])
 
         for i, key in enumerate(('position_x', 'position_y')):
             if center:
-                center = fly2centers[fly][i]
-                data_dict[key] = (data_dict[key] - center) * mm_per_pixel
+                roi_center = fly2centers[fly][i]
+                data_dict[key] = (data_dict[key] - roi_center) * mm_per_pixel
 
             else:
                 data_dict[key] = data_dict[key] * mm_per_pixel
+
+        if verbose:
+            # TODO TODO assertions to check data is roughly appropriately
+            # centered (e.g. if there is some range, should have + and -, etc)
+            print('y max, after centering:', data_dict['position_y'].max())
+            print('y min, after centering:', data_dict['position_y'].min())
+            print('y position range in mm: {}'.format(
+                data_dict['position_y'].max() - data_dict['position_y'].min()))
+
 
     for fly, meta_dict in fly2meta.items():
         mm_per_pixel = arena_length_mm / recording2scale[meta_dict['dir']]
