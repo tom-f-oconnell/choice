@@ -38,7 +38,10 @@ from stimuli.srv import LoadSequenceRequest
 # TODO use config file for these flags / command line args
 # TODO allow command line y/n setting of args, w/ y/n to enter into
 # configuration of large groups, like plotting options
-verbose = True
+
+# are most things i'm using verbose for actually better suited to a debug flag?
+# need verbose at all? pick one?
+verbose = False
 debug = False
 
 ################################################################################
@@ -89,22 +92,22 @@ show_roi_numbers = True
 trace_linewidth = 1.0
 
 # Defines the 0 on the horizontal (time) axis of all plots, to be this many
-# seconds before the start of the first test period.
+# seconds before the start of the first test/train period.
 # TODO TODO also test that making this nonzero doesn't change metrics
-plot_t0_to_test0_start_s = 0 # 60
+plot_t0_to_stim0_start_s = 0 # 60
 
-# TODO TODO why does sign of (the effect of) plot_t0_to_test0_start_s seem to
+# TODO TODO why does sign of (the effect of) plot_t0_to_stim0_start_s seem to
 # change depending on the value of this flag?
 plot_all_tracking = False
 # can include a period of quiescence after train / test blocks
 plot_to_end_of_experiment = True
 # TODO define options for fixed widths before first and after last tests
-plot_to_end_of_test = False
+plot_to_end_of_stim = False
 
 # TODO TODO TODO fix. axes setting currently seems to ignore this.
 plot_from_start_of_experiment = True
 # TODO also make these two mutually exclusive with plot_all_tracking
-plot_from_start_of_test = False
+plot_from_first_stim = False
 
 # TODO maybe make an option to plot all tracking on one end or the other?
 
@@ -119,26 +122,26 @@ y_beyond_arena = 0
 
 # clean up?
 n_traj_bound_flags = \
-    sum([plot_all_tracking, plot_to_end_of_test, plot_to_end_of_experiment])
+    sum([plot_all_tracking, plot_to_end_of_stim, plot_to_end_of_experiment])
 
 if n_traj_bound_flags > 1:
     # TODO check string displays properly
-    raise ValueError('''Only one of plot_all_tracking, plot_to_end_of_test, or 
+    raise ValueError('''Only one of plot_all_tracking, plot_to_end_of_stim, or 
         plot_to_end_of_experiment should be True.''')
 
 elif n_traj_bound_flags == 0:
-    raise ValueError('''One of plot_all_tracking, plot_to_end_of_test, or 
+    raise ValueError('''One of plot_all_tracking, plot_to_end_of_stim, or 
         plot_to_end_of_experiment should be True.''')
 
-n_traj_bound_flags = sum([plot_all_tracking, plot_from_start_of_test,
+n_traj_bound_flags = sum([plot_all_tracking, plot_from_first_stim,
                           plot_from_start_of_experiment])
 
 if n_traj_bound_flags > 1:
-    raise ValueError('''Only one of plot_all_tracking, plot_from_start_of_test, 
+    raise ValueError('''Only one of plot_all_tracking, plot_from_first_stim, 
         or plot_from_start_of_experiment should be True.''')
 
 elif n_traj_bound_flags == 0:
-    raise ValueError('''One of plot_all_tracking, plot_from_start_of_test, or 
+    raise ValueError('''One of plot_all_tracking, plot_from_first_stim, or 
         plot_from_start_of_experiment should be True.''')
 
 
@@ -155,14 +158,10 @@ save_report = False
 
 # TODO it seems these were originally for displaying?
 # separate flags for whether the text should be added to traces plot?
-want_time_spent = True
-want_decision_bias = True
-want_accuracy = True
+
+want_abs_decision_bias = True
 # preference index == performance index, in past literature?
 # see Aso & Rubin 2016 for one example of how this could be calculated
-want_performance_index = False
-want_any_metrics = (want_time_spent or want_accuracy or 
-                    want_decision_bias or want_performance_index)
 
 # TODO would probably want to test case where some experiments in a group don't
 # contain this file, while others do. in that case, there should still be an
@@ -254,9 +253,9 @@ def load_metadata(d):
                 left_pins = stimulus_rosparams['olf']['left_pins']
                 right_pins = stimulus_rosparams['olf']['right_pins']
 
-                if 'prestimulus_delay_s' in stimulus_rosparams['olf']:
-                    metadata['prestimulus_delay_s'] = \
-                        stimulus_rosparams['olf']['prestimulus_delay_s']
+                # TODO maybe recursively convert to dict somehow, for
+                # simplicity?
+                metadata['rosparams'] = stimulus_rosparams
 
                 # Using this as a test for whether there was shock reinforcement
                 # in this experiment.
@@ -309,17 +308,17 @@ def load_metadata(d):
         assert len(odors) == 1
         return odors[0]
 
-    # TODO TODO adapt to working w/ single test / make diff func / inline it
+    # TODO delete me
+    """
+    # TODO adapt to working w/ single test / make diff func / inline it?
     def prepost_odors(odors2pins, pin_group, stimuli):
-        # TODO
-        """
-        """
         prepins = stimuli[0].seq.pins
         postpins = stimuli[-1].seq.pins
         prepin = pin_from(prepins, pin_group)
         postpin = pin_from(postpins, pin_group)
         return odor_for_pin(odors2pins, prepin), \
             odor_for_pin(odors2pins, postpin)
+    """
 
     pickles = glob.glob(join(d, '*_stimuli.p'))
     if len(pickles) > 1:
@@ -340,12 +339,6 @@ def load_metadata(d):
         odors2left_pins, odors2right_pins, _, trial_structure = pickle.load(f)
 
     stimuli = [x for x in trial_structure if type(x) is LoadSequenceRequest]
-
-    # TODO TODO make work nice w/ > 2 test case
-    pretest_left_odor, posttest_left_odor = \
-        prepost_odors(odors2left_pins, left_pins, stimuli)
-    pretest_right_odor, posttest_right_odor = \
-        prepost_odors(odors2right_pins, right_pins, stimuli)
 
     # TODO check that all blocks would yield the same answer?
 
@@ -394,24 +387,15 @@ def load_metadata(d):
     times = dict()
     # TODO TODO accomodate trial structures not starting / ending with a time
     times['start'] = trial_structure[0].to_sec()
-    if 'prestimulus_delay_s' in metadata:
-        times['start'] -= metadata['prestimulus_delay_s']
+    if 'prestimulus_delay_s' in metadata['rosparams']['olf']:
+        times['start'] -= metadata['rosparams']['olf']['prestimulus_delay_s']
 
     times['end'] = trial_structure[-1].to_sec()
     # TODO make sure these don't screw up how innate bias handles anything
     # (want sequential plots, not just pre and post)
-    times['pretest_start'] = stimuli[0].seq.start.to_sec()
-    times['posttest_start'] = stimuli[-1].seq.start.to_sec()
     # TODO TODO remove references to this, for uneven test lengths? (or should i
     # discourage uneven test lengths?)
-    times['test_duration'] = \
-        stimuli[0].seq.end.to_sec() - stimuli[0].seq.start.to_sec()
-
     metadata['times'] = times
-    metadata['pretest_left_odor'] = pretest_left_odor
-    metadata['posttest_left_odor'] = posttest_left_odor
-    metadata['pretest_right_odor'] = pretest_right_odor
-    metadata['posttest_right_odor'] = posttest_right_odor
     metadata['stimuli'] = list(stimuli)
 
     # TODO switch to new style
@@ -489,7 +473,7 @@ def plot_trace(times, positions, meta, metrics=None,
     # "pre"-test here just means the test before training, rather than
     # the start of some period that comes before a test.
     # TODO TODO TODO work in cases where pretest_start is not defined
-    plot_t0 = meta['times']['pretest_start'] - plot_t0_to_test0_start_s
+    plot_t0 = meta['stimuli'][0].seq.start.to_sec()- plot_t0_to_stim0_start_s
     # TODO I don't really think it's worth factoring the above line out, but
     # it's probably worth reorganizing the code to not have to recompute it.
 
@@ -541,6 +525,9 @@ def plot_trace(times, positions, meta, metrics=None,
 
             # displayed on down side in plot, and down should also be left in
             # the video , with closer arenas further to the right
+            # TODO TODO TODO check this isn't failing in some of the cases where
+            # the balance might have been listed separately as an odor
+            # (though i guess it woudl be in the legend if that was the case?)
             elif p in meta['left_pins2odors']:
                 if verbose:
                     print('left odor', meta['left_pins2odors'][p])
@@ -618,6 +605,13 @@ def plot_trace(times, positions, meta, metrics=None,
         # TODO TODO bbox_inches="tight", or equivalent, should do above
         fontsize = 7
         valign = 'top'
+
+        # TODO TODO just display everthing in metrics dict/df passed in?
+        # TODO TODO fix pre/post to only be displayed this way when there was
+        # training in between tests. if there are two adjacent tests (but
+        # flipped) i think it would make more sense to take the average to
+        # mitigate asymmetries
+        '''
         if want_time_spent:
             text = ''
             # TODO TODO also label which col is time spent / decision bias, etc
@@ -635,6 +629,7 @@ def plot_trace(times, positions, meta, metrics=None,
             x_pos = x_0 if not want_time_spent else (x_0 + dx)
             ax.text(x_pos, y_pos, text, transform=ax.transAxes, \
                 fontsize=fontsize, verticalalignment=valign)
+        '''
 
         # no sure i want a box?
         # TODO what does verticalalignment do?
@@ -767,7 +762,9 @@ def load_or_generate_reject_reasons(experiment_group_dir, fly2data, fly2meta,
         cid = fig.canvas.mpl_connect('key_press_event', press)
 
         if 'times' in meta:
-            plot_t0 = meta['times']['pretest_start'] - plot_t0_to_test0_start_s
+            plot_t0 = \
+                meta['stimuli'][0].seq.start.to_sec() - plot_t0_to_stim0_start_s
+
             # TODO TODO move this stuff inside plot_trace? was there some reason
             # I couldn't easily do that?
             # relative to time origin defined earlier
@@ -834,10 +831,8 @@ def load_or_generate_reject_reasons(experiment_group_dir, fly2data, fly2meta,
     return rejects
 
 
-# TODO TODO also plot ranges these functions use, for sanity checking (that it
+# TODO also plot ranges these functions use, for sanity checking (that it
 # is getting the data from the right part of the experiment)
-# TODO TODO related: could I please make this not depend on cropped / shifted
-# times but just absolute times and absolute boundaries of test regions?
 def time_spent(times, y_positions):
     """
     Args:
@@ -991,11 +986,16 @@ def accuracy(times, y_positions_mm,
     return accuracy_toward_left
 
 
+# TODO provide ax argument (like all plotting fns) + return fig / ax?
+# consistent (partial?) return sig for plotting fns (that might need to return
+# extra stuff)?
 # TODO TODO work with an arbitrary number of blocks
 # (and only label pre/post is there are 2 blocks? require shock in between?)
 def plot_metric_change(metric_pre, metric_post, path, title='', ylabel='',
     fly2meta=None, fly_nums_in_order=None, exps=None, rois=None,
     filename=None, allow_negative=False):
+    # TODO TODO explain what the fuck the exps / rois things are for and why i'm
+    # only somewtimes using them, or delete
     # TODO
     """
     """
@@ -1031,12 +1031,15 @@ def plot_metric_change(metric_pre, metric_post, path, title='', ylabel='',
     else:
         ax.set_ylim([-.1, 1.1])
 
+    # TODO TODO TODO is fly 'n' the same as ROI??
+    # fly2meta and fly_nums_in_order
     if use_group1:
         for fly, pre, post in zip(fly_nums_in_order, metric_pre, metric_post):
             label = split(fly2meta[fly]['dir'])[-1] + ', ROI ' + \
                 str(fly2meta[fly]['n'])
             ax.plot(x, [pre, post], marker='.', label=label, color='black')
 
+    # exps and rois
     elif use_group2:
         for exp, roi, pre, post in zip(exps, rois, metric_pre, metric_post):
             label = split(exp)[-1] + ', ROI ' + str(roi)
@@ -1084,8 +1087,8 @@ def plot_metric_change(metric_pre, metric_post, path, title='', ylabel='',
 
 
 # TODO TODO decide how to deal with path. hack.
-def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
-        odor2color=None):
+def analyze_group(fly2data, fly2meta, path, title='', metrics_to_compute=[],
+        experiment2label=None, odor2color=None):
     """
     Args:
         fly2data (dict): Integer fly ID to main data for individual fly
@@ -1099,13 +1102,13 @@ def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
     # TODO use a local copy if doesn't really need to be global, and maybe
     # refactor if it does need to be global, s.t. condition can be computed
     # earlier?
-    global want_time_spent
-    global want_decision_bias
+    # TODO generalize this to a function (on what domain?)?
     global sort_traces_by
 
     if len(fly2data) == 0:
         raise ValueError('empty group')
 
+    # TODO get rid of these
     time_fractions_pre = []
     time_fractions_post = []
     decision_biases_pre = []
@@ -1164,138 +1167,116 @@ def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
             print('experiment', split(meta['dir'])[-1],
                 '({})'.format(experiment2label[meta['dir']]), 'fly', meta['n'])
 
-        # TODO do this differently, so that group analysis will fail if mix of
-        # some with and without stimuli
-        if not 'times' in meta:
-            want_time_spent = False
-            want_decision_bias = False
-            sort_traces_by = None
-            # maybe use nonzero times / intersection of times and tracking being
-            # nonzero / nan?
-            times_for_plot = epoch_times_s
-            y_for_plot = data['position_y']
-            # TODO warn and say why can't get metrics
-            # (if they were True maybe?)
+        plot_t0 = \
+            meta['stimuli'][0].seq.start.to_sec() - plot_t0_to_stim0_start_s
+
+        #print 'START TIME =', plot_t0
+        #print '# of zero entries', epoch_times_s.size - nonzero_times.size
+
+        # TODO print how much this fly has walked (in each test period?)
+
+        if 'shocked_odor' in meta:
+            had_some_reinforced = True
+            odor_of_interest = meta['shocked_odor']
 
         else:
-            plot_t0 = meta['times']['pretest_start'] - plot_t0_to_test0_start_s
+            # TODO test this case
+            # TODO this (and probably other logic w/ reinforced) seem to
+            # expect only two odors?  per experiment? or across?
+            if odor_A is None:
+                odor_A = random.sample(meta['odors'], 1)[0]
+            had_some_innate = True
+            odor_of_interest = odor_A
 
-            #print 'START TIME =', plot_t0
-            #print '# of zero entries', epoch_times_s.size - nonzero_times.size
+        if had_some_reinforced and had_some_innate:
+            raise ValueError('mix of innate tests and conditioning in ' +
+                'this group, or reinforced odor could not be determined ' +
+                'from metadata.')
 
-            # TODO print how much this fly has walked (in each test period?)
+        if len(metrics_to_compute) > 0:
+            # TODO comment about how orient will work
+            test_times, test_y_positions = \
+                extract_test_period_data(data, meta,
+                                         orient_positive=odor_of_interest)
+            metrics = dict()
+            if len(test_times) != 2:
+                raise NotImplementedError
 
-            if 'shocked_odor' in meta:
-                had_some_reinforced = True
-                odor_of_interest = meta['shocked_odor']
+        for i, (times, y_positions) in enumerate(
+            zip(test_times, test_y_positions)):
 
-            else:
-                # TODO test this case
-                # TODO this (and probably other logic w/ reinforced) seem to
-                # expect only two odors?  per experiment? or across?
-                if odor_A is None:
-                    odor_A = random.sample(meta['odors'], 1)[0]
-                had_some_innate = True
-                odor_of_interest = odor_A
+            for metric in metrics_to_compute:
+                # TODO maybe enforce pattern on function names somewhere
+                # (so this doesn't get muck up a database down the line /
+                # parsing for plotting?)
+                # TODO TODO TODO use df w/ test_number column, rather than dict
+                # w/ postfixing
+                metrics[metric.__name__ + str(i)] = metric(times, y_positions)
 
-            if had_some_reinforced and had_some_innate:
-                raise ValueError('mix of innate tests and conditioning in ' +
-                    'this group, or reinforced odor could not be determined ' +
-                    'from metadata.')
+        # TODO TODO move these checks to extract test data fn?
+        """
+        assert not np.any(np.logical_and(pretest_indices, 
+            posttest_indices)), 'pre and post test indices overlapped'
 
-            if want_any_metrics:
-                # TODO comment about how orient will work
-                test_times, test_y_positions = \
-                    extract_test_period_data(data, meta,
-                                             orient_positive=odor_of_interest)
-                metrics = dict()
-                if len(test_times) != 2:
-                    raise NotImplementedError
+        n_pretest_indices = np.sum(pretest_indices)
+        n_posttest_indices = np.sum(posttest_indices)
+        curr_rel_err = abs(n_pretest_indices - n_posttest_indices) / \
+            n_posttest_indices
+        '''
+        rel_indices_tol = 0.35
+        assert curr_rel_err <= rel_indices_tol, '# pretest_indices=' + \
+            str(n_pretest_indices) + ', # posttest_indices=' + \
+            str(n_posttest_indices) + \ ', relative error=' + \
+            str(curr_rel_err)
+        '''
+        if curr_rel_err != 0:
+            if verbose:
+                warnings.warn('relative difference in ' + 
+                    'timepoints in pre and post test = {}'.format(
+                    curr_rel_err))
+        """
 
-            for i, (times, y_positions) in enumerate(
-                zip(test_times, test_y_positions)):
+        # TODO put these into a df and get these out of a dataframe at end for
+        # plotting?
+        time_fractions_pre.append(time_fraction_pre)
+        time_fractions_post.append(time_fraction_post)
+        decision_biases_pre.append(decision_bias_pre)
+        decision_biases_post.append(decision_bias_post)
 
-                if want_time_spent:
-                    # TODO TODO some introspection based solution for deriving
-                    # their dict entries from fn names (decorator?)? maybe
-                    # including passing dict and having metric fns insert with
-                    # name of their choice (avoiding conflict)
-                    metrics['time_spent{}'.format(i)] = \
-                        time_spent(times, y_positions)
+        # TODO convert odor + conc to good string representation
+        if had_some_reinforced:
+            curr_df = pd.DataFrame({
+                    'experiment': meta['dir'],
+                    'roi': meta['n'],
+                    # TODO TODO these should include conc too (separate
+                    # field?)
+                    'shocked_odor': meta['shocked_odor'][0],
+                    'nonshocked_odor': meta['nonshocked_odor'][0],
+                    'decision_bias_pre': decision_bias_pre,
+                    'decision_bias_post': decision_bias_post,
+                    'time_fraction_pre': time_fraction_pre,
+                    'time_fraction_post': time_fraction_post
+                }, index=[curr_idx])
 
-                if want_decision_bias:
-                    metrics['decision_bias{}'.format(i)] = \
-                        decision_bias(times, y_positions) 
+        else:
+            curr_df = pd.DataFrame({
+                    'experiment': meta['dir'],
+                    'roi': meta['n'],
+                    'odor_A': odor_of_interest[0],
+                    # TODO TODO should still do odor B, right?
+                    'decision_bias_pre': decision_bias_pre,
+                    'decision_bias_post': decision_bias_post,
+                    'time_fraction_pre': time_fraction_pre,
+                    'time_fraction_post': time_fraction_post
+                }, index=[curr_idx])
 
-            # TODO TODO fix. hack to temporarily not have to change all later
-            # pre/post code / other code that deals with metrics after this
-            time_fraction_pre = metrics['time_spent0']
-            time_fraction_post = metrics['time_spent1']
-            decision_bias_pre = metrics['decision_bias0']
-            decision_bias_post = metrics['decision_bias1']
-            #####
-     
-            # TODO TODO move these checks to extract test data fn
-            """
-            assert not np.any(np.logical_and(pretest_indices, 
-                posttest_indices)), 'pre and post test indices overlapped'
+        dfs.append(curr_df)
 
-            n_pretest_indices = np.sum(pretest_indices)
-            n_posttest_indices = np.sum(posttest_indices)
-            curr_rel_err = abs(n_pretest_indices - n_posttest_indices) / \
-                n_posttest_indices
-            '''
-            rel_indices_tol = 0.35
-            assert curr_rel_err <= rel_indices_tol, '# pretest_indices=' + \
-                str(n_pretest_indices) + ', # posttest_indices=' + \
-                str(n_posttest_indices) + \ ', relative error=' + \
-                str(curr_rel_err)
-            '''
-            if curr_rel_err != 0:
-                if verbose:
-                    warnings.warn('relative difference in ' + 
-                        'timepoints in pre and post test = {}'.format(
-                        curr_rel_err))
-            """
-
-            time_fractions_pre.append(time_fraction_pre)
-            time_fractions_post.append(time_fraction_post)
-            decision_biases_pre.append(decision_bias_pre)
-            decision_biases_post.append(decision_bias_post)
-
-            # TODO convert odor + conc to good string representation
-            if 'shocked_odor' in meta:
-                curr_df = pd.DataFrame({
-                        'experiment': meta['dir'],
-                        'roi': meta['n'],
-                        # TODO TODO these should include conc too (separate
-                        # field?)
-                        'shocked_odor': meta['shocked_odor'][0],
-                        'nonshocked_odor': meta['nonshocked_odor'][0],
-                        'decision_bias_pre': decision_bias_pre,
-                        'decision_bias_post': decision_bias_post,
-                        'time_fraction_pre': time_fraction_pre,
-                        'time_fraction_post': time_fraction_post
-                    }, index=[curr_idx])
-
-            else:
-                curr_df = pd.DataFrame({
-                        'experiment': meta['dir'],
-                        'roi': meta['n'],
-                        'odor_A': odor_of_interest[0],
-                        # TODO TODO should still do odor B, right?
-                        'decision_bias_pre': decision_bias_pre,
-                        'decision_bias_post': decision_bias_post,
-                        'time_fraction_pre': time_fraction_pre,
-                        'time_fraction_post': time_fraction_post
-                    }, index=[curr_idx])
-
-            dfs.append(curr_df)
-
-            # relative to start of experiment
-            rel_times = epoch_times_s - plot_t0
-            times_for_plot = rel_times
-            y_for_plot = data['position_y']
+        # TODO refactor to data loading?
+        # relative to start of experiment
+        rel_times = epoch_times_s - plot_t0
+        times_for_plot = rel_times
+        y_for_plot = data['position_y']
 
         # end if statement checking for 'times' in meta
 
@@ -1305,16 +1286,6 @@ def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
             # TODO maybe try antialiased=True/False? default?
             # rasterized default?
             ax = axes[curr_idx]
-            
-            # TODO TODO delete this block after fixing hack above
-            if want_time_spent:
-                metrics['time_fraction_pre'] = time_fraction_pre
-                metrics['time_fraction_post'] = time_fraction_post
-
-            if want_decision_bias:
-                metrics['decision_bias_pre'] = decision_bias_pre
-                metrics['decision_bias_post'] = decision_bias_post
-
             handles = None
             labels = None
 
@@ -1357,6 +1328,7 @@ def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
     else:
         df = None
 
+    # TODO TODO improve. make more extensible.
     # sort by change in metric and plot subplots in that order
     if sort_traces_by == 'decision_bias':
         sort_on = df['decision_bias_pre'] - df['decision_bias_post']
@@ -1444,18 +1416,17 @@ def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
     if plot_from_start_of_experiment:
         plotting_x_min = meta['times']['start']
 
-    elif plot_from_start_of_test:
+    elif plot_from_first_stim:
         # TODO TODO adapt to case where first sequence thing isn't a test
         # maybe rename?
-        plotting_x_min = meta['times']['pretest_start']
+        plotting_x_min = meta['stimuli'][0].seq.start.to_sec()
 
     # TODO get from sequence if not loading various times into metadata dict
     if plot_to_end_of_experiment:
         plotting_x_max = meta['times']['end']
 
-    elif plot_to_end_of_test:
-        plotting_x_max = \
-            meta['times']['pretest_start'] + meta['times']['test_duration']
+    elif plot_to_end_of_stim:
+        plotting_x_max = meta['stimuli'][-1].seq.end.to_sec()
 
     plotting_x_min = plotting_x_min - plot_t0
     plotting_x_max = plotting_x_max - plot_t0
@@ -1537,43 +1508,31 @@ def analyze_group(fly2data, fly2meta, path, title='', experiment2label=None,
     if (not show_plots) or only_show_interactive:
         plt.close('all')
 
-    # TODO maybe have this function return the results of the loop above, 
-    # optionally making plots of traces?
-    # how best to break it up?
-
     if make_plots:
-        if want_time_spent:
-            # TODO maybe deal with plot format inside function?
+        for metric in metrics_to_compute:
             if title == '':
-                filename = 'time_spent.' + plot_format
+                filename = metric.__name__ + '.' + plot_format
             else:
-                filename = (title.replace(' ', '_') + '_time_spent.'
-                    + plot_format)
+                filename = (title.replace(' ', '_') + '_' + metric.__name__ +
+                    '.' + plot_format)
 
-            # TODO just have this take same metrics dict? better abstraction?
-            plot_metric_change(time_fractions_pre, time_fractions_post, path,
-                title='Conditioned change in time spent',
-                ylabel='Proportion of test spent in shocked odor',
-                fly2meta=fly2meta, fly_nums_in_order=fly_nums_in_order,
-                filename=filename)
-
-        if want_decision_bias:
-            # TODO factor?
-            if title == '':
-                filename = 'decision_bias.' + plot_format
-            else:
-                filename = (title.replace(' ', '_') + '_decision_bias.'
-                    + plot_format)
+            # maybe don't mutate this?
+            if had_some_reinforced:
+                metric.ylabel = metric.ylabel.replace('odor A', 'shocked odor')
 
             # TODO does it currently try to plot anything with only one point
             # for the good trials?  should filter those as well if so
-            plot_metric_change(decision_biases_pre, decision_biases_post, path,
-                title='Conditioned change in decision bias',
-                ylabel='Decision bias', fly2meta=fly2meta,
-                fly_nums_in_order=fly_nums_in_order, filename=filename,
-                allow_negative=True)
-        # TODO also plot their differences for various groups as swarm plots?
-        # print?
+            plot_metric_change(time_fractions_pre, time_fractions_post, path,
+                title=('Conditioned change in ' + 
+                       metric.__name__.replace('_', ' ')),
+                # TODO consider adapting to use other args (see other
+                # plot_metric_change call)
+                fly2meta=fly2meta,
+                fly_nums_in_order=fly_nums_in_order,
+                filename=filename,
+                # TODO class?
+                ylabel=metric.ylabel,
+                allow_negative=metric.allow_negative)
     return df
 
 
@@ -1703,111 +1662,12 @@ def report_metric_change_stats(df, key_prefix, desc=None):
     return report
 
 
+# TODO 
 '''
 def passed_decision_cutoff(data, metadata,
     choice_zone_mm=choice_zone_mm):
     """
     """
-    #(times, y_positions, meta, prefix,
-    #mean_y_extent_pixels, odor_of_interest, choice_zone_mm=choice_zone_mm):
-    # TODO 
-    """
-    should be signed, unlike that in Parnas, with positive indicating a bias
-    against shocked odor.
-    """
-    assert prefix == 'pre' or prefix == 'post'
-
-    test_indices = np.logical_and(times > meta['times'][prefix +
-        'test_start'], times < (meta['times'][prefix + 'test_start'] +
-        meta['times']['test_duration']))
-    assert test_indices.dtype == np.bool, \
-        'later operations assume indices represented as boolean mask'
-
-    y_vals = [p[1] for p in meta['roi_points']]
-    y_mid = np.mean(y_vals)
-
-    # TODO use ratio of this height in pixels to mean height in pixels to
-    # get more accurate est of real boundaries of decision zone?
-    # probably assumes camera is properly calibrated?
-    arena_length_mm = 51
-    # assumes properly calibrated camera (or negligible geometric distortion)
-    choice_zone_pixels = ((choice_zone_mm / arena_length_mm) *
-        mean_y_extent_pixels)
-    # TODO check left / right here is correct. maybe orientation settable via
-    # parameter?
-    left_border = y_mid - (choice_zone_pixels / 2)
-    right_border = y_mid + (choice_zone_pixels / 2)
-
-    y_positions_in_test = y_positions[test_indices]
-    # just need to count all exits from choice zone, separately for each side
-    in_choice_zone = np.logical_and(y_positions_in_test >= left_border,
-        y_positions_in_test <= right_border).astype(np.int8)
-
-    # diff is -1 at the end of a run of Trues (1s)
-    # TODO debounce at all? filter trajectories better first?
-    exits = np.argwhere(np.diff(in_choice_zone) == -1)
-    towards_left = 0
-    towards_right = 0
-    for e in exits:
-        if abs(y_positions_in_test[e] - left_border) < \
-            abs(y_positions_in_test[e] - right_border):
-
-            towards_left += 1
-        else:
-            towards_right += 1
-
-    total_decisions = towards_left + towards_right
-    if verbose:
-        print('decisions toward left', towards_left)
-        print('decisions toward right', towards_right)
-
-    if total_decisions == 0:
-        # TODO does this propagate appropriately
-        bias_against_left = np.nan
-
-    else:
-        # TODO TODO is this right?
-        # TODO TODO test
-        bias_against_left = (towards_left - towards_right) / total_decisions
-
-    # TODO handle appropriately downstream
-    nonshocked_odor = None
-
-    # TODO TODO test this (and time_spent) handle odor vs. itself correctly
-    # (where I removed the asserts)
-
-    # convention is negative = aversion to shocked odor, positive = attraction
-    # to shocked odor so that changes are in same direction as fraction of time
-    # spent in reinforced
-    if odor_of_interest == meta[prefix + 'test_left_odor']:
-        bias_against = (-1) * bias_against_left
-        if verbose:
-            print((prefix + 'test_left_odor was the odor of interest ' + \
-                '(was reinforced if there was conditioning)'))
-
-        # TODO maybe calculate this elsewhere? (so as not to repeat in this and
-        # time_spent...)
-        if 'shocked_odor' in meta:
-            nonshocked_odor = meta[prefix + 'test_right_odor']
-
-    elif odor_of_interest == meta[prefix + 'test_right_odor']:
-        bias_against = bias_against_left
-        if verbose:
-            print((prefix + 'test_left_odor was NOT the odor of interest ' + \
-                '(not reinforced if there was conditioning)'))
-
-        if 'shocked_odor' in meta:
-            nonshocked_odor = meta[prefix + 'test_left_odor']
-
-    else:
-        assert False, 'neither of ' + prefix + \
-            'test_<left/right>_odor(s) were equal to odor of interest'
-
-    if verbose:
-        print('decision bias {}:'.format(prefix), bias_against)
-
-    return bias_against, test_indices, nonshocked_odor
-    return False
 '''
 
 
@@ -1904,6 +1764,7 @@ def convert_pixels_to_mm(fly2data, fly2meta, center=True):
                 for x, y in meta_dict['roi_points']]
 
 
+# TODO test w/ dasgupta, cc, and parnas / kristina test cases
 def extract_test_period_data(data, meta, orient_positive=None):
     """
     Args:
@@ -1931,12 +1792,33 @@ def extract_test_period_data(data, meta, orient_positive=None):
     epoch_times_s = (data['time_epoch_secs'] + data['time_epoch_nsecs'] /
         1e9).as_matrix()
 
-    # TODO at least raise notimplemented if test_duration =/= train_duration
-    # (need access to both of those though)
+    # TODO TODO TODO at least raise notimplemented if test_duration =/=
+    # train_duration (need access to both of those though)
+    olf = meta['rosparams']['olf']
+    if 'train_duration_s' in olf:
+        if ('test_duration_s' in olf and (olf['train_duration_s'] ==
+            olf['test_duration_s'])):
 
-    #for i, s in enumerate(meta['stimuli']):
-    # TODO TODO TODO fix this hack. only supports pre/post test case
+            # TODO test this displays OK
+            # TODO TODO do similar error checking in experiment, to avoid people
+            # getting into this branch w/o easy recourse (provide different ways
+            # to fail / pick a less horrible one?)
+            # e.g. could use periods where there are two diff odors, if only
+            # ever training with one odor and only ever testing with diff odors
+            # (could err in case where extra olf/odors item flag
+            # 'against_itself' is set? or use other cues to get test periods
+            # then?)
+            raise NotImplementedError("""Currently no way to reliably 
+                distinguish training and test periods if they are the same 
+                length. Make length slightly different or complain to devs.""")
+
     for i, s in enumerate((meta['stimuli'][0], meta['stimuli'][-1])):
+        block_duration_s = s.seq.end.to_sec() - s.seq.start.to_sec()
+        if block_duration_s == olf['train_duration_s']:
+            continue
+        assert block_duration_s == olf['test_duration_s'], \
+            'Expected test duration if not train duration.'
+
 
         # TODO how to filter out test periods? just any with no shock?
         # no shock and == test_duration?
@@ -1957,17 +1839,17 @@ def extract_test_period_data(data, meta, orient_positive=None):
         # TODO need to as_matrix this too?
         y_positions = data['position_y'][test_indices]
 
+        # TODO test / break out code for getting odor into helper?
         # TODO need to determine which side reinforced odor / odor A was on
         # (maybe this fn should define odor A? otherwise accept arg?)
         if not (orient_positive is None):
-            # TODO TODO fix hack (concurrent w/ above)
-            if i == 0:
-                prefix = 'pre'
-            elif i == 1:
-                prefix = 'post'
-
-            if orient_positive == meta[prefix + 'test_left_odor']:
-                # TODO check this is the correct one
+            odors = [p for p in s.seq.pins if p in meta['left_pins2odors']]
+            assert len(odors) == 1
+            # seems to assume left is negative
+            # TODO check that that is true / my assumption is wrong
+            odor_on_left = odors[0]
+            if orient_positive == odor_on_left:
+                # TODO TODO check this is correct
                 y_positions = (-1) * y_positions
 
         test_y_positions.append(y_positions)
@@ -1975,21 +1857,23 @@ def extract_test_period_data(data, meta, orient_positive=None):
     return test_times, test_y_positions
 
 
-def orient_one_odor_positive(fly2data):
-    # TODO possible to operate on one unit and map it cleanly? (or need too much
-    # global info?)
-    """
-    """
-    raise NotImplementedError
-
-
 def main():
     """Determines which directories to run analysis on, and analyzes them.
     """
-    global want_time_spent
-    global want_accuracy
-    global want_decision_bias
-    global want_performance_index
+    # TODO maybe just turn these into classes?
+    metrics_to_compute = [time_spent, decision_bias, accuracy]
+    # TODO way to define property of fn once, rather than each call?
+    # (e.g. __ylabel__)
+    ylabels = [
+        'Time spent in odor A',
+        'Decision bias for odor A',
+        'Accuracy for odor A'
+    ]
+    allow_negative = [False, True, False]
+
+    for metric, ylabel, neg in zip(metrics_to_compute, ylabels, allow_negative):
+        metric.ylabel = ylabel
+        metric.allow_negative = neg
 
     # TODO check current dir -> check for env var -> check that dir
     # what all indications of having data from this kind of experiment?
@@ -2206,6 +2090,7 @@ def main():
     # TODO order traces consistently across runs (by roi #).
     if len(good_fly2data) > 0:
         df = analyze_group(good_fly2data, fly2meta, path,
+                           metrics_to_compute=metrics_to_compute,
                            experiment2label=experiment2label,
                            odor2color=odor2color)
 
@@ -2235,26 +2120,35 @@ def main():
                     'conditioning) in df')
 
             # TODO handle odor better in filename
-            # TODO TODO TODO make these work for a sequence of values, not just
-            # 2 sep. args
-            if want_time_spent:
-                plot_metric_change(curr_df['time_fraction_pre'],
-                    curr_df['time_fraction_post'], path,
-                    title='Conditioned change in time spent, ' + o[0] +
-                    ' {}'.format(label),
-                    ylabel='Proportion of test spent in {}'.format(label),
-                    exps=curr_df['experiment'], \
-                    rois=curr_df['roi'], filename=o[0] + '_time_spent.' + 
-                    plot_format)
+            # TODO TODO make these work for a sequence of values, not just
+            # 2 sep. args?
+            for metric in metrics_to_compute:
+                # TODO TODO only do this on correct test periods (+ if
+                # intervening training?)
+                # TODO does it currently try to plot anything with only one
+                # point for the good trials?  should filter those as well if so
+                plot_metric_change(
+                    # TODO can i use the df in a similar way in the calls in
+                    # analyze_group?
+                    # TODO more idiomatic way to do this indexing?
+                    curr_df[metric.__name__][curr_df['test_number'] == 0],
+                    curr_df[metric.__name__][curr_df['test_number'] == 1],
+                    # TODO get rid of this arg
+                    path,
+                    title=('Conditioned change in ' + 
+                           metric.__name__.replace('_', ' ')),
+                    # TODO consider adapting other call to this fn to use these
+                    # args, and then shorten this fn
+                    exps=curr_df['experiment'],
+                    rois=curr_df['roi'],
 
-            if want_decision_bias:
-                plot_metric_change(curr_df['decision_bias_pre'],
-                    curr_df['decision_bias_post'], path,
-                    title='Conditioned change in decision bias, ' + o[0] +
-                    ' {}'.format(label), ylabel='Decision bias',
-                    exps=curr_df['experiment'], rois=curr_df['roi'],
-                    filename=o[0] + '_decision_bias.' + plot_format,
-                    allow_negative=True)
+                    filename='{}_{}.{}'.format(o[0], metric.__name__,
+                        plot_format),
+                    # depends on this having been mutated in analyze_group...
+                    # (odor A -> shocked odor, if one was shocked)
+                    ylabel=metric.ylabel,
+                    allow_negative=metric.allow_negative
+                )
 
         reason2formatstr = {
             'never_active': '{0} fl{0(y,ies)} were never active',
@@ -2296,9 +2190,11 @@ def main():
         if len(bad_fly2data) > 0:
             analyze_group(bad_fly2data, fly2meta, path,
                           title=reason.replace('_', ' '),
+                          metrics_to_compute=metrics_to_compute,
                           experiment2label=experiment2label,
                           odor2color=odor2color)
 
+    # TODO factor report generation stuff into a function?
     # TODO format this for evernote & upload
     # TODO or format for a website, as Kristen Branson's Janelia data
     total_flies = len(fly2data) - rois_without_flies
@@ -2315,43 +2211,31 @@ def main():
         report += '\n'
 
     if df is None:
-        want_time_spent = False
-        want_decision_bias = False
+        metrics_to_compute = []
 
-    if want_time_spent:
-        key_prefix = 'time_fraction'
+    for metric in metrics_to_compute:
         # TODO don't recalculate change? i forgot i needed it for hist when i
-        # wrote report function...
-        change = df[key_prefix + '_pre'] - df[key_prefix + '_post']
+        # wrote report function... (?)
+        # TODO more idiomatic way to do the indexing?
+        change = (df[metric.__name__][df['test_number'] == 0] - 
+                  df[metric.__name__][df['test_number'] == 1])
 
-        # TODO rename from time_fraction to have a better default desc?
-        report += report_metric_change_stats(df, 'time_fraction',
-                                             desc='time spent in shocked odor')
+        # TODO rename ylabel to illustrate more general use? back to desc?
+        report += report_metric_change_stats(df, metric.__name__,
+                                             desc=metric.ylabel)
 
         fig = plt.figure()
         plt.hist(change[np.logical_not(np.isnan(change))], color='black',
             bins=30)
 
-        plt.title('Changes in time spent in CS')
-        fig.savefig(join(path, 'time_spent_change_histogram.' + plot_format),
-            bbox_inches='tight')
+        plt.title('Changes in ' + metric.ylabel[0].lower() + metric.ylabel[1:])
+        fig.savefig(join(path, metric.__name__ + '_change_histogram.' +
+            plot_format), bbox_inches='tight')
 
-    if want_decision_bias:
-        key_prefix = 'decision_bias'
-        change = df[key_prefix + '_pre'] - df[key_prefix + '_post']
-        report += report_metric_change_stats(df, 'decision_bias')
-
+    if want_abs_decision_bias:
         report += 'Mean |decision bias| post: '
         report += format_stat(np.nanmean(np.abs(df['decision_bias_post'])))
         report += '\n\n'
-
-        fig = plt.figure()
-        plt.hist(change[np.logical_not(np.isnan(change))], color='black',
-            bins=30)
-
-        plt.title('Changes in decision bias')
-        fig.savefig(join(path, 'bias_change_histogram.' + plot_format),
-            bbox_inches='tight')
 
     report += 'Experiments represented by each label:\n'
     label2experiment = {v: k for k, v in list(experiment2label.items())}
