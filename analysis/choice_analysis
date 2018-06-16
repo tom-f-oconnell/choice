@@ -72,8 +72,9 @@ minimum_end_to_center_runs = None
 # in publications, etc
 
 only_show_interactive = False
-show_plots = False
-save_plots = True
+show_plots = True
+# TODO make sure this is honored if false
+save_plots = False
 plot_format = 'png'
 make_plots = show_plots or save_plots
 # TODO describe alternatives. None=chronological (offer reverse?) translate
@@ -176,7 +177,10 @@ digits_after_zero = 3
 
 if make_plots:
     import matplotlib
-    matplotlib.use('Agg')
+    # 'Agg' == 'agg' seemed to have been responsible for a bug around 093d53e
+    # where plt.show() would return without doing anything, after a call to
+    # plot_trace, for the purpose of getting an interactive plot to label.
+    matplotlib.use('TkAgg')
 
     import matplotlib.pyplot as plt
     import matplotlib.patches as patches
@@ -464,8 +468,9 @@ def plot_trace(times, positions, meta, metrics=None,
     legend_entries = []
     handles = []
 
-    # TODO explain why
-    if not 'times' in meta:
+    # TODO explain why. just so if there is (little/no) metadata, some basic
+    # plotting still works? not sure i'm being consistent
+    if not 'stimuli' in meta:
         # TODO is this the path taken by many during labelling? (when no patches
         # show up) why?
         return legend_entries, handles
@@ -705,6 +710,7 @@ def load_or_generate_reject_reasons(experiment_group_dir, fly2data, fly2meta,
     # them by pressing one of the appropriate numbers. Flies are analyzed within
     # each category, and the distribution across the categories is useful for
     # troubleshooting.
+    # TODO rename this flag? not sure i understand why it was named this way
     new_keys = False
     # TODO fix patching / plot ranges
     for fly, data in list(fly2data.items()):
@@ -761,7 +767,7 @@ def load_or_generate_reject_reasons(experiment_group_dir, fly2data, fly2meta,
         fig = plt.figure()
         cid = fig.canvas.mpl_connect('key_press_event', press)
 
-        if 'times' in meta:
+        if 'stimuli' in meta:
             plot_t0 = \
                 meta['stimuli'][0].seq.start.to_sec() - plot_t0_to_stim0_start_s
 
@@ -801,8 +807,11 @@ def load_or_generate_reject_reasons(experiment_group_dir, fly2data, fly2meta,
                 print(e)
                 pass
 
+        # TODO TODO TODO what is causing this to be reached? this state should
+        # be handled.
         if not hasattr(press, 'group'):
-            sys.exit()
+            raise RuntimeError(
+                'Plot key press callback did not have patched group attribute.')
 
         if not press.group in rejects:
             rejects[press.group] = OrderedDict()
@@ -986,36 +995,28 @@ def accuracy(times, y_positions_mm,
     return accuracy_toward_left
 
 
+# TODO TODO try to be consistent wrt what king of information plotting fns
+# require. maybe change this back to old signature, w/o whole df passed in.
+# maybe make other fns take whole df. both?
+
 # TODO provide ax argument (like all plotting fns) + return fig / ax?
 # consistent (partial?) return sig for plotting fns (that might need to return
 # extra stuff)?
 # TODO TODO work with an arbitrary number of blocks
 # (and only label pre/post is there are 2 blocks? require shock in between?)
-def plot_metric_change(metric_pre, metric_post, path, title='', ylabel='',
-    fly2meta=None, fly_nums_in_order=None, exps=None, rois=None,
-    filename=None, allow_negative=False):
-    # TODO TODO explain what the fuck the exps / rois things are for and why i'm
-    # only somewtimes using them, or delete
+def plot_metric_change(df, metric_name, path, title='', ylabel='',
+        filename=None, allow_negative=False, pretest_index=0, posttest_index=1):
     # TODO
     """
     """
-    group1 = [fly2meta, fly_nums_in_order]
-    group2 = [exps, rois]
-    is_none = lambda x: x is None
-    def check_all_or_none(group):
-        # TODO 
-        """
-        """
-        elements_none = list(map(is_none, group))
-        if any(elements_none):
-            assert all(elements_none), 'either all parameters within group' + \
-                ' must be set, or none should be'
-            return False
-        return True
+    # maybe passing a df and extracting a bunch of stuff from there will make
+    # this function less re-usable? think about it.
+    # and do i want to pass the metric_name in? i guess i have to if i go the df
+    # route, unless i just operate on all metrics in here, but i'd need access
+    # to metrics_to_compute...
 
-    use_group1 = check_all_or_none(group1)
-    use_group2 = check_all_or_none(group2)
-    assert use_group1 ^ use_group2, 'parameter groups were not exclusive'
+    # TODO maybe move indexing df for pre and post test outside of this and the
+    # other reporting functions to avoid the duplication? or too trivial?
 
     # TODO option for adding these plots to subplots? pass in ax?
     fig = plt.figure(figsize=(4,4))
@@ -1031,18 +1032,28 @@ def plot_metric_change(metric_pre, metric_post, path, title='', ylabel='',
     else:
         ax.set_ylim([-.1, 1.1])
 
-    # TODO TODO TODO is fly 'n' the same as ROI??
-    # fly2meta and fly_nums_in_order
-    if use_group1:
-        for fly, pre, post in zip(fly_nums_in_order, metric_pre, metric_post):
-            label = split(fly2meta[fly]['dir'])[-1] + ', ROI ' + \
-                str(fly2meta[fly]['n'])
-            ax.plot(x, [pre, post], marker='.', label=label, color='black')
+    # TODO delete me
+    import pdb
+    pdb.set_trace()
+    #
 
-    # exps and rois
-    elif use_group2:
-        for exp, roi, pre, post in zip(exps, rois, metric_pre, metric_post):
-            label = split(exp)[-1] + ', ROI ' + str(roi)
+    # TODO simplify. just index df on fly id? add as another column? (to avoid
+    # having to find pairs of (exp, roi) that are unique)
+    for exp in df.experiment.unique():
+        # TODO how?
+        for roi in df['roi'][df.experiment == exp]:
+            label = '{}, ROI {}'.format(split(exp)[-1], roi)
+            # TODO TODO idiomatic indexing?
+            fly_indices = np.logical_and(df.roi == roi,
+                                         df.experiment == exp)
+            df[df.test_number == pretest_index].set_index('fly_id')[metric_name]
+            post = df[df.test_number == posttest_index
+                     ].set_index('fly_id')[metric_name]
+            #pre = df[metric_name][np.logical_and(fly_indices,
+            #    df.test_number == pretest_index)]
+            #post = df[metric_name][np.logical_and(fly_indices,
+            #    df.test_number == posttest_index)]
+
             ax.plot(x, [pre, post], marker='.', label=label, color='black')
 
     # TODO boxplot on top of this?
@@ -1050,6 +1061,7 @@ def plot_metric_change(metric_pre, metric_post, path, title='', ylabel='',
         assert not filename is None, \
             'must pass filename to plot_metric_change if save_plots is True'
         # TODO save at same level as all experiment directories?
+        # TODO TODO move path into filename and just don't save if not passed?
         fig.savefig(join(path, filename), bbox_inches='tight')
 
     if show_plots:
@@ -1085,6 +1097,8 @@ def plot_metric_change(metric_pre, metric_post, path, title='', ylabel='',
     else:
         plt.close('all')
 
+    # TODO return canonical set of return vals from plotting fn
+
 
 # TODO TODO decide how to deal with path. hack.
 def analyze_group(fly2data, fly2meta, path, title='', metrics_to_compute=[],
@@ -1108,12 +1122,6 @@ def analyze_group(fly2data, fly2meta, path, title='', metrics_to_compute=[],
     if len(fly2data) == 0:
         raise ValueError('empty group')
 
-    # TODO get rid of these
-    time_fractions_pre = []
-    time_fractions_post = []
-    decision_biases_pre = []
-    decision_biases_post = []
-
     # TODO line up images of ROIs, with drawn midline, to check for those errors
 
     # TODO TODO break stuff to make figure w/ array of traces into its own
@@ -1134,7 +1142,8 @@ def analyze_group(fly2data, fly2meta, path, title='', metrics_to_compute=[],
 
     dfs = []
     for_plotting = []
-    curr_idx = 0
+    curr_df_idx = 0
+    curr_plot_idx = 0
 
     had_some_reinforced = False
     had_some_innate = False
@@ -1199,19 +1208,29 @@ def analyze_group(fly2data, fly2meta, path, title='', metrics_to_compute=[],
                 extract_test_period_data(data, meta,
                                          orient_positive=odor_of_interest)
             metrics = dict()
-            if len(test_times) != 2:
-                raise NotImplementedError
+            # TODO delete me after fixing
+            #if len(test_times) != 2:
+            #    raise NotImplementedError
 
-        for i, (times, y_positions) in enumerate(
-            zip(test_times, test_y_positions)):
-
+            metrics['test_number'] = []
             for metric in metrics_to_compute:
                 # TODO maybe enforce pattern on function names somewhere
                 # (so this doesn't get muck up a database down the line /
                 # parsing for plotting?)
-                # TODO TODO TODO use df w/ test_number column, rather than dict
-                # w/ postfixing
-                metrics[metric.__name__ + str(i)] = metric(times, y_positions)
+                # TODO TODO also make name depend on any parameterization?
+                # or make a new column to indicate the parameterization?
+                # (i guess this is just for the decision boundary...)
+                metrics[metric.__name__] = []
+
+            for i, (times, y_positions) in enumerate(
+                zip(test_times, test_y_positions)):
+
+                metrics['test_number'].append(i)
+                for metric in metrics_to_compute:
+                    # TODO TODO TODO add fly id (am i only using one, consistent
+                    # one throughout now?) and other information, and merge into
+                    # one big df
+                    metrics[metric.__name__].append(metric(times, y_positions))
 
         # TODO TODO move these checks to extract test data fn?
         """
@@ -1238,38 +1257,46 @@ def analyze_group(fly2data, fly2meta, path, title='', metrics_to_compute=[],
 
         # TODO put these into a df and get these out of a dataframe at end for
         # plotting?
-        time_fractions_pre.append(time_fraction_pre)
-        time_fractions_post.append(time_fraction_post)
-        decision_biases_pre.append(decision_bias_pre)
-        decision_biases_post.append(decision_bias_post)
+
+        # TODO maybe construct directly as a dataframe?
+        fly_output_data = {
+            # TODO assert fly_id isn't already in df?
+            'fly_id': fly,
+            'experiment': meta['dir'],
+            # TODO TODO also include fly id?
+            'roi': meta['n']
+        }
+        fly_output_data.update(metrics)
+        # TODO delete me
+        print('FLY_OUTPUT_DATA')
+        print(fly_output_data)
+        #
 
         # TODO convert odor + conc to good string representation
         if had_some_reinforced:
-            curr_df = pd.DataFrame({
-                    'experiment': meta['dir'],
-                    'roi': meta['n'],
-                    # TODO TODO these should include conc too (separate
-                    # field?)
-                    'shocked_odor': meta['shocked_odor'][0],
-                    'nonshocked_odor': meta['nonshocked_odor'][0],
-                    'decision_bias_pre': decision_bias_pre,
-                    'decision_bias_post': decision_bias_post,
-                    'time_fraction_pre': time_fraction_pre,
-                    'time_fraction_post': time_fraction_post
-                }, index=[curr_idx])
+            odor_data = {
+                # TODO TODO these should include conc too (separate
+                # field?)
+                'shocked_odor': meta['shocked_odor'][0],
+                'nonshocked_odor': meta['nonshocked_odor'][0],
+            }
 
         else:
-            curr_df = pd.DataFrame({
-                    'experiment': meta['dir'],
-                    'roi': meta['n'],
-                    'odor_A': odor_of_interest[0],
-                    # TODO TODO should still do odor B, right?
-                    'decision_bias_pre': decision_bias_pre,
-                    'decision_bias_post': decision_bias_post,
-                    'time_fraction_pre': time_fraction_pre,
-                    'time_fraction_post': time_fraction_post
-                }, index=[curr_idx])
+            odor_data = {
+                'odor_a': odor_of_interest[0],
+                # TODO TODO should still do odor B, right?
+            }
+        fly_output_data.update(odor_data)
 
+        num_tests = len(test_times)
+        curr_df = pd.DataFrame(fly_output_data,
+            index=range(curr_df_idx, curr_df_idx + num_tests))
+        curr_df_idx += num_tests
+
+        # TODO delete me
+        print('CURR_DF')
+        print(curr_df.to_string())
+        #
         dfs.append(curr_df)
 
         # TODO refactor to data loading?
@@ -1278,14 +1305,14 @@ def analyze_group(fly2data, fly2meta, path, title='', metrics_to_compute=[],
         times_for_plot = rel_times
         y_for_plot = data['position_y']
 
-        # end if statement checking for 'times' in meta
-
         # TODO only print metrics if not make_plots and display_metrics? just
         # latter?
         if make_plots:
             # TODO maybe try antialiased=True/False? default?
             # rasterized default?
-            ax = axes[curr_idx]
+            # TODO TODO this doesn't need to match df idx for any reason does it
+            # ? (in handling elsewhere)
+            ax = axes[curr_plot_idx]
             handles = None
             labels = None
 
@@ -1313,6 +1340,7 @@ def analyze_group(fly2data, fly2meta, path, title='', metrics_to_compute=[],
                 args_to_plot = (times_for_plot, y_for_plot, meta)
                 # will need to fill in the ax later. this is to change order of
                 # subplots.
+                # TODO TODO still need this? use df? pass subset?
                 kwargs_to_plot = {'metrics': metrics}
                 # TODO will redefining these variables change the values already
                 # in the list?  probably not?
@@ -1320,7 +1348,7 @@ def analyze_group(fly2data, fly2meta, path, title='', metrics_to_compute=[],
 
             fly_nums_in_order.append(fly)
         # TODO just use enumerate instead?
-        curr_idx += 1
+        curr_plot_idx += 1
 
     if len(dfs) > 0:
         # TODO ignore_index?
@@ -1330,11 +1358,21 @@ def analyze_group(fly2data, fly2meta, path, title='', metrics_to_compute=[],
 
     # TODO TODO improve. make more extensible.
     # sort by change in metric and plot subplots in that order
+    # TODO at least rename to indicate it is sorting on a change, to
+    # differentiate from case where you'd want to sort based on absolute bias in
+    # a single test period case
+    '''
     if sort_traces_by == 'decision_bias':
-        sort_on = df['decision_bias_pre'] - df['decision_bias_post']
+        # TODO TODO TODO make sure this difference is valid (only subtracting
+        # data that came from the same fly) maybe sort. see note in
+        # report_metric_change
+        sort_on = (df['decision_bias'][df['test_number'] == 0] -
+                   df['decision_bias'][df['test_number'] == 1])
 
     elif sort_traces_by == 'time_spent':
-        sort_on = df['time_fraction_pre'] - df['time_fraction_post']
+        sort_on = (df['time_fraction'][df['test_number'] == 0] -
+                   df['time_fraction'][df['test_number'] == 1])
+    '''
 
     if not sort_traces_by is None:
         # despite having np > 1.4, argsort seemed to be misbehaving w/ nans
@@ -1516,23 +1554,24 @@ def analyze_group(fly2data, fly2meta, path, title='', metrics_to_compute=[],
                 filename = (title.replace(' ', '_') + '_' + metric.__name__ +
                     '.' + plot_format)
 
-            # maybe don't mutate this?
+            # TODO maybe don't mutate this? do elsewhere?
             if had_some_reinforced:
                 metric.ylabel = metric.ylabel.replace('odor A', 'shocked odor')
 
             # TODO does it currently try to plot anything with only one point
             # for the good trials?  should filter those as well if so
-            plot_metric_change(time_fractions_pre, time_fractions_post, path,
+            plot_metric_change(
+                df,
+                metric.__name__,
+                path,
                 title=('Conditioned change in ' + 
                        metric.__name__.replace('_', ' ')),
-                # TODO consider adapting to use other args (see other
-                # plot_metric_change call)
-                fly2meta=fly2meta,
-                fly_nums_in_order=fly_nums_in_order,
                 filename=filename,
                 # TODO class?
                 ylabel=metric.ylabel,
-                allow_negative=metric.allow_negative)
+                allow_negative=metric.allow_negative
+            )
+
     return df
 
 
@@ -1611,32 +1650,53 @@ def nansem(data):
 
 
 # maybe redo... fn to just get CIs and stuff?
-def report_metric_change_stats(df, key_prefix, desc=None):
+def report_metric_change_stats(df, metric_name, pretest_index=0,
+        posttest_index=1, desc=None):
     """Returns a str with mean and median, with SEM and 95% CI, respectively.
     
     Args:
-        df (pandas.DataFrame): has columns <key_prefix>_pre and
-            <key_prefix>_post
+        df (pandas.DataFrame): has columns <metric_name> and 'test_number'.
+            'test_number' 0 should be the index of the pre-training test, and 1
+            the index of the post-training test.
 
-        key_prefix (str): str that exists as prefix of _pre and _post in
-            df column labels
+        metric_name (str): If using this function as I do in my pipeline, this
+            is the __name__ of a function used to compute some metric of the
+            flies' preference, and which is included in metrics_to_compute in
+            main.
+
+        pretest_index (int): (default=0) The value of the 'test_number' column
+            in the test period defined as the pre-test (before aversive
+            conditioning, for instance).
+
+        posttest_index (int): (default=1) The value of the 'test_number' column
+            in the test period defined as the post-test (before aversive
+            conditioning, for instance).
 
         desc (str): (optional) alternative description of input key. Otherwise
-            derived from key_prefix.
+            derived from metric_name.
 
     Returns:
         A formatted string with the mean +/- SEM and median with 95% CI for 
         the difference in the requested metric (pre minus post).
     """
-    # scrape / introscope from elsewhere? this function a closure?
-    # plotting fns could maybe use same things?
-    supported_prefixes = {'time_fraction', 'decision_bias'}
-    assert key_prefix in supported_prefixes, 'Unrecognized key_prefix'
+    raise NotImplementedError
+    err = '{0} defined as {1}, but no entries in df have \'test_number\' == {1}'
+    if np.sum(df['test_number'] == pretest_index) == 0:
+        raise ValueError(err.format('pretest_index', pretest_index))
 
-    change = df[key_prefix + '_pre'] - df[key_prefix + '_post']
+    if np.sum(df['test_number'] == posttest_index) == 0:
+        raise ValueError(err.format('posttest_index', posttest_index))
 
+    # TODO TODO TODO does this guarantee it is always subtracting from same fly?
+    # (is order preserved?) check! (sort on flyid in each case or something?)
+    # TODO TODO TODO is this the kind of chained indexing they were warning
+    # about? problem?
+    change = (df[metric_name][df['test_number'] == 0].set_index('fly_id') -
+              df[metric_name][df['test_number'] == 1].set_index('fly_id'))
+
+    # TODO TODO get from same ylabel thing? default to this?
     if desc is None:
-        desc = key_prefix.replace('_', ' ')
+        desc = metric_name.replace('_', ' ')
 
     ci_level = 0.95
     mean = change.mean()
@@ -1656,7 +1716,6 @@ def report_metric_change_stats(df, key_prefix, desc=None):
     report += 'Median difference in {}: '.format(desc)
     report += format_stat(change.median(),
         ci=confidence_interval(change, np.median, level=ci_level))
-
     report += '\n\n'
 
     return report
@@ -2108,8 +2167,8 @@ def main():
                 label = 'shocked odor'
 
             # for assessing innate preference
-            elif 'odor_A' in df.columns:
-                curr_df = df[df['odor_A'] == o[0]]
+            elif 'odor_a' in df.columns:
+                curr_df = df[df['odor_a'] == o[0]]
                 odor_lines.append(formatter.format('{0} good trace{0(s)} ' +
                     'with {1} as odor A', len(curr_df), o[0]))
                 label = 'odor A'
@@ -2128,19 +2187,12 @@ def main():
                 # TODO does it currently try to plot anything with only one
                 # point for the good trials?  should filter those as well if so
                 plot_metric_change(
-                    # TODO can i use the df in a similar way in the calls in
-                    # analyze_group?
-                    # TODO more idiomatic way to do this indexing?
-                    curr_df[metric.__name__][curr_df['test_number'] == 0],
-                    curr_df[metric.__name__][curr_df['test_number'] == 1],
-                    # TODO get rid of this arg
+                    curr_df,
+                    metric.__name__,
+                    # TODO get rid of this arg?
                     path,
                     title=('Conditioned change in ' + 
                            metric.__name__.replace('_', ' ')),
-                    # TODO consider adapting other call to this fn to use these
-                    # args, and then shorten this fn
-                    exps=curr_df['experiment'],
-                    rois=curr_df['roi'],
 
                     filename='{}_{}.{}'.format(o[0], metric.__name__,
                         plot_format),
@@ -2217,12 +2269,17 @@ def main():
         # TODO don't recalculate change? i forgot i needed it for hist when i
         # wrote report function... (?)
         # TODO more idiomatic way to do the indexing?
+        # TODO TODO put behind some condition indicating it makes sense to
+        # calculate this difference
         change = (df[metric.__name__][df['test_number'] == 0] - 
                   df[metric.__name__][df['test_number'] == 1])
 
         # TODO rename ylabel to illustrate more general use? back to desc?
-        report += report_metric_change_stats(df, metric.__name__,
-                                             desc=metric.ylabel)
+        report += report_metric_change_stats(
+            df,
+            metric.__name__,
+            desc=metric.ylabel
+        )
 
         fig = plt.figure()
         plt.hist(change[np.logical_not(np.isnan(change))], color='black',
