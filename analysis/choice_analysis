@@ -47,6 +47,9 @@ debug = False
 ################################################################################
 # Rejection criteria
 ################################################################################
+# If this is True in addition to further rejection criteria, this will be
+# applied first, and the set of flies that are ultimately analyzed will be those
+# making all rejection criteria.
 use_manual_rejection = True
 
 # TODO make manual rejection mutually exclusive with all others (err if both)
@@ -55,14 +58,18 @@ use_manual_rejection = True
 minimum_walking_speed = None
 minimum_choices_per_test = None
 # also used to calculate decision bias
-choice_zone_mm = 5
+choice_zone_mm = 7
 # assuming user will click slightly beyond edge of 50mm arena to not miss
 # anything. worth investigating sensitivity to this.
-arena_length_mm = 51
+arena_length_mm = 50
 
 # maybe this was equivalent in DasGupta terms to the above?
 # why did they need 7 zones again?
 minimum_end_to_center_runs = None
+end_to_end_counts_for_end_to_center = False
+
+if minimum_walking_speed or minimum_choices_per_test:
+    raise NotImplementedError
 
 ################################################################################
 # Plotting options
@@ -73,7 +80,7 @@ minimum_end_to_center_runs = None
 
 only_show_interactive = False
 show_plots = False
-save_plots = False
+save_plots = True
 dryrun_plots = True
 
 plot_format = 'png'
@@ -156,7 +163,7 @@ if show_roi_numbers and not show_experiment_labels:
 ################################################################################
 # Other options
 ################################################################################
-save_report = False
+save_report = True
 
 # TODO it seems these were originally for displaying?
 # separate flags for whether the text should be added to traces plot?
@@ -1108,7 +1115,7 @@ def plot_metric_change(df, metric_name, path, title='', ylabel='',
 # TODO TODO decide how to deal with path. hack.
 def analyze_group(fly2data, fly2meta, path, title='', metrics_to_compute=[],
         experiment2label=None, odor2color=None,
-        pretest_index=0, posttest_index=1):
+        pretest_index=None, posttest_index=None):
     """
     Args:
         fly2data (dict): Integer fly ID to main data for individual fly
@@ -1124,6 +1131,19 @@ def analyze_group(fly2data, fly2meta, path, title='', metrics_to_compute=[],
     # earlier?
     # TODO generalize this to a function (on what domain?)?
     global sort_traces_by
+
+    use_pre_post = True
+    if pretest_index is None or posttest_index is None:
+        # TODO test this case
+        if not ((pretest_index is None) and (posttest_index is None)):
+            raise ValueError('If passing pretest_index or posttest_index to ' +
+                'analyze_group, must pass both')
+        
+        use_pre_post = False
+
+    if verbose:
+        print('analyze_group, with use_pre_post={}'.format(use_pre_post))
+
 
     if len(fly2data) == 0:
         raise ValueError('empty group')
@@ -1552,33 +1572,37 @@ def analyze_group(fly2data, fly2meta, path, title='', metrics_to_compute=[],
     if (not show_plots) or only_show_interactive:
         plt.close('all')
 
-    if make_plots:
+    # TODO maybe don't mutate this? do elsewhere?
+    if had_some_reinforced:
         for metric in metrics_to_compute:
-            if title == '':
-                filename = metric.__name__ + '.' + plot_format
-            else:
-                filename = (title.replace(' ', '_') + '_' + metric.__name__ +
-                    '.' + plot_format)
+            metric.ylabel = metric.ylabel.replace('odor A',
+                                                  'shocked odor')
 
-            # TODO maybe don't mutate this? do elsewhere?
-            if had_some_reinforced:
-                metric.ylabel = metric.ylabel.replace('odor A', 'shocked odor')
+    # TODO do i still want to call this for the non-use_pre_post case?
+    if use_pre_post:
+        if make_plots:
+            for metric in metrics_to_compute:
+                if title == '':
+                    filename = metric.__name__ + '.' + plot_format
+                else:
+                    filename = (title.replace(' ', '_') + '_' + metric.__name__
+                        + '.' + plot_format)
 
-            # TODO does it currently try to plot anything with only one point
-            # for the good trials?  should filter those as well if so
-            plot_metric_change(
-                df,
-                metric.__name__,
-                path,
-                title=('Conditioned change in ' + 
-                       metric.__name__.replace('_', ' ')),
-                filename=filename,
-                # TODO class?
-                ylabel=metric.ylabel,
-                allow_negative=metric.allow_negative,
-                pretest_index=pretest_index,
-                posttest_index=posttest_index
-            )
+                # TODO does it currently try to plot anything with only one
+                # point for the good trials?  should filter those as well if so
+                plot_metric_change(
+                    df,
+                    metric.__name__,
+                    path,
+                    title=('Conditioned change in ' + 
+                           metric.__name__.replace('_', ' ')),
+                    filename=filename,
+                    # TODO class?
+                    ylabel=metric.ylabel,
+                    allow_negative=metric.allow_negative,
+                    pretest_index=pretest_index,
+                    posttest_index=posttest_index
+                )
 
     return df
 
@@ -1658,8 +1682,9 @@ def nansem(data):
 
 
 # maybe redo... fn to just get CIs and stuff?
-def report_metric_change_stats(df, metric_name, pretest_index=0,
-        posttest_index=1, desc=None):
+def report_metric_stats(values, metric_name, desc=None, change=False,
+        test_num=None):
+    # TODO TODO handle change some other way?
     """Returns a str with mean and median, with SEM and 95% CI, respectively.
     
     Args:
@@ -1672,58 +1697,47 @@ def report_metric_change_stats(df, metric_name, pretest_index=0,
             flies' preference, and which is included in metrics_to_compute in
             main.
 
-        pretest_index (int): (default=0) The value of the 'test_number' column
-            in the test period defined as the pre-test (before aversive
-            conditioning, for instance).
-
-        posttest_index (int): (default=1) The value of the 'test_number' column
-            in the test period defined as the post-test (before aversive
-            conditioning, for instance).
-
         desc (str): (optional) alternative description of input key. Otherwise
             derived from metric_name.
+
+        change (bool): (default=False) If True, adds a snippet to some of the
+            lines saying "difference in", to differentiate from the
+            un-differenced metric.
 
     Returns:
         A formatted string with the mean +/- SEM and median with 95% CI for 
         the difference in the requested metric (pre minus post).
     """
-    err = '{0} defined as {1}, but no entries in df have \'test_number\' == {1}'
-    if np.sum(df['test_number'] == pretest_index) == 0:
-        raise ValueError(err.format('pretest_index', pretest_index))
-
-    if np.sum(df['test_number'] == posttest_index) == 0:
-        raise ValueError(err.format('posttest_index', posttest_index))
-
-    pre_df = df.loc[df.test_number == pretest_index].set_index('fly_id',
-        verify_integrity=True)
-    post_df = df.loc[df.test_number == posttest_index].set_index('fly_id',
-        verify_integrity=True)
-    # TODO TODO does this guarantee it is always subtracting from same fly?
-    # need to sort?
-    change = pre_df[metric_name] - post_df[metric_name]
+    if change and not (test_num is None):
+        raise ValueError('change and test_num are not valid together')
 
     # TODO TODO get from same ylabel thing? default to this?
     if desc is None:
         desc = metric_name.replace('_', ' ')
 
     ci_level = 0.95
-    mean = change.mean()
-    mean_ci = confidence_interval(change, np.mean, level=ci_level)
-    report = 'Mean difference in {}: '.format(desc)
+    mean = values.mean()
+    mean_ci = confidence_interval(values, np.mean, level=ci_level)
+    report = 'Mean{} {}{}: '.format(' difference in' if change else '', desc,
+        '' if test_num is None else ', test number {}'.format(test_num))
+
     report += format_stat(mean, ci=mean_ci, ci_level=ci_level)
 
-    sem_comparison_ci = confidence_interval(change, np.mean, level=0.68)
+    sem_comparison_ci = confidence_interval(values, np.mean, level=0.68)
     # behind verbose flag? extra info flag or something?
     report += '\nSEM={{:.{}f}}'.format(digits_after_zero).format(
-        nansem(change))
+        nansem(values))
     report += ' ~= {{:.{}f}} from bootstrapped 68% CI on mean'.format(
         digits_after_zero).format(np.mean(np.abs(sem_comparison_ci - mean)))
 
     report += '\n'
 
-    report += 'Median difference in {}: '.format(desc)
-    report += format_stat(change.median(),
-        ci=confidence_interval(change, np.median, level=ci_level))
+
+    report += 'Median{} {}{}: '.format(' difference in' if change else '', desc,
+        '' if test_num is None else ', test number {}'.format(test_num))
+
+    report += format_stat(values.median(),
+        ci=confidence_interval(values, np.median, level=ci_level))
     report += '\n\n'
 
     return report
@@ -1831,6 +1845,56 @@ def convert_pixels_to_mm(fly2data, fly2meta, center=True):
                 for x, y in meta_dict['roi_points']]
 
 
+def is_test_period(seq, meta):
+    """Returns if seq is considered a testing period, not a training period.
+
+    seq (stimuli.msg.Sequence): sequence that was sent to Arduino for the
+        period in question.
+
+    meta (dict): metadata for the associated experiment, some loaded from ROS
+        param YAML file, including params configuring stimulus delivery.
+    """
+    olf = meta['rosparams']['olf']
+    if 'train_duration_s' in olf:
+        if ('test_duration_s' in olf and (olf['train_duration_s'] ==
+            olf['test_duration_s'])):
+
+            # TODO test this displays OK
+            # TODO TODO do similar error checking in experiment, to avoid people
+            # getting into this branch w/o easy recourse (provide different ways
+            # to fail / pick a less horrible one?)
+            # e.g. could use periods where there are two diff odors, if only
+            # ever training with one odor and only ever testing with diff odors
+            # (could err in case where extra olf/odors item flag
+            # 'against_itself' is set? or use other cues to get test periods
+            # then?)
+            raise NotImplementedError("""Currently no way to reliably 
+                distinguish training and test periods if they are the same 
+                length. Make length slightly different or complain to Tom.""")
+
+    block_duration_s = seq.seq.end.to_sec() - seq.seq.start.to_sec()
+    if block_duration_s == olf['train_duration_s']:
+        return False
+
+    assert block_duration_s == olf['test_duration_s'], \
+        'Expected test duration if not train duration.'
+
+    # TODO how to filter out test periods? just any with no shock?
+    # no shock and == test_duration?
+    # TODO TODO what about against_self case, when we get a training block
+    # w/o shock here, and where the test_duration == training_duration???
+    # matter? warn if the stars do align in that way? explicitly specify
+    # tests when saving trial structure?
+    return True
+
+
+def is_training_period(seq, meta):
+    """
+    """
+    return not is_test_period(seq, meta)
+
+
+
 # TODO test w/ dasgupta, cc, and parnas / kristina test cases
 def extract_test_period_data(data, meta, orient_positive=None):
     # TODO typecheck orient_positive (shouldn't be a pin)
@@ -1860,41 +1924,10 @@ def extract_test_period_data(data, meta, orient_positive=None):
     epoch_times_s = (data['time_epoch_secs'] + data['time_epoch_nsecs'] /
         1e9).as_matrix()
 
-    # TODO TODO TODO at least raise notimplemented if test_duration =/=
-    # train_duration (need access to both of those though)
-    olf = meta['rosparams']['olf']
-    if 'train_duration_s' in olf:
-        if ('test_duration_s' in olf and (olf['train_duration_s'] ==
-            olf['test_duration_s'])):
-
-            # TODO test this displays OK
-            # TODO TODO do similar error checking in experiment, to avoid people
-            # getting into this branch w/o easy recourse (provide different ways
-            # to fail / pick a less horrible one?)
-            # e.g. could use periods where there are two diff odors, if only
-            # ever training with one odor and only ever testing with diff odors
-            # (could err in case where extra olf/odors item flag
-            # 'against_itself' is set? or use other cues to get test periods
-            # then?)
-            raise NotImplementedError("""Currently no way to reliably 
-                distinguish training and test periods if they are the same 
-                length. Make length slightly different or complain to Tom.""")
-
     oriented_for_metrics = []
-    for i, s in enumerate(meta['stimuli']):
-        block_duration_s = s.seq.end.to_sec() - s.seq.start.to_sec()
-        if block_duration_s == olf['train_duration_s']:
+    for s in meta['stimuli']:
+        if not is_test_period(s, meta):
             continue
-        assert block_duration_s == olf['test_duration_s'], \
-            'Expected test duration if not train duration.'
-
-        # TODO how to filter out test periods? just any with no shock?
-        # no shock and == test_duration?
-        # TODO TODO what about against_self case, when we get a training block
-        # w/o shock here, and where the test_duration == training_duration???
-        # matter? warn if the stars do align in that way? explicitly specify
-        # tests when saving trial structure?
-
         # assuming indexed the same
         # TODO check sizes or something at least?
         test_indices = np.logical_and(epoch_times_s >= s.seq.start.to_sec(),
@@ -1948,8 +1981,6 @@ def main():
         'Accuracy for odor A'
     ]
     allow_negative = [False, True, False]
-    pretest_index = 0
-    posttest_index = 1
 
     for metric, ylabel, neg in zip(metrics_to_compute, ylabels, allow_negative):
         metric.ylabel = ylabel
@@ -2011,6 +2042,10 @@ def main():
     # building up + (creating or failing) reject reason dict from child
     # analysis_rejects?
 
+    # Where there is 1 test period, followed by an arbitrary number of
+    # training periods, and 1 test period again at the end.
+    use_pre_post = True
+
     # so that we only sort chronologically, and not also based on preceding
     # parts of the paths that might differ (if using nested organizational
     # directories)
@@ -2032,6 +2067,7 @@ def main():
         except ValueError as e:
             print(e, file=sys.stderr)
             warnings.warn('SKIPPING: {}'.format(d))
+            continue
 
         try:
             for o in common_metadata['odors']:
@@ -2039,6 +2075,21 @@ def main():
         except KeyError as e:
             if require_stimuli:
                 raise
+
+        # TODO TODO option to check, at this point, that the information from
+        # all directories to be analyzed is consistent
+        if len(common_metadata['stimuli']) < 3:
+            use_pre_post = False
+
+        for s in \
+            (common_metadata['stimuli'][0], common_metadata['stimuli'][-1]):
+
+            use_pre_post = use_pre_post and is_test_period(s, common_metadata)
+
+        for s in common_metadata['stimuli'][1:-1]:
+            use_pre_post = \
+                use_pre_post and is_training_period(s, common_metadata)
+
 
         for f in glob.glob(join(d, '*.hdf5')):
             metadata = dict(common_metadata)
@@ -2090,6 +2141,26 @@ def main():
         # convert pixels to mm and set origin to midline of long axis (in place)
         convert_pixels_to_mm(fly2data, fly2meta, center=True)
 
+    term_width = 90
+    print('\n' + (term_width * '*'))
+    if use_pre_post:
+        print('Using analysis for experiments with a pre/post ' +
+            'test surrounding some amount of training.')
+
+        pretest_index = 0
+        posttest_index = 1
+
+    else:
+        # TODO TODO do i actually want to tailor report to [train..., test]
+        # (dasgupta) case? / test for training period(s) following (1?) test?
+        print('Using analysis for experiments with all testing periods ' +
+            'after any training, if there was training at all.')
+        pretest_index = None
+        posttest_index = None
+
+    print((term_width * '*') + '\n')
+
+
     if make_plots:
         # TODO seed or something for better colors w/ # odors=2
         # TODO TODO change default colors so none is close to red (at least for
@@ -2105,8 +2176,10 @@ def main():
 
     if use_manual_rejection:
         if children_experiment_groups is None:
-            rejects = load_or_generate_reject_reasons(path, fly2data, fly2meta,
-                odor2color)
+            rejects = load_or_generate_reject_reasons(path,
+                                                      fly2data,
+                                                      fly2meta,
+                                                      odor2color)
         else:
             # TODO do i want to keep this for grouping at all?  or shift this to
             # making plots across experiment comparisions (e.g. mixture
@@ -2186,6 +2259,9 @@ def main():
 
         formatter = PluralFormatter()
 
+        # TODO any reason to do this for not use_pre_post case?
+        # i guess it'd reveal a side bias? but i think i might rather do that
+        # explicitly from the df?
         odor_lines = []
         for o in all_odors:
             # for analyzing experiments with aversive conditioning
@@ -2213,31 +2289,34 @@ def main():
                     'experiment) nor shocked_odor (if experiment with ' +
                     'conditioning) in df')
 
-            # TODO handle odor better in filename
-            # TODO TODO make these work for a sequence of values, not just
-            # 2 sep. args?
-            for metric in metrics_to_compute:
-                # TODO TODO only do this on correct test periods (+ if
-                # intervening training?)
-                # TODO does it currently try to plot anything with only one
-                # point for the good trials?  should filter those as well if so
-                plot_metric_change(
-                    curr_df,
-                    metric.__name__,
-                    # TODO get rid of this arg?
-                    path,
-                    title=('Conditioned change in ' + 
-                           metric.__name__.replace('_', ' ')),
+            if use_pre_post:
+                # TODO handle odor better in filename
+                # TODO TODO make these work for a sequence of values, not just
+                # 2 sep. args?
+                for metric in metrics_to_compute:
+                    # TODO TODO only do this on correct test periods (+ if
+                    # intervening training?)
+                    # TODO does it currently try to plot anything with only one
+                    # point for the good trials?  should filter those as well if
+                    # so
+                    plot_metric_change(
+                        curr_df,
+                        metric.__name__,
+                        # TODO get rid of this arg?
+                        path,
+                        title=('Conditioned change in ' + 
+                               metric.__name__.replace('_', ' ')),
 
-                    filename='{}_{}.{}'.format(o[0].replace(' ', '_'), 
-                        metric.__name__, plot_format),
-                    # depends on this having been mutated in analyze_group...
-                    # (odor A -> shocked odor, if one was shocked)
-                    ylabel=metric.ylabel,
-                    allow_negative=metric.allow_negative,
-                    pretest_index=pretest_index,
-                    posttest_index=posttest_index
-                )
+                        filename='{}_{}.{}'.format(o[0].replace(' ', '_'), 
+                            metric.__name__, plot_format),
+                        # depends on this having been mutated in
+                        # analyze_group...  (odor A -> shocked odor, if one was
+                        # shocked)
+                        ylabel=metric.ylabel,
+                        allow_negative=metric.allow_negative,
+                        pretest_index=pretest_index,
+                        posttest_index=posttest_index
+                    )
 
         reason2formatstr = {
             'never_active': '{0} fl{0(y,ies)} were never active',
@@ -2309,44 +2388,81 @@ def main():
     # TODO factor this stuff into fn that only computes change once (for
     # correctness' sake)?
     for metric in metrics_to_compute:
-        # TODO don't recalculate change? i forgot i needed it for hist when i
-        # wrote report function... (?)
-        # TODO more idiomatic way to do the indexing?
-        # TODO TODO put behind some condition indicating it makes sense to
-        # calculate this difference
-
-        # duplicated code!!!!
-        pre_df = df.loc[df.test_number == pretest_index].set_index('fly_id',
-            verify_integrity=True)
-        post_df = df.loc[df.test_number == posttest_index].set_index('fly_id',
-            verify_integrity=True)
-        change = pre_df[metric.__name__] - post_df[metric.__name__]
-
-        # TODO rename ylabel to illustrate more general use? back to desc?
-        report += report_metric_change_stats(
-            df,
-            metric.__name__,
-            desc=(metric.ylabel[0].lower() + metric.ylabel[1:]),
-            pretest_index=pretest_index,
-            posttest_index=posttest_index
-        )
-
         fig = plt.figure()
-        plt.hist(change[np.logical_not(np.isnan(change))], color='black',
-            bins=30)
+        if use_pre_post:
+            # TODO don't recalculate change? i forgot i needed it for hist when
+            # i wrote report function... (?)
 
-        plt.title('Changes in ' + metric.ylabel[0].lower() + metric.ylabel[1:])
+            # duplicated code!!!! (now, should just be w/ prep for
+            # plot_metric_change)
+            # TODO need to explicitly check for both of these being non-empty?
+            # or will it already err?
+            pre_df = df.loc[df.test_number == pretest_index].set_index('fly_id',
+                verify_integrity=True)
+            post_df = df.loc[df.test_number == posttest_index].set_index(
+                'fly_id', verify_integrity=True)
+            # TODO TODO does this guarantee it is always subtracting from same
 
-        if save_plots:
-            fig.savefig(join(path, metric.__name__ + '_change_histogram.' +
-                plot_format), bbox_inches='tight')
+            # fly?  need to sort?
+            change = pre_df[metric.__name__] - post_df[metric.__name__]
 
-    if want_abs_decision_bias:
-        report += 'Mean |decision bias| post: '
-        # TODO bring posttest_index up here and use that instead?
-        report += format_stat(np.nanmean(np.abs(
-                              df.loc[df.test_number == 1, 'decision_bias'])))
-        report += '\n\n'
+            # TODO rename ylabel to illustrate more general use? back to desc?
+            report += report_metric_stats(
+                change,
+                metric.__name__,
+                desc=(metric.ylabel[0].lower() + metric.ylabel[1:]),
+                change=True
+            )
+
+            # TODO should technically only do this is make_plots is true
+            # TODO TODO make sure honored throughout. want to be able to get rid
+            # of matplotlib dependency if false
+            plt.hist(change[np.logical_not(np.isnan(change))], color='black',
+                bins=30)
+            plt.title('Changes in ' + metric.ylabel[0].lower() +
+                metric.ylabel[1:])
+            if save_plots:
+                fig.savefig(join(path, metric.__name__ + '_change_histogram.' +
+                    plot_format), bbox_inches='tight')
+
+            if want_abs_decision_bias:
+                report += 'Mean |decision bias| post: '
+                # TODO bring posttest_index up here and use that instead?
+                report += format_stat(np.nanmean(np.abs(df.loc[
+                    df.test_number == 1, 'decision_bias'])))
+
+                report += '\n\n'
+
+        else:
+            # TODO TODO also report metrics on each test period, in use_pre_post
+            # case?  in same style?
+            # TODO TODO TODO use language here to reflect that one odor was
+            # shocked, if that was the case (dasgupta case)
+            test_numbers = df.test_number.unique()
+            for i in test_numbers:
+                if len(test_numbers) == 1:
+                    n = None
+                else:
+                    n = i
+
+                values = df.loc[df.test_number == i, metric.__name__]
+                report += report_metric_stats(
+                    values,
+                    metric.__name__,
+                    desc=(metric.ylabel[0].lower() + metric.ylabel[1:]),
+                    test_num=n
+                )
+
+                # TODO should technically only do this is make_plots is true
+                plt.hist(values[np.logical_not(np.isnan(values))],
+                    color='black', bins=30)
+                plt.title(metric.ylabel)
+                if save_plots:
+                    # TODO test both cases
+                    fig.savefig(join(path, '{}{}_histogram.{}'.format(
+                        metric.__name__, '' if n is None else '_test{}'.format(
+                        i), plot_format)), bbox_inches='tight')
+
 
     report += 'Experiments represented by each label:\n'
     label2experiment = {v: k for k, v in list(experiment2label.items())}
