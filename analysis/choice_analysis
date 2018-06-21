@@ -445,13 +445,18 @@ def is_experiment_dir(d):
 # TODO refactor to only take bare minimum beyond times, positions, and ax
 def plot_trace(times, positions, meta, metrics=None,
     label=None, odor2color=None, ax=None):
-    # TODO TODO TODO still need to center in some cases? add flag? otherwise,
-    # can i remove any args?
+    # TODO still need to center in some cases? add flag? otherwise, can i remove
+    # any args?
     """
     Args:
         times (array-like):
+
         positions (array-like):
-        meta (dict):
+
+        meta (dict): dict w/ keys with the function name of each metric that was
+            computed, and another key 'test_number'. Each value is a list, with
+            a length of each equal to the number of test periods.
+
         ax (matplotlib.Axes) (optional):
 
     Returns:
@@ -470,6 +475,10 @@ def plot_trace(times, positions, meta, metrics=None,
         plt.plot(times, y_data, c='black', linewidth=trace_linewidth)
     else:
         ax.plot(times, y_data, c='black', linewidth=trace_linewidth)
+
+    def odor_tuple2str(odor_conc):
+        name, log10conc = odor_conc
+        return '{}, $10^{{{}}}$ in vial'.format(name, log10conc)
 
     plt.xlabel('Seconds')
 
@@ -545,8 +554,9 @@ def plot_trace(times, positions, meta, metrics=None,
                 if verbose:
                     print('left odor', meta['left_pins2odors'][p])
 
-                legend_entry = meta['left_pins2odors'][p]
-                color = odor2color[legend_entry]
+                odor = meta['left_pins2odors'][p]
+                legend_entry = odor_tuple2str(odor)
+                color = odor2color[odor]
                 y0 = y_min_below_mid - y_beyond_arena
                 height = large_height
                 alpha = odor_patch_alpha
@@ -557,14 +567,16 @@ def plot_trace(times, positions, meta, metrics=None,
                 if verbose:
                     print('right odor', meta['right_pins2odors'][p])
 
-                legend_entry = meta['right_pins2odors'][p]
-                color = odor2color[legend_entry]
+                odor = meta['right_pins2odors'][p]
+                legend_entry = odor_tuple2str(odor)
+                color = odor2color[odor]
                 # because we define the middle as the new origin
                 y0 = 0
                 height = large_height
                 alpha = odor_patch_alpha
 
             else:
+                # TODO could explicitly check it was one of the balance pins
                 #print 'skipping pin', p
                 continue
 
@@ -609,9 +621,15 @@ def plot_trace(times, positions, meta, metrics=None,
                 handles.append(p)
 
     if display_metrics and not metrics is None:
+        # TODO TODO make cols the test_number and rows the metrics? (so time is
+        # along x)
+        # TODO TODO also label which row/col is time spent / decision bias, etc
         y_pos = 0.77
         x_0 = 1.02
-        dx = 0.17
+        # TODO TODO set based on fontsize & length of longest metric name
+        rowlabel_to_first_col = 0.18
+        # TODO negative sign can cause uneven spacing. fix that.
+        dx = 0.09
         # TODO make more of a margin between the right text and the edge somehow
         # TODO any way to just say "don't cut things off" and / or "don't have
         # things overlap" now?
@@ -619,32 +637,35 @@ def plot_trace(times, positions, meta, metrics=None,
         fontsize = 7
         valign = 'top'
 
-        # TODO TODO just display everthing in metrics dict/df passed in?
-        # TODO TODO fix pre/post to only be displayed this way when there was
-        # training in between tests. if there are two adjacent tests (but
-        # flipped) i think it would make more sense to take the average to
-        # mitigate asymmetries
-        '''
-        if want_time_spent:
+        # TODO TODO make something like this happen for the first fly?
+        # or maybe better yet, (just?) make column labels describing each
+        # metric (for the first fly?)
+        #    text += 'pre: %.3f in reinforced\npost: %.3f in reinforced' % \
+        #       (metrics['time_fraction_pre'],metrics['time_fraction_post'])
+            
+        # TODO TODO if not displaying metrics, get rid of extra whitespace to
+        # the right
+        # TODO just add the pre / post in advance?
+        # TODO param to limit # of cols? / rows?
+        x_pos = x_0
+        metric_names = [m for m in metrics.keys() if not m == 'test_number']
+        ax.text(x_pos, y_pos, '\n'.join(metric_names), transform=ax.transAxes,
+                fontsize=fontsize, verticalalignment=valign)
+        x_pos += rowlabel_to_first_col 
+
+        for i in range(len(metrics['test_number'])):
             text = ''
-            # TODO TODO also label which col is time spent / decision bias, etc
-            text += 'pre: %.3f\npost: %.3f' % \
-                (metrics['time_fraction_pre'],metrics['time_fraction_post'])
+            for metric in metric_names:
+                text += '%.3f\n' % metrics[metric][i]
+            # to get rid of trailing newline, so things line up better
+            text = text[:-1]
 
             # TODO scale fontsize w/ # of traces? / figsize?
-            ax.text(x_0, y_pos, text, transform=ax.transAxes, \
-                fontsize=fontsize, verticalalignment=valign)
+            ax.text(x_pos, y_pos, text, transform=ax.transAxes,
+                    fontsize=fontsize, verticalalignment=valign)
+            x_pos += dx
 
-        if want_decision_bias:
-            text = '%.3f\n%.3f' % \
-                (metrics['decision_bias_pre'], metrics['decision_bias_post'])
-
-            x_pos = x_0 if not want_time_spent else (x_0 + dx)
-            ax.text(x_pos, y_pos, text, transform=ax.transAxes, \
-                fontsize=fontsize, verticalalignment=valign)
-        '''
-
-        # no sure i want a box?
+        # not sure i want a box?
         # TODO what does verticalalignment do?
 
     # different name for this flag?
@@ -1339,12 +1360,6 @@ def analyze_group(fly2data, fly2meta, path, title='', metrics_to_compute=[],
             handles = None
             labels = None
 
-            # TODO TODO make something like this happen for the first fly?
-            # or maybe better yet, (just?) make column labels describing each
-            # metric (for the first fly?)
-            #    text += 'pre: %.3f in reinforced\npost: %.3f in reinforced' % \
-            #       (metrics['time_fraction_pre'],metrics['time_fraction_post'])
-            
             label = None
             if show_experiment_labels and not (experiment2label is None):
                 label = experiment2label[meta['dir']]
@@ -1387,18 +1402,20 @@ def analyze_group(fly2data, fly2meta, path, title='', metrics_to_compute=[],
     #if sort_traces_by in df.columns:
     #    sort_on = (
     # TODO check for _change suffix or something?
-    if sort_traces_by == 'decision_bias':
-        raise NotImplementedError
-        # TODO TODO TODO make sure this difference is valid (only subtracting
-        # data that came from the same fly) maybe sort. see note in
-        # report_metric_change
-        sort_on = (df['decision_bias'][df['test_number'] == 0] -
-                   df['decision_bias'][df['test_number'] == 1])
+    if use_pre_post:
+        if sort_traces_by == 'decision_bias':
+            # TODO TODO TODO make sure this difference is valid (only
+            # subtracting data that came from the same fly) maybe sort. see note
+            # in report_metric_change
+            sort_on = (df.loc[df.test_number == pretest_index, 'decision_bias']
+                - df.loc[df.test_number == posttest_index, 'decision_bias'])
 
-    elif sort_traces_by == 'time_spent':
-        raise NotImplementedError
-        sort_on = (df['time_fraction'][df['test_number'] == 0] -
-                   df['time_fraction'][df['test_number'] == 1])
+        elif sort_traces_by == 'time_spent':
+            raise NotImplementedError
+            sort_on = (df.loc[df.test_number == pretest_index, 'time_fraction']
+                - df.loc[df.test_number == posttest_index, 'time_fraction'])
+            sort_on = (df['time_fraction'][df['test_number'] == 0] -
+                       df['time_fraction'][df['test_number'] == 1])
 
     if not sort_traces_by is None:
         # despite having np > 1.4, argsort seemed to be misbehaving w/ nans
@@ -1423,22 +1440,6 @@ def analyze_group(fly2data, fly2meta, path, title='', metrics_to_compute=[],
             # TODO TODO is this all they were needed for? if i'm using
             # constant limits, maybe get rid of this code now?
             axes_to_set_limits.append(ax)
-
-    if make_plots and (not handles is None) and (not labels is None):
-        # TODO take union of labels & handles returned above?
-        # TODO way to have the colored parts of the legend on the right, with
-        # the text on the left. (might look better if i want to keep this in the
-        # bottom right corner)
-        fig.legend(handles=handles, labels=labels, #loc='lower right',
-                   fontsize=9, bbox_transform=fig.transFigure, 
-                   bbox_to_anchor=(1.0, 0.1))
-
-        # was trying to follow:
-        # https://stackoverflow.com/questions/43272206/python-legend-overlaps-with-the-pie-chart/43281595
-        # but this didn't seem to make any more space for the legend. different
-        # parameters?
-        #fig.subplots_adjust(left=0.1, bottom=0.1, right=0.75)
-
 
     # TODO do this for single plots within plot_trace?
     # relative
@@ -1544,30 +1545,49 @@ def analyze_group(fly2data, fly2meta, path, title='', metrics_to_compute=[],
 
                 # TODO enable y ticks for last one too?
 
-    if save_plots:
-        try:
-            # TODO why did this change height of plots? only if >=2?
-            fig.tight_layout(pad=2, h_pad=0)
-        except ValueError as e:
-            # TODO fix cause
-            # still unclear what is the cause of the error in my case
-            # see: https://github.com/matplotlib/matplotlib/issues/5456
-            warnings.warn(str(e))
-            warnings.warn('Warning: could not use tight_layout on figure')
-            pass
+    if make_plots and (not handles is None) and (not labels is None):
+        # TODO take union of labels & handles returned above?
+        # TODO way to have the colored parts of the legend on the right, with
+        # the text on the left. (might look better if i want to keep this in the
+        # bottom right corner)
 
+        # TODO uncomment me
+        # TODO when calling from fig, bbox_tranform still default to
+        # ax.transAxes? where are boundaries of ax.transAxes for subplot?
+        ax = axes_to_set_limits[-1]
+        # improvement on this legend layout?
+        fig.legend(handles=handles, labels=labels, ncol=len(labels),
+            loc='center', fontsize=9, bbox_to_anchor=(0.5, -0.9),
+            bbox_transform=ax.transAxes)
+        # TODO would fig.transFigure or ax.transAxes be easier to use to make a
+        # solution robust to things like # of traces?
+
+        # TODO TODO test that in both interactive and non-interactive mode, the
+        # legend displays appropriately (not cut off)
+
+        # was trying to follow:
+        # https://stackoverflow.com/questions/43272206/python-legend-overlaps-with-the-pie-chart/43281595
+        # but this didn't seem to make any more space for the legend. different
+        # parameters?
+        #fig.subplots_adjust(left=0.1, bottom=0.1, right=0.75)
+
+    if save_plots:
+        #fig.tight_layout(pad=2, h_pad=0)
         # default is 0.9. we want to move right edge of actual plots in, 
         # so that there is extra space on the right for the text
-        fig.subplots_adjust(right=0.8)
+        #fig.subplots_adjust(right=0.8)
+
         # TODO flag to output all figs in current dir? (as well?) symlink?
         if title == '':
             # TODO why are there traces in there that were marked as rejects?
-            fig.savefig(join(path, 'traces.' + plot_format))
+            # TODO TODO are there still?
+            fig.savefig(join(path, 'traces.' + plot_format),
+                bbox_inches='tight')
 
         else:
             plt.suptitle(title)
             fig.savefig(join(path, title.replace(' ', '_') + '_traces.' +
-                plot_format))
+                plot_format), bbox_inches='tight')
 
     if (not show_plots) or only_show_interactive:
         plt.close('all')
@@ -2425,14 +2445,6 @@ def main():
                 fig.savefig(join(path, metric.__name__ + '_change_histogram.' +
                     plot_format), bbox_inches='tight')
 
-            if want_abs_decision_bias:
-                report += 'Mean |decision bias| post: '
-                # TODO bring posttest_index up here and use that instead?
-                report += format_stat(np.nanmean(np.abs(df.loc[
-                    df.test_number == 1, 'decision_bias'])))
-
-                report += '\n\n'
-
         else:
             # TODO TODO also report metrics on each test period, in use_pre_post
             # case?  in same style?
@@ -2463,6 +2475,12 @@ def main():
                         metric.__name__, '' if n is None else '_test{}'.format(
                         i), plot_format)), bbox_inches='tight')
 
+    if use_pre_post and want_abs_decision_bias:
+        report += 'Mean |decision bias| post: '
+        # TODO bring posttest_index up here and use that instead?
+        report += format_stat(np.nanmean(np.abs(df.loc[
+            df.test_number == posttest_index, 'decision_bias'])))
+        report += '\n\n'
 
     report += 'Experiments represented by each label:\n'
     label2experiment = {v: k for k, v in list(experiment2label.items())}
