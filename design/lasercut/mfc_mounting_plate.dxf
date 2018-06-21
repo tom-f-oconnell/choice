@@ -1,0 +1,626 @@
+  0
+SECTION
+  2
+HEADER
+  9
+$ACADVER
+  1
+AC1009
+  9
+$INSBASE
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  9
+$EXTMIN
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  9
+$EXTMAX
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  0
+ENDSEC
+  0
+SECTION
+  2
+TABLES
+  0
+TABLE
+  2
+VPORT
+ 70
+0
+  0
+ENDTAB
+  0
+TABLE
+  2
+LTYPE
+ 70
+1
+  0
+LTYPE
+  2
+CONTINUOUS
+ 70
+0
+  3
+Solid line
+ 72
+65
+ 73
+0
+ 40
+0.0
+  0
+ENDTAB
+  0
+TABLE
+  2
+LAYER
+ 70
+1
+  0
+LAYER
+  2
+0
+ 70
+64
+ 62
+7
+  6
+continuous
+  0
+ENDTAB
+  0
+TABLE
+  2
+STYLE
+ 70
+1
+  0
+STYLE
+  2
+STANDARD
+ 70
+0
+ 40
+0
+ 41
+1.0
+ 50
+0.0
+ 71
+0
+ 42
+1
+ 3
+ARIAL.TTF
+ 4
+
+  0
+ENDTAB
+  0
+TABLE
+  2
+VIEW
+ 70
+0
+  0
+ENDTAB
+  0
+ENDSEC
+  0
+SECTION
+  2
+BLOCKS
+  0
+BLOCK
+  8
+mfc_mounting_hole_group
+  2
+ARRAY
+ 70
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  3
+ARRAY
+  0
+CIRCLE
+  8
+mfc_mounting_hole_group
+ 62
+0
+ 10
+-132.0
+ 20
+37.5
+ 30
+0.0
+ 40
+2.15265
+  0
+CIRCLE
+  8
+mfc_mounting_hole_group
+ 62
+0
+ 10
+-75.48
+ 20
+17.18
+ 30
+0.0
+ 40
+2.15265
+  0
+CIRCLE
+  8
+mfc_mounting_hole_group
+ 62
+0
+ 10
+-7.05
+ 20
+37.5
+ 30
+0.0
+ 40
+2.15265
+  0
+CIRCLE
+  8
+mfc_mounting_hole_group
+ 62
+0
+ 10
+49.47
+ 20
+17.18
+ 30
+0.0
+ 40
+2.15265
+  0
+ENDBLK
+  0
+BLOCK
+  8
+mfc_mounting_hole_group
+  2
+ARRAY001
+ 70
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  3
+ARRAY001
+  0
+CIRCLE
+  8
+mfc_mounting_hole_group
+ 62
+0
+ 10
+-79.0
+ 20
+64.18
+ 30
+0.0
+ 40
+2.15265
+  0
+CIRCLE
+  8
+mfc_mounting_hole_group
+ 62
+0
+ 10
+-22.48
+ 20
+43.86
+ 30
+0.0
+ 40
+2.15265
+  0
+CIRCLE
+  8
+mfc_mounting_hole_group
+ 62
+0
+ 10
+45.95
+ 20
+64.18
+ 30
+0.0
+ 40
+2.15265
+  0
+CIRCLE
+  8
+mfc_mounting_hole_group
+ 62
+0
+ 10
+102.47
+ 20
+43.86
+ 30
+0.0
+ 40
+2.15265
+  0
+ENDBLK
+  0
+BLOCK
+  8
+extrusion_mounting_holes
+  2
+ARRAY002
+ 70
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  3
+ARRAY002
+  0
+CIRCLE
+  8
+extrusion_mounting_holes
+ 62
+0
+ 10
+-131.0
+ 20
+7.7639
+ 30
+0.0
+ 40
+3.2639
+  0
+CIRCLE
+  8
+extrusion_mounting_holes
+ 62
+0
+ 10
+-131.0
+ 20
+72.2361
+ 30
+0.0
+ 40
+3.2639
+  0
+CIRCLE
+  8
+extrusion_mounting_holes
+ 62
+0
+ 10
+0.0
+ 20
+7.7639
+ 30
+0.0
+ 40
+3.2639
+  0
+CIRCLE
+  8
+extrusion_mounting_holes
+ 62
+0
+ 10
+0.0
+ 20
+72.2361
+ 30
+0.0
+ 40
+3.2639
+  0
+ENDBLK
+  0
+BLOCK
+  8
+extrusion_mounting_holes
+  2
+ARRAY003
+ 70
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  3
+ARRAY003
+  0
+CIRCLE
+  8
+extrusion_mounting_holes
+ 62
+0
+ 10
+131.0
+ 20
+7.7639
+ 30
+0.0
+ 40
+3.2639
+  0
+CIRCLE
+  8
+extrusion_mounting_holes
+ 62
+0
+ 10
+131.0
+ 20
+72.2361
+ 30
+0.0
+ 40
+3.2639
+  0
+ENDBLK
+  0
+ENDSEC
+  0
+SECTION
+  2
+ENTITIES
+  0
+INSERT
+  2
+ARRAY
+  8
+mfc_mounting_hole_group
+ 62
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  0
+INSERT
+  2
+ARRAY001
+  8
+mfc_mounting_hole_group
+ 62
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  0
+INSERT
+  2
+ARRAY002
+  8
+extrusion_mounting_holes
+ 62
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  0
+INSERT
+  2
+ARRAY003
+  8
+extrusion_mounting_holes
+ 62
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  0
+CIRCLE
+  8
+extra_mounting_holes
+ 62
+0
+ 10
+-11.0278
+ 20
+72.2361
+ 30
+0.0
+ 40
+3.2639
+  0
+CIRCLE
+  8
+extra_mounting_holes
+ 62
+0
+ 10
+-119.9722
+ 20
+7.7639
+ 30
+0.0
+ 40
+3.2639
+  0
+CIRCLE
+  8
+extra_mounting_holes
+ 62
+0
+ 10
+119.9722
+ 20
+7.7639
+ 30
+0.0
+ 40
+3.2639
+  0
+CIRCLE
+  8
+extra_mounting_holes
+ 62
+0
+ 10
+119.9722
+ 20
+72.2361
+ 30
+0.0
+ 40
+3.2639
+  0
+POLYLINE
+  8
+mfc_mounting_plate
+ 62
+0
+ 70
+1
+ 66
+1
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  0
+VERTEX
+  8
+mfc_mounting_plate
+ 10
+-137.0
+ 20
+0.0
+ 30
+0.0
+  0
+VERTEX
+  8
+mfc_mounting_plate
+ 10
+137.0
+ 20
+0.0
+ 30
+0.0
+ 42
+0.414213562373
+  0
+VERTEX
+  8
+mfc_mounting_plate
+ 10
+141.0
+ 20
+4.0
+ 30
+0.0
+  0
+VERTEX
+  8
+mfc_mounting_plate
+ 10
+141.0
+ 20
+76.0
+ 30
+0.0
+ 42
+0.414213562373
+  0
+VERTEX
+  8
+mfc_mounting_plate
+ 10
+137.0
+ 20
+80.0
+ 30
+0.0
+  0
+VERTEX
+  8
+mfc_mounting_plate
+ 10
+-137.0
+ 20
+80.0
+ 30
+0.0
+ 42
+0.414213562373
+  0
+VERTEX
+  8
+mfc_mounting_plate
+ 10
+-141.0
+ 20
+76.0
+ 30
+0.0
+  0
+VERTEX
+  8
+mfc_mounting_plate
+ 10
+-141.0
+ 20
+4.0
+ 30
+0.0
+ 42
+0.414213562373
+  0
+SEQEND
+  8
+mfc_mounting_plate
+  0
+ENDSEC
+  0
+EOF
