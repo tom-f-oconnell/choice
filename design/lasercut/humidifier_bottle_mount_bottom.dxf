@@ -25,7 +25,7 @@ $EXTMIN
  10
 -141
  20
--8.881784197001252e-16
+-35
  30
 0
   9
@@ -255,7 +255,7 @@ $DIMBLK2
   9
 $DIMSTYLE
   2
-Standard
+STANDARD
   9
 $DIMCLRD
  70
@@ -801,10 +801,6 @@ $PEXTMAX
  30
 0
   9
-$SNAPSTYLE
- 70
-    0
-  9
 $PLIMMIN
  10
 0
@@ -813,9 +809,9 @@ $PLIMMIN
   9
 $PLIMMAX
  10
-210
- 20
 297
+ 20
+210
   9
 $UNITMODE
  70
@@ -875,7 +871,7 @@ $LWDISPLAY
   9
 $INSUNITS
  70
-    4
+    0
   9
 $HYPERLINKBASE
   1
@@ -903,7 +899,7 @@ $EXTNAMES
   9
 $PSVPSCALE
  40
-1
+0
   9
 $OLESTARTUP
 290
@@ -1111,9 +1107,9 @@ AcDbViewportTableRecord
  21
 1
  12
-123.75
+80.00000000000004
  22
-99.84375
+60.37500000000004
  13
 0
  23
@@ -1139,7 +1135,7 @@ AcDbViewportTableRecord
  37
 0
  40
-247.8125
+198.2500000000001
  41
 1.583858764186633
  42
@@ -2251,7 +2247,29 @@ AcDbSymbolTableRecord
 100
 AcDbLayerTableRecord
   2
-mfc_mounting_plate
+humidifier_bottles_mount
+ 70
+    0
+ 62
+    7
+  6
+CONTINUOUS
+370
+   -3
+390
+F
+  0
+LAYER
+  5
+4B
+330
+2
+100
+AcDbSymbolTableRecord
+100
+AcDbLayerTableRecord
+  2
+humidifier_mounting_holes
  70
     0
  62
@@ -2279,7 +2297,7 @@ AcDbSymbolTable
   0
 STYLE
   5
-4B
+4C
 330
 2
 100
@@ -2363,7 +2381,7 @@ ACAD
   0
 APPID
   5
-4C
+4D
 330
 9
 100
@@ -2395,7 +2413,7 @@ AcDbDimStyleTable
   0
 DIMSTYLE
 105
-4D
+4E
 330
 A
 100
@@ -2579,7 +2597,7 @@ AcDbBlockTableRecord
   0
 BLOCK_RECORD
   5
-4E
+4F
 330
 1
 100
@@ -2587,7 +2605,7 @@ AcDbSymbolTableRecord
 100
 AcDbBlockTableRecord
   2
-COMPOUND
+ARRAY004
  70
     0
 280
@@ -2597,7 +2615,7 @@ COMPOUND
   0
 BLOCK_RECORD
   5
-51
+52
 330
 1
 100
@@ -2605,7 +2623,7 @@ AcDbSymbolTableRecord
 100
 AcDbBlockTableRecord
   2
-COMPOUND001
+CLONE
  70
     0
 280
@@ -2615,7 +2633,7 @@ COMPOUND001
   0
 BLOCK_RECORD
   5
-54
+55
 330
 1
 100
@@ -2623,7 +2641,7 @@ AcDbSymbolTableRecord
 100
 AcDbBlockTableRecord
   2
-COMPOUND002
+ARRAY005
  70
     0
 280
@@ -2717,9 +2735,9 @@ AcDbBlockEnd
   0
 BLOCK
   5
-4F
+50
 330
-4E
+4F
 100
 AcDbEntity
   8
@@ -2727,7 +2745,7 @@ AcDbEntity
 100
 AcDbBlockBegin
   2
-COMPOUND
+ARRAY004
  70
     0
  10
@@ -2735,13 +2753,13 @@ COMPOUND
  20
 0
   3
-COMPOUND
+ARRAY004
   1
 
   0
 CIRCLE
   5
-57
+58
 100
 AcDbEntity
   8
@@ -2755,33 +2773,11 @@ ByLayer
 100
 AcDbCircle
  10
--132
+-105
  20
-37.5
+40
  40
-2.15265
-  0
-CIRCLE
-  5
-58
-100
-AcDbEntity
-  8
-mfc_mounting_plate
-  6
-ByLayer
- 62
-    0
-370
-   -1
-100
-AcDbCircle
- 10
--75.48
- 20
-17.18
- 40
-2.15265
+35
   0
 CIRCLE
   5
@@ -2789,7 +2785,7 @@ CIRCLE
 100
 AcDbEntity
   8
-mfc_mounting_plate
+humidifier_bottles_mount
   6
 ByLayer
  62
@@ -2799,11 +2795,11 @@ ByLayer
 100
 AcDbCircle
  10
--7.05
+-35
  20
-37.5
+40
  40
-2.15265
+35
   0
 CIRCLE
   5
@@ -2811,7 +2807,7 @@ CIRCLE
 100
 AcDbEntity
   8
-mfc_mounting_plate
+humidifier_bottles_mount
   6
 ByLayer
  62
@@ -2821,11 +2817,11 @@ ByLayer
 100
 AcDbCircle
  10
-49.47
+35
  20
-17.18
+40
  40
-2.15265
+35
   0
 CIRCLE
   5
@@ -2833,7 +2829,7 @@ CIRCLE
 100
 AcDbEntity
   8
-mfc_mounting_plate
+humidifier_bottles_mount
   6
 ByLayer
  62
@@ -2843,83 +2839,17 @@ ByLayer
 100
 AcDbCircle
  10
--79
+105
  20
-64.18000000000001
+40
  40
-2.15265
-  0
-CIRCLE
-  5
-5C
-100
-AcDbEntity
-  8
-mfc_mounting_plate
-  6
-ByLayer
- 62
-    0
-370
-   -1
-100
-AcDbCircle
- 10
--22.48
- 20
-43.86
- 40
-2.15265
-  0
-CIRCLE
-  5
-5D
-100
-AcDbEntity
-  8
-mfc_mounting_plate
-  6
-ByLayer
- 62
-    0
-370
-   -1
-100
-AcDbCircle
- 10
-45.95
- 20
-64.18000000000001
- 40
-2.15265
-  0
-CIRCLE
-  5
-5E
-100
-AcDbEntity
-  8
-mfc_mounting_plate
-  6
-ByLayer
- 62
-    0
-370
-   -1
-100
-AcDbCircle
- 10
-102.47
- 20
-43.86
- 40
-2.15265
+35
   0
 ENDBLK
   5
-50
+51
 330
-4E
+4F
 100
 AcDbEntity
   8
@@ -2929,9 +2859,9 @@ AcDbBlockEnd
   0
 BLOCK
   5
-52
+53
 330
-51
+52
 100
 AcDbEntity
   8
@@ -2939,7 +2869,7 @@ AcDbEntity
 100
 AcDbBlockBegin
   2
-COMPOUND001
+CLONE
  70
     0
  10
@@ -2947,13 +2877,13 @@ COMPOUND001
  20
 0
   3
-COMPOUND001
+CLONE
   1
 
   0
 CIRCLE
   5
-5F
+5C
 100
 AcDbEntity
   8
@@ -2970,6 +2900,72 @@ AcDbCircle
 131
  20
 7.7639
+ 40
+3.2639
+  0
+CIRCLE
+  5
+5D
+100
+AcDbEntity
+  8
+humidifier_mounting_holes
+  6
+ByLayer
+ 62
+    0
+370
+   -1
+100
+AcDbCircle
+ 10
+131
+ 20
+72.23609999999999
+ 40
+3.2639
+  0
+CIRCLE
+  5
+5E
+100
+AcDbEntity
+  8
+humidifier_mounting_holes
+  6
+ByLayer
+ 62
+    0
+370
+   -1
+100
+AcDbCircle
+ 10
+-131
+ 20
+7.7639
+ 40
+3.2639
+  0
+CIRCLE
+  5
+5F
+100
+AcDbEntity
+  8
+humidifier_mounting_holes
+  6
+ByLayer
+ 62
+    0
+370
+   -1
+100
+AcDbCircle
+ 10
+-131
+ 20
+72.23609999999999
  40
 3.2639
   0
@@ -2979,7 +2975,7 @@ CIRCLE
 100
 AcDbEntity
   8
-mfc_mounting_plate
+humidifier_mounting_holes
   6
 ByLayer
  62
@@ -2989,9 +2985,9 @@ ByLayer
 100
 AcDbCircle
  10
-131
+0
  20
-72.23609999999999
+7.7639
  40
 3.2639
   0
@@ -3001,73 +2997,7 @@ CIRCLE
 100
 AcDbEntity
   8
-mfc_mounting_plate
-  6
-ByLayer
- 62
-    0
-370
-   -1
-100
-AcDbCircle
- 10
--131
- 20
-7.7639
- 40
-3.2639
-  0
-CIRCLE
-  5
-62
-100
-AcDbEntity
-  8
-mfc_mounting_plate
-  6
-ByLayer
- 62
-    0
-370
-   -1
-100
-AcDbCircle
- 10
--131
- 20
-72.23609999999999
- 40
-3.2639
-  0
-CIRCLE
-  5
-63
-100
-AcDbEntity
-  8
-mfc_mounting_plate
-  6
-ByLayer
- 62
-    0
-370
-   -1
-100
-AcDbCircle
- 10
-0
- 20
-7.7639
- 40
-3.2639
-  0
-CIRCLE
-  5
-64
-100
-AcDbEntity
-  8
-mfc_mounting_plate
+humidifier_mounting_holes
   6
 ByLayer
  62
@@ -3085,9 +3015,9 @@ AcDbCircle
   0
 ENDBLK
   5
-53
+54
 330
-51
+52
 100
 AcDbEntity
   8
@@ -3097,9 +3027,9 @@ AcDbBlockEnd
   0
 BLOCK
   5
-55
+56
 330
-54
+55
 100
 AcDbEntity
   8
@@ -3107,7 +3037,7 @@ AcDbEntity
 100
 AcDbBlockBegin
   2
-COMPOUND002
+ARRAY005
  70
     0
  10
@@ -3115,13 +3045,13 @@ COMPOUND002
  20
 0
   3
-COMPOUND002
+ARRAY005
   1
 
   0
 CIRCLE
   5
-65
+62
 100
 AcDbEntity
   8
@@ -3135,7 +3065,29 @@ ByLayer
 100
 AcDbCircle
  10
--11.0278
+-70
+ 20
+7.7639
+ 40
+3.2639
+  0
+CIRCLE
+  5
+63
+100
+AcDbEntity
+  8
+humidifier_mounting_holes
+  6
+ByLayer
+ 62
+    0
+370
+   -1
+100
+AcDbCircle
+ 10
+-70
  20
 72.23609999999999
  40
@@ -3143,11 +3095,11 @@ AcDbCircle
   0
 CIRCLE
   5
-66
+64
 100
 AcDbEntity
   8
-mfc_mounting_plate
+humidifier_mounting_holes
   6
 ByLayer
  62
@@ -3157,7 +3109,7 @@ ByLayer
 100
 AcDbCircle
  10
--119.9722
+70
  20
 7.7639
  40
@@ -3165,11 +3117,11 @@ AcDbCircle
   0
 CIRCLE
   5
-67
+65
 100
 AcDbEntity
   8
-mfc_mounting_plate
+humidifier_mounting_holes
   6
 ByLayer
  62
@@ -3179,29 +3131,7 @@ ByLayer
 100
 AcDbCircle
  10
-119.9722
- 20
-7.7639
- 40
-3.2639
-  0
-CIRCLE
-  5
-68
-100
-AcDbEntity
-  8
-mfc_mounting_plate
-  6
-ByLayer
- 62
-    0
-370
-   -1
-100
-AcDbCircle
- 10
-119.9722
+70
  20
 72.23609999999999
  40
@@ -3209,9 +3139,9 @@ AcDbCircle
   0
 ENDBLK
   5
-56
+57
 330
-54
+55
 100
 AcDbEntity
   8
@@ -3227,11 +3157,11 @@ ENTITIES
   0
 LWPOLYLINE
   5
-69
+66
 100
 AcDbEntity
   8
-mfc_mounting_plate
+humidifier_bottles_mount
   6
 ByLayer
  62
@@ -3289,11 +3219,11 @@ AcDbPolyline
   0
 INSERT
   5
-6A
+67
 100
 AcDbEntity
   8
-mfc_mounting_plate
+humidifier_bottles_mount
   6
 ByLayer
  62
@@ -3303,7 +3233,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-COMPOUND
+ARRAY004
  10
 0
  20
@@ -3329,11 +3259,11 @@ COMPOUND
   0
 INSERT
   5
-6B
+68
 100
 AcDbEntity
   8
-mfc_mounting_plate
+humidifier_mounting_holes
   6
 ByLayer
  62
@@ -3343,7 +3273,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-COMPOUND001
+CLONE
  10
 0
  20
@@ -3369,11 +3299,11 @@ COMPOUND001
   0
 INSERT
   5
-6C
+69
 100
 AcDbEntity
   8
-mfc_mounting_plate
+humidifier_mounting_holes
   6
 ByLayer
  62
@@ -3383,7 +3313,7 @@ ByLayer
 100
 AcDbBlockReference
   2
-COMPOUND002
+ARRAY005
  10
 0
  20
