@@ -5,25 +5,27 @@ import numpy as np
 import os
 
 # TODO convert in to kicad footprint wizard
-def electrode_vertices(mirror=True, lengthwise=True, include_other_electrode=True, \
-        rightmost_tooth_from_top=False,  center_x=0, center_y=0, \
-        min_half_length=25, min_width=6.5, between_electrodes=0.6, \
-        electrode_width=0.4, connections_between_grids=False,  \
-        y_between_grid_centers=22.50, extra_center_tooth=1):
+def electrode_vertices(mirror=True, lengthwise=True,
+        include_other_electrode=True, rightmost_tooth_from_top=False,
+        center_x=0, center_y=0, min_half_length=25, min_width=6.5,
+        between_electrodes=0.6, electrode_width=0.4,
+        connections_between_grids=False, y_between_grid_centers=22.50,
+        extra_center_tooth=1):
     """
     TODO reword mirror?
     TODO what does rightmost_tooth_from_top do?
 
-    include_other_electrode: not the exact same as the electrode with a bus down the center
-    there are two disconnected electrodes like these per chamber
-    but only one common high voltage electrode
+    include_other_electrode: not the exact same as the electrode with a bus down
+    the center there are two disconnected electrodes like these per chamber but
+    only one common high voltage electrode
 
     between_electrodes: changed from 1mm of original to 0.6, which is IPC
     minimum for up to 150V for uncoated external connectors not at elevation
 
-    connections_between_grids: should be false when used for Kicad footprints, 
+    connections_between_grids: should be false when used for Kicad footprints,
     unless you are trying to avoid routing the common high voltage rail in the
-    center. If your board will have holes / routes there, then you can't do this.
+    center. If your board will have holes / routes there, then you can't do
+    this.
 
     y_between_grid_centers : ignored if connections_between_grids is False
 
@@ -38,13 +40,15 @@ def electrode_vertices(mirror=True, lengthwise=True, include_other_electrode=Tru
 
     # between the two close edges
     # TODO is this the behavior i want for non-lengthwise case?
-    between_backbones = ((min_half_length + between_electrodes - \
-        electrode_width / 2.0) if lengthwise else \
+    between_backbones = ((min_half_length + between_electrodes -
+        electrode_width / 2.0) if lengthwise else
         (min_width + 2 * between_electrodes))
 
-    backbone = (center_x if lengthwise else center_y) - (between_backbones / 2.0)
-    tooth_tip = (center_x if lengthwise else center_y) + \
-        (between_backbones / 2.0) - between_electrodes
+    backbone = ((center_x if lengthwise else center_y) -
+                (between_backbones / 2.0))
+
+    tooth_tip = ((center_x if lengthwise else center_y) +
+        (between_backbones / 2.0) - between_electrodes)
 
     # TODO maybe rename
     center = center_y if lengthwise else center_x
@@ -63,46 +67,48 @@ def electrode_vertices(mirror=True, lengthwise=True, include_other_electrode=Tru
     curr_pos = origin
     points = []
 
-    swap_if_necessary = (lambda x: [x[1], x[0]]) if lengthwise \
-        else (lambda x: x)
+    swap_if_necessary = ((lambda x: [x[1], x[0]]) if lengthwise
+        else (lambda x: x))
 
     # top left, at intersection with bottom edge of grid unit above
     # TODO test / fix for lengthwise case
     if connections_between_grids:
-        points.append([curr_pos, backbone + (y_between_grid_centers - electrode_width)])
+        points.append([curr_pos,
+                       backbone + (y_between_grid_centers - electrode_width)])
         curr_pos += electrode_width
-        points.append([curr_pos, backbone + (y_between_grid_centers - electrode_width)])
+        points.append([curr_pos,
+                       backbone + (y_between_grid_centers - electrode_width)])
 
     else:
-        points.append(swap_if_necessary([curr_pos, \
-            tooth_tip + extra_center_tooth]))
+        points.append(swap_if_necessary([curr_pos,
+                                         tooth_tip + extra_center_tooth]))
         curr_pos += electrode_width
-        points.append(swap_if_necessary([curr_pos, \
-            tooth_tip + extra_center_tooth]))
+        points.append(swap_if_necessary([curr_pos,
+                                         tooth_tip + extra_center_tooth]))
 
     # TODO check this makes sense for lengthwise
     if include_other_electrode:
         # origin for this will be topleft-most vertex
-        other_electrode_points = [swap_if_necessary([curr_pos + \
+        other_electrode_points = [swap_if_necessary([curr_pos +
             between_electrodes, opposing_backbone + electrode_width])]
 
-    # TODO maybe take into account that interleaved comb will add one electrode tooth
-    # one one end?
+    # TODO maybe take into account that interleaved comb will add one electrode
+    # tooth one one end?
     while curr_pos < center + (min_width if lengthwise else min_half_length):
         if include_other_electrode:
             opp = curr_pos + between_electrodes
-            other_electrode_points.append(swap_if_necessary([opp, \
+            other_electrode_points.append(swap_if_necessary([opp,
                 opposing_tooth_tip]))
 
             opp += electrode_width
-            other_electrode_points.append(swap_if_necessary([opp, \
+            other_electrode_points.append(swap_if_necessary([opp,
                 opposing_tooth_tip]))
 
-            other_electrode_points.append(swap_if_necessary([opp, \
+            other_electrode_points.append(swap_if_necessary([opp,
                 opposing_backbone]))
 
             opp += between_backbone_vertices 
-            other_electrode_points.append(swap_if_necessary([opp, \
+            other_electrode_points.append(swap_if_necessary([opp,
                 opposing_backbone]))
 
         # two points along backbone
@@ -129,14 +135,14 @@ def electrode_vertices(mirror=True, lengthwise=True, include_other_electrode=Tru
     if include_other_electrode:
         # TODO describe in docstring
         if rightmost_tooth_from_top:
-            other_electrode_points.append(swap_if_necessary([opp, \
+            other_electrode_points.append(swap_if_necessary([opp,
                 opposing_tooth_tip]))
 
             opp += electrode_width
-            other_electrode_points.append(swap_if_necessary([opp, \
+            other_electrode_points.append(swap_if_necessary([opp,
                 opposing_tooth_tip]))
 
-        other_electrode_points.append(swap_if_necessary([opp, \
+        other_electrode_points.append(swap_if_necessary([opp,
             opposing_backbone + electrode_width]))
 
         other_electrode_points.append(other_electrode_points[0])
@@ -211,14 +217,15 @@ def electrode_vertices(mirror=True, lengthwise=True, include_other_electrode=Tru
 
 # TODO also include / copy over other features of the pcb dxf to use as exclude
 # regions for footprint?
-# break those layers into own dxf? (would want to keep it in sync with master dxf though...)
+# break those layers into own dxf? (would want to keep it in sync with master
+# dxf though...)
 
 def as_librecad_commands(polylines):
     # command to generate this polyline in librecad
     # you may want to manually connect the end to some other feature
-    print 'Copy the output below this line, look for the command window in LibreCAD,' + \
-        ' and find the "Paste Multiple Commands" option in the dropdown. Then press <Esc> ' + \
-        'to finish drawing the polyline.'
+    print ('Copy the output below this line, look for the command window ' + 
+        'in LibreCAD, and find the "Paste Multiple Commands" option in the ' +
+        'dropdown. Then press <Esc> to finish drawing the polyline.')
 
     for polyline in polylines:
         print '\npolyline'
@@ -241,7 +248,8 @@ def as_kicad_mod(polylines, filename=None):
     from pcbnew import PCB_IO as io
     from kicad_util import *
 
-    # TODO check for library through some pcbnew api call? / catch creation error?
+    # TODO check for library through some pcbnew api call? / catch creation
+    # error?
     footprint_lib_dir = os.path.split(os.path.abspath(filename))[0]
     if not os.path.exists(footprint_lib_dir):
         # TODO any properties i want to pass?
@@ -251,8 +259,8 @@ def as_kicad_mod(polylines, filename=None):
     # but don't think i want either of those
     # TODO is this None thing going to cause problems later?
     footprint = pcbnew.MODULE(None)
-    footprint.SetDescription('Electrodes for shocking either side of one ' + \
-        'behavior chamber, for conditioning Drosophila to avoid odors ' + \
+    footprint.SetDescription('Electrodes for shocking either side of one ' +
+        'behavior chamber, for conditioning Drosophila to avoid odors ' +
         'paired with the shock.')
 
     def remove_neighboring_duplicates(point_list):
@@ -287,9 +295,9 @@ def as_kicad_mod(polylines, filename=None):
         pad.SetShape(pcbnew.PAD_SHAPE_CUSTOM)
         pv = pcbnew.wxPoint_Vector()
 
-        # kicad considers polygons to be self intersecting any points are repeated
-        # including having the point list start and end be the same
-        # so we will just exclude the end here
+        # kicad considers polygons to be self intersecting any points are
+        # repeated including having the point list start and end be the same so
+        # we will just exclude the end here
         pl = remove_neighboring_duplicates(pl)
         pl = remove_redundant_ends(pl)
 
@@ -326,16 +334,18 @@ def as_kicad_mod(polylines, filename=None):
             # TODO sign correct?
             pv.append(pcbnew.wxPoint(x - pad_x, (-y) - pad_y))
 
-        # TODO what all does the smd pad specifier mean? reasons i wouldn't want it?
+        # TODO what all does the smd pad specifier mean? reasons i wouldn't want
+        # it?
         # TODO remove mask layer?
 
         # TODO remove solder paste layer?
 
-        # TODO actually setting thickness to zero seemed to expose a bug?
-        # even though pad dialog in footprint editor seems to indicate zero is the default?
+        # TODO actually setting thickness to zero seemed to expose a bug?  even
+        # though pad dialog in footprint editor seems to indicate zero is the
+        # default?
         thickness = 1
-        # TODO why is the thickness of this primitive listed as 0.15mm in the GUI
-        # though i don't see it mentioned in the pads in the s-expr output
+        # TODO why is the thickness of this primitive listed as 0.15mm in the
+        # GUI though i don't see it mentioned in the pads in the s-expr output
         # (at least not for the pad, for the reference and stuff i do)
         pad.AddPrimitive(pv, thickness)
 
@@ -365,7 +375,8 @@ def as_kicad_mod(polylines, filename=None):
         pad.SetAttribute(pcbnew.PAD_ATTRIB_SMD)
 
         # pad editing in GUI fails if this is not true
-        assert pad.MergePrimitivesAsPolygon(), 'pad could not be merged. would be invalid in GUI.'
+        assert pad.MergePrimitivesAsPolygon(), \
+            'pad could not be merged. would be invalid in GUI.'
 
         # TODO sign correct?
         pad.SetPosition(pcbnew.wxPoint(pad_x, pad_y))
@@ -383,9 +394,9 @@ def as_kicad_mod(polylines, filename=None):
 
     # TODO not clear on why both setpos0 and setposition are called
     # in FootprintWizardBase.py
-    footprint.Reference().SetPosition(pcbnew.wxPoint(int(round(0.6 * min(all_xs))), \
-        int(round(1.1 * min(all_ys)))))
-    footprint.Value().SetPosition(pcbnew.wxPoint(int(round(0.6 * max(all_xs))), \
+    footprint.Reference().SetPosition(pcbnew.wxPoint(
+        int(round(0.6 * min(all_xs))), int(round(1.1 * min(all_ys)))))
+    footprint.Value().SetPosition(pcbnew.wxPoint(int(round(0.6 * max(all_xs))),
         int(round(1.1 * min(all_ys)))))
 
     # aiming for a visible layer that does not translate into manufacture
@@ -400,9 +411,9 @@ def as_kicad_mod(polylines, filename=None):
     
 
 if __name__ == '__main__':
-    filename = '../pcb/footprints.pretty/electrodes_clearance0.6mm_W0.4mm' + \
-        '_centerflush.kicad_mod'
+    filename = ('../pcb/footprints.pretty/electrodes_clearance0.6mm_W0.4mm' +
+        '_centerflush.kicad_mod')
     to_output_format = lambda *x: as_kicad_mod(*x, filename=filename)
-    to_output_format(electrode_vertices(lengthwise=False, \
+    to_output_format(electrode_vertices(lengthwise=False,
         include_other_electrode=True, mirror=True))
 

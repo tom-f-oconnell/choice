@@ -131,136 +131,6 @@ BLOCK
   8
 mfc_mounting_plate
   2
-COMPOUND
- 70
-0
- 10
-0.0
- 20
-0.0
- 30
-0.0
-  3
-COMPOUND
-  0
-CIRCLE
-  8
-mfc_mounting_plate
- 62
-0
- 10
--132.0
- 20
-37.5
- 30
-0.0
- 40
-2.15265
-  0
-CIRCLE
-  8
-mfc_mounting_plate
- 62
-0
- 10
--79.29
- 20
-17.18
- 30
-0.0
- 40
-2.15265
-  0
-CIRCLE
-  8
-mfc_mounting_plate
- 62
-0
- 10
--7.05
- 20
-37.5
- 30
-0.0
- 40
-2.15265
-  0
-CIRCLE
-  8
-mfc_mounting_plate
- 62
-0
- 10
-45.66
- 20
-17.18
- 30
-0.0
- 40
-2.15265
-  0
-CIRCLE
-  8
-mfc_mounting_plate
- 62
-0
- 10
--79.0
- 20
-64.18
- 30
-0.0
- 40
-2.15265
-  0
-CIRCLE
-  8
-mfc_mounting_plate
- 62
-0
- 10
--26.29
- 20
-43.86
- 30
-0.0
- 40
-2.15265
-  0
-CIRCLE
-  8
-mfc_mounting_plate
- 62
-0
- 10
-45.95
- 20
-64.18
- 30
-0.0
- 40
-2.15265
-  0
-CIRCLE
-  8
-mfc_mounting_plate
- 62
-0
- 10
-98.66
- 20
-43.86
- 30
-0.0
- 40
-2.15265
-  0
-ENDBLK
-  0
-BLOCK
-  8
-mfc_mounting_plate
-  2
 COMPOUND001
  70
 0
@@ -433,6 +303,154 @@ mfc_mounting_plate
   0
 ENDBLK
   0
+BLOCK
+  8
+mfc_mounting_plate
+  2
+ARRAY
+ 70
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  3
+ARRAY
+  0
+CIRCLE
+  8
+mfc_mounting_plate
+ 62
+0
+ 10
+-152.0
+ 20
+37.5
+ 30
+0.0
+ 40
+2.15265
+  0
+CIRCLE
+  8
+mfc_mounting_plate
+ 62
+0
+ 10
+-99.29
+ 20
+17.18
+ 30
+0.0
+ 40
+2.15265
+  0
+CIRCLE
+  8
+mfc_mounting_plate
+ 62
+0
+ 10
+12.95
+ 20
+37.5
+ 30
+0.0
+ 40
+2.15265
+  0
+CIRCLE
+  8
+mfc_mounting_plate
+ 62
+0
+ 10
+65.66
+ 20
+17.18
+ 30
+0.0
+ 40
+2.15265
+  0
+ENDBLK
+  0
+BLOCK
+  8
+mfc_mounting_plate
+  2
+ARRAY001
+ 70
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  3
+ARRAY001
+  0
+CIRCLE
+  8
+mfc_mounting_plate
+ 62
+0
+ 10
+-99.0
+ 20
+64.18
+ 30
+0.0
+ 40
+2.15265
+  0
+CIRCLE
+  8
+mfc_mounting_plate
+ 62
+0
+ 10
+-46.29
+ 20
+43.86
+ 30
+0.0
+ 40
+2.15265
+  0
+CIRCLE
+  8
+mfc_mounting_plate
+ 62
+0
+ 10
+65.95
+ 20
+64.18
+ 30
+0.0
+ 40
+2.15265
+  0
+CIRCLE
+  8
+mfc_mounting_plate
+ 62
+0
+ 10
+118.66
+ 20
+43.86
+ 30
+0.0
+ 40
+2.15265
+  0
+ENDBLK
+  0
 ENDSEC
   0
 SECTION
@@ -459,9 +477,9 @@ VERTEX
   8
 mfc_mounting_plate
  10
--137.0
+-157.0
  20
-0.0
+1.38644651315e-12
  30
 0.0
   0
@@ -469,7 +487,7 @@ VERTEX
   8
 mfc_mounting_plate
  10
-137.0
+157.0
  20
 0.0
  30
@@ -481,7 +499,7 @@ VERTEX
   8
 mfc_mounting_plate
  10
-141.0
+161.0
  20
 4.0
  30
@@ -491,7 +509,7 @@ VERTEX
   8
 mfc_mounting_plate
  10
-141.0
+161.0
  20
 76.0
  30
@@ -503,7 +521,7 @@ VERTEX
   8
 mfc_mounting_plate
  10
-137.0
+157.0
  20
 80.0
  30
@@ -513,19 +531,19 @@ VERTEX
   8
 mfc_mounting_plate
  10
--137.0
+-157.0
  20
 80.0
  30
 0.0
  42
-0.414213562373
+0.414213562371
   0
 VERTEX
   8
 mfc_mounting_plate
  10
--141.0
+-161.0
  20
 76.0
  30
@@ -535,31 +553,17 @@ VERTEX
   8
 mfc_mounting_plate
  10
--141.0
+-161.0
  20
 4.0
  30
 0.0
  42
-0.414213562373
+0.414213562372
   0
 SEQEND
   8
 mfc_mounting_plate
-  0
-INSERT
-  2
-COMPOUND
-  8
-mfc_mounting_plate
- 62
-0
- 10
-0.0
- 20
-0.0
- 30
-0.0
   0
 INSERT
   2
@@ -578,6 +582,34 @@ mfc_mounting_plate
 INSERT
   2
 COMPOUND002
+  8
+mfc_mounting_plate
+ 62
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  0
+INSERT
+  2
+ARRAY
+  8
+mfc_mounting_plate
+ 62
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  0
+INSERT
+  2
+ARRAY001
   8
 mfc_mounting_plate
  62
