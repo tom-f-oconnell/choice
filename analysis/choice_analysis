@@ -2262,6 +2262,10 @@ def main():
         elif not fly2meta[k]['n'] in bad[stamp]:
             good_fly2data[k] = v
 
+    formatter = PluralFormatter()
+    odor_lines = []
+    df = None
+
     # TODO order traces consistently across runs (by roi #).
     if len(good_fly2data) > 0:
         df = analyze_group(
@@ -2277,12 +2281,9 @@ def main():
             posttest_index=posttest_index
         )
 
-        formatter = PluralFormatter()
-
         # TODO any reason to do this for not use_pre_post case?
         # i guess it'd reveal a side bias? but i think i might rather do that
         # explicitly from the df?
-        odor_lines = []
         for o in all_odors:
             # for analyzing experiments with aversive conditioning
             if 'shocked_odor' in df.columns:
@@ -2337,19 +2338,21 @@ def main():
                         pretest_index=pretest_index,
                         posttest_index=posttest_index
                     )
+    # end if checking if there are good flies
 
-        reason2formatstr = {
-            'never_active': '{0} fl{0(y,ies)} were never active',
-            'inactive_after_shock': '{0} fl{0(y,ies)} became ' +
-            'inactive after a shock',
-            'no_sample_either_test': '{0} fl{0(y,ies)} did not ' +
-                'come close enough to sampling one odor during a ' +
-                'test',
-            'no_receive_shock': '{0} fl{0(y,ies)} did not appear ' +
-                'to receive a shock',
-            'tracker_artifacts': '{0} trajector{0(y,ies)} ' +
-                'appeared to have tracking artifacts'
-        }
+
+    reason2formatstr = {
+        'never_active': '{0} fl{0(y,ies)} were never active',
+        'inactive_after_shock': '{0} fl{0(y,ies)} became ' +
+        'inactive after a shock',
+        'no_sample_either_test': '{0} fl{0(y,ies)} did not ' +
+            'come close enough to sampling one odor during a ' +
+            'test',
+        'no_receive_shock': '{0} fl{0(y,ies)} did not appear ' +
+            'to receive a shock',
+        'tracker_artifacts': '{0} trajector{0(y,ies)} ' +
+            'appeared to have tracking artifacts'
+    }
 
     reject_reason_lines = []
     rois_without_flies = 0
@@ -2475,7 +2478,7 @@ def main():
                         metric.__name__, '' if n is None else '_test{}'.format(
                         i), plot_format)), bbox_inches='tight')
 
-    if use_pre_post and want_abs_decision_bias:
+    if (not df is None) and use_pre_post and want_abs_decision_bias:
         report += 'Mean |decision bias| post: '
         # TODO bring posttest_index up here and use that instead?
         report += format_stat(np.nanmean(np.abs(df.loc[
