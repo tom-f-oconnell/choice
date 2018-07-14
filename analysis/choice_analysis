@@ -2396,7 +2396,9 @@ def main():
 
     # TODO TODO don't include stuff implying there was selection ("good") if all
     # rejection is turned off
-    report = 'Good flies: {}/{}\n'.format(len(good_fly2data), total_flies)
+    report = 'Good flies: {}/{} ({})\n'.format(len(good_fly2data), total_flies, 
+        format_stat(len(good_fly2data) / total_flies))
+
     for line in odor_lines:
         report += line + '\n'
     report += '\n'
