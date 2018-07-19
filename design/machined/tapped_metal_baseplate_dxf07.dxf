@@ -1115,9 +1115,9 @@ AcDbViewportTableRecord
  21
 1
  12
-247.463199596543
+183.1886450914285
  22
-131.2474812003424
+122.4668968115882
  13
 0
  23
@@ -1143,9 +1143,9 @@ AcDbViewportTableRecord
  37
 0
  40
-355.8265045875949
+270.5187999208619
  41
-1.881462799495586
+1.583858764186633
  42
 50
  43
@@ -2235,7 +2235,7 @@ AcDbLayerTableRecord
   2
 0
  70
-    1
+    0
  62
     7
   6
@@ -2297,7 +2297,7 @@ AcDbSymbolTableRecord
 100
 AcDbTextStyleTableRecord
   2
-standard
+Standard
  70
     0
  40
@@ -2311,7 +2311,7 @@ standard
  42
 1
   3
-standard
+txt
   4
 
   0
@@ -2677,101 +2677,9 @@ SECTION
   2
 ENTITIES
   0
-MTEXT
-  5
-4E
-100
-AcDbEntity
-  8
-0
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbMText
- 10
-260
- 20
-30
- 30
-0
- 40
-3
- 41
-132.7500077143099
- 71
-    1
- 72
-    1
-  1
-TODO put all directional blocks in consistent orientation.\Pmake all parts symmetric across midline into blocks, and mirror
-  7
-standard
-210
-0
-220
-0
-230
-1
- 50
-0
- 73
-    2
- 44
-1
-  0
-CIRCLE
-  5
-4F
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-134.0772
- 20
-215
- 40
-8
-  0
-LINE
-  5
-50
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-85.00000007178122
- 20
-200
- 11
--9.699999999999989
- 21
-200
-  0
 ARC
   5
-51
+4E
 100
 AcDbEntity
   8
@@ -2797,33 +2705,9 @@ AcDbArc
  51
 180
   0
-LINE
-  5
-52
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-259.7
- 20
-200
- 11
-165.0000000717812
- 21
-200
-  0
 ARC
   5
-53
+4F
 100
 AcDbEntity
   8
@@ -2849,137 +2733,9 @@ AcDbArc
  51
 90
   0
-LINE
-  5
-54
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-85.0000000717812
- 20
-200
- 11
-85.00000001435625
- 21
-219.9999999856438
-  0
 ARC
   5
-55
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-90.00000001435623
- 20
-220
- 40
-5
-100
-AcDbArc
- 50
-90
- 51
-180.0000001645103
-  0
-LINE
-  5
-56
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-165.0000000143562
- 20
-220.0000000143563
- 11
-165.0000000717812
- 21
-200
-  0
-ARC
-  5
-57
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-160.0000000143562
- 20
-220
- 40
-5
-100
-AcDbArc
- 50
-1.645106286774572e-07
- 51
-90
-  0
-LINE
-  5
-58
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-90.0000038290535
- 20
-225
- 11
-160.0000000143562
- 21
-225
-  0
-ARC
-  5
-59
+50
 100
 AcDbEntity
   8
@@ -3007,7 +2763,7 @@ AcDbArc
   0
 ARC
   5
-5A
+51
 100
 AcDbEntity
   8
@@ -3035,7 +2791,7 @@ AcDbArc
   0
 LINE
   5
-5B
+52
 100
 AcDbEntity
   8
@@ -3059,7 +2815,7 @@ AcDbLine
   0
 LINE
   5
-5C
+53
 100
 AcDbEntity
   8
@@ -3080,6 +2836,222 @@ AcDbLine
 -14.7
  21
 195
+  0
+LINE
+  5
+54
+100
+AcDbEntity
+  8
+06b_metal_support_tapped
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbLine
+ 10
+264.7
+ 20
+195
+ 11
+264.7
+ 21
+2
+  0
+LINE
+  5
+55
+100
+AcDbEntity
+  8
+06b_metal_support_tapped
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbLine
+ 10
+98.006
+ 20
+178.25
+ 11
+152.006
+ 21
+178.25
+  0
+LINE
+  5
+56
+100
+AcDbEntity
+  8
+06b_metal_support_tapped
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbLine
+ 10
+152.006
+ 20
+178.25
+ 11
+152.006
+ 21
+169.25
+  0
+LINE
+  5
+57
+100
+AcDbEntity
+  8
+06b_metal_support_tapped
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbLine
+ 10
+152.006
+ 20
+169.25
+ 11
+98.006
+ 21
+169.25
+  0
+LINE
+  5
+58
+100
+AcDbEntity
+  8
+06b_metal_support_tapped
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbLine
+ 10
+98.006
+ 20
+169.25
+ 11
+98.006
+ 21
+178.25
+  0
+LINE
+  5
+59
+100
+AcDbEntity
+  8
+06b_metal_support_tapped
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbLine
+ 10
+98.0925836027684
+ 20
+155.7557114693859
+ 11
+152.0925836027684
+ 21
+155.7557114693859
+  0
+LINE
+  5
+5A
+100
+AcDbEntity
+  8
+06b_metal_support_tapped
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbLine
+ 10
+152.0925836027684
+ 20
+155.7557114693859
+ 11
+152.0925836027684
+ 21
+146.7557114693859
+  0
+LINE
+  5
+5B
+100
+AcDbEntity
+  8
+06b_metal_support_tapped
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbLine
+ 10
+152.0925836027684
+ 20
+146.7557114693859
+ 11
+98.0925836027684
+ 21
+146.7557114693859
+  0
+LINE
+  5
+5C
+100
+AcDbEntity
+  8
+06b_metal_support_tapped
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbLine
+ 10
+98.0925836027684
+ 20
+146.7557114693859
+ 11
+98.0925836027684
+ 21
+155.7557114693859
   0
 LINE
   5
@@ -3097,15 +3069,15 @@ ByLayer
 100
 AcDbLine
  10
-264.7
+98.1791672055368
  20
-195
+133.2614229387718
  11
-264.7
+152.1791672055368
  21
-2
+133.2614229387718
   0
-CIRCLE
+LINE
   5
 5E
 100
@@ -3119,15 +3091,17 @@ ByLayer
 370
    -1
 100
-AcDbCircle
+AcDbLine
  10
-115.6365234645944
+152.1791672055368
  20
-116.7332608974728
- 40
-1.85178
+133.2614229387718
+ 11
+152.1791672055368
+ 21
+124.2614229387718
   0
-CIRCLE
+LINE
   5
 5F
 100
@@ -3141,15 +3115,17 @@ ByLayer
 370
    -1
 100
-AcDbCircle
+AcDbLine
  10
-125.0120034645944
+152.1791672055368
  20
-116.7333541706728
- 40
-1.85178
+124.2614229387718
+ 11
+98.1791672055368
+ 21
+124.2614229387718
   0
-CIRCLE
+LINE
   5
 60
 100
@@ -3163,15 +3139,17 @@ ByLayer
 370
    -1
 100
-AcDbCircle
+AcDbLine
  10
-115.6505269291888
+98.1791672055368
  20
-71.72761506814562
- 40
-1.85178
+124.2614229387718
+ 11
+98.1791672055368
+ 21
+133.2614229387718
   0
-CIRCLE
+LINE
   5
 61
 100
@@ -3185,15 +3163,17 @@ ByLayer
 370
    -1
 100
-AcDbCircle
+AcDbLine
  10
-125.0260069291888
+98.2657508083052
  20
-71.72770834134562
- 40
-1.85178
+110.7671344081577
+ 11
+152.2657508083052
+ 21
+110.7671344081577
   0
-CIRCLE
+LINE
   5
 62
 100
@@ -3207,15 +3187,17 @@ ByLayer
 370
    -1
 100
-AcDbCircle
+AcDbLine
  10
-115.6645303937832
+152.2657508083052
  20
-26.72196923881843
- 40
-1.85178
+110.7671344081577
+ 11
+152.2657508083052
+ 21
+101.7671344081577
   0
-CIRCLE
+LINE
   5
 63
 100
@@ -3229,15 +3211,17 @@ ByLayer
 370
    -1
 100
-AcDbCircle
+AcDbLine
  10
-125.0400103937832
+152.2657508083052
  20
-26.72206251201843
- 40
-1.85178
+101.7671344081577
+ 11
+98.2657508083052
+ 21
+101.7671344081577
   0
-CIRCLE
+LINE
   5
 64
 100
@@ -3251,15 +3235,17 @@ ByLayer
 370
    -1
 100
-AcDbCircle
+AcDbLine
  10
-134.3437051747206
+98.2657508083052
  20
-139.2419131655706
- 40
-1.85178
+101.7671344081577
+ 11
+98.2657508083052
+ 21
+110.7671344081577
   0
-CIRCLE
+LINE
   5
 65
 100
@@ -3273,15 +3259,17 @@ ByLayer
 370
    -1
 100
-AcDbCircle
+AcDbLine
  10
-124.9682444458214
+98.3523344110736
  20
-139.2229036950818
- 40
-1.85178
+88.27284587754366
+ 11
+152.3523344110736
+ 21
+88.27284587754366
   0
-CIRCLE
+LINE
   5
 66
 100
@@ -3295,15 +3283,17 @@ ByLayer
 370
    -1
 100
-AcDbCircle
+AcDbLine
  10
-134.4005332233104
+152.3523344110736
  20
-94.23152833003829
- 40
-1.85178
+88.27284587754366
+ 11
+152.3523344110736
+ 21
+79.27284587754366
   0
-CIRCLE
+LINE
   5
 67
 100
@@ -3317,15 +3307,17 @@ ByLayer
 370
    -1
 100
-AcDbCircle
+AcDbLine
  10
-125.0250724944112
+152.3523344110736
  20
-94.2125188595495
- 40
-1.85178
+79.27284587754366
+ 11
+98.3523344110736
+ 21
+79.27284587754366
   0
-CIRCLE
+LINE
   5
 68
 100
@@ -3339,15 +3331,17 @@ ByLayer
 370
    -1
 100
-AcDbCircle
+AcDbLine
  10
-134.4573612719002
+98.3523344110736
  20
-49.22114349450602
- 40
-1.85178
+79.27284587754366
+ 11
+98.3523344110736
+ 21
+88.27284587754366
   0
-CIRCLE
+LINE
   5
 69
 100
@@ -3361,15 +3355,17 @@ ByLayer
 370
    -1
 100
-AcDbCircle
+AcDbLine
  10
-125.081900543001
+98.438918013842
  20
-49.20213402401725
- 40
-1.85178
+65.77855734692957
+ 11
+152.438918013842
+ 21
+65.77855734692957
   0
-CIRCLE
+LINE
   5
 6A
 100
@@ -3383,15 +3379,17 @@ ByLayer
 370
    -1
 100
-AcDbCircle
+AcDbLine
  10
-115.62252
+152.438918013842
  20
-161.7389067268
- 40
-1.85178
+65.77855734692957
+ 11
+152.438918013842
+ 21
+56.77855734692957
   0
-CIRCLE
+LINE
   5
 6B
 100
@@ -3405,15 +3403,17 @@ ByLayer
 370
    -1
 100
-AcDbCircle
+AcDbLine
  10
-124.998
+152.438918013842
  20
-161.739
- 40
-1.85178
+56.77855734692957
+ 11
+98.438918013842
+ 21
+56.77855734692957
   0
-CIRCLE
+LINE
   5
 6C
 100
@@ -3427,15 +3427,17 @@ ByLayer
 370
    -1
 100
-AcDbCircle
+AcDbLine
  10
-134.2868771261308
+98.438918013842
  20
-184.2522980011028
- 40
-1.85178
+56.77855734692957
+ 11
+98.438918013842
+ 21
+65.77855734692957
   0
-CIRCLE
+LINE
   5
 6D
 100
@@ -3449,15 +3451,17 @@ ByLayer
 370
    -1
 100
-AcDbCircle
+AcDbLine
  10
-124.9114163972316
+98.5255016166104
  20
-184.2332885306141
- 40
-1.85178
+43.28426881631549
+ 11
+152.5255016166104
+ 21
+43.28426881631549
   0
-CIRCLE
+LINE
   5
 6E
 100
@@ -3471,15 +3475,17 @@ ByLayer
 370
    -1
 100
-AcDbCircle
+AcDbLine
  10
-254.9718
+152.5255016166104
  20
-150
- 40
-3.3782
+43.28426881631549
+ 11
+152.5255016166104
+ 21
+34.28426881631549
   0
-CIRCLE
+LINE
   5
 6F
 100
@@ -3493,15 +3499,17 @@ ByLayer
 370
    -1
 100
-AcDbCircle
+AcDbLine
  10
-254.9718
+152.5255016166104
  20
-100
- 40
-3.3782
+34.28426881631549
+ 11
+98.5255016166104
+ 21
+34.28426881631549
   0
-CIRCLE
+LINE
   5
 70
 100
@@ -3515,15 +3523,17 @@ ByLayer
 370
    -1
 100
-AcDbCircle
+AcDbLine
  10
-254.9718
+98.5255016166104
  20
-50
- 40
-3.3782
+34.28426881631549
+ 11
+98.5255016166104
+ 21
+43.28426881631549
   0
-CIRCLE
+LINE
   5
 71
 100
@@ -3537,15 +3547,17 @@ ByLayer
 370
    -1
 100
-AcDbCircle
+AcDbLine
  10
--4.9718
+98.6120852193788
  20
-150
- 40
-3.3782
+20.7899802857014
+ 11
+152.6120852193788
+ 21
+20.7899802857014
   0
-CIRCLE
+LINE
   5
 72
 100
@@ -3559,15 +3571,17 @@ ByLayer
 370
    -1
 100
-AcDbCircle
+AcDbLine
  10
--4.9718
+152.6120852193788
  20
-100
- 40
-3.3782
+20.7899802857014
+ 11
+152.6120852193788
+ 21
+11.7899802857014
   0
-CIRCLE
+LINE
   5
 73
 100
@@ -3581,13 +3595,15 @@ ByLayer
 370
    -1
 100
-AcDbCircle
+AcDbLine
  10
--4.9718
+152.6120852193788
  20
-50
- 40
-3.3782
+11.7899802857014
+ 11
+98.6120852193788
+ 21
+11.7899802857014
   0
 LINE
   5
@@ -3605,750 +3621,6 @@ ByLayer
 100
 AcDbLine
  10
-98.006
- 20
-178.25
- 11
-152.006
- 21
-178.25
-  0
-LINE
-  5
-75
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-152.006
- 20
-178.25
- 11
-152.006
- 21
-169.25
-  0
-LINE
-  5
-76
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-152.006
- 20
-169.25
- 11
-98.006
- 21
-169.25
-  0
-LINE
-  5
-77
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-98.006
- 20
-169.25
- 11
-98.006
- 21
-178.25
-  0
-LINE
-  5
-78
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-98.0925836027684
- 20
-155.7557114693859
- 11
-152.0925836027684
- 21
-155.7557114693859
-  0
-LINE
-  5
-79
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-152.0925836027684
- 20
-155.7557114693859
- 11
-152.0925836027684
- 21
-146.7557114693859
-  0
-LINE
-  5
-7A
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-152.0925836027684
- 20
-146.7557114693859
- 11
-98.0925836027684
- 21
-146.7557114693859
-  0
-LINE
-  5
-7B
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-98.0925836027684
- 20
-146.7557114693859
- 11
-98.0925836027684
- 21
-155.7557114693859
-  0
-LINE
-  5
-7C
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-98.1791672055368
- 20
-133.2614229387718
- 11
-152.1791672055368
- 21
-133.2614229387718
-  0
-LINE
-  5
-7D
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-152.1791672055368
- 20
-133.2614229387718
- 11
-152.1791672055368
- 21
-124.2614229387718
-  0
-LINE
-  5
-7E
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-152.1791672055368
- 20
-124.2614229387718
- 11
-98.1791672055368
- 21
-124.2614229387718
-  0
-LINE
-  5
-7F
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-98.1791672055368
- 20
-124.2614229387718
- 11
-98.1791672055368
- 21
-133.2614229387718
-  0
-LINE
-  5
-80
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-98.2657508083052
- 20
-110.7671344081577
- 11
-152.2657508083052
- 21
-110.7671344081577
-  0
-LINE
-  5
-81
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-152.2657508083052
- 20
-110.7671344081577
- 11
-152.2657508083052
- 21
-101.7671344081577
-  0
-LINE
-  5
-82
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-152.2657508083052
- 20
-101.7671344081577
- 11
-98.2657508083052
- 21
-101.7671344081577
-  0
-LINE
-  5
-83
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-98.2657508083052
- 20
-101.7671344081577
- 11
-98.2657508083052
- 21
-110.7671344081577
-  0
-LINE
-  5
-84
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-98.3523344110736
- 20
-88.27284587754366
- 11
-152.3523344110736
- 21
-88.27284587754366
-  0
-LINE
-  5
-85
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-152.3523344110736
- 20
-88.27284587754366
- 11
-152.3523344110736
- 21
-79.27284587754366
-  0
-LINE
-  5
-86
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-152.3523344110736
- 20
-79.27284587754366
- 11
-98.3523344110736
- 21
-79.27284587754366
-  0
-LINE
-  5
-87
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-98.3523344110736
- 20
-79.27284587754366
- 11
-98.3523344110736
- 21
-88.27284587754366
-  0
-LINE
-  5
-88
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-98.438918013842
- 20
-65.77855734692957
- 11
-152.438918013842
- 21
-65.77855734692957
-  0
-LINE
-  5
-89
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-152.438918013842
- 20
-65.77855734692957
- 11
-152.438918013842
- 21
-56.77855734692957
-  0
-LINE
-  5
-8A
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-152.438918013842
- 20
-56.77855734692957
- 11
-98.438918013842
- 21
-56.77855734692957
-  0
-LINE
-  5
-8B
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-98.438918013842
- 20
-56.77855734692957
- 11
-98.438918013842
- 21
-65.77855734692957
-  0
-LINE
-  5
-8C
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-98.5255016166104
- 20
-43.28426881631549
- 11
-152.5255016166104
- 21
-43.28426881631549
-  0
-LINE
-  5
-8D
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-152.5255016166104
- 20
-43.28426881631549
- 11
-152.5255016166104
- 21
-34.28426881631549
-  0
-LINE
-  5
-8E
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-152.5255016166104
- 20
-34.28426881631549
- 11
-98.5255016166104
- 21
-34.28426881631549
-  0
-LINE
-  5
-8F
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-98.5255016166104
- 20
-34.28426881631549
- 11
-98.5255016166104
- 21
-43.28426881631549
-  0
-LINE
-  5
-90
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-98.6120852193788
- 20
-20.7899802857014
- 11
-152.6120852193788
- 21
-20.7899802857014
-  0
-LINE
-  5
-91
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-152.6120852193788
- 20
-20.7899802857014
- 11
-152.6120852193788
- 21
-11.7899802857014
-  0
-LINE
-  5
-92
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-152.6120852193788
- 20
-11.7899802857014
- 11
-98.6120852193788
- 21
-11.7899802857014
-  0
-LINE
-  5
-93
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
 98.6120852193788
  20
 11.7899802857014
@@ -4359,7 +3631,7 @@ AcDbLine
   0
 CIRCLE
   5
-94
+75
 100
 AcDbEntity
   8
@@ -4381,29 +3653,7 @@ AcDbCircle
   0
 CIRCLE
   5
-95
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-238.036
- 20
-135.214
- 40
-1.7272
-  0
-CIRCLE
-  5
-96
+76
 100
 AcDbEntity
   8
@@ -4425,7 +3675,7 @@ AcDbCircle
   0
 CIRCLE
   5
-97
+77
 100
 AcDbEntity
   8
@@ -4447,7 +3697,7 @@ AcDbCircle
   0
 CIRCLE
   5
-98
+78
 100
 AcDbEntity
   8
@@ -4469,7 +3719,7 @@ AcDbCircle
   0
 CIRCLE
   5
-99
+79
 100
 AcDbEntity
   8
@@ -4491,7 +3741,7 @@ AcDbCircle
   0
 CIRCLE
   5
-9A
+7A
 100
 AcDbEntity
   8
@@ -4513,7 +3763,7 @@ AcDbCircle
   0
 CIRCLE
   5
-9B
+7B
 100
 AcDbEntity
   8
@@ -4535,7 +3785,7 @@ AcDbCircle
   0
 CIRCLE
   5
-9C
+7C
 100
 AcDbEntity
   8
@@ -4557,7 +3807,7 @@ AcDbCircle
   0
 CIRCLE
   5
-9D
+7D
 100
 AcDbEntity
   8
@@ -4579,7 +3829,7 @@ AcDbCircle
   0
 CIRCLE
   5
-9E
+7E
 100
 AcDbEntity
   8
@@ -4601,7 +3851,7 @@ AcDbCircle
   0
 CIRCLE
   5
-9F
+7F
 100
 AcDbEntity
   8
@@ -4623,7 +3873,7 @@ AcDbCircle
   0
 CIRCLE
   5
-A0
+80
 100
 AcDbEntity
   8
@@ -4645,7 +3895,7 @@ AcDbCircle
   0
 CIRCLE
   5
-A1
+81
 100
 AcDbEntity
   8
@@ -4667,7 +3917,7 @@ AcDbCircle
   0
 CIRCLE
   5
-A2
+82
 100
 AcDbEntity
   8
@@ -4689,7 +3939,7 @@ AcDbCircle
   0
 CIRCLE
   5
-A3
+83
 100
 AcDbEntity
   8
@@ -4711,117 +3961,7 @@ AcDbCircle
   0
 CIRCLE
   5
-A4
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-162.214
- 40
-1.7272
-  0
-CIRCLE
-  5
-A5
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-139.964
- 40
-1.7272
-  0
-CIRCLE
-  5
-A6
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-117.714
- 40
-1.7272
-  0
-CIRCLE
-  5
-A7
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-196.285
- 20
-146.714
- 40
-1.7272
-  0
-CIRCLE
-  5
-A8
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-196.285
- 20
-133.214
- 40
-1.7272
-  0
-CIRCLE
-  5
-A9
+84
 100
 AcDbEntity
   8
@@ -4843,95 +3983,7 @@ AcDbCircle
   0
 CIRCLE
   5
-AA
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-95.4645
- 40
-1.7272
-  0
-CIRCLE
-  5
-AB
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-72.2145
- 40
-1.7272
-  0
-CIRCLE
-  5
-AC
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-49.9645
- 40
-1.7272
-  0
-CIRCLE
-  5
-AD
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-170
- 20
-27.7145
- 40
-1.7272
-  0
-CIRCLE
-  5
-AE
+85
 100
 AcDbEntity
   8
@@ -4953,51 +4005,7 @@ AcDbCircle
   0
 CIRCLE
   5
-AF
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-196.285
- 20
-43.2145
- 40
-1.7272
-  0
-CIRCLE
-  5
-B0
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-196.285
- 20
-56.7145
- 40
-1.7272
-  0
-CIRCLE
-  5
-B1
+86
 100
 AcDbEntity
   8
@@ -5019,95 +4027,7 @@ AcDbCircle
   0
 CIRCLE
   5
-B2
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-238.036
- 20
-54.7855
- 40
-1.7272
-  0
-CIRCLE
-  5
-B3
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-228.285
- 20
-88.2145
- 40
-1.7272
-  0
-CIRCLE
-  5
-B4
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-228.285
- 20
-101.714
- 40
-1.7272
-  0
-CIRCLE
-  5
-B5
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-212.285
- 20
-94.9645
- 40
-1.7272
-  0
-CIRCLE
-  5
-B6
+87
 100
 AcDbEntity
   8
@@ -5129,227 +4049,7 @@ AcDbCircle
   0
 CIRCLE
   5
-B7
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-80
- 20
-162.214
- 40
-1.7272
-  0
-CIRCLE
-  5
-B8
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-80
- 20
-139.964
- 40
-1.7272
-  0
-CIRCLE
-  5
-B9
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-80
- 20
-117.714
- 40
-1.7272
-  0
-CIRCLE
-  5
-BA
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-80
- 20
-95.4645
- 40
-1.7272
-  0
-CIRCLE
-  5
-BB
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-53.7145
- 20
-146.714
- 40
-1.7272
-  0
-CIRCLE
-  5
-BC
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-53.7145
- 20
-133.214
- 40
-1.7272
-  0
-CIRCLE
-  5
-BD
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-37.7145
- 20
-94.9645
- 40
-1.7272
-  0
-CIRCLE
-  5
-BE
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-21.7145
- 20
-101.714
- 40
-1.7272
-  0
-CIRCLE
-  5
-BF
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-21.7145
- 20
-88.2145
- 40
-1.7272
-  0
-CIRCLE
-  5
-C0
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-11.9645
- 20
-135.214
- 40
-1.7272
-  0
-CIRCLE
-  5
-C1
+88
 100
 AcDbEntity
   8
@@ -5371,7 +4071,7 @@ AcDbCircle
   0
 CIRCLE
   5
-C2
+89
 100
 AcDbEntity
   8
@@ -5393,139 +4093,7 @@ AcDbCircle
   0
 CIRCLE
   5
-C3
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-80
- 20
-27.7145
- 40
-1.7272
-  0
-CIRCLE
-  5
-C4
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-80
- 20
-49.9645
- 40
-1.7272
-  0
-CIRCLE
-  5
-C5
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-80
- 20
-72.2145
- 40
-1.7272
-  0
-CIRCLE
-  5
-C6
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-53.7145
- 20
-56.7145
- 40
-1.7272
-  0
-CIRCLE
-  5
-C7
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-53.7145
- 20
-43.2145
- 40
-1.7272
-  0
-CIRCLE
-  5
-C8
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-11.9645
- 20
-54.7855
- 40
-1.7272
-  0
-CIRCLE
-  5
-C9
+8A
 100
 AcDbEntity
   8
@@ -5545,361 +4113,9 @@ AcDbCircle
  40
 1.7272
   0
-CIRCLE
-  5
-CA
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-150.25
- 20
-210
- 40
-1.7272
-  0
-CIRCLE
-  5
-CB
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-150.25
- 20
-220
- 40
-1.7272
-  0
-CIRCLE
-  5
-CC
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-99.75
- 20
-220
- 40
-1.7272
-  0
-CIRCLE
-  5
-CD
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-99.75
- 20
-210
- 40
-1.7272
-  0
 LINE
   5
-CE
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-128.6887963675474
- 20
-121.5611628974746
- 11
-147.9390034645944
- 21
-121.5611628974746
-  0
-ARC
-  5
-CF
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-147.9390034645944
- 20
-120.5611628974746
- 40
-1
-100
-AcDbArc
- 50
-360
- 51
-90
-  0
-LINE
-  5
-D0
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-148.9390034645944
- 20
-120.5611628974746
- 11
-148.9390034645944
- 21
-119.7486628974746
-  0
-ARC
-  5
-D1
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-147.9390034645944
- 20
-119.7486628974746
- 40
-1
-100
-AcDbArc
- 50
-270
- 51
-360
-  0
-LINE
-  5
-D2
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-147.9390034645944
- 20
-118.7486628974746
- 11
-128.6887963675474
- 21
-118.7486628974746
-  0
-ARC
-  5
-D3
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-128.6887963675474
- 20
-119.7486628974746
- 40
-1.000000000000007
-100
-AcDbArc
- 50
-180.0000000000004
- 51
-270.0000000000004
-  0
-LINE
-  5
-D4
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-127.6887963675474
- 20
-119.7486628974746
- 11
-127.6887963675474
- 21
-120.5611628974746
-  0
-ARC
-  5
-D5
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-127.6887963675474
- 20
-120.5611628974746
- 40
-0
-100
-AcDbArc
- 50
-0
- 51
-0
-  0
-ARC
-  5
-D6
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-127.6887963675474
- 20
-120.5611628974746
- 40
-0
-100
-AcDbArc
- 50
-0
- 51
-0
-  0
-ARC
-  5
-D7
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-128.6887963675474
- 20
-120.5611628974746
- 40
-1
-100
-AcDbArc
- 50
-90
- 51
-180
-  0
-LINE
-  5
-D8
+8B
 100
 AcDbEntity
   8
@@ -5923,7 +4139,7 @@ AcDbLine
   0
 ARC
   5
-D9
+8C
 100
 AcDbEntity
   8
@@ -5951,7 +4167,7 @@ AcDbArc
   0
 LINE
   5
-DA
+8D
 100
 AcDbEntity
   8
@@ -5975,7 +4191,7 @@ AcDbLine
   0
 ARC
   5
-DB
+8E
 100
 AcDbEntity
   8
@@ -6003,271 +4219,7 @@ AcDbArc
   0
 LINE
   5
-DC
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-128.7027998321418
- 20
-76.55551706814742
- 11
-147.9530069291888
- 21
-76.55551706814742
-  0
-ARC
-  5
-DD
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-147.9530069291888
- 20
-75.55551706814742
- 40
-1
-100
-AcDbArc
- 50
-360
- 51
-90
-  0
-LINE
-  5
-DE
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-148.9530069291888
- 20
-75.55551706814742
- 11
-148.9530069291888
- 21
-74.74301706814742
-  0
-ARC
-  5
-DF
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-147.9530069291888
- 20
-74.74301706814742
- 40
-1
-100
-AcDbArc
- 50
-270
- 51
-360
-  0
-LINE
-  5
-E0
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-147.9530069291888
- 20
-73.74301706814742
- 11
-128.7027998321418
- 21
-73.74301706814742
-  0
-ARC
-  5
-E1
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-128.7027998321418
- 20
-74.74301706814744
- 40
-1.000000000000007
-100
-AcDbArc
- 50
-180.0000000000004
- 51
-270.0000000000004
-  0
-LINE
-  5
-E2
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-127.7027998321418
- 20
-74.74301706814742
- 11
-127.7027998321418
- 21
-75.55551706814742
-  0
-ARC
-  5
-E3
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-127.7027998321418
- 20
-75.55551706814742
- 40
-0
-100
-AcDbArc
- 50
-0
- 51
-0
-  0
-ARC
-  5
-E4
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-127.7027998321418
- 20
-75.55551706814742
- 40
-0
-100
-AcDbArc
- 50
-0
- 51
-0
-  0
-ARC
-  5
-E5
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-128.7027998321418
- 20
-75.55551706814742
- 40
-1
-100
-AcDbArc
- 50
-90
- 51
-180
-  0
-LINE
-  5
-E6
+8F
 100
 AcDbEntity
   8
@@ -6291,7 +4243,7 @@ AcDbLine
   0
 ARC
   5
-E7
+90
 100
 AcDbEntity
   8
@@ -6319,7 +4271,7 @@ AcDbArc
   0
 LINE
   5
-E8
+91
 100
 AcDbEntity
   8
@@ -6343,7 +4295,7 @@ AcDbLine
   0
 ARC
   5
-E9
+92
 100
 AcDbEntity
   8
@@ -6371,271 +4323,7 @@ AcDbArc
   0
 LINE
   5
-EA
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-128.7168032967362
- 20
-31.54987123882023
- 11
-147.9670103937832
- 21
-31.54987123882023
-  0
-ARC
-  5
-EB
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-147.9670103937832
- 20
-30.54987123882023
- 40
-1
-100
-AcDbArc
- 50
-360
- 51
-90
-  0
-LINE
-  5
-EC
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-148.9670103937832
- 20
-30.54987123882023
- 11
-148.9670103937832
- 21
-29.73737123882023
-  0
-ARC
-  5
-ED
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-147.9670103937832
- 20
-29.73737123882023
- 40
-1
-100
-AcDbArc
- 50
-270
- 51
-360
-  0
-LINE
-  5
-EE
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-147.9670103937832
- 20
-28.73737123882023
- 11
-128.7168032967362
- 21
-28.73737123882023
-  0
-ARC
-  5
-EF
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-128.7168032967362
- 20
-29.73737123882024
- 40
-1.000000000000007
-100
-AcDbArc
- 50
-180.0000000000004
- 51
-270.0000000000004
-  0
-LINE
-  5
-F0
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-127.7168032967362
- 20
-29.73737123882023
- 11
-127.7168032967362
- 21
-30.54987123882023
-  0
-ARC
-  5
-F1
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-127.7168032967362
- 20
-30.54987123882023
- 40
-0
-100
-AcDbArc
- 50
-0
- 51
-0
-  0
-ARC
-  5
-F2
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-127.7168032967362
- 20
-30.54987123882023
- 40
-0
-100
-AcDbArc
- 50
-0
- 51
-0
-  0
-ARC
-  5
-F3
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-128.7168032967362
- 20
-30.54987123882023
- 40
-1
-100
-AcDbArc
- 50
-90
- 51
-180
-  0
-LINE
-  5
-F4
+93
 100
 AcDbEntity
   8
@@ -6659,7 +4347,7 @@ AcDbLine
   0
 ARC
   5
-F5
+94
 100
 AcDbEntity
   8
@@ -6687,7 +4375,7 @@ AcDbArc
   0
 LINE
   5
-F6
+95
 100
 AcDbEntity
   8
@@ -6711,7 +4399,7 @@ AcDbLine
   0
 ARC
   5
-F7
+96
 100
 AcDbEntity
   8
@@ -6739,271 +4427,7 @@ AcDbArc
   0
 LINE
   5
-F8
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-121.2816224101579
- 20
-144.0432108554139
- 11
-102.0314552717166
- 21
-144.0039881416538
-  0
-ARC
-  5
-F9
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-102.0334927933683
- 20
-143.0039902174032
- 40
-1
-100
-AcDbArc
- 50
-90.1167414720848
- 51
-180.1167414720848
-  0
-LINE
-  5
-FA
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-101.0334948691177
- 20
-143.0019526957515
- 11
-101.0351503554597
- 21
-142.1894543822979
-  0
-ARC
-  5
-FB
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-102.0351482797103
- 20
-142.1914919039496
- 40
-1
-100
-AcDbArc
- 50
-180.1167414720848
- 51
-270.1167414720848
-  0
-LINE
-  5
-FC
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-102.037185801362
- 20
-141.191493979699
- 11
-121.2873529398033
- 21
-141.2307166934591
-  0
-ARC
-  5
-FD
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-121.2853154181516
- 20
-142.2307146177097
- 40
-1.000000000000007
-100
-AcDbArc
- 50
-270.1167414720844
- 51
-0.1167414720843948
-  0
-LINE
-  5
-FE
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-122.2853133424022
- 20
-142.2327521393615
- 11
-122.2836578560602
- 21
-143.0452504528151
-  0
-ARC
-  5
-FF
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-122.2836578560602
- 20
-143.0452504528151
- 40
-0
-100
-AcDbArc
- 50
-180.1167414720848
- 51
-180.1167414720848
-  0
-ARC
-  5
-100
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-122.2836578560602
- 20
-143.0452504528151
- 40
-0
-100
-AcDbArc
- 50
-180.1167414720848
- 51
-180.1167414720848
-  0
-ARC
-  5
-101
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-121.2836599318096
- 20
-143.0432129311633
- 40
-1
-100
-AcDbArc
- 50
-0.1167414720848019
- 51
-90.1167414720848
-  0
-LINE
-  5
-102
+97
 100
 AcDbEntity
   8
@@ -7027,7 +4451,7 @@ AcDbLine
   0
 ARC
   5
-103
+98
 100
 AcDbEntity
   8
@@ -7055,7 +4479,7 @@ AcDbArc
   0
 LINE
   5
-104
+99
 100
 AcDbEntity
   8
@@ -7079,7 +4503,7 @@ AcDbLine
   0
 ARC
   5
-105
+9A
 100
 AcDbEntity
   8
@@ -7107,271 +4531,7 @@ AcDbArc
   0
 LINE
   5
-106
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-121.3384504587477
- 20
-99.03282601988165
- 11
-102.0882833203064
- 21
-98.99360330612154
-  0
-ARC
-  5
-107
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-102.0903208419581
- 20
-97.99360538187094
- 40
-1
-100
-AcDbArc
- 50
-90.1167414720848
- 51
-180.1167414720848
-  0
-LINE
-  5
-108
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-101.0903229177075
- 20
-97.99156786021922
- 11
-101.0919784040495
- 21
-97.1790695467656
-  0
-ARC
-  5
-109
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-102.0919763283001
- 20
-97.18110706841732
- 40
-1
-100
-AcDbArc
- 50
-180.1167414720848
- 51
-270.1167414720848
-  0
-LINE
-  5
-10A
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-102.0940138499518
- 20
-96.18110914416671
- 11
-121.3441809883931
- 21
-96.22033185792682
-  0
-ARC
-  5
-10B
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-121.3421434667414
- 20
-97.22032978217744
- 40
-1.000000000000007
-100
-AcDbArc
- 50
-270.1167414720844
- 51
-0.1167414720843948
-  0
-LINE
-  5
-10C
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-122.342141390992
- 20
-97.22236730382913
- 11
-122.34048590465
- 21
-98.03486561728275
-  0
-ARC
-  5
-10D
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-122.34048590465
- 20
-98.03486561728275
- 40
-0
-100
-AcDbArc
- 50
-180.1167414720848
- 51
-180.1167414720848
-  0
-ARC
-  5
-10E
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-122.34048590465
- 20
-98.03486561728275
- 40
-0
-100
-AcDbArc
- 50
-180.1167414720848
- 51
-180.1167414720848
-  0
-ARC
-  5
-10F
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-121.3404879803994
- 20
-98.03282809563105
- 40
-1
-100
-AcDbArc
- 50
-0.1167414720848019
- 51
-90.1167414720848
-  0
-LINE
-  5
-110
+9B
 100
 AcDbEntity
   8
@@ -7395,7 +4555,7 @@ AcDbLine
   0
 ARC
   5
-111
+9C
 100
 AcDbEntity
   8
@@ -7423,7 +4583,7 @@ AcDbArc
   0
 LINE
   5
-112
+9D
 100
 AcDbEntity
   8
@@ -7447,7 +4607,7 @@ AcDbLine
   0
 ARC
   5
-113
+9E
 100
 AcDbEntity
   8
@@ -7475,271 +4635,7 @@ AcDbArc
   0
 LINE
   5
-114
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-121.3952785073375
- 20
-54.0224411843494
- 11
-102.1451113688962
- 21
-53.98321847058928
-  0
-ARC
-  5
-115
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-102.1471488905479
- 20
-52.98322054633867
- 40
-1
-100
-AcDbArc
- 50
-90.1167414720848
- 51
-180.1167414720848
-  0
-LINE
-  5
-116
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-101.1471509662973
- 20
-52.98118302468696
- 11
-101.1488064526393
- 21
-52.16868471123335
-  0
-ARC
-  5
-117
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-102.1488043768899
- 20
-52.17072223288505
- 40
-1
-100
-AcDbArc
- 50
-180.1167414720848
- 51
-270.1167414720848
-  0
-LINE
-  5
-118
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-102.1508418985416
- 20
-51.17072430863445
- 11
-121.4010090369829
- 21
-51.20994702239457
-  0
-ARC
-  5
-119
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-121.3989715153312
- 20
-52.20994494664518
- 40
-1.000000000000007
-100
-AcDbArc
- 50
-270.1167414720844
- 51
-0.1167414720843948
-  0
-LINE
-  5
-11A
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-122.3989694395818
- 20
-52.21198246829688
- 11
-122.3973139532398
- 21
-53.0244807817505
-  0
-ARC
-  5
-11B
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-122.3973139532398
- 20
-53.0244807817505
- 40
-0
-100
-AcDbArc
- 50
-180.1167414720848
- 51
-180.1167414720848
-  0
-ARC
-  5
-11C
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-122.3973139532398
- 20
-53.0244807817505
- 40
-0
-100
-AcDbArc
- 50
-180.1167414720848
- 51
-180.1167414720848
-  0
-ARC
-  5
-11D
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-121.3973160289892
- 20
-53.02244326009879
- 40
-1
-100
-AcDbArc
- 50
-0.1167414720848019
- 51
-90.1167414720848
-  0
-LINE
-  5
-11E
+9F
 100
 AcDbEntity
   8
@@ -7763,7 +4659,7 @@ AcDbLine
   0
 ARC
   5
-11F
+A0
 100
 AcDbEntity
   8
@@ -7791,7 +4687,7 @@ AcDbArc
   0
 LINE
   5
-120
+A1
 100
 AcDbEntity
   8
@@ -7815,7 +4711,7 @@ AcDbLine
   0
 ARC
   5
-121
+A2
 100
 AcDbEntity
   8
@@ -7843,271 +4739,7 @@ AcDbArc
   0
 LINE
   5
-122
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-128.674792902953
- 20
-166.5668087268018
- 11
-147.925
- 21
-166.5668087268018
-  0
-ARC
-  5
-123
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-147.925
- 20
-165.5668087268018
- 40
-1
-100
-AcDbArc
- 50
-360
- 51
-90
-  0
-LINE
-  5
-124
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-148.925
- 20
-165.5668087268018
- 11
-148.925
- 21
-164.7543087268018
-  0
-ARC
-  5
-125
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-147.925
- 20
-164.7543087268018
- 40
-1
-100
-AcDbArc
- 50
-270
- 51
-360
-  0
-LINE
-  5
-126
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-147.925
- 20
-163.7543087268018
- 11
-128.674792902953
- 21
-163.7543087268018
-  0
-ARC
-  5
-127
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-128.674792902953
- 20
-164.7543087268018
- 40
-1.000000000000007
-100
-AcDbArc
- 50
-180.0000000000004
- 51
-270.0000000000004
-  0
-LINE
-  5
-128
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-127.674792902953
- 20
-164.7543087268018
- 11
-127.674792902953
- 21
-165.5668087268018
-  0
-ARC
-  5
-129
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-127.674792902953
- 20
-165.5668087268018
- 40
-0
-100
-AcDbArc
- 50
-0
- 51
-0
-  0
-ARC
-  5
-12A
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-127.674792902953
- 20
-165.5668087268018
- 40
-0
-100
-AcDbArc
- 50
-0
- 51
-0
-  0
-ARC
-  5
-12B
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-128.674792902953
- 20
-165.5668087268018
- 40
-1
-100
-AcDbArc
- 50
-90
- 51
-180
-  0
-LINE
-  5
-12C
+A3
 100
 AcDbEntity
   8
@@ -8131,7 +4763,7 @@ AcDbLine
   0
 ARC
   5
-12D
+A4
 100
 AcDbEntity
   8
@@ -8159,7 +4791,7 @@ AcDbArc
   0
 LINE
   5
-12E
+A5
 100
 AcDbEntity
   8
@@ -8183,7 +4815,7 @@ AcDbLine
   0
 ARC
   5
-12F
+A6
 100
 AcDbEntity
   8
@@ -8211,271 +4843,7 @@ AcDbArc
   0
 LINE
   5
-130
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-121.2247943615681
- 20
-189.0535956909462
- 11
-101.9746272231268
- 21
-189.0143729771861
-  0
-ARC
-  5
-131
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-101.9766647447785
- 20
-188.0143750529355
- 40
-1
-100
-AcDbArc
- 50
-90.1167414720848
- 51
-180.1167414720848
-  0
-LINE
-  5
-132
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-100.9766668205279
- 20
-188.0123375312838
- 11
-100.9783223068699
- 21
-187.1998392178302
-  0
-ARC
-  5
-133
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-101.9783202311205
- 20
-187.2018767394819
- 40
-1
-100
-AcDbArc
- 50
-180.1167414720848
- 51
-270.1167414720848
-  0
-LINE
-  5
-134
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-101.9803577527722
- 20
-186.2018788152313
- 11
-121.2305248912135
- 21
-186.2411015289914
-  0
-ARC
-  5
-135
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-121.2284873695618
- 20
-187.241099453242
- 40
-1.000000000000007
-100
-AcDbArc
- 50
-270.1167414720844
- 51
-0.1167414720843948
-  0
-LINE
-  5
-136
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbLine
- 10
-122.2284852938124
- 20
-187.2431369748937
- 11
-122.2268298074704
- 21
-188.0556352883473
-  0
-ARC
-  5
-137
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-122.2268298074704
- 20
-188.0556352883473
- 40
-0
-100
-AcDbArc
- 50
-180.1167414720848
- 51
-180.1167414720848
-  0
-ARC
-  5
-138
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-122.2268298074704
- 20
-188.0556352883473
- 40
-0
-100
-AcDbArc
- 50
-180.1167414720848
- 51
-180.1167414720848
-  0
-ARC
-  5
-139
-100
-AcDbEntity
-  8
-06b_metal_support_tapped
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
-121.2268318832198
- 20
-188.0535977666956
- 40
-1
-100
-AcDbArc
- 50
-0.1167414720848019
- 51
-90.1167414720848
-  0
-LINE
-  5
-13A
+A7
 100
 AcDbEntity
   8
@@ -8499,7 +4867,7 @@ AcDbLine
   0
 ARC
   5
-13B
+A8
 100
 AcDbEntity
   8
@@ -8527,7 +4895,7 @@ AcDbArc
   0
 LINE
   5
-13C
+A9
 100
 AcDbEntity
   8
@@ -8551,7 +4919,7 @@ AcDbLine
   0
 ARC
   5
-13D
+AA
 100
 AcDbEntity
   8
@@ -8576,6 +4944,30 @@ AcDbArc
 90.1167414720848
  51
 270.1167414720848
+  0
+LINE
+  5
+AB
+100
+AcDbEntity
+  8
+06b_metal_support_tapped
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbLine
+ 10
+-9.699999999999989
+ 20
+200
+ 11
+259.7
+ 21
+200
   0
 ENDSEC
   0

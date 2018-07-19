@@ -2,11 +2,18 @@ exported following instructions here:
 https://citizengadget.com/post/139813545072/kicad-to-advanced-circuits-for-pcbs-and-assembly
 
 copying important section here:
-To generate the gerbers in pcbnew, click plot icon or File->Plot. This Wayne and Layne post on Gerber generation was super helpful here.
+To generate the gerbers in pcbnew, click plot icon or File->Plot. This Wayne and
+Layne post on Gerber generation was super helpful here.
 
-    Layers, probably F.Cu (Top Copper), B.Cu(Bottom Copper) F.Paste(Top Solder Paste) F.Silk (Top Silkscreen), B.Silk (Bottom Silkscreen), B.Mask (Bottom soldermask), F.Mask (Top soldermask)
+    Layers, probably F.Cu (Top Copper), B.Cu(Bottom Copper) F.Paste(Top Solder
+    Paste) F.Silk (Top Silkscreen), B.Silk (Bottom Silkscreen), B.Mask (Bottom
+    soldermask), F.Mask (Top soldermask)
 
-    Options, You might have other stuff checked, but the important one is to make sure Exclude PCB edge layer from other layers is unchecked as Advanced doesn’t take a separate edge cuts layer. Another nicety is check use auxiliary axis as origin so when you view in gerbview the file is in the center of the screen.
+    Options, You might have other stuff checked, but the important one is to
+    make sure Exclude PCB edge layer from other layers is unchecked as Advanced
+    doesn’t take a separate edge cuts layer. Another nicety is check use
+    auxiliary axis as origin so when you view in gerbview the file is in the
+    center of the screen.
 
     Gerber Options, click Protel filename Options.
 
@@ -17,6 +24,12 @@ Now to generate the drill file, click Generate Drill File.
     Drill Units, use inches
     Zeros format suppress leading zeros
     Drill Map doesn’t matter
-    Files options uncheck mirror y, use minimal header, and if you have non plated holes, Advanced takes a separate file for plated and non plated so make sure merge pth and npth holes into one file is unchecked.
-    Drill Origin Auxiliary axis presuming you used “auxiliary axis as origin” in the plot screen. 
-    Finally, click Drill File then Close and Close and you Gerbers are in your project directory under GerberOutput  
+    Files options uncheck mirror y, use minimal header, and if you have non
+    plated holes, Advanced takes a separate file for plated and non plated so
+    make sure merge pth and npth holes into one file is unchecked.
+
+    Drill Origin Auxiliary axis presuming you used “auxiliary axis as origin” in
+    the plot screen. 
+
+    Finally, click Drill File then Close and Close and you Gerbers are in your
+    project directory under GerberOutput  
