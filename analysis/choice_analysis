@@ -2513,16 +2513,6 @@ def main():
                         test_num=i
                     )
 
-                    # TODO should technically only do this is make_plots is true
-                    plt.hist(values[np.logical_not(np.isnan(values))],
-                        color='black', bins=30,
-                        range=((-1, 1) if metric.allow_negative else (0, 1)))
-                    plt.title(metric.ylabel)
-
-                    if save_plots:
-                        fig.savefig(join(path, '{}_histogram.{}'.format(
-                            metric.__name__, plot_format)), bbox_inches='tight')
-
             # TODO TODO exclude paraffin vs. paraffin control tests in
             # report and histogram
             values = df.loc[:, metric.__name__]
@@ -2540,6 +2530,30 @@ def main():
             if save_plots:
                 fig.savefig(join(path, '{}_histogram.{}'.format(
                     metric.__name__, plot_format)), bbox_inches='tight')
+
+    # TODO compare these velocities / speeds to those output by tracker, to test
+    # K's claim the tracker output was innacurate
+    mean_speeds = []
+    for fly, data in fly2data.items():
+        # TODO (as said elsewhere) centralize time conversion
+        epoch_times_s = (data['time_epoch_secs'] + data['time_epoch_nsecs'] /
+            1e9).as_matrix()
+        dtime = np.diff(epoch_times_s)
+        dxdt = np.diff(data['position_x']) / dtime
+        dydt = np.diff(data['position_y']) / dtime
+        speed = np.sqrt(np.square(dxdt) + np.square(dydt))
+        mean_speed = np.nanmean(speed)
+        if np.isnan(mean_speed):
+            warnings.warn('nanmean returned nan speed for fly {}'.format(fly))
+            continue
+        mean_speeds.append(mean_speed)
+
+    fig = plt.figure()
+    plt.hist(mean_speeds, color='black', bins=20)
+    plt.title('Mean walking speeds (mm/s)')
+    if save_plots:
+        fig.savefig(join(path, 'mean_walking_speeds.{}'.format(
+            plot_format)), bbox_inches='tight')
 
     if not use_pre_post:
         report += '*' * term_width + '\n'
