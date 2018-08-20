@@ -17,6 +17,7 @@ import datetime as dt
 import random
 import string
 import warnings
+import copy
 
 import numpy as np
 import pandas as pd
@@ -1240,7 +1241,16 @@ def analyze_group(fly2data, fly2meta, path, title='', metrics_to_compute=[],
             # TODO this (and probably other logic w/ reinforced) seem to
             # expect only two odors?  per experiment? or across?
             if odor_A is None:
-                odor_A = random.sample(meta['odors'], 1)[0]
+                nonsolvent_odors = copy.deepcopy(meta['odors'])
+                for o in meta['rosparams']['olf']['odors']:
+                    if 'solvent' in o and o['solvent']:
+                        nonsolvent_odors.remove(
+                            (o['name'], o['vial_log10_concentration']))
+
+                odor_A_contenders = (meta['odors'] if len(nonsolvent_odors) == 0
+                    else nonsolvent_odors)
+                odor_A = random.sample(odor_A_contenders, 1)[0]
+
             had_some_innate = True
             odor_of_interest = odor_A
 
@@ -1330,6 +1340,10 @@ def analyze_group(fly2data, fly2meta, path, title='', metrics_to_compute=[],
             }
 
         else:
+            # TODO TODO odor_a and odor_b should be same length as
+            # oriented_for_metrics, with odor_a and odor_b both equal to
+            # whatever the solvent is, in the cases where there are tests of the
+            # solvent against itself
             odor_data = {
                 'odor_a': odor_of_interest[0],
                 # TODO TODO should still do odor B, right?
@@ -1597,6 +1611,9 @@ def analyze_group(fly2data, fly2meta, path, title='', metrics_to_compute=[],
         for metric in metrics_to_compute:
             metric.ylabel = metric.ylabel.replace('odor A',
                                                   'shocked odor')
+    else:
+        for metric in metrics_to_compute:
+            metric.ylabel = metric.ylabel.replace('odor A', odor_A[0])
 
     # TODO do i still want to call this for the non-use_pre_post case?
     if use_pre_post:
@@ -1874,6 +1891,7 @@ def is_test_period(seq, meta):
     meta (dict): metadata for the associated experiment, some loaded from ROS
         param YAML file, including params configuring stimulus delivery.
     """
+    block_duration_s = seq.seq.end.to_sec() - seq.seq.start.to_sec()
     olf = meta['rosparams']['olf']
     if 'train_duration_s' in olf:
         if ('test_duration_s' in olf and (olf['train_duration_s'] ==
@@ -1892,10 +1910,11 @@ def is_test_period(seq, meta):
                 distinguish training and test periods if they are the same 
                 length. Make length slightly different or complain to Tom.""")
 
-    block_duration_s = seq.seq.end.to_sec() - seq.seq.start.to_sec()
-    if block_duration_s == olf['train_duration_s']:
-        return False
+        if block_duration_s == olf['train_duration_s']:
+            return False
 
+    assert 'test_duration_s' in olf, \
+        'Expected test_duration_s parameter in metadata'
     assert block_duration_s == olf['test_duration_s'], \
         'Expected test duration if not train duration.'
 
@@ -1912,7 +1931,6 @@ def is_training_period(seq, meta):
     """
     """
     return not is_test_period(seq, meta)
-
 
 
 # TODO test w/ dasgupta, cc, and parnas / kristina test cases
@@ -1944,10 +1962,33 @@ def extract_test_period_data(data, meta, orient_positive=None):
     epoch_times_s = (data['time_epoch_secs'] + data['time_epoch_nsecs'] /
         1e9).as_matrix()
 
+    # TODO rename s to indicate its type
+    def odor_on_side(s, side_pins2odors):
+        curr_odor_pins = [p for p in s.seq.pins if p in side_pins2odors]
+        assert len(curr_odor_pins) == 1
+        odor_pin_on_side = curr_odor_pins[0]
+        return side_pins2odors[odor_pin_on_side]
+
+    def left_odor(s, meta):
+        return odor_on_side(s, meta['left_pins2odors'])
+
+    def right_odor(s, meta):
+        return odor_on_side(s, meta['right_pins2odors'])
+
     oriented_for_metrics = []
     for s in meta['stimuli']:
         if not is_test_period(s, meta):
             continue
+
+        # Currently not returning data on test periods that are just the solvent
+        # against itself.
+        # TODO include analysis of these test periods at some point
+        odor_on_left = left_odor(s, meta)
+        odor_on_right = right_odor(s, meta)
+        if not (odor_on_left == orient_positive or
+            odor_on_right == orient_positive):
+            continue
+
         # assuming indexed the same
         # TODO check sizes or something at least?
         test_indices = np.logical_and(epoch_times_s >= s.seq.start.to_sec(),
@@ -1965,16 +2006,11 @@ def extract_test_period_data(data, meta, orient_positive=None):
         # (maybe this fn should define odor A? otherwise accept arg?)
         flipped = False
         if not (orient_positive is None):
-            curr_left_odor_pins = \
-                [p for p in s.seq.pins if p in meta['left_pins2odors']]
-            assert len(curr_left_odor_pins) == 1
-            # seems to assume left is negative
-            # TODO check that that is true / my assumption is wrong
-            odor_pin_on_left = curr_left_odor_pins[0]
-            odor_on_left = meta['left_pins2odors'][odor_pin_on_left]
 
             if orient_positive == odor_on_left:
                 # TODO TODO check this is correct
+                # seems to assume left is negative
+                # TODO check that that is true / my assumption is wrong
                 y_positions = (-1) * y_positions
                 flipped = True
 
@@ -2000,6 +2036,8 @@ def main():
         'Decision bias for odor A',
         'Accuracy for odor A'
     ]
+    # Downstream will assume ranges are either [0, 1], for False,
+    # or [-1, 1], for True.
     allow_negative = [False, True, False]
 
     for metric, ylabel, neg in zip(metrics_to_compute, ylabels, allow_negative):
@@ -2410,6 +2448,9 @@ def main():
     if df is None:
         metrics_to_compute = []
 
+    if not use_pre_post:
+        alltest_metrics_report = ''
+
     # TODO factor this stuff into fn that only computes change once (for
     # correctness' sake)?
     for metric in metrics_to_compute:
@@ -2428,6 +2469,10 @@ def main():
                 'fly_id', verify_integrity=True)
             # TODO TODO does this guarantee it is always subtracting from same
 
+
+            # TODO TODO exclude paraffin vs. paraffin control tests in
+            # report and histogram
+
             # fly?  need to sort?
             change = pre_df[metric.__name__] - post_df[metric.__name__]
 
@@ -2443,42 +2488,63 @@ def main():
             # TODO TODO make sure honored throughout. want to be able to get rid
             # of matplotlib dependency if false
             plt.hist(change[np.logical_not(np.isnan(change))], color='black',
-                bins=30)
+                bins=30, range=(-1 if metric.allow_negative else 0, 1))
+
             plt.title('Changes in ' + metric.ylabel[0].lower() +
                 metric.ylabel[1:])
+
             if save_plots:
                 fig.savefig(join(path, metric.__name__ + '_change_histogram.' +
                     plot_format), bbox_inches='tight')
 
         else:
-            # TODO TODO also report metrics on each test period, in use_pre_post
-            # case?  in same style?
+            # TODO also report metrics on each test period, in use_pre_post
+            # case? in same style?
             # TODO TODO TODO use language here to reflect that one odor was
             # shocked, if that was the case (dasgupta case)
             test_numbers = df.test_number.unique()
-            for i in test_numbers:
-                if len(test_numbers) == 1:
-                    n = None
-                else:
-                    n = i
+            if len(test_numbers) > 1:
+                for i in test_numbers:
+                    values = df.loc[df.test_number == i, metric.__name__]
+                    report += report_metric_stats(
+                        values,
+                        metric.__name__,
+                        desc=(metric.ylabel[0].lower() + metric.ylabel[1:]),
+                        test_num=i
+                    )
 
-                values = df.loc[df.test_number == i, metric.__name__]
-                report += report_metric_stats(
-                    values,
-                    metric.__name__,
-                    desc=(metric.ylabel[0].lower() + metric.ylabel[1:]),
-                    test_num=n
-                )
+                    # TODO should technically only do this is make_plots is true
+                    plt.hist(values[np.logical_not(np.isnan(values))],
+                        color='black', bins=30,
+                        range=((-1, 1) if metric.allow_negative else (0, 1)))
+                    plt.title(metric.ylabel)
 
-                # TODO should technically only do this is make_plots is true
-                plt.hist(values[np.logical_not(np.isnan(values))],
-                    color='black', bins=30)
-                plt.title(metric.ylabel)
-                if save_plots:
-                    # TODO test both cases
-                    fig.savefig(join(path, '{}{}_histogram.{}'.format(
-                        metric.__name__, '' if n is None else '_test{}'.format(
-                        i), plot_format)), bbox_inches='tight')
+                    if save_plots:
+                        fig.savefig(join(path, '{}_histogram.{}'.format(
+                            metric.__name__, plot_format)), bbox_inches='tight')
+
+            # TODO TODO exclude paraffin vs. paraffin control tests in
+            # report and histogram
+            values = df.loc[:, metric.__name__]
+            alltest_metrics_report += report_metric_stats(
+                values,
+                metric.__name__,
+                desc=(metric.ylabel[0].lower() + metric.ylabel[1:]),
+                test_num=None
+            )
+            plt.hist(values[np.logical_not(np.isnan(values))],
+               color='black', bins=30,
+                range=((-1, 1) if metric.allow_negative else (0, 1)))
+            plt.title(metric.ylabel)
+
+            if save_plots:
+                fig.savefig(join(path, '{}_histogram.{}'.format(
+                    metric.__name__, plot_format)), bbox_inches='tight')
+
+    if not use_pre_post:
+        report += '*' * term_width + '\n'
+        report += alltest_metrics_report 
+        report += '*' * term_width + '\n'
 
     if (not df is None) and use_pre_post and want_abs_decision_bias:
         report += 'Mean |decision bias| post: '
