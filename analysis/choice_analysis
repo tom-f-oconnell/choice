@@ -2125,6 +2125,7 @@ def main():
         except ValueError as e:
             print(e, file=sys.stderr)
             warnings.warn('SKIPPING: {}'.format(d))
+            # TODO maybe sys.exit here?
             continue
 
         try:
@@ -2326,13 +2327,33 @@ def main():
             # for analyzing experiments with aversive conditioning
             if 'shocked_odor' in df.columns:
                 curr_df = df[df.shocked_odor == o[0]]
+
                 # TODO how to not need to input positions / kwarg names w/
                 # custom formatter?
                 odor_lines.append(formatter.format('{0} good trace{0(s)} ' +
                     'with {1} as the reinforced odor.',
                     len(curr_df['fly_id'].unique()), o[0]))
 
+                if len(curr_df['fly_id'].unique()) == 0:
+                    continue
+
                 label = 'shocked odor'
+
+                metric = decision_bias
+                pre_df = curr_df.loc[curr_df.test_number == pretest_index
+                    ].set_index('fly_id', verify_integrity=True)
+                post_df = curr_df.loc[curr_df.test_number == posttest_index
+                    ].set_index('fly_id', verify_integrity=True)
+                change = pre_df[metric.__name__] - post_df[metric.__name__]
+
+                report_lines = report_metric_stats(
+                    change,
+                    metric.__name__,
+                    desc=(metric.ylabel[0].lower() + metric.ylabel[1:]),
+                    change=True
+                )
+                # TODO fix hack?
+                odor_lines.append(report_lines.split('\n', 1)[0])
 
             # for assessing innate preference
             elif 'odor_a' in df.columns:
