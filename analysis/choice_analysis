@@ -182,6 +182,15 @@ require_stimuli = False
 print_version = True
 digits_after_zero = 3
 
+# TODO provide instructions for installing the backend
+# TODO also depend on sql setup in other repos? multi_tracker?
+# See repo at https://github.com/tom-f-oconnell/flypush
+save_to_database = False
+if save_to_database:
+    from sqlalchemy import create_engine
+    url = 'postgresql+psycopg2://flypush:flypush@localhost:5432/flypush'
+    conn = create_engine(url)
+
 ################################################################################
 
 if make_plots:
@@ -1068,11 +1077,10 @@ def plot_metric_change(df, metric_name, path, title='', ylabel='',
     # having to find pairs of (exp, roi) that are unique)
     #for fly_id in df.fly_id.unique():
     for exp in df.experiment.unique():
-        # TODO how?
-        for roi in df['roi'][df.experiment == exp]:
+        for roi in df['tracking_pipeline_num'][df.experiment == exp]:
 
             label = '{}, ROI {}'.format(split(exp)[-1], roi)
-            fly_indices = np.logical_and(df.roi == roi,
+            fly_indices = np.logical_and(df.tracking_pipeline_num == roi,
                                          df.experiment == exp)
 
             # TODO TODO delete / put these behind some kind of all_checks flag
@@ -1325,7 +1333,7 @@ def analyze_group(fly2data, fly2meta, path, title='', metrics_to_compute=[],
             # do trials with same fly, across days?
             'fly_id': fly,
             'experiment': meta['dir'],
-            'roi': meta['n'],
+            'tracking_pipeline_num': meta['n'],
             'oriented_for_metrics': oriented_for_metrics
         }
         fly_output_data.update(metrics)
