@@ -1685,8 +1685,12 @@ def format_stat(stat, ci=None, ci_level=0.95, stderr=None,
 
 def confidence_interval(data, fn, n=1000, level=0.95):
     """
+    Returns None if n=1, as can not compute CI.
     """
     data = np.squeeze(data)
+    if len(data.shape) == 0:
+        return None
+
     assert len(data.shape) == 1, 'expecting one dimensional input'
     # TODO report how much data is lost in tossing nan? if verbose? flag to err?
     data = data[~np.isnan(data)]
@@ -1768,16 +1772,15 @@ def report_metric_stats(values, metric_name, desc=None, change=False,
 
     report += format_stat(mean, ci=mean_ci, ci_level=ci_level)
 
-    sem_comparison_ci = confidence_interval(values, np.mean, level=0.68)
-    # behind verbose flag? extra info flag or something?
-    report += '\nSEM={{:.{}f}}'.format(digits_after_zero).format(
-        nansem(values))
-    report += ' ~= {{:.{}f}} from bootstrapped 68% CI on mean'.format(
-        digits_after_zero).format(np.mean(np.abs(sem_comparison_ci - mean)))
+    if mean_ci is not None:
+        sem_comparison_ci = confidence_interval(values, np.mean, level=0.68)
+        # behind verbose flag? extra info flag or something?
+        report += '\nSEM={{:.{}f}}'.format(digits_after_zero).format(
+            nansem(values))
+        report += ' ~= {{:.{}f}} from bootstrapped 68% CI on mean'.format(
+            digits_after_zero).format(np.mean(np.abs(sem_comparison_ci - mean)))
 
     report += '\n'
-
-
     report += 'Median{} {}{}: '.format(' difference in' if change else '', desc,
         '' if test_num is None else ', test number {}'.format(test_num))
 
