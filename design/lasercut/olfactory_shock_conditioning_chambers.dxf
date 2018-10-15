@@ -23,17 +23,17 @@ $INSBASE
   9
 $EXTMIN
  10
-96
+10000000000
  20
--6.2726
+10000000000
  30
 0
   9
 $EXTMAX
  10
-392.7500077143099
+-10000000000
  20
-196.262
+-10000000000
  30
 0
   9
@@ -91,7 +91,7 @@ STANDARD
   9
 $CLAYER
   8
-0
+03b1_delrin_chambers_and_manifold_with_doors
   9
 $CELTYPE
   6
@@ -1115,9 +1115,9 @@ AcDbViewportTableRecord
  21
 1
  12
-350.0384887073094
+282.2242436366105
  22
-173.0390440258936
+114.5469728058782
  13
 0
  23
@@ -1143,9 +1143,9 @@ AcDbViewportTableRecord
  37
 0
  40
-497.791897778715
+348.0278237591363
  41
-1.603427172582619
+1.834733893557423
  42
 50
  43
@@ -2427,7 +2427,7 @@ AcDbLayerTableRecord
   2
 02ba2_acrylic_ceiling
  70
-    0
+    1
  62
     1
   6
@@ -2619,7 +2619,7 @@ AcDbLayerTableRecord
   2
 05.2_bottom_pcb_edges_and_routing
  70
-    1
+    0
  62
     7
   6
@@ -2643,7 +2643,7 @@ AcDbLayerTableRecord
   2
 06a_clear_support_plastic
  70
-    1
+    0
  62
     1
   6
@@ -45588,6 +45588,46 @@ delrin_door
 1
  45
 1
+  0
+INSERT
+  5
+504
+100
+AcDbEntity
+  8
+03b1_delrin_chambers_and_manifold_with_doors
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbBlockReference
+  2
+delrin_chamber_with_door
+ 10
+124.9889836416566
+ 20
+161.7496321490918
+ 30
+0
+ 41
+-1
+ 42
+1
+ 43
+0
+ 50
+359.9999977400595
+ 70
+    1
+ 71
+    1
+ 44
+0
+ 45
+0
   0
 ENDSEC
   0
