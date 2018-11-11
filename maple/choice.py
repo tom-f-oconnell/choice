@@ -61,6 +61,113 @@ class ChoiceModule(maple.module.Array):
             flymanip_working_height, n_cols, n_rows,
             to_first_anchor, anchor_spacing)
 
+        self.z0_working_height = 9
+
+
+    def get(self, xy, ij):
+        """
+        """
+        self.robot.flyManipVac(True)
+        self.robot.flyManipAir(False)
+        # TODO add support for larger valve? (just rewire into old vac?)
+
+        self.open_door(ij)
+
+        # Anchors are defined as centers of fly loading ports here.
+        self.robot.moveXY(xy)
+        # TODO TODO lower to working height
+
+        self.robot.dwell(5)
+        # TODO TODO move back up to travel height
+
+        self.close_door(ij)
+
+        # TODO move back up to travel height
+
+
+    def put(self, xy, ij):
+        """
+        Assumes flyManipVac is on and flyManipAir is off, otherwise fly could
+        have been able to escape.
+        """
+        # how much time will i have before flies start to escape? test
+        self.open_door(ij)
+
+        self.robot.moveXY(xy)
+        # TODO TODO lower to working height
+
+        self.robot.flyManipVac(False)
+        self.robot.flyManipAir(True)
+        self.robot.dwell(3)
+        self.robot.flyManipAir(False)
+
+        # again, test escape rate
+        self.close_door(ij)
+
+
+    # TODO would doors like these be a common enough motif to include their
+    # positions (optionally?) in Array constructor, and move these fns up there?
+    # maybe an ArrayWithDoors class?
+    def open_door(self, ij):
+        """
+        Assumes smallPartManipAir is off.
+        """
+        self.robot.smallPartManipVac(True)
+        # TODO require working height for this effector higher up in class
+        # heirarchy? (in ArrayWithDoors, for sure, if i implement that)
+
+        # TODO move to working height
+        self.robot.move self.z0_working_height
+
+        self.robot.moveXY(self.door_center(ij, closed=True))
+        self.robot.dwell(1)
+        # TODO move back to travel height
+        self.robot.moveXY(self.door_center(ij, closed=False))
+        self.robot.dwell(1)
+        self.robot.smallPartManipVac(False)
+        # TODO move back to travel height
+
+
+    def close_door(self, ij):
+        """
+        Assumes smallPartManipAir is off.
+        """
+        self.robot.smallPartManipVac(True)
+        self.robot.moveXY(self.door_center(ij, closed=False))
+        # TODO move to working height
+
+        self.robot.dwell(1)
+        # TODO move back to travel height
+
+        self.robot.moveXY(self.door_center(ij, closed=True))
+        self.robot.dwell(1)
+        self.robot.smallPartManipVac(False)
+        # TODO move back to travel height
+
+
+    def door_center(self, ij, closed=False):
+        """
+        """
+        i, j = ij
+        # should i stick to (row, col)? might be more natural?
+        assert i == 1, 'This module only has one column.'
+        # TODO check using right index
+        x, y = self.anchor_center(i, j)
+
+        # Which side the door is on alternates, about axis that goes through
+        # each anchor (fly loading holes). Reflected in y with workspace
+        # orientation.
+        door_x = x - 4.89
+
+        dy = 10.0 if closed else 14.0
+        if j % 2 == 0:
+            door_y = y + dy
+        else:
+            door_y = y - dy
+
+        return (door_x, door_y)
+
+
 '''
 # TODO or will i want / need to namespace it maple.workspace.Workspace?
 class ChoiceWorkspace(maple.Workspace):
@@ -90,10 +197,17 @@ def main():
         'morgue': maple.module.Morgue(robot, (,))
     }
     '''
-    left_arena = ChoiceModule(robot, (,)),
-    right_arena = ChoiceModule(robot, (,)),
-    flyplate = maple.module.FlyPlate(robot, (,)),
-    morgue = maple.module.Morgue(robot, (,))
+    # TODO make sure offsets defined from top right of (original) alignment
+    # plate work to find the right positions (probably need some offset relative
+    # to endstops)
+
+    # Measured from tom-f-oconnell/MAPLEHardware/Drawings/alignment_plate.dxf,
+    # with construction lines added as necessary to measure from origin to top
+    # right corner of the bounding box of each module.
+    left_arena = ChoiceModule(robot, (382.15, 18.2))
+    right_arena = ChoiceModule(robot, (93.65, 18.2))
+    flyplate = maple.module.FlyPlate(robot, (321.65, 212.0))
+    morgue = maple.module.Morgue(robot, (427.15, 303.8))
 
     ###########################################################################
     # Load flies
