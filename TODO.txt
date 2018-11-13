@@ -42,3 +42,9 @@
     bias by eye
   - could also just group them by orientation, then which odor was shocked,
     and then whether the shocked odor came first? or something like that?
+
+- interface w/ MFCs, if only to verify target flow has been achieved, and err
+  otherwise
+
+- closing gracefully if ctrl-c-ing at all points in experiment start? roi window
+  seemed it might have been causing a hang until that was also exited?
