@@ -25,7 +25,7 @@ import maple.robotutil
 class ChoiceModule(maple.module.Array):
     """
     """
-    def __init__(self, robot, offset, verbose=False):
+    def __init__(self, robot, offset, position_correction=True, verbose=False):
         # Oriented rotated 90 degrees clockwise from LibreCAD schematics.
         # "length" and "height" in FreeCAD params reflect LibreCAD rotation.
         # All units mm.
@@ -65,7 +65,8 @@ class ChoiceModule(maple.module.Array):
 
         super(ChoiceModule, self).__init__(robot, offset, extent,
             flymanip_working_height, n_cols, n_rows,
-            to_first_anchor, anchor_spacing)
+            to_first_anchor, anchor_spacing,
+            position_correction=position_correction)
 
         self.z0_working_height = 9.5 # was 9.0
         self.z0_center_travel_height = self.z0_working_height + 6
@@ -319,8 +320,11 @@ def main():
     # Measured from tom-f-oconnell/MAPLEHardware/Drawings/alignment_plate.dxf,
     # with construction lines added as necessary to measure from origin to top
     # right corner of the bounding box of each module.
+
+    # Turning off position_correction on left_arena, so that isn't done in the
+    # constructor, since I'm not using the left_arena just while testing.
     left_arena = ChoiceModule(robot,
-        (382.15 - z2_offset[0], 18.2 - z2_offset[1]))
+        (382.15 - z2_offset[0], 18.2 - z2_offset[1]), position_correction=False)
     right_arena = ChoiceModule(robot,
         (93.65 - z2_offset[0], 18.2 - z2_offset[1]))
 
