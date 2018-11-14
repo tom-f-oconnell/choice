@@ -12,6 +12,8 @@ from __future__ import division
 import os
 import random
 
+import numpy as np
+
 import maple
 import maple.module
 import maple.robotutil
@@ -65,8 +67,8 @@ class ChoiceModule(maple.module.Array):
             flymanip_working_height, n_cols, n_rows,
             to_first_anchor, anchor_spacing)
 
-        self.z0_working_height = 9
-        self.z0_center_travel_height = self.z0_working_height + 4
+        self.z0_working_height = 9.5 # was 9.0
+        self.z0_center_travel_height = self.z0_working_height + 6
 
 
     def get(self, xy, ij):
@@ -218,8 +220,9 @@ class ChoiceModule(maple.module.Array):
         # TODO check using right index
         x, y = self.anchor_center(i, j)
 
-        # TODO calculate better + use central offset definition (in cfg?)
-        door_x = x - 4.89 - 80
+        # TODO use central offset definition (in cfg?)
+        # 78 was measured from Z-plate DXF. Need correction?
+        door_x = x - 4.89 - 78
 
         # Which side the door is on alternates, about axis that goes through
         # each anchor (fly loading holes). Reflected in y with workspace
@@ -234,13 +237,35 @@ class ChoiceModule(maple.module.Array):
         return (door_x, door_y)
 
 
-'''
-# TODO or will i want / need to namespace it maple.workspace.Workspace?
-class ChoiceWorkspace(maple.Workspace):
+def measure_offset(array_modules, current_offset=None):
     """
     """
-    pass
-'''
+    points = []
+    errors = []
+    for array_module in array_modules:
+        ps, errs = array_module.measure_errors()
+        points.extend(ps)
+        errors.extend(errs)
+
+    print('Errors:')
+    for p, e in zip(points, errors):
+        print(p, e)
+
+    mean_errors = np.mean(errors, 0)
+    print('Mean errors ({0[0]}, {0[1]})'.format(mean_errors))
+    if current_offset is not None:
+        print('Change Z2 offset to ({0[0]}, {0[1]})'.format(
+            current_offset + mean_errors))
+
+    # TODO TODO TODO also solve for new offset between each included module
+    # TODO for more accuracy: another (or all?) corner(s) on the flyplate, and
+    # maybe a middle point in the 1 dimensional arrays?
+
+    # TODO save correction to config file automatically
+    print('Entering debugger. Press <Ctrl>-d to exit.')
+    import ipdb
+    ipdb.set_trace()
+    return points, errors
 
 
 def main():
@@ -281,8 +306,7 @@ def main():
     # Distance from zero defined in alignment_plate.dxf (inside corner of
     # vertical support in top right corner) to z2 (fly) effector, when the robot
     # is at what it considers to be (0,0)
-    # TODO calculate? this was eyeballed
-    z2_offset = (48.0, 97.5)
+    z2_offset = (46.89, 94.8)
 
     # Measured 45.5 to top of 1/8" alignment plate + 3.175 thickness of that
     # plate.
@@ -305,6 +329,21 @@ def main():
 
     morgue = maple.module.Morgue(robot,
         (427.15 - z2_offset[0], 303.8 - z2_offset[1]))
+
+    # TODO TODO automatically compute and save corrections + desired working
+    # distances if they are not found
+
+    # Uncomment if you need to recalulate offset of all modules wrt MAPLE's
+    # coordinate system.
+    #measure_offset([flyplate, right_arena], current_offset=z2_offset)
+
+    '''
+    print('Measuring Z2 working distance for flyplate:')
+    flyplate.measure_working_distance()
+    print('\nMeasuring Z2 working distance for choice chamber for flyplate:')
+    right_arena.measure_working_distance()
+    print('')
+    '''
 
     ###########################################################################
     # Load flies
