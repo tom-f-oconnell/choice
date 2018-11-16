@@ -9,6 +9,7 @@ chambers, running experiments in between.
 from __future__ import print_function
 from __future__ import division
 
+import sys
 import os
 import random
 
@@ -53,7 +54,7 @@ class ChoiceModule(maple.module.Array):
 
         # TODO experiment with this
         # Defined from z=0 being the bottom of this module.
-        flymanip_working_height = 12
+        flymanip_working_height = 10.8
 
         n_cols = 8
         n_rows = 1
@@ -68,8 +69,26 @@ class ChoiceModule(maple.module.Array):
             to_first_anchor, anchor_spacing,
             position_correction=position_correction)
 
+        # TODO require working height for this effector higher up in class
+        # heirarchy? (in ArrayWithDoors, for sure, if i implement that)
         self.z0_working_height = 9.5 # was 9.0
         self.z0_center_travel_height = self.z0_working_height + 6
+
+        self.close_doors_after_unloading = False
+
+        self.door_vac_connect_delay_ms = 0
+        self.door_vac_disconnect_delay_ms = 0
+        # TODO measure whether this actually helps (seemed to by hand, but might
+        # not with robot) (and is 2 sufficient?)
+        self.repeats_per_door = 2
+
+        # TODO implement
+        #self.door_overshoot = 0.5
+
+        # Assume everything is closed at beginning, b/c trying to open a closed
+        # door isn't really that harmful (?), and the first operation will need
+        # them open.
+        self.door_is_open = np.full((self.n_cols, self.n_rows), False)
 
 
     def get(self, xy, ij):
@@ -99,7 +118,8 @@ class ChoiceModule(maple.module.Array):
         #else:
         print('Getting fly from behavior chamber {} ({})'.format(ij, xy))
 
-        self.close_door(ij)
+        if self.close_doors_after_unloading:
+            self.close_door(ij)
 
 
     def put(self, xy, ij):
@@ -119,7 +139,7 @@ class ChoiceModule(maple.module.Array):
 
             self.robot.flyManipVac(False)
             self.robot.flyManipAir(True)
-            self.robot.dwell_ms(3000)
+            self.robot.dwell_ms(600)
             self.robot.flyManipAir(False)
 
             zt = self.robot.z2_to_worksurface - self.flymanip_working_height - 6
@@ -131,7 +151,9 @@ class ChoiceModule(maple.module.Array):
         # again, test escape rate
         self.close_door(ij)
 
-
+    # TODO TODO if door gets stuck in middle, does that prevent vacuum seal from
+    # forming on future attempts? (if so, would need to prevent by
+    # re-engineering doors, or detect and fix...)
     # TODO would doors like these be a common enough motif to include their
     # positions (optionally?) in Array constructor, and move these fns up there?
     # maybe an ArrayWithDoors class?
@@ -139,6 +161,13 @@ class ChoiceModule(maple.module.Array):
         """
         Assumes smallPartManipAir is off.
         """
+        # TODO TODO TODO check that vac isn't pulling doors up (increasing
+        # friction, risking escape, etc) at the working height (decrease working
+        # height if so)
+        if self.door_is_open[ij]:
+            print('Door {} was already open'.format(ij))
+            return
+
         closed_door = self.door_center(ij, closed=True)
         open_door = self.door_center(ij, closed=False)
 
@@ -158,27 +187,33 @@ class ChoiceModule(maple.module.Array):
                     '{}'.format(zt))
                 self.robot.moveZ0(zt)
 
-            self.robot.smallPartManipVac(True)
-            # TODO require working height for this effector higher up in class
-            # heirarchy? (in ArrayWithDoors, for sure, if i implement that)
+            # TODO maybe jitter starting position of other attempts optionally?
+            for _ in range(self.repeats_per_door):
+                self.robot.smallPartManipVac(True)
 
-            self.robot.moveXY(self.door_center(ij, closed=True))
+                self.robot.moveXY(self.door_center(ij, closed=True))
 
-            zw = self.robot.z0_to_worksurface - self.z0_working_height
-            self.robot.moveZ0(zw)
+                zw = self.robot.z0_to_worksurface - self.z0_working_height
+                self.robot.moveZ0(zw)
 
-            self.robot.dwell_ms(1000)
-            self.robot.moveXY(self.door_center(ij, closed=False))
-            self.robot.dwell_ms(1000)
-            self.robot.smallPartManipVac(False)
+                self.robot.dwell_ms(self.door_vac_connect_delay_ms)
+                self.robot.moveXY(self.door_center(ij, closed=False))
+                self.robot.dwell_ms(self.door_vac_disconnect_delay_ms)
+                self.robot.smallPartManipVac(False)
 
-            self.robot.moveZ0(zt)
+                self.robot.moveZ0(zt)
+
+        self.door_is_open[ij] = True
 
 
     def close_door(self, ij):
         """
         Assumes smallPartManipAir is off.
         """
+        if not self.door_is_open[ij]:
+            print('Door {} was already closed'.format(ij))
+            return
+
         open_door = self.door_center(ij, closed=False)
         closed_door = self.door_center(ij, closed=True)
 
@@ -199,18 +234,20 @@ class ChoiceModule(maple.module.Array):
                     '{}'.format(zt))
                 self.robot.moveZ0(zt)
 
-            self.robot.smallPartManipVac(True)
-            self.robot.moveXY(open_door)
-            zw = self.robot.z0_to_worksurface - self.z0_working_height
-            self.robot.moveZ0(zw)
+            for _ in range(self.repeats_per_door):
+                self.robot.smallPartManipVac(True)
+                self.robot.moveXY(open_door)
+                zw = self.robot.z0_to_worksurface - self.z0_working_height
+                self.robot.moveZ0(zw)
 
-            self.robot.dwell_ms(1000)
+                self.robot.dwell_ms(self.door_vac_connect_delay_ms)
+                self.robot.moveXY(closed_door)
+                self.robot.dwell_ms(self.door_vac_disconnect_delay_ms)
+                self.robot.smallPartManipVac(False)
 
-            self.robot.moveXY(closed_door)
-            self.robot.dwell_ms(1000)
-            self.robot.smallPartManipVac(False)
+                self.robot.moveZ0(zt)
 
-            self.robot.moveZ0(zt)
+        self.door_is_open[ij] = False
 
 
     def door_center(self, ij, closed=False):
@@ -237,6 +274,9 @@ class ChoiceModule(maple.module.Array):
 
         return (door_x, door_y)
 
+    # TODO TODO function to test opening and closing of doors
+    # to optimize working height + overshoot (if any)
+
 
 def measure_offset(array_modules, current_offset=None):
     """
@@ -258,14 +298,6 @@ def measure_offset(array_modules, current_offset=None):
         print('Change Z2 offset to ({0[0]}, {0[1]})'.format(
             current_offset + mean_errors))
 
-    # TODO TODO TODO also solve for new offset between each included module
-    # TODO for more accuracy: another (or all?) corner(s) on the flyplate, and
-    # maybe a middle point in the 1 dimensional arrays?
-
-    # TODO save correction to config file automatically
-    print('Entering debugger. Press <Ctrl>-d to exit.')
-    import ipdb
-    ipdb.set_trace()
     return points, errors
 
 
@@ -278,12 +310,13 @@ def main():
     dry_run = False
     just_right_arena = True
 
+    # TODO TODO include mode to load the flies back into flyplate after
+    # experiment, for testing purposes (cycle back and forth and measure loss)
+
     if just_right_arena and random_order:
         raise ValueError('set random_order to False to use just_right_arena')
 
     ###########################################################################
-    # TODO get config from right place first
-    # not sure i want to need to change MAPLE.cfg in experiment dependent manner
     # TODO implement contructor that can also take components of workspace?
     if dry_run:
         robot = None
@@ -292,30 +325,23 @@ def main():
         robot = maple.robotutil.MAPLE(os.path.join(maple.__path__[0],
             'MAPLE.cfg'))
 
-    '''
-    choice_workspace = {
-        'left_arena': ChoiceModule(robot, (,)),
-        'right_arena': ChoiceModule(robot, (,)),
-        'flyplate': maple.module.FlyPlate(robot, (,)),
-        'morgue': maple.module.Morgue(robot, (,))
-    }
-    '''
-    # TODO make sure offsets defined from top right of (original) alignment
-    # plate work to find the right positions (probably need some offset relative
-    # to endstops)
-
     # Distance from zero defined in alignment_plate.dxf (inside corner of
     # vertical support in top right corner) to z2 (fly) effector, when the robot
     # is at what it considers to be (0,0)
     z2_offset = (46.89, 94.8)
 
+    # Silicone seems to just be touching at ~40mm. Silicone extends between
+    # metal needle by maybe ~1mm or so.
+    #robot.z2_to_worksurface = 43.175
+    # This is a point just north of the flyplate.
+    # TODO maybe save and only do this every so often (or if errors seem to
+    # happen)
+    robot.zero_z2_to_reference(xy=(310, 110), thickness=3.175, speed=300)
+
+    # TODO TODO set relative to z2_to_worksurface if not using sensor?
     # Measured 45.5 to top of 1/8" alignment plate + 3.175 thickness of that
     # plate.
     robot.z0_to_worksurface = 48.675
-
-    # Silicone seems to just be touching at ~40mm. Silicone extends between
-    # metal needle by maybe ~1mm or so.
-    robot.z2_to_worksurface = 43.175
 
     # Measured from tom-f-oconnell/MAPLEHardware/Drawings/alignment_plate.dxf,
     # with construction lines added as necessary to measure from origin to top
@@ -334,13 +360,8 @@ def main():
     morgue = maple.module.Morgue(robot,
         (427.15 - z2_offset[0], 303.8 - z2_offset[1]))
 
-    # TODO TODO automatically compute and save corrections + desired working
-    # distances if they are not found
 
-    # Uncomment if you need to recalulate offset of all modules wrt MAPLE's
-    # coordinate system.
-    #measure_offset([flyplate, right_arena], current_offset=z2_offset)
-
+    # TODO compute and save desired working distances?
     '''
     print('Measuring Z2 working distance for flyplate:')
     flyplate.measure_working_distance()
@@ -348,6 +369,13 @@ def main():
     right_arena.measure_working_distance()
     print('')
     '''
+
+    # TODO TODO build in ability to start where it left off
+    # (like if there was an error or the program needed to be stopped)
+
+    # TODO TODO how come a keyboardinterrupt during homing doesn't have the
+    # robot stop right after the home? shouldnt sendSyncCmd still be waiting to
+    # finish, and then that be what gets interrupted? fix if possible
 
     ###########################################################################
     # Load flies
@@ -403,12 +431,18 @@ def main():
                     assert False
 
                 print('Trying to load {}'.format(arena_name))
-
                 dest_pos = arena_to_load.put_next()
                 
 
             if flyplate.is_empty():
                 break
+
+
+        # TODO TODO load rois saved w/ choice ROS acquisition scripts, so that
+        # we can build backgrounds for each of those regions, and check for
+        # flies getting loaded / cleared successfully (may need to adjust for
+        # rectangular ROIs, if I allow those to be applied simultaneously)
+        # (may also need to move gantry out of way to check)
 
         ########################################################################
         # Run the experiment
@@ -470,5 +504,6 @@ def main():
             print('')
 
 
+# TODO TODO command line arg to force recalibration
 if __name__ == '__main__':
     main()
