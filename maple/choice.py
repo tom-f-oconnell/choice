@@ -16,6 +16,7 @@ import random
 import numpy as np
 
 import maple
+import maple.errs
 import maple.module
 import maple.robotutil
 # TODO also use this api in other places i call roslaunch w/ subprocess
@@ -54,14 +55,19 @@ class ChoiceModule(maple.module.Array):
 
         # TODO experiment with this
         # Defined from z=0 being the bottom of this module.
-        flymanip_working_height = 10.8
+        # 10.8 seemed to verge on not deep enough to reliably make a good seal
+        # (though may need to revisit after playing with how billows sits)
+        # 9.8 seemed possibly too low to allow fly to get shot past door,
+        # leading to some escapes and door deaths (though possible it is also
+        # because wider loading holes on this ceiling I cut)
+        flymanip_working_height = 10.4
 
         n_cols = 8
         n_rows = 1
         # Measured from upper left corner of bottom layer, to the center of the
         # closest hole in the ceiling layer, as if the corner were not filleted,
         # with the dimensions swapped.
-        to_first_anchor = (20.238 + v1_nub_height, 139.701)
+        to_first_anchor = (19.738 + v1_nub_height, 139.701)
         anchor_spacing = 22.5
 
         super(ChoiceModule, self).__init__(robot, offset, extent,
@@ -74,7 +80,11 @@ class ChoiceModule(maple.module.Array):
         self.z0_working_height = 9.5 # was 9.0
         self.z0_center_travel_height = self.z0_working_height + 6
 
-        self.close_doors_after_unloading = False
+        # TODO was this causing backlash problems?
+        # TODO TODO (seems likely) can still skip closing doors, just approach
+        # as it opening on next load
+        #self.close_doors_after_unloading = False
+        self.close_doors_after_unloading = True
 
         self.door_vac_connect_delay_ms = 0
         self.door_vac_disconnect_delay_ms = 0
@@ -105,11 +115,20 @@ class ChoiceModule(maple.module.Array):
             # Anchors are defined as centers of fly loading ports here.
             self.robot.moveXY(xy)
 
+            self.robot.fly_vac_highflow(True)
+
             zw = self.robot.z2_to_worksurface - self.flymanip_working_height
             print('Moving fly manipulator to working height {}'.format(zw))
             self.robot.moveZ2(zw)
 
+            self.robot.dwell_ms(2000)
+            self.robot.fly_vac_highflow(False)
+
+            self.robot.dwell_ms(1000)
+            self.robot.fly_vac_highflow(True)
             self.robot.dwell_ms(5000)
+
+            self.robot.fly_vac_highflow(False)
 
             zt = self.robot.z2_to_worksurface - self.flymanip_working_height - 6
             print('Moving fly manipulator to local travel height {}'.format(zt))
@@ -139,7 +158,7 @@ class ChoiceModule(maple.module.Array):
 
             self.robot.flyManipVac(False)
             self.robot.flyManipAir(True)
-            self.robot.dwell_ms(600)
+            self.robot.dwell_ms(1200)
             self.robot.flyManipAir(False)
 
             zt = self.robot.z2_to_worksurface - self.flymanip_working_height - 6
@@ -151,9 +170,7 @@ class ChoiceModule(maple.module.Array):
         # again, test escape rate
         self.close_door(ij)
 
-    # TODO TODO if door gets stuck in middle, does that prevent vacuum seal from
-    # forming on future attempts? (if so, would need to prevent by
-    # re-engineering doors, or detect and fix...)
+
     # TODO would doors like these be a common enough motif to include their
     # positions (optionally?) in Array constructor, and move these fns up there?
     # maybe an ArrayWithDoors class?
@@ -324,6 +341,7 @@ def main():
         # TODO allow calling constructor w/ no arguments for default config
         robot = maple.robotutil.MAPLE(os.path.join(maple.__path__[0],
             'MAPLE.cfg'))
+        ###    'MAPLE.cfg'), home=False)
 
     # Distance from zero defined in alignment_plate.dxf (inside corner of
     # vertical support in top right corner) to z2 (fly) effector, when the robot
@@ -336,7 +354,9 @@ def main():
     # This is a point just north of the flyplate.
     # TODO maybe save and only do this every so often (or if errors seem to
     # happen)
-    robot.zero_z2_to_reference(xy=(310, 110), thickness=3.175, speed=300)
+    # TODO TODO have this fail / re-home if it basically times out
+    # now, it just uses the position it thinks it got to as the reference
+    robot.zero_z2_to_reference(xy=(310, 110), thickness=3.175, speed=1500)
 
     # TODO TODO set relative to z2_to_worksurface if not using sensor?
     # Measured 45.5 to top of 1/8" alignment plate + 3.175 thickness of that
@@ -360,6 +380,33 @@ def main():
     morgue = maple.module.Morgue(robot,
         (427.15 - z2_offset[0], 303.8 - z2_offset[1]))
 
+    modules = {
+        'left_arena': left_arena,
+        'right_arena': right_arena,
+        'flyplate': flyplate,
+        'morgue': morgue
+    }
+
+    def indices_to_platelabels(ij):
+        cols = [chr(x + ord('A')) for x in range(8)][::-1]
+        rows = [x for x in range(1, 13)][::-1]
+        return cols[i], rows[j]
+
+    def platelabels_to_indices(letter, num):
+        i = ord('H') - ord(letter)
+        j = 12 - num
+        return (i, j)
+
+    # TODO how to have it just to the next well, rather than starting from (0,0)
+    # set all preceding to full?
+    # TODO cache automatically if crash, etc
+    # TODO TODO also save position while clearing arrays
+    # (need to store another bit to say whether you are loading or unloading?)
+    # or just load if have flies and some are still empty?
+    start_from = platelabels_to_indices('G', 7)
+
+    flyplate.full[:start_from[0], :] = False
+    flyplate.full[start_from[0], :start_from[1]] = False
 
     # TODO compute and save desired working distances?
     '''
@@ -383,60 +430,108 @@ def main():
     # TODO maybe factor into function outside of main, s.t. after the plate is
     # out of flies, the user can just be prompted to reload it before the main
     # loop continues
+
+    experiment_num = 1
     while flyplate.has_flies():
 
-        while (not left_arena.is_full()) or (not right_arena.is_full()):
+        # TODO TODO handle this better...
+        try:
+            while (not left_arena.is_full()) or (not right_arena.is_full()):
 
-            if just_right_arena and right_arena.is_full():
-                break
+                if just_right_arena and right_arena.is_full():
+                    break
 
-            if random_order:
-                # Takes a fly from the flyplate. It will be held in the fly
-                # manipulator effector with vacuum until it is deposited.
-                # TODO TODO manage metadata about the fly. probably easiest to
-                # take data from a GUI to annotate flies in the wells?
-                source_pos = flyplate.get_random()
+                if random_order:
+                    # TODO TODO TODO load multi_tracker rois, map those to
+                    # index coordinates in the module, and implement some simple
+                    # machine vision to check whether a fly has been loaded in a
+                    # given chamber. skip chambers that have a fly in them.
+                    # TODO AND AVOID TRACKING THEM
+                    # TODO and warn once the # of such chambers reaches a
+                    # certain threshold value
 
-                # TODO maybe randomly select from all available wells, s.t.
-                # there isn't more probability (per well) on wells in more full
-                # chambers?
-                # TODO just weight choice by # wells free? (would need new
-                # func?)
-                # TODO fix hack. use dict of modules addressed by name or
-                # something.
-                arena_to_load = random.choice([x for x in
-                    [('left_arena', left_arena), ('right_arena', right_arena)]
-                    if not x[1].is_full()])
+                    # Takes a fly from the flyplate. It will be held in the fly
+                    # manipulator effector with vacuum until it is deposited.
+                    # TODO TODO manage metadata about the fly. probably easiest
+                    # to take data from a GUI to annotate flies in the wells?
+                    source_pos = flyplate.get_random()
 
-                print('Trying to load {}'.format(arena_to_load[0]))
-                #dest_arena = arena_to_load.__name__
+                    # TODO maybe randomly select from all available wells, s.t.
+                    # there isn't more probability (per well) on wells in more
+                    # full chambers?
+                    # TODO just weight choice by # wells free? (would need new
+                    # func?)
+                    # TODO fix hack. use dict of modules addressed by name or
+                    # something.
+                    arena_to_load = random.choice([x for x in [('left_arena',
+                        left_arena), ('right_arena', right_arena)]
+                        if not x[1].is_full()])
 
-                # Deposits the fly currently in the manipulator into a random
-                # well in the behavior arena.
-                dest_pos = arena_to_load[1].put_random()
+                    print('Trying to load {}'.format(arena_to_load[0]))
+                    #dest_arena = arena_to_load.__name__
 
-            else:
-                source_pos = flyplate.get_next()
-
-                if not right_arena.is_full():
-                    arena_to_load = right_arena
-                    arena_name = 'right_arena'
-
-                elif not left_arena.is_full():
-                    arena_to_load = left_arena
-                    arena_name = 'left_arena'
+                    # Deposits the fly currently in the manipulator into a
+                    # random well in the behavior arena.
+                    dest_pos = arena_to_load[1].put_random()
 
                 else:
-                    # TODO invalid state error
-                    assert False
+                    source_pos = flyplate.get_next()
 
-                print('Trying to load {}'.format(arena_name))
-                dest_pos = arena_to_load.put_next()
-                
+                    if not right_arena.is_full():
+                        arena_to_load = right_arena
+                        arena_name = 'right_arena'
 
-            if flyplate.is_empty():
-                break
+                    elif not left_arena.is_full():
+                        arena_to_load = left_arena
+                        arena_name = 'left_arena'
 
+                    else:
+                        # TODO invalid state error
+                        assert False
+
+                    print('Trying to load {}'.format(arena_name))
+                    dest_pos = arena_to_load.put_next()
+                    
+
+                if flyplate.is_empty():
+                    break
+
+        except maple.errs.FlyManipulatorCrashError:
+            # TODO factor this all into a fn or use only one except block
+
+            # TODO TODO TODO save state and also clear calibration of module we
+            # crashed over
+            # TODO TODO get current position and use it to check which module we
+            # are over
+            pos = robot.getCurrentPosition()
+            # TODO log position of crash, including Z
+
+            # TODO TODO probably need to skip to the next fly, considering we
+            # will likely have lost the fly in the crash, when the vacuum
+            # switched off
+
+            for name, m in modules.items():
+                # (Ignoring calibration for now)
+                if m.contains(pos[:2]):
+                    print('\n\nCrashed over module {}!!!!!\n\n'.format(name))
+                    print('You will need to recalibrate this module.')
+                    m.clear_correction()
+                    break
+
+            # TODO could jitter position and retry?
+
+            # TODO factor into robot util function just short of release
+            robot.smoothie.sendCmd('M999\n')
+
+            robot.light(False)
+            robot.flyManipVac(False)
+            robot.smallPartManipVac(False)
+            robot.flyManipAir(False)
+            robot.smallPartManipAir(False)
+            robot.fly_vac_highflow(False)
+            #
+
+            robot.home()
 
         # TODO TODO load rois saved w/ choice ROS acquisition scripts, so that
         # we can build backgrounds for each of those regions, and check for
@@ -450,7 +545,7 @@ def main():
         # TODO maybe don't image both chambers if one is empty?
 
         #if dry_run:
-        print('\nRunning experiment\n')
+        print('\n\nRunning experiment {}\n'.format(experiment_num))
 
         '''
         else:
@@ -467,6 +562,7 @@ def main():
             # TODO does this return when the launch file finishes?
             launch.start()
         '''
+        experiment_num += 1
 
         # TODO also transfer data, start tracking, and (if labelling is
         # automated) do analysis (build that sequence here, or elsewhere and
@@ -478,30 +574,60 @@ def main():
         ########################################################################
         # Unload the flies
         ########################################################################
-        while left_arena.has_flies() or right_arena.has_flies():
-            if random_order:
-                arena_to_clear = random.choice([x for x in
-                    [left_arena, right_arena] if x.has_flies()])
-                source_pos = arena_to_clear.get_random()
-
-            else:
-                if right_arena.has_flies():
-                    arena_to_clear = right_arena
-                    arena_name = 'right_arena'
-
-                elif left_arena.has_flies():
-                    arena_to_clear = left_arena
-                    arena_name = 'left_arena'
+        try:
+            while left_arena.has_flies() or right_arena.has_flies():
+                if random_order:
+                    arena_to_clear = random.choice([x for x in
+                        [left_arena, right_arena] if x.has_flies()])
+                    source_pos = arena_to_clear.get_random()
 
                 else:
-                    # TODO invalid state error
-                    assert False
+                    if right_arena.has_flies():
+                        arena_to_clear = right_arena
+                        arena_name = 'right_arena'
 
-                source_pos = arena_to_clear.get_next()
+                    elif left_arena.has_flies():
+                        arena_to_clear = left_arena
+                        arena_name = 'left_arena'
 
-            morgue.put()
-            #if dry_run:
-            print('')
+                    else:
+                        # TODO invalid state error
+                        assert False
+
+                    source_pos = arena_to_clear.get_next()
+
+                morgue.put()
+                #if dry_run:
+                print('')
+
+        except maple.errs.FlyManipulatorCrashError:
+            pos = robot.getCurrentPosition()
+            for name, m in modules.items():
+                if m.contains(pos[:2]):
+                    print('\n\nCrashed over module {}!!!!!\n\n'.format(name))
+                    print('You will need to recalibrate this module.')
+                    m.clear_correction()
+                    break
+
+            robot.smoothie.sendCmd('M999\n')
+            robot.light(False)
+            robot.flyManipVac(False)
+            robot.smallPartManipVac(False)
+            robot.flyManipAir(False)
+            robot.smallPartManipAir(False)
+            robot.fly_vac_highflow(False)
+
+            robot.home()
+
+        # TODO alternative strategies to maintain better repeatability?
+        # just go slower? diff motor current? tension? move cables so they don't
+        # touch edge?
+        # TODO or search surface to find holes w/ Z2? vision?
+
+        # To try to re-establish some positional accuracy.
+        # Assumes error across homings are smaller than error that has
+        # accumulated since last home.
+        #robot.home()
 
 
 # TODO TODO command line arg to force recalibration
