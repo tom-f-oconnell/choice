@@ -96,7 +96,7 @@ class ChoiceModule(maple.module.Array):
         # 10.2 will generally trigger limit on a Delrin hit (also hitting
         # yellow?)
         # 10.4 was too high to move the door very often.
-        self.z2_vent_manip_height = 10.1
+        self.z2_vent_manip_height = 10.15
 
         # was causing backlash problems
         #self.close_doors_after_unloading = False
@@ -524,10 +524,10 @@ class ChoiceModule(maple.module.Array):
         
         # Just to manually take some backlash from anchor point into account
         if left:
-            vent_x_backlash_correction = 0.0
+            vent_x_backlash_correction = 0.1
             vent_y_backlash_correction = 0.0
         else:
-            vent_x_backlash_correction = 0.6
+            vent_x_backlash_correction = 1.1
             vent_y_backlash_correction = -0.2
 
         vent_manip_y = vent_air_y + vent_y_backlash_correction
