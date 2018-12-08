@@ -91,7 +91,7 @@ STANDARD
   9
 $CLAYER
   8
-04.a_short_yellow_shim_manifold
+00a2_slider_compression
   9
 $CELTYPE
   6
@@ -1115,9 +1115,9 @@ AcDbViewportTableRecord
  21
 1
  12
-174.1471824515737
+156.4325551666034
  22
-134.9590679159727
+118.0441980705044
  13
 0
  23
@@ -1143,7 +1143,7 @@ AcDbViewportTableRecord
  37
 0
  40
-285.5134059022357
+228.410724721789
  41
 1.834733893557423
  42
@@ -2246,6 +2246,10 @@ CONTINUOUS
     0
 390
 F
+1001
+LibreCad
+1070
+    1
   0
 LAYER
   5
@@ -2259,13 +2263,11 @@ AcDbLayerTableRecord
   2
 00a2_slider_compression
  70
-    1
+    0
  62
     1
   6
 CONTINUOUS
-290
-0
 370
     0
 390
@@ -2294,6 +2296,10 @@ CONTINUOUS
     0
 390
 F
+1001
+LibreCad
+1070
+    1
   0
 LAYER
   5
@@ -2318,6 +2324,10 @@ CONTINUOUS
     0
 390
 F
+1001
+LibreCad
+1070
+    1
   0
 LAYER
   5
@@ -2342,6 +2352,10 @@ CONTINUOUS
     0
 390
 F
+1001
+LibreCad
+1070
+    1
   0
 LAYER
   5
@@ -2366,6 +2380,10 @@ CONTINUOUS
     0
 390
 F
+1001
+LibreCad
+1070
+    1
   0
 LAYER
   5
@@ -2390,6 +2408,10 @@ CONTINUOUS
     0
 390
 F
+1001
+LibreCad
+1070
+    1
   0
 LAYER
   5
@@ -2499,7 +2521,7 @@ AcDbLayerTableRecord
   2
 04.a_short_yellow_shim_manifold
  70
-    0
+    1
  62
     1
   6
@@ -2606,6 +2628,10 @@ CONTINUOUS
     0
 390
 F
+1001
+LibreCad
+1070
+    1
   0
 LAYER
   5
@@ -2630,6 +2656,10 @@ CONTINUOUS
     0
 390
 F
+1001
+LibreCad
+1070
+    1
   0
 LAYER
   5
@@ -2654,6 +2684,10 @@ CONTINUOUS
     0
 390
 F
+1001
+LibreCad
+1070
+    1
   0
 LAYER
   5
@@ -2678,6 +2712,10 @@ CONTINUOUS
     0
 390
 F
+1001
+LibreCad
+1070
+    1
   0
 ENDTAB
   0
@@ -7149,9 +7187,31 @@ AcDbCircle
  40
 1.8288
   0
-LWPOLYLINE
+CIRCLE
   5
 146
+100
+AcDbEntity
+  8
+00a2_slider_compression
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbCircle
+ 10
+-1.42109e-14
+ 20
+66.75
+ 40
+1.8288
+  0
+LWPOLYLINE
+  5
+147
 100
 AcDbEntity
   8
@@ -7171,43 +7231,21 @@ AcDbPolyline
  43
 0
  10
--5.541109000000006
+-3.5411
  20
--5.605591185302771
+-5.60559
  10
 3.958890999999994
  20
--5.605595000000008
+-5.60559
  10
 3.958890999999994
  20
 184.394405
  10
--5.541109000000006
+-3.5411
  20
 184.394405
-  0
-CIRCLE
-  5
-147
-100
-AcDbEntity
-  8
-00a2_slider_compression
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbCircle
- 10
--1.42109e-14
- 20
-66.75
- 40
-1.8288
   0
 ENDBLK
   5
