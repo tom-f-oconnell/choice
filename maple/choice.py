@@ -81,7 +81,6 @@ class ChoiceModule(maple.module.Array):
         super(ChoiceModule, self).__init__(robot, offset, extent,
             flymanip_working_height, n_cols, n_rows,
             to_first_anchor, anchor_spacing,
-            position_correction=position_correction,
             calibration_approach_from=calibration_approach_from)
 
         # TODO require working height for this effector higher up in class
@@ -90,13 +89,29 @@ class ChoiceModule(maple.module.Array):
         self.z0_center_travel_height = self.z0_working_height + 6
 
         self.flymanip_travel_height = self.flymanip_working_height + 6
-        # Trying 12 - 1/8" (3.175 mm)
 
-        # 10 seems to hit yellow layer.
-        # 10.2 will generally trigger limit on a Delrin hit (also hitting
-        # yellow?)
-        # 10.4 was too high to move the door very often.
-        self.z2_vent_manip_height = 10.15
+        # TODO maybe go back to using a fn to define calibration points,
+        # b/c now I have to pass flag to superclass constructor indicating we
+        # are going to handle checking for correction...
+        # or maybe just don't automatically try to fit correction in
+        # constructor?
+        j = 0
+        for i in (0, self.n_cols - 1):
+            center = self.anchor_center(i, j, without_correction=True)
+
+            for left in (True, False):
+                z0_vx, vy = self.vent_manip_center( (i,j), left, closed=True)
+                z2_vx = z0_vx - self.robot.z0_to_z2_dx
+                self.calibration_points.append((z2_vx, vy))
+
+                # TODO TODO might want to provide facilities for correcting
+                # based on each point, rather than only applying correction to
+                # the anchor_center and then assuming rectilinear axes about
+                # that
+                self.calibration_approach_points.append(center)
+
+                # Will ultimately use the vacuum cup to move these vent doors.
+                self.calibration_effectors.append(0)
 
         # was causing backlash problems
         #self.close_doors_after_unloading = False
@@ -104,9 +119,10 @@ class ChoiceModule(maple.module.Array):
 
         self.door_vac_connect_delay_ms = 0
         self.door_vac_disconnect_delay_ms = 0
+        self.disconnect_air_ms = 80
         # TODO measure whether this actually helps (seemed to by hand, but might
         # not with robot) (and is 2 sufficient?)
-        self.repeats_per_door = 2
+        self.repeats_per_door = 1
 
         # TODO implement
         #self.door_overshoot = 0.5
@@ -277,6 +293,10 @@ class ChoiceModule(maple.module.Array):
                 self.robot.dwell_ms(self.door_vac_disconnect_delay_ms)
                 self.robot.smallPartManipVac(False)
 
+                self.robot.smallPartManipAir(True)
+                self.robot.dwell_ms(self.disconnect_air_ms)
+                self.robot.smallPartManipAir(False)
+
                 self.robot.moveZ0(zt)
 
         self.door_is_open[ij] = True
@@ -323,6 +343,10 @@ class ChoiceModule(maple.module.Array):
                 self.robot.dwell_ms(self.door_vac_disconnect_delay_ms)
                 self.robot.smallPartManipVac(False)
 
+                self.robot.smallPartManipAir(True)
+                self.robot.dwell_ms(self.disconnect_air_ms)
+                self.robot.smallPartManipAir(False)
+
                 self.robot.moveZ0(zt)
 
         self.door_is_open[ij] = False
@@ -348,26 +372,23 @@ class ChoiceModule(maple.module.Array):
             'left' if left else 'right', open_vent))
 
         if self.robot is not None:
-            # TODO TODO is computation of travel height failing or is
-            # maintenance / getting of correct current height before last z2
-            # move?
-            zt = self.robot.z2_to_worksurface - self.flymanip_travel_height
-            curr_z2 = self.robot.currentPosition[4]
+            zt = self.robot.z0_to_worksurface - self.z0_center_travel_height
+            curr_z0 = self.robot.currentPosition[2]
 
-            if curr_z2 <= zt:
-                print('Fly manipulator already above minimum travel height' +
-                    ' ({} <= {})'.format(curr_z2, zt))
+            if curr_z0 <= zt:
+                print('Part manipulator already above minimum travel height' +
+                    ' ({} <= {})'.format(curr_z0, zt))
             else:
-                print('Moving fly manipulator to local travel height ' +
+                print('Moving part manipulator to local travel height ' +
                     '{}'.format(zt))
-                self.robot.moveZ2(zt)
+                self.robot.moveZ0(zt)
 
             self.robot.moveXY(closed_vent)
 
-            zw = self.robot.z2_to_worksurface - self.z2_vent_manip_height
-            self.robot.moveZ2(zw)
+            zw = self.robot.z0_to_worksurface - self.z0_working_height
+            self.robot.moveZ0(zw)
             self.robot.moveXY(open_vent)
-            self.robot.moveZ2(zt)
+            self.robot.moveZ0(zt)
 
         self.vent_is_open[i, j, k] = True
 
@@ -392,79 +413,95 @@ class ChoiceModule(maple.module.Array):
             'left' if left else 'right', closed_vent))
 
         if self.robot is not None:
-            zt = self.robot.z2_to_worksurface - self.flymanip_travel_height
-            curr_z2 = self.robot.currentPosition[4]
+            zt = self.robot.z0_to_worksurface - self.z0_center_travel_height
+            curr_z0 = self.robot.currentPosition[2]
 
-            if curr_z2 <= zt:
-                print('Fly manipulator already above minimum travel height' +
-                    ' ({} <= {})'.format(curr_z2, zt))
+            if curr_z0 <= zt:
+                print('Part manipulator already above minimum travel height' +
+                    ' ({} <= {})'.format(curr_z0, zt))
             else:
-                print('Moving fly manipulator to local travel height ' +
+                print('Moving part manipulator to local travel height ' +
                     '{}'.format(zt))
-                self.robot.moveZ2(zt)
+                self.robot.moveZ0(zt)
 
             # So that manipulator isn't right up against the edge it was pushing
             # when it was opening the door.
             backoff = 0.5
             self.robot.moveXY((open_vent[0] + backoff, open_vent[1]))
 
-            zw = self.robot.z2_to_worksurface - self.z2_vent_manip_height
-            self.robot.moveZ2(zw)
+            zw = self.robot.z0_to_worksurface - self.z0_working_height
+            self.robot.moveZ0(zw)
 
             # Some other effect causing need for this.
             # Maybe it's lasercutter kerf? Maybe friction from effector rubbing
             # on shim layer and bending?
             further = 0.6
             self.robot.moveXY((closed_vent[0] + further, closed_vent[1]))
-            self.robot.moveZ2(zt)
+            self.robot.moveZ0(zt)
 
         self.vent_is_open[i, j, k] = False
 
 
     # TODO similar fn for main fly ports?
-    def to_vent_port(self, ij, left):
+    def to_vent_port(self, ij, left, z_axis=2):
         """
         """
+        if not (z_axis == 0 or z_axis == 2):
+            raise ValueError('only Z0 and Z2 supported')
+
+        # In Z0 coordinates
         vent_port = self.vent_air_center(ij, left)
 
         # TODO open first?
         
         if self.robot is not None:
-            # TODO TODO is computation of travel height failing or is
-            # maintenance / getting of correct current height before last z2
-            # move?
-            zt = self.robot.z2_to_worksurface - self.flymanip_travel_height
-            curr_z2 = self.robot.currentPosition[4]
+            if z_axis == 0:
+                zt = self.robot.z0_to_worksurface - self.z0_center_travel_height
+                curr_z0 = self.robot.currentPosition[2]
 
-            if curr_z2 <= zt:
-                print('Fly manipulator already above minimum travel height' +
-                    ' ({} <= {})'.format(curr_z2, zt))
-            else:
-                print('Moving fly manipulator to local travel height ' +
-                    '{}'.format(zt))
-                self.robot.moveZ2(zt)
+                if curr_z0 <= zt:
+                    print('Part manipulator already above minimum travel ' +
+                        'height ({} <= {})'.format(curr_z0, zt))
+                else:
+                    print('Moving part manipulator to local travel height ' +
+                        '{}'.format(zt))
+                    self.robot.moveZ0(zt)
 
-            self.robot.moveXY(vent_port)
+                self.robot.moveXY(vent_port)
 
-            # TODO maybe allow this to be set indep of height for main port?
-            zw = self.robot.z2_to_worksurface - self.flymanip_working_height
-            self.robot.moveZ2(zw)
+                # TODO maybe allow this to be set indep of height for main port?
+                zw = self.robot.z0_to_worksurface - self.z0_working_height
+                self.robot.moveZ0(zw)
+
+            elif z_axis == 2:
+                zt = self.robot.z2_to_worksurface - self.flymanip_travel_height
+                curr_z2 = self.robot.currentPosition[4]
+
+                if curr_z2 <= zt:
+                    print('Fly manipulator already above minimum travel height'+
+                        ' ({} <= {})'.format(curr_z2, zt))
+                else:
+                    print('Moving fly manipulator to local travel height ' +
+                        '{}'.format(zt))
+                    self.robot.moveZ2(zt)
+
+                self.robot.moveXY([vent_port[0] - self.robot.z0_to_z2_dx,
+                    vent_port[1]])
+
+                # TODO maybe allow this to be set indep of height for main port?
+                zw = self.robot.z2_to_worksurface - self.flymanip_working_height
+                self.robot.moveZ2(zw)
 
 
     def door_center(self, ij, closed=False):
-        """
+        """Returns door_center in Z0 coordinates.
         """
         i, j = ij
         assert j == 0, 'This module only has one column.'
         x, y = self.anchor_center(i, j)
-
-        # TODO use central offset definition (in cfg?)
-        # 78 was measured from Z-plate DXF. Need correction?
-        # 78 is the difference in X position of the Z0 and Z2 motor mounts.
-        z0_to_z2_dx = -78
         flyport_to_door_dx = -4.89
         
-        door_x = x + flyport_to_door_dx + z0_to_z2_dx
+        door_x = x + flyport_to_door_dx + self.robot.z0_to_z2_dx
 
         dy = 8.252
         if not closed:
@@ -494,14 +531,14 @@ class ChoiceModule(maple.module.Array):
         assert j == 0, 'This module only has one column.'
         x, y = self.anchor_center(i, j)
 
-        vent_air_x = x + 1.268
+        vent_air_x = x + 1.268 + self.robot.z0_to_z2_dx
 
         flyport_to_vent_air_dy = 22.495
         if left:
             vent_air_y = y - flyport_to_vent_air_dy
         else:
             vent_air_y = y + flyport_to_vent_air_dy
-
+        
         return (vent_air_x, vent_air_y)
 
 
@@ -518,21 +555,13 @@ class ChoiceModule(maple.module.Array):
         # May want to set this less, possibly to prevent fly escape, catching,
         # or limit switch problems.
         # 4 did pose some limit switch problems, at least with one calibration.
-        vent_stroke = 3.5
+        vent_stroke = 3.3
         max_vent_stroke = 4
         assert vent_stroke <= max_vent_stroke
-        
-        # Just to manually take some backlash from anchor point into account
-        if left:
-            vent_x_backlash_correction = 0.1
-            vent_y_backlash_correction = 0.0
-        else:
-            vent_x_backlash_correction = 1.1
-            vent_y_backlash_correction = -0.2
 
-        vent_manip_y = vent_air_y + vent_y_backlash_correction
-
-        vent_manip_dx = -4.75 + vent_x_backlash_correction
+        vent_manip_y = vent_air_y
+        fudge_factor = -0.4
+        vent_manip_dx = -4.75 + fudge_factor
 
         # These doors open along other axis, so this is the coordinate that
         # changes depending on open / closed status.
@@ -580,7 +609,8 @@ class ChoiceModule(maple.module.Array):
             if self.robot is not None:
                 i, j = ij
                 # To keep backlash similar to during normal operation
-                self.robot.moveXY(self.anchor_center(i,j))
+                z2x, z2y = self.anchor_center(i,j)
+                self.robot.moveXY([z2x + self.robot.z0_to_z2_dx, z2y])
 
             # Left
             self.open_vent(ij, True)
@@ -598,7 +628,8 @@ class ChoiceModule(maple.module.Array):
         for ij in self.all_index_pairs():
             if self.robot is not None:
                 i,j = ij
-                self.robot.moveXY(self.anchor_center(i,j))
+                z2x, z2y = self.anchor_center(i,j)
+                self.robot.moveXY([z2x + self.robot.z0_to_z2_dx, z2y])
 
             # Left
             self.close_vent(ij, True)
@@ -631,29 +662,36 @@ class ChoiceModule(maple.module.Array):
         self.effectors_to_travel_height()
 
     
-    def visit_all_vent_ports(self):
+    def visit_all_vent_ports(self, z_axis=2):
         """To see whether there would be crashes.
 
         Result of check will mean more if approaches in use are in same
         direction as here, because of the backlash.
         """
+        assert z_axis == 2 or z_axis == 0
+
         self.effectors_to_travel_height()
-        zt = self.robot.z2_to_worksurface - self.flymanip_travel_height
+        zt = self.robot.z0_to_worksurface - self.z0_center_travel_height
 
         for ij in self.all_index_pairs():
             if self.robot is not None:
                 i,j = ij
-                self.robot.moveXY(self.anchor_center(i,j))
+                z2x, z2y = self.anchor_center(i,j)
+                self.robot.moveXY([z2x + self.robot.z0_to_z2_dx, z2y])
 
-            self.to_vent_port(ij, True)
+            self.to_vent_port(ij, True, z_axis=z_axis)
 
-            print('Moving fly manipulator to local travel height {}'.format(zt))
-            self.robot.moveZ2(zt)
+            self.effectors_to_travel_height()
+            #print('Moving part manipulator to local travel height {}'.format(
+            #    zt))
+            #self.robot.moveZ0(zt)
 
-            self.to_vent_port(ij, False)
+            self.to_vent_port(ij, False, z_axis=z_axis)
 
-            print('Moving fly manipulator to local travel height {}'.format(zt))
-            self.robot.moveZ2(zt)
+            self.effectors_to_travel_height()
+            #print('Moving part manipulator to local travel height {}'.format(
+            #    zt))
+            #self.robot.moveZ0(zt)
 
         self.effectors_to_travel_height()
 
@@ -719,13 +757,24 @@ def main():
         # metal needle by maybe ~1mm or so.
         #robot.z2_to_worksurface = 43.175
         # This is a point just north of the flyplate.
+        '''
         robot.zero_z2_to_reference(xy=z2_reference_point, thickness=3.175,
             speed=1500)
+        print('Found worksurface at Z2={:.2f}mm'.format(
+            robot.z2_to_worksurface))
+        '''
+        # Measured as above
+        robot.z2_to_worksurface = 44.5125
 
         # TODO TODO set relative to z2_to_worksurface if not using sensor?
         # Measured 45.5 to top of 1/8" alignment plate + 3.175 thickness of that
         # plate.
-        robot.z0_to_worksurface = 48.675
+        robot.z0_to_worksurface = 48.675 + 14.0 - 3 #48.675
+
+        # TODO use central offset definition (in cfg?)
+        # 78 was measured from Z-plate DXF. Need correction?
+        # 78 is the difference in X position of the Z0 and Z2 motor mounts.
+        robot.z0_to_z2_dx = -(78 - 1)
 
     # Measured from tom-f-oconnell/MAPLEHardware/Drawings/alignment_plate.dxf,
     # with construction lines added as necessary to measure from origin to top
@@ -734,23 +783,27 @@ def main():
     flyplate = maple.module.FlyPlate(robot,
         (321.65 - z2_offset[0], 212.0 - z2_offset[1]),
         calibration_approach_from=z2_reference_point)
+    # TODO TODO save these in human editable format like json/yaml, rather than
+    # pickle
+    flyplate.fit_correction()
 
-    # Turning off position_correction on left_arena, so that isn't done in the
-    # constructor, since I'm not using the left_arena just while testing.
-    # TODO maybe get rid of position_correction hack (assume True), and just set
-    # robot to None or something to disable it when I want?
     left_arena = ChoiceModule(robot,
         (382.15 - z2_offset[0], 18.2 - z2_offset[1]),
-        position_correction=False,
         calibration_approach_from=flyplate.offset[:2] + (flyplate.extent[0], 0))
+    if not just_right_arena:
+        left_arena.fit_correction()
 
     right_arena = ChoiceModule(robot,
         (93.65 - z2_offset[0], 18.2 - z2_offset[1]),
         calibration_approach_from=flyplate.offset[:2])
+    right_arena.fit_correction()
 
     morgue = maple.module.Morgue(robot,
         (427.15 - z2_offset[0], 303.8 - z2_offset[1]))
 
+    # TODO maybe factor into some kind of workspace class, with higher level
+    # planning fns (could be useful at least for picking appropriate approach
+    # points to avoid backlash errors in calibration)
     modules = {
         'left_arena': left_arena,
         'right_arena': right_arena,
@@ -797,6 +850,7 @@ def main():
     ###right_arena.clear_correction()
 
     #right_arena.visit_all_loading_ports()
+    # TODO fix anchors in z2 case. seems to be using z0 anchor.
     #right_arena.visit_all_vent_ports()
     right_arena.open_vents()
     right_arena.close_vents()
