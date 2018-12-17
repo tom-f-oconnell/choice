@@ -28,7 +28,7 @@ class ChoiceModule(maple.module.Array):
     """
     """
     def __init__(self, robot, offset, position_correction=True,
-            calibration_approach_from=None, verbose=False):
+            calibration_approach_from=None, verbose=False, morgue=None):
         # Oriented rotated 90 degrees clockwise from LibreCAD schematics.
         # "length" and "height" in FreeCAD params reflect LibreCAD rotation.
         # All units mm.
@@ -89,7 +89,7 @@ class ChoiceModule(maple.module.Array):
             center = self.anchor_center(i, j, without_correction=True)
 
             for left in (True, False):
-                z0_vx, vy = self.vent_manip_center( (i,j), left, closed=True,
+                z0_vx, vy = self.vent_manip_center(i, left, closed=True,
                     with_fudge=False)
 
                 z2_vx = z0_vx - self.robot.z0_to_z2_dx
@@ -104,13 +104,16 @@ class ChoiceModule(maple.module.Array):
                 # Will ultimately use the vacuum cup to move these vent doors.
                 self.calibration_effectors.append(0)
 
+        self.fly_load_air_ms = 1500
+
         # was causing backlash problems
         #self.close_doors_after_unloading = False
         self.close_doors_after_unloading = True
 
         self.door_vac_connect_delay_ms = 0
         self.door_vac_disconnect_delay_ms = 0
-        self.disconnect_air_ms = 80
+        # 80 works, but makes a high pitched sound.
+        self.disconnect_air_ms = 40
         self.repeats_per_door = 1
 
         self.repeats_per_vent = 1
@@ -123,16 +126,21 @@ class ChoiceModule(maple.module.Array):
         # 2 vents per chamber. One on either end.
         self.vent_is_open = np.full((self.n_cols, self.n_rows, 2), False)
 
+        self.morgue = morgue
+
 
     def get(self, xy, ij):
         """
         """
+        i, _ = ij
+
         vac_each_port = True
+        morgue_after_each = True
         # I wasn't having such great luck with my attempt at this strategy.
         blow_towards_center = False
         assert vac_each_port != blow_towards_center
 
-        print('Getting fly from behavior chamber {} ({})'.format(ij, xy))
+        print('Getting fly from behavior chamber {} ({})'.format(i, xy))
 
         if self.robot is not None:
             zt = self.robot.z2_to_worksurface - self.flymanip_travel_height
@@ -150,29 +158,29 @@ class ChoiceModule(maple.module.Array):
             self.robot.flyManipVac(False)
 
             # Left vent
-            self.open_vent(ij, True)
+            self.open_vent(i, True)
             self.robot.flyManipAir(True)
-            self.to_vent_port(ij, True)
+            self.to_vent_port(i, True)
             self.robot.dwell_ms(blow_time_ms)
             self.robot.flyManipAir(False)
             self.robot.moveZ2(zt)
-            self.close_vent(ij, True)
+            self.close_vent(i, True)
 
             # Right vent
-            self.open_vent(ij, False)
+            self.open_vent(i, False)
             self.robot.flyManipAir(True)
-            self.to_vent_port(ij, False)
+            self.to_vent_port(i, False)
             self.robot.dwell_ms(blow_time_ms)
             self.robot.flyManipAir(False)
             self.robot.moveZ2(zt)
-            self.close_vent(ij, False)
+            self.close_vent(i, False)
 
         if self.robot is not None:
             self.robot.flyManipVac(True)
             self.robot.flyManipAir(False)
             # TODO add support for larger valve? (just rewire into old vac?)
 
-        self.open_door(ij)
+        self.open_door(i)
 
         if self.robot is not None:
             # Anchors are defined as centers of fly loading ports here.
@@ -190,7 +198,15 @@ class ChoiceModule(maple.module.Array):
 
         # TODO also apply this flag to vents? separate?
         if self.close_doors_after_unloading:
-            self.close_door(ij)
+            self.close_door(i)
+
+        if morgue_after_each:
+            if self.morgue is None:
+                raise ValueError('need to pass morgue to __init__ to' +
+                    ' use morgue_after_each unloading option.')
+            self.morgue.put()
+            # TODO maybe move back to anchor for backlash if coming back to
+            # do vents?
 
         if vac_each_port and self.robot is not None:
             # TODO TODO TODO should i just go to the morgue after each hole?
@@ -203,39 +219,26 @@ class ChoiceModule(maple.module.Array):
 
             # TODO yea... just factor into a fn
             # Left vent
-            self.open_vent(ij, True)
+            self.open_vent(i, True)
             self.robot.fly_vac_highflow(True)
-            self.to_vent_port(ij, True)
+            self.to_vent_port(i, True)
             self.robot.dwell_ms(2000)
             self.robot.fly_vac_highflow(False)
             self.robot.moveZ2(zt)
-            self.close_vent(ij, True)
+            self.close_vent(i, True)
+            if morgue_after_each:
+                self.morgue.put()
 
             # Right vent
-            self.open_vent(ij, False)
+            self.open_vent(i, False)
             self.robot.fly_vac_highflow(True)
-            self.to_vent_port(ij, False)
+            self.to_vent_port(i, False)
             self.robot.dwell_ms(2000)
             self.robot.fly_vac_highflow(False)
             self.robot.moveZ2(zt)
-            self.close_vent(ij, False)
-
-            '''
-            self.robot.fly_vac_highflow(False)
-
-            self.robot.dwell_ms(500)
-            self.robot.flyManipVac(False)
-            self.robot.flyManipAir(True)
-            self.robot.dwell_ms(800)
-            self.robot.flyManipVac(True)
-            self.robot.flyManipAir(False)
-
-            self.robot.dwell_ms(750)
-            self.robot.fly_vac_highflow(True)
-            self.robot.dwell_ms(5000)
-
-            self.robot.fly_vac_highflow(False)
-            '''
+            self.close_vent(i, False)
+            if morgue_after_each:
+                self.morgue.put()
 
 
     def put(self, xy, ij):
@@ -243,8 +246,10 @@ class ChoiceModule(maple.module.Array):
         Assumes flyManipVac is on and flyManipAir is off, otherwise fly could
         have been able to escape.
         """
+        i, _ = ij
+
         # how much time will i have before flies start to escape? test
-        self.open_door(ij)
+        self.open_door(i)
 
         if self.robot is not None:
             self.robot.moveXY(xy)
@@ -255,7 +260,7 @@ class ChoiceModule(maple.module.Array):
 
             self.robot.flyManipVac(False)
             self.robot.flyManipAir(True)
-            self.robot.dwell_ms(1500)
+            self.robot.dwell_ms(self.fly_load_air_ms)
             # TODO leave on while withdrawing a little? if lack of opposite vent
             # is the problem, and that does help with unloading, then may need
             # to play around with this...
@@ -265,28 +270,31 @@ class ChoiceModule(maple.module.Array):
             print('Moving fly manipulator to local travel height {}'.format(zt))
             self.robot.moveZ2(zt)
 
-        print('Depositing fly in behavior chamber {} ({})'.format(ij, xy))
+        print('Depositing fly in behavior chamber {} ({})'.format(i, xy))
 
         # again, test escape rate
-        self.close_door(ij)
+        self.close_door(i)
 
 
     # TODO would doors like these be a common enough motif to include their
     # positions (optionally?) in Array constructor, and move these fns up there?
     # maybe an ArrayWithDoors class?
-    def open_door(self, ij):
+    def open_door(self, i):
         """
         Assumes smallPartManipAir is off.
         """
+        self.effectors_to_travel_height()
+
         # TODO TODO TODO check that vac isn't pulling doors up (increasing
         # friction, risking escape, etc) at the working height (decrease working
         # height if so)
+        ij = [i, 0]
         if self.door_is_open[ij]:
-            print('Door {} was already open'.format(ij))
+            print('Door {} was already open'.format(i))
             return
 
-        closed_door = self.door_center(ij, closed=True)
-        open_door = self.door_center(ij, closed=False)
+        closed_door = self.door_center(i, closed=True)
+        open_door = self.door_center(i, closed=False)
 
         #if self.robot is None:
         print('Moving to closed door at {}'.format(closed_door))
@@ -308,13 +316,13 @@ class ChoiceModule(maple.module.Array):
             for _ in range(self.repeats_per_door):
                 self.robot.smallPartManipVac(True)
 
-                self.robot.moveXY(self.door_center(ij, closed=True))
+                self.robot.moveXY(self.door_center(i, closed=True))
 
                 zw = self.robot.z0_to_worksurface - self.z0_working_height
                 self.robot.moveZ0(zw)
 
                 self.robot.dwell_ms(self.door_vac_connect_delay_ms)
-                self.robot.moveXY(self.door_center(ij, closed=False))
+                self.robot.moveXY(self.door_center(i, closed=False))
                 self.robot.dwell_ms(self.door_vac_disconnect_delay_ms)
                 self.robot.smallPartManipVac(False)
 
@@ -325,18 +333,22 @@ class ChoiceModule(maple.module.Array):
                 self.robot.moveZ0(zt)
 
         self.door_is_open[ij] = True
+        self.effectors_to_travel_height()
 
 
-    def close_door(self, ij):
+    def close_door(self, i):
         """
         Assumes smallPartManipAir is off.
         """
+        self.effectors_to_travel_height()
+
+        ij = [i, 0]
         if not self.door_is_open[ij]:
-            print('Door {} was already closed'.format(ij))
+            print('Door {} was already closed'.format(i))
             return
 
-        open_door = self.door_center(ij, closed=False)
-        closed_door = self.door_center(ij, closed=True)
+        open_door = self.door_center(i, closed=False)
+        closed_door = self.door_center(i, closed=True)
 
         #if self.robot is None:
         print('Moving to open door at {}'.format(open_door))
@@ -344,8 +356,6 @@ class ChoiceModule(maple.module.Array):
         #    return
 
         if self.robot is not None:
-            self.effectors_to_travel_height()
-
             zt = self.robot.z0_to_worksurface - self.z0_center_travel_height
 
             for _ in range(self.repeats_per_door):
@@ -366,25 +376,26 @@ class ChoiceModule(maple.module.Array):
                 self.robot.moveZ0(zt)
 
         self.door_is_open[ij] = False
+        self.effectors_to_travel_height()
 
 
     # TODO TODO make decorator to flank function w/
     # self.effectors_to_travel_height() ?
-    def open_vent(self, ij, left):
+    def open_vent(self, i, left):
         """
         """
         self.effectors_to_travel_height()
 
-        i, j = ij
+        j = 0
         k = 0 if left else 1
 
         if self.vent_is_open[i, j, k]:
             print('{} vent {} was already open'.format(
-                'Left' if left else 'Right', ij))
+                'Left' if left else 'Right', i))
             return
 
-        open_vent = self.vent_manip_center(ij, left, closed=False)
-        closed_vent = self.vent_manip_center(ij, left, closed=True)
+        open_vent = self.vent_manip_center(i, left, closed=False)
+        closed_vent = self.vent_manip_center(i, left, closed=True)
 
         if self.robot is not None:
             zw = self.robot.z0_to_worksurface - self.z0_working_height
@@ -404,6 +415,11 @@ class ChoiceModule(maple.module.Array):
             if self.robot is not None:
                 self.robot.moveXY(open_vent)
                 self.robot.smallPartManipVac(False)
+
+                self.robot.smallPartManipAir(True)
+                self.robot.dwell_ms(self.disconnect_air_ms)
+                self.robot.smallPartManipAir(False)
+
                 # TODO need air here as well?
                 self.robot.moveZ0(zw - self.retract_between_vent_repeats)
 
@@ -411,21 +427,21 @@ class ChoiceModule(maple.module.Array):
         self.effectors_to_travel_height()
 
 
-    def close_vent(self, ij, left):
+    def close_vent(self, i, left):
         """
         """
         self.effectors_to_travel_height()
 
-        i, j = ij
+        j = 0
         k = 0 if left else 1
 
         if not self.vent_is_open[i, j, k]:
             print('{} vent {} was already closed'.format(
-                'Left' if left else 'Right', ij))
+                'Left' if left else 'Right', i))
             return
 
-        open_vent = self.vent_manip_center(ij, left, closed=False)
-        closed_vent = self.vent_manip_center(ij, left, closed=True)
+        open_vent = self.vent_manip_center(i, left, closed=False)
+        closed_vent = self.vent_manip_center(i, left, closed=True)
 
         if self.robot is not None:
             # TODO just compute in constructor?
@@ -447,6 +463,11 @@ class ChoiceModule(maple.module.Array):
                 further = 0.0
                 self.robot.moveXY((closed_vent[0] + further, closed_vent[1]))
                 self.robot.smallPartManipVac(False)
+
+                self.robot.smallPartManipAir(True)
+                self.robot.dwell_ms(self.disconnect_air_ms)
+                self.robot.smallPartManipAir(False)
+
                 self.robot.moveZ0(zw - self.retract_between_vent_repeats)
 
         self.vent_is_open[i, j, k] = False
@@ -454,14 +475,14 @@ class ChoiceModule(maple.module.Array):
 
 
     # TODO similar fn for main fly ports?
-    def to_vent_port(self, ij, left, z_axis=2):
+    def to_vent_port(self, i, left, z_axis=2):
         """
         """
         if not (z_axis == 0 or z_axis == 2):
             raise ValueError('only Z0 and Z2 supported')
 
         # In Z0 coordinates
-        vent_port = self.vent_air_center(ij, left)
+        vent_port = self.vent_air_center(i, left)
 
         # TODO open first?
         
@@ -504,11 +525,10 @@ class ChoiceModule(maple.module.Array):
                 self.robot.moveZ2(zw)
 
 
-    def door_center(self, ij, closed=False):
+    def door_center(self, i, closed=False):
         """Returns door_center in Z0 coordinates.
         """
-        i, j = ij
-        assert j == 0, 'This module only has one column.'
+        j = 0
         x, y = self.anchor_center(i, j)
         flyport_to_door_dx = -4.89
         
@@ -530,7 +550,7 @@ class ChoiceModule(maple.module.Array):
         return (door_x, door_y)
 
 
-    def vent_air_center(self, ij, left):
+    def vent_air_center(self, i, left):
         """Returns center of vent air/vacuum application point.
 
         Args:
@@ -538,8 +558,7 @@ class ChoiceModule(maple.module.Array):
             viewing chamber in CAD orientation (w/ D-sub at bottom). False
             otherwise.
         """
-        i, j = ij
-        assert j == 0, 'This module only has one column.'
+        j = 0
         x, y = self.anchor_center(i, j)
 
         vent_air_x = x + 1.268 + self.robot.z0_to_z2_dx
@@ -553,7 +572,7 @@ class ChoiceModule(maple.module.Array):
         return (vent_air_x, vent_air_y)
 
 
-    def vent_manip_center(self, ij, left, closed=True, with_fudge=True):
+    def vent_manip_center(self, i, left, closed=True, with_fudge=True):
         """Returns center of vent slider manipulation point.
 
         Args:
@@ -561,7 +580,7 @@ class ChoiceModule(maple.module.Array):
             viewing chamber in CAD orientation (w/ D-sub at bottom). False
             otherwise.
         """
-        vent_air_x, vent_air_y = self.vent_air_center(ij, left)
+        vent_air_x, vent_air_y = self.vent_air_center(i, left)
 
         # May want to set this less, possibly to prevent fly escape, catching,
         # or limit switch problems.
@@ -573,7 +592,7 @@ class ChoiceModule(maple.module.Array):
         vent_manip_y = vent_air_y
 
         if with_fudge:
-            fudge_factor = -0.5 #-0.2 #-0.5
+            fudge_factor = -0.2 #-0.5
         else:
             fudge_factor = 0.0
 
@@ -598,8 +617,8 @@ class ChoiceModule(maple.module.Array):
         """
         self.effectors_to_travel_height()
 
-        for ij in self.all_index_pairs():
-            self.open_door(ij)
+        for i, _ in self.all_index_pairs():
+            self.open_door(i)
 
         self.effectors_to_travel_height()
 
@@ -609,8 +628,8 @@ class ChoiceModule(maple.module.Array):
         """
         self.effectors_to_travel_height()
 
-        for ij in self.all_index_pairs():
-            self.close_door(ij)
+        for i, _ in self.all_index_pairs():
+            self.close_door(i)
 
         self.effectors_to_travel_height()
 
@@ -621,17 +640,16 @@ class ChoiceModule(maple.module.Array):
         """
         self.effectors_to_travel_height()
 
-        for ij in self.all_index_pairs():
+        for i, j in self.all_index_pairs():
             if self.robot is not None:
-                i, j = ij
                 # To keep backlash similar to during normal operation
-                z2x, z2y = self.anchor_center(i,j)
+                z2x, z2y = self.anchor_center(i, j)
                 self.robot.moveXY([z2x + self.robot.z0_to_z2_dx, z2y])
 
             # Left
-            self.open_vent(ij, True)
+            self.open_vent(i, True)
             # Right
-            self.open_vent(ij, False)
+            self.open_vent(i, False)
 
         self.effectors_to_travel_height()
 
@@ -641,16 +659,15 @@ class ChoiceModule(maple.module.Array):
         """
         self.effectors_to_travel_height()
 
-        for ij in self.all_index_pairs():
+        for i, j in self.all_index_pairs():
             if self.robot is not None:
-                i,j = ij
-                z2x, z2y = self.anchor_center(i,j)
+                z2x, z2y = self.anchor_center(i, j)
                 self.robot.moveXY([z2x + self.robot.z0_to_z2_dx, z2y])
 
             # Left
-            self.close_vent(ij, True)
+            self.close_vent(i, True)
             # Right
-            self.close_vent(ij, False)
+            self.close_vent(i, False)
 
         self.effectors_to_travel_height()
 
@@ -664,7 +681,7 @@ class ChoiceModule(maple.module.Array):
         self.effectors_to_travel_height()
 
         for i, j in self.all_index_pairs():
-            xy = self.anchor_center(i,j)
+            xy = self.anchor_center(i, j)
             self.robot.moveXY(xy)
 
             zw = self.robot.z2_to_worksurface - self.flymanip_working_height
@@ -689,20 +706,19 @@ class ChoiceModule(maple.module.Array):
         self.effectors_to_travel_height()
         zt = self.robot.z0_to_worksurface - self.z0_center_travel_height
 
-        for ij in self.all_index_pairs():
+        for i, j in self.all_index_pairs():
             if self.robot is not None:
-                i,j = ij
-                z2x, z2y = self.anchor_center(i,j)
+                z2x, z2y = self.anchor_center(i, j)
                 self.robot.moveXY([z2x + self.robot.z0_to_z2_dx, z2y])
 
-            self.to_vent_port(ij, True, z_axis=z_axis)
+            self.to_vent_port(i, True, z_axis=z_axis)
 
             self.effectors_to_travel_height()
             #print('Moving part manipulator to local travel height {}'.format(
             #    zt))
             #self.robot.moveZ0(zt)
 
-            self.to_vent_port(ij, False, z_axis=z_axis)
+            self.to_vent_port(i, False, z_axis=z_axis)
 
             self.effectors_to_travel_height()
             #print('Moving part manipulator to local travel height {}'.format(
@@ -711,30 +727,35 @@ class ChoiceModule(maple.module.Array):
 
         self.effectors_to_travel_height()
 
+
+    def remove_flies(self, assume_full=True):
+        """
+        """
+        if self.morgue is None:
+            raise ValueError('need to pass morgue to __init__ to' +
+                ' use remove_flies.')
+
+        if not assume_full:
+            raise NotImplementedError
+
+        for i, j in self.all_index_pairs():
+            self.get_indices(i, j)
+            self.morgue.put()
+
+
+    def mock_load(self):
+        """
+        To test effects of air on vent doors. It can sometimes open them.
+        """
+        for i, j in self.all_index_pairs():
+            self.put_indices(i, j)
+
+        # Because we aren't actually stopping at a source to get flies here, but
+        # put_indices sets each to full on return.
+        self.full[:] = False
+
+
     # TODO one function that combines all to check for crashes
-
-
-def measure_offset(array_modules, current_offset=None):
-    """
-    """
-    points = []
-    errors = []
-    for array_module in array_modules:
-        ps, errs = array_module.measure_errors()
-        points.extend(ps)
-        errors.extend(errs)
-
-    print('Errors:')
-    for p, e in zip(points, errors):
-        print(p, e)
-
-    mean_errors = np.mean(errors, 0)
-    print('Mean errors ({0[0]}, {0[1]})'.format(mean_errors))
-    if current_offset is not None:
-        print('Change Z2 offset to ({0[0]}, {0[1]})'.format(
-            current_offset + mean_errors))
-
-    return points, errors
 
 
 def main():
@@ -785,7 +806,7 @@ def main():
             robot.z2_to_worksurface))
         '''
         # Measured as above
-        robot.z2_to_worksurface = 44.5125
+        robot.z2_to_worksurface = 44.7562
 
         # TODO set relative to z2_to_worksurface if not using sensor?
         # Measured 45.5 to top of 1/8" alignment plate + 3.175 thickness of that
@@ -817,20 +838,21 @@ def main():
     # pickle
     flyplate.fit_correction()
 
+    morgue = maple.module.Morgue(robot,
+        (427.15 - z2_offset[0], 303.8 - z2_offset[1]))
+
     left_arena = ChoiceModule(robot,
         (382.15 - z2_offset[0], 18.2 - z2_offset[1]),
-        calibration_approach_from=flyplate.offset[:2] + (flyplate.extent[0], 0))
+        calibration_approach_from=flyplate.offset[:2] + (flyplate.extent[0], 0),
+        morgue=morgue)
     if not just_right_arena:
         left_arena.fit_correction()
 
     right_arena = ChoiceModule(robot,
         (93.65 - z2_offset[0], 18.2 - z2_offset[1]),
-        calibration_approach_from=flyplate.offset[:2])
-    # TODO delete me
+        calibration_approach_from=flyplate.offset[:2],
+        morgue=morgue)
     right_arena.fit_correction()
-
-    morgue = maple.module.Morgue(robot,
-        (427.15 - z2_offset[0], 303.8 - z2_offset[1]))
 
     # TODO maybe factor into some kind of workspace class, with higher level
     # planning fns (could be useful at least for picking appropriate approach
@@ -858,12 +880,10 @@ def main():
     # TODO TODO also save position while clearing arrays
     # (need to store another bit to say whether you are loading or unloading?)
     # or just load if have flies and some are still empty?
-    '''
-    start_from = platelabels_to_indices('G', 7)
+    start_from = platelabels_to_indices('D', 7)
 
     flyplate.full[:start_from[0], :] = False
     flyplate.full[start_from[0], :start_from[1]] = False
-    '''
 
     # TODO compute and save desired working distances?
     '''
@@ -874,6 +894,19 @@ def main():
     print('')
     '''
 
+    #right_arena.remove_flies()
+
+    #right_arena.open_vent(7, False)
+    #sys.exit()
+
+    right_arena.open_vents()
+    robot.home()
+    raw_input('Press any key to continue.')
+    right_arena.close_vents()
+    right_arena.mock_load()
+    robot.home()
+    sys.exit()
+
     # TODO delete me
     #right_arena.open_doors()
     #right_arena.close_doors()
@@ -881,13 +914,11 @@ def main():
     #right_arena.visit_all_loading_ports()
     # TODO fix anchors in z2 case. seems to be using z0 anchor.
     #right_arena.visit_all_vent_ports()
-    right_arena.vent_is_open[:] = True
-    right_arena.close_vents()
 
-    right_arena.open_vents()
-    robot.home()
-    raw_input('Press any key to continue.')
-    right_arena.close_vents()
+    #right_arena.vent_is_open[:] = True
+    #right_arena.close_vents()
+
+    """
 
     '''
     right_arena.full[4:] = True
@@ -896,6 +927,7 @@ def main():
         morgue.put()
     '''
     sys.exit()
+    """
     #
 
     # TODO TODO build in ability to start where it left off
@@ -1023,7 +1055,8 @@ def main():
             print('Moving effectors out of way.')
             robot.moveZ0(0)
             robot.moveZ2(0)
-            stage_right = left_arena.offset[:2] + [left_arena.extent[0] + 50, 0]
+            # TODO 50 sufficient? just use current y position?
+            stage_right = [left_arena.offset[0] + left_arena.extent[0] + 50, 0]
             # For return w/o backlash. May want to just home and then move a
             # little to the opposite side of the first well, or visit morgue
             # first.
