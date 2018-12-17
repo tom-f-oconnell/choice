@@ -44,7 +44,7 @@ class ChoiceModule(maple.module.Array):
         # stayed over ceiling PCB...
         # TODO just include more detailed map of heights and let some path
         # planning work?
-        max_z_extent = 19.5
+        max_z_extent = 21.0
 
         # TODO if extent is only going to be what is flush with floor, s.t. it
         # can be used to generate layout w/ 1/8" sheet, maybe also include
@@ -54,20 +54,7 @@ class ChoiceModule(maple.module.Array):
                   chamber_length,
                   max_z_extent)
 
-        # TODO experiment with this
-        # Defined from z=0 being the bottom of this module.
-        # 10.8 seemed to verge on not deep enough to reliably make a good seal
-        # (though may need to revisit after playing with how billows sits)
-        # 9.8 seemed possibly too low to allow fly to get shot past door,
-        # leading to some escapes and door deaths (though possible it is also
-        # because wider loading holes on this ceiling I cut)
-        # TODO TODO maybe slightly further down when withdrawing (and move
-        # between two heights, to ensure seal?)
-        # 11/27/18: 10.4 seemed maybe too low? (phenotype is flies were getting
-        # stuck in door)
-        # TODO it could be that the opposite vent helps get them out of the
-        # doorway initially... for this trial, that was taped to try to assist
-        # unloading
+        # Should be about 1 mm above bottom of ~3mm acrylic.
         flymanip_working_height = 11
 
         n_cols = 8
@@ -86,7 +73,9 @@ class ChoiceModule(maple.module.Array):
         # TODO require working height for this effector higher up in class
         # heirarchy? (in ArrayWithDoors, for sure, if i implement that)
         self.z0_working_height = 9.5 # was 9.0
-        self.z0_center_travel_height = self.z0_working_height + 6
+        # TODO delete. too risky when less than extent, and now it's just doing
+        # pretty much same as effectors_to_travel_height()
+        self.z0_center_travel_height = max_z_extent + 2
 
         self.flymanip_travel_height = self.flymanip_working_height + 6
 
@@ -100,7 +89,9 @@ class ChoiceModule(maple.module.Array):
             center = self.anchor_center(i, j, without_correction=True)
 
             for left in (True, False):
-                z0_vx, vy = self.vent_manip_center( (i,j), left, closed=True)
+                z0_vx, vy = self.vent_manip_center( (i,j), left, closed=True,
+                    with_fudge=False)
+
                 z2_vx = z0_vx - self.robot.z0_to_z2_dx
                 self.calibration_points.append((z2_vx, vy))
 
@@ -120,12 +111,10 @@ class ChoiceModule(maple.module.Array):
         self.door_vac_connect_delay_ms = 0
         self.door_vac_disconnect_delay_ms = 0
         self.disconnect_air_ms = 80
-        # TODO measure whether this actually helps (seemed to by hand, but might
-        # not with robot) (and is 2 sufficient?)
         self.repeats_per_door = 1
 
-        # TODO implement
-        #self.door_overshoot = 0.5
+        self.repeats_per_vent = 1
+        self.retract_between_vent_repeats = 3.0
 
         # Assume everything is closed at beginning, b/c trying to open a closed
         # door isn't really that harmful (?), and the first operation will need
@@ -138,6 +127,46 @@ class ChoiceModule(maple.module.Array):
     def get(self, xy, ij):
         """
         """
+        vac_each_port = True
+        # I wasn't having such great luck with my attempt at this strategy.
+        blow_towards_center = False
+        assert vac_each_port != blow_towards_center
+
+        print('Getting fly from behavior chamber {} ({})'.format(ij, xy))
+
+        if self.robot is not None:
+            zt = self.robot.z2_to_worksurface - self.flymanip_travel_height
+
+        if blow_towards_center and self.robot is not None:
+            # TODO TODO maybe open center door halfway or something first, to
+            # allow for a little more flow to center?
+            # TODO maybe a few pulses so pressure can't build up?
+            # it seems in one case, that the seal broke, and the (dead) fly was
+            # blown up from around the bellows... not sure what exactly happened
+            # oh, i think it might have come up through the vent slot?
+            # (with the air blowing the door all the way back first? possible?)
+            # redesign to prevent?
+            blow_time_ms = 300
+            self.robot.flyManipVac(False)
+
+            # Left vent
+            self.open_vent(ij, True)
+            self.robot.flyManipAir(True)
+            self.to_vent_port(ij, True)
+            self.robot.dwell_ms(blow_time_ms)
+            self.robot.flyManipAir(False)
+            self.robot.moveZ2(zt)
+            self.close_vent(ij, True)
+
+            # Right vent
+            self.open_vent(ij, False)
+            self.robot.flyManipAir(True)
+            self.to_vent_port(ij, False)
+            self.robot.dwell_ms(blow_time_ms)
+            self.robot.flyManipAir(False)
+            self.robot.moveZ2(zt)
+            self.close_vent(ij, False)
+
         if self.robot is not None:
             self.robot.flyManipVac(True)
             self.robot.flyManipAir(False)
@@ -152,14 +181,18 @@ class ChoiceModule(maple.module.Array):
             self.robot.fly_vac_highflow(True)
 
             zw = self.robot.z2_to_worksurface - self.flymanip_working_height
-            zt = self.robot.z2_to_worksurface - self.flymanip_travel_height
             print('Moving fly manipulator to working height {}'.format(zw))
             self.robot.moveZ2(zw)
-
             self.robot.dwell_ms(2000)
             # TODO need to shut off? (might interfere w/ door operation...)
             self.robot.fly_vac_highflow(False)
+            self.robot.moveZ2(zt)
 
+        # TODO also apply this flag to vents? separate?
+        if self.close_doors_after_unloading:
+            self.close_door(ij)
+
+        if vac_each_port and self.robot is not None:
             # TODO TODO TODO should i just go to the morgue after each hole?
             # or will it either not generate too much debris by running higher
             # vac against flies or will it not matter?
@@ -173,18 +206,18 @@ class ChoiceModule(maple.module.Array):
             self.open_vent(ij, True)
             self.robot.fly_vac_highflow(True)
             self.to_vent_port(ij, True)
-            self.robot.moveZ2(zw)
             self.robot.dwell_ms(2000)
             self.robot.fly_vac_highflow(False)
+            self.robot.moveZ2(zt)
             self.close_vent(ij, True)
 
             # Right vent
             self.open_vent(ij, False)
             self.robot.fly_vac_highflow(True)
             self.to_vent_port(ij, False)
-            self.robot.moveZ2(zw)
             self.robot.dwell_ms(2000)
             self.robot.fly_vac_highflow(False)
+            self.robot.moveZ2(zt)
             self.close_vent(ij, False)
 
             '''
@@ -203,14 +236,6 @@ class ChoiceModule(maple.module.Array):
 
             self.robot.fly_vac_highflow(False)
             '''
-            print('Moving fly manipulator to local travel height {}'.format(zt))
-            self.robot.moveZ2(zt)
-
-        #else:
-        print('Getting fly from behavior chamber {} ({})'.format(ij, xy))
-
-        if self.close_doors_after_unloading:
-            self.close_door(ij)
 
 
     def put(self, xy, ij):
@@ -319,18 +344,9 @@ class ChoiceModule(maple.module.Array):
         #    return
 
         if self.robot is not None:
-            zt = self.robot.z0_to_worksurface - self.z0_center_travel_height
-            # TODO TODO may need to use fn that uses gcode to get pos from
-            # smoothie?
-            curr_z0 = self.robot.currentPosition[2]
+            self.effectors_to_travel_height()
 
-            if curr_z0 <= zt:
-                print('Part manipulator already above minimum travel height' +
-                    ' ({} <= {})'.format(curr_z0, zt))
-            else:
-                print('Moving part manipulator to local travel height ' +
-                    '{}'.format(zt))
-                self.robot.moveZ0(zt)
+            zt = self.robot.z0_to_worksurface - self.z0_center_travel_height
 
             for _ in range(self.repeats_per_door):
                 self.robot.smallPartManipVac(True)
@@ -352,9 +368,13 @@ class ChoiceModule(maple.module.Array):
         self.door_is_open[ij] = False
 
 
+    # TODO TODO make decorator to flank function w/
+    # self.effectors_to_travel_height() ?
     def open_vent(self, ij, left):
         """
         """
+        self.effectors_to_travel_height()
+
         i, j = ij
         k = 0 if left else 1
 
@@ -366,36 +386,36 @@ class ChoiceModule(maple.module.Array):
         open_vent = self.vent_manip_center(ij, left, closed=False)
         closed_vent = self.vent_manip_center(ij, left, closed=True)
 
-        print('Moving to closed {} vent at {}'.format(
-            'left' if left else 'right', closed_vent))
-        print('Moving {} vent to open position at {}'.format(
-            'left' if left else 'right', open_vent))
-
         if self.robot is not None:
-            zt = self.robot.z0_to_worksurface - self.z0_center_travel_height
-            curr_z0 = self.robot.currentPosition[2]
-
-            if curr_z0 <= zt:
-                print('Part manipulator already above minimum travel height' +
-                    ' ({} <= {})'.format(curr_z0, zt))
-            else:
-                print('Moving part manipulator to local travel height ' +
-                    '{}'.format(zt))
-                self.robot.moveZ0(zt)
-
-            self.robot.moveXY(closed_vent)
-
             zw = self.robot.z0_to_worksurface - self.z0_working_height
-            self.robot.moveZ0(zw)
-            self.robot.moveXY(open_vent)
-            self.robot.moveZ0(zt)
+
+        for _ in range(self.repeats_per_vent):
+            print('Moving to closed {} vent at {}'.format(
+                'left' if left else 'right', closed_vent))
+
+            if self.robot is not None:
+                self.robot.smallPartManipVac(True)
+                self.robot.moveXY(closed_vent)
+                self.robot.moveZ0(zw)
+
+            print('Moving {} vent to open position at {}'.format(
+                'left' if left else 'right', open_vent))
+
+            if self.robot is not None:
+                self.robot.moveXY(open_vent)
+                self.robot.smallPartManipVac(False)
+                # TODO need air here as well?
+                self.robot.moveZ0(zw - self.retract_between_vent_repeats)
 
         self.vent_is_open[i, j, k] = True
+        self.effectors_to_travel_height()
 
 
     def close_vent(self, ij, left):
         """
         """
+        self.effectors_to_travel_height()
+
         i, j = ij
         k = 0 if left else 1
 
@@ -407,39 +427,30 @@ class ChoiceModule(maple.module.Array):
         open_vent = self.vent_manip_center(ij, left, closed=False)
         closed_vent = self.vent_manip_center(ij, left, closed=True)
 
-        print('Moving to open {} vent at {}'.format(
-            'left' if left else 'right', open_vent))
-        print('Moving {} vent to closed position at {}'.format(
-            'left' if left else 'right', closed_vent))
-
         if self.robot is not None:
-            zt = self.robot.z0_to_worksurface - self.z0_center_travel_height
-            curr_z0 = self.robot.currentPosition[2]
-
-            if curr_z0 <= zt:
-                print('Part manipulator already above minimum travel height' +
-                    ' ({} <= {})'.format(curr_z0, zt))
-            else:
-                print('Moving part manipulator to local travel height ' +
-                    '{}'.format(zt))
-                self.robot.moveZ0(zt)
-
-            # So that manipulator isn't right up against the edge it was pushing
-            # when it was opening the door.
-            backoff = 0.5
-            self.robot.moveXY((open_vent[0] + backoff, open_vent[1]))
-
+            # TODO just compute in constructor?
             zw = self.robot.z0_to_worksurface - self.z0_working_height
-            self.robot.moveZ0(zw)
 
-            # Some other effect causing need for this.
-            # Maybe it's lasercutter kerf? Maybe friction from effector rubbing
-            # on shim layer and bending?
-            further = 0.6
-            self.robot.moveXY((closed_vent[0] + further, closed_vent[1]))
-            self.robot.moveZ0(zt)
+        for _ in range(self.repeats_per_vent):
+            print('Moving to open {} vent at {}'.format(
+                'left' if left else 'right', open_vent))
+
+            if self.robot is not None:
+                self.robot.smallPartManipVac(True)
+                self.robot.moveXY(open_vent)
+                self.robot.moveZ0(zw)
+
+            print('Moving {} vent to closed position at {}'.format(
+                'left' if left else 'right', closed_vent))
+
+            if self.robot is not None:
+                further = 0.0
+                self.robot.moveXY((closed_vent[0] + further, closed_vent[1]))
+                self.robot.smallPartManipVac(False)
+                self.robot.moveZ0(zw - self.retract_between_vent_repeats)
 
         self.vent_is_open[i, j, k] = False
+        self.effectors_to_travel_height()
 
 
     # TODO similar fn for main fly ports?
@@ -542,7 +553,7 @@ class ChoiceModule(maple.module.Array):
         return (vent_air_x, vent_air_y)
 
 
-    def vent_manip_center(self, ij, left, closed=True):
+    def vent_manip_center(self, ij, left, closed=True, with_fudge=True):
         """Returns center of vent slider manipulation point.
 
         Args:
@@ -555,12 +566,17 @@ class ChoiceModule(maple.module.Array):
         # May want to set this less, possibly to prevent fly escape, catching,
         # or limit switch problems.
         # 4 did pose some limit switch problems, at least with one calibration.
-        vent_stroke = 3.3
+        vent_stroke = 3.0 #2.3
         max_vent_stroke = 4
         assert vent_stroke <= max_vent_stroke
 
         vent_manip_y = vent_air_y
-        fudge_factor = -0.4
+
+        if with_fudge:
+            fudge_factor = -0.5 #-0.2 #-0.5
+        else:
+            fudge_factor = 0.0
+
         vent_manip_dx = -4.75 + fudge_factor
 
         # These doors open along other axis, so this is the coordinate that
@@ -729,6 +745,9 @@ def main():
     random_order = False
     dry_run = False
     just_right_arena = True
+    # For testing. This way, if it is going where you don't want it, it won't
+    # really crash.
+    lower_vac_cup_into_ceiling = True
 
     # TODO TODO include mode to load the flies back into flyplate after
     # experiment, for testing purposes (cycle back and forth and measure loss)
@@ -743,8 +762,10 @@ def main():
     else:
         # TODO allow calling constructor w/ no arguments for default config
         robot = maple.robotutil.MAPLE(os.path.join(maple.__path__[0],
-            'MAPLE.cfg'))
-        ###    'MAPLE.cfg'), home=False)
+            'MAPLE.cfg'), home=False)
+        #    'MAPLE.cfg'))
+
+    # TODO TODO only home if "necessary" (?)
 
     # Distance from zero defined in alignment_plate.dxf (inside corner of
     # vertical support in top right corner) to z2 (fly) effector, when the robot
@@ -766,10 +787,19 @@ def main():
         # Measured as above
         robot.z2_to_worksurface = 44.5125
 
-        # TODO TODO set relative to z2_to_worksurface if not using sensor?
+        # TODO set relative to z2_to_worksurface if not using sensor?
         # Measured 45.5 to top of 1/8" alignment plate + 3.175 thickness of that
         # plate.
-        robot.z0_to_worksurface = 48.675 + 14.0 - 3 #48.675
+        # 11.5 is already depresses the cup a little
+        # 11.2 seems to always be making contact, but it was moving less than
+        # the best. Wasn't really getting sliders stuck on old yellow grooves.
+        # 11.3 was starting to get sliders stuck on defunct grooves, with the 
+        # ceiling off at least.
+        robot.z0_to_worksurface = 48.675 + 11.7
+
+        testing_height_dy = -3.0
+        if not lower_vac_cup_into_ceiling:
+            robot.z0_to_worksurface += testing_height_dy
 
         # TODO use central offset definition (in cfg?)
         # 78 was measured from Z-plate DXF. Need correction?
@@ -796,6 +826,7 @@ def main():
     right_arena = ChoiceModule(robot,
         (93.65 - z2_offset[0], 18.2 - z2_offset[1]),
         calibration_approach_from=flyplate.offset[:2])
+    # TODO delete me
     right_arena.fit_correction()
 
     morgue = maple.module.Morgue(robot,
@@ -847,14 +878,23 @@ def main():
     #right_arena.open_doors()
     #right_arena.close_doors()
 
-    ###right_arena.clear_correction()
-
     #right_arena.visit_all_loading_ports()
     # TODO fix anchors in z2 case. seems to be using z0 anchor.
     #right_arena.visit_all_vent_ports()
-    right_arena.open_vents()
+    right_arena.vent_is_open[:] = True
     right_arena.close_vents()
 
+    right_arena.open_vents()
+    robot.home()
+    raw_input('Press any key to continue.')
+    right_arena.close_vents()
+
+    '''
+    right_arena.full[4:] = True
+    while right_arena.has_flies():
+        right_arena.get_next()
+        morgue.put()
+    '''
     sys.exit()
     #
 
