@@ -72,7 +72,7 @@ class ChoiceModule(maple.module.Array):
 
         # TODO require working height for this effector higher up in class
         # heirarchy? (in ArrayWithDoors, for sure, if i implement that)
-        self.z0_working_height = 9.5 # was 9.0
+        self.z0_working_height = 9.0 #9.5 # was 9.0
         # TODO delete. too risky when less than extent, and now it's just doing
         # pretty much same as effectors_to_travel_height()
         self.z0_center_travel_height = max_z_extent + 2
@@ -104,7 +104,7 @@ class ChoiceModule(maple.module.Array):
                 # Will ultimately use the vacuum cup to move these vent doors.
                 self.calibration_effectors.append(0)
 
-        self.fly_load_air_ms = 1500
+        self.fly_load_air_ms = 600
 
         # was causing backlash problems
         #self.close_doors_after_unloading = False
@@ -288,8 +288,7 @@ class ChoiceModule(maple.module.Array):
         # TODO TODO TODO check that vac isn't pulling doors up (increasing
         # friction, risking escape, etc) at the working height (decrease working
         # height if so)
-        ij = [i, 0]
-        if self.door_is_open[ij]:
+        if self.door_is_open[i,0]:
             print('Door {} was already open'.format(i))
             return
 
@@ -332,7 +331,7 @@ class ChoiceModule(maple.module.Array):
 
                 self.robot.moveZ0(zt)
 
-        self.door_is_open[ij] = True
+        self.door_is_open[i,0] = True
         self.effectors_to_travel_height()
 
 
@@ -342,8 +341,7 @@ class ChoiceModule(maple.module.Array):
         """
         self.effectors_to_travel_height()
 
-        ij = [i, 0]
-        if not self.door_is_open[ij]:
+        if not self.door_is_open[i,0]:
             print('Door {} was already closed'.format(i))
             return
 
@@ -375,7 +373,7 @@ class ChoiceModule(maple.module.Array):
 
                 self.robot.moveZ0(zt)
 
-        self.door_is_open[ij] = False
+        self.door_is_open[i,0] = False
         self.effectors_to_travel_height()
 
 
@@ -783,7 +781,7 @@ def main():
     else:
         # TODO allow calling constructor w/ no arguments for default config
         robot = maple.robotutil.MAPLE(os.path.join(maple.__path__[0],
-            'MAPLE.cfg'), home=False)
+            'MAPLE.cfg'), home=False, enable_z1=False)
         #    'MAPLE.cfg'))
 
     # TODO TODO only home if "necessary" (?)
@@ -799,7 +797,6 @@ def main():
         # metal needle by maybe ~1mm or so.
         #robot.z2_to_worksurface = 43.175
         # This is a point just north of the flyplate.
-        '''
         robot.zero_z2_to_reference(xy=z2_reference_point, thickness=3.175,
             speed=1500)
         print('Found worksurface at Z2={:.2f}mm'.format(
@@ -807,6 +804,7 @@ def main():
         '''
         # Measured as above
         robot.z2_to_worksurface = 44.7562
+        '''
 
         # TODO set relative to z2_to_worksurface if not using sensor?
         # Measured 45.5 to top of 1/8" alignment plate + 3.175 thickness of that
@@ -816,6 +814,8 @@ def main():
         # the best. Wasn't really getting sliders stuck on old yellow grooves.
         # 11.3 was starting to get sliders stuck on defunct grooves, with the 
         # ceiling off at least.
+        # TODO try to get this right re: diff between vac cups, then just fix
+        # working height in module, as intended
         robot.z0_to_worksurface = 48.675 + 11.7
 
         testing_height_dy = -3.0
@@ -880,10 +880,12 @@ def main():
     # TODO TODO also save position while clearing arrays
     # (need to store another bit to say whether you are loading or unloading?)
     # or just load if have flies and some are still empty?
+    '''
     start_from = platelabels_to_indices('D', 7)
 
     flyplate.full[:start_from[0], :] = False
     flyplate.full[start_from[0], :start_from[1]] = False
+    '''
 
     # TODO compute and save desired working distances?
     '''
@@ -896,9 +898,7 @@ def main():
 
     #right_arena.remove_flies()
 
-    #right_arena.open_vent(7, False)
-    #sys.exit()
-
+    '''
     right_arena.open_vents()
     robot.home()
     raw_input('Press any key to continue.')
@@ -906,6 +906,7 @@ def main():
     right_arena.mock_load()
     robot.home()
     sys.exit()
+    '''
 
     # TODO delete me
     #right_arena.open_doors()
@@ -1050,6 +1051,7 @@ def main():
             #
 
             robot.home()
+            break
 
         if not dry_run:
             print('Moving effectors out of way.')
@@ -1146,6 +1148,7 @@ def main():
             robot.fly_vac_highflow(False)
 
             robot.home()
+            break
 
         # TODO alternative strategies to maintain better repeatability?
         # just go slower? diff motor current? tension? move cables so they don't
