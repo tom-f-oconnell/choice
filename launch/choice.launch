@@ -48,7 +48,7 @@
   <rosparam command="load" file="stimulus_parameters.yaml" />
 
   <!-- TODO move this into stimulis_arduino launch (and rename)? -->
-  <node name="stimulus_loader" pkg="stimuli" type="odor_randomizer.py"
+  <node name="stimulus_loader" pkg="stimuli" type="two_choice.py"
     output="screen" required="true" />
  
   <!-- TODO is this explicit find syntax idiomatic or is there a simpler way to
