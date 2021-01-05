@@ -1,8 +1,23 @@
 <launch>
-  <!-- can be used to PID with the same parameter file as your experiment -->
+  <!-- Only runs the valve program. Does no video acquisition or tracking.
+  Can be used to PID with the same stimulus parameters + code as your experiment. -->
   <arg name="stimuli_only" default="False" />
+
+  <!-- Port the Arduino controlling the valves is connected to -->
   <arg name="port" default="/dev/ttyACM0" />
+
+  <!-- True (default) if using usb_cam driver or False to use pointgrey_camera_driver.
+       Also changes which topic images / rectified images are published to
+       (though maybe it shouldn't...).
+  -->
+  <arg name="usb_cam" default="True" />
+
+  <!-- Only record the delta-video, rather than doing the tracking as well.
+  Can be tracked later by playing back the delta-vieo, though this is a bit more
+  complicated for the user. Only use if computer can't handle doing the tracking
+  at acquisition-time. -->
   <arg name="video_only" default="False" />
+
   <!-- the Arduino library controlling the shift-register based shock shield.
        should be false if not using the multishock control hardware (shield_pcb)
   -->
@@ -12,44 +27,52 @@
   
   <env if="$(arg debug)" name="ROSCONSOLE_CONFIG_FILE" value="$(find choice)/etc/debug_rosconsole.conf" />
   
-  <!-- TODO put snapshot_params node in this package, add another node tag -->
-  <node name="versionpub" pkg="metatools" type="versionpub.py" 
-    unless="$(arg stimuli_only)">
-    <rosparam>
-      package_names: ['metatools', 'stimuli', 'choice', 'multi_tracker', 'rosserial_arduino', 'usb_cam']
-    </rosparam>
-  </node>
+  <group unless="$(arg stimuli_only)">
 
-  <!-- TODO deal with camera parameters / calibration -->
-  <include file="$(find multi_tracker)/launch/rectified_usb_cam.launch" 
-    unless="$(arg stimuli_only)"/>
+    <!-- TODO reasonable to set these all as default in package directories and
+         only set non defaults locally? -->
+    <!-- TODO test these are loaded from directory roslaunch is invoked in. setup
+         default handling -->
+    <include file="$(find multi_tracker)/launch/load_tracking_parameter_yamls.launch"/>
 
-  <!-- TODO reasonable to set these all as default in package directories and
-       only set non defaults locally? -->
-  <!-- TODO test these are loaded from directory roslaunch is invoked in. setup
-       default handling -->
-  <include 
-    file="$(find multi_tracker)/launch/load_tracking_parameter_yamls.launch" 
-    unless="$(arg stimuli_only)"/>
+    <!-- TODO put snapshot_params node in this package, add another node tag -->
+    <node name="versionpub" pkg="metatools" type="versionpub.py">
+      <rosparam if="$(arg usb_cam)">
+        package_names: ['metatools', 'stimuli', 'choice', 'multi_tracker', 'rosserial_arduino', 'usb_cam']
+      </rosparam>
+      <!-- pointgrey_camera_driver not installed from source, so not included in this case -->
+      <rosparam unless="$(arg usb_cam)">
+        package_names: ['metatools', 'stimuli', 'choice', 'multi_tracker', 'rosserial_arduino']
+      </rosparam>
+    </node>
 
-  <include file="$(find multi_tracker)/launch/detect_roi_tracking.launch"
-    unless="$(arg stimuli_only)">
-    <arg name="video_only" value="$(arg video_only)" />
-    <!-- TODO how best to treat this when retracking?
-         should i aim for a package wide policy of remapping cameras 
-         to camera/image_raw? or package wide policy of always
-         doing this just when retracking? i kind of like the former better
-         but it might take more work? -->
-    <arg name="camera" value="usb_cam/image_rect" />
-  </include>
+    <include file="$(find multi_tracker)/launch/rectified_usb_cam.launch" if="$(arg usb_cam)"/>
+    <group unless="$(arg usb_cam)">
+      <!-- TODO see notes about camera calibration handling in pointgrey case in 
+           ejhonglab/nagel_laminar launch file. if fixed there, fix here too -->
+      <node name="pointgrey_camera_node" pkg="pointgrey_camera_driver" type="camera_node" ns="camera" required="true" output="screen"/>
+      <node name="image_proc" pkg="image_proc" type="image_proc" ns="camera" required="true" output="screen"/>
+    </group>
+
+    <include file="$(find multi_tracker)/launch/detect_roi_tracking.launch">
+      <arg name="video_only" value="$(arg video_only)"/>
+      <!-- TODO how best to treat this when retracking?
+           should i aim for a package wide policy of remapping cameras 
+           to camera/image_raw? or package wide policy of always
+           doing this just when retracking? i kind of like the former better
+           but it might take more work? -->
+      <arg name="camera" value="usb_cam/image_rect" if="$(arg usb_cam)"/>
+      <arg name="camera" value="camera/image_rect" unless="$(arg usb_cam)"/>
+    </include>
+
+  </group>
 
   <!-- TODO make default to load config from cwd? (no reason to do this indep of
        ROS_HOME though, right? -->
   <rosparam command="load" file="stimulus_parameters.yaml" />
 
   <!-- TODO move this into stimulis_arduino launch (and rename)? -->
-  <node name="stimulus_loader" pkg="stimuli" type="two_choice.py"
-    output="screen" required="true" />
+  <node name="stimulus_loader" pkg="stimuli" type="two_choice.py" output="screen" required="true"/>
  
   <!-- TODO is this explicit find syntax idiomatic or is there a simpler way to
        find .launch files? -->
@@ -58,10 +81,8 @@
   </include>
 
   <group if="$(arg using_multishock)">
-    <node name="channel_measurement_splitter" pkg="choice"
-      type="channel_measurement_splitter.py" />
+    <node name="channel_measurement_splitter" pkg="choice" type="channel_measurement_splitter.py"/>
 
-    <!-- unless="$(arg stimuli_only)"> -->
     <node name="shock_currents_save_bag" pkg="choice" type="save_bag.py">
         <rosparam param="topics">
             - channel_measurements_stamped
